@@ -75,6 +75,11 @@ public OnGameModeInit()
 	return 1;
 }
 
+public ForTest()
+{
+	return 1;
+}
+
 strtok(const string[], &index)
 {
 	new length = strlen(string);
