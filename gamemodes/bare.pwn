@@ -17,6 +17,11 @@ public OnPlayerConnect(playerid)
 	return 1;
 }
 
+public fortest2()
+{
+	return 3;
+}
+
 public OnPlayerCommandText(playerid, cmdtext[])
 {
 	new idx;
