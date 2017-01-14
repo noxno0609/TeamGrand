@@ -17,11 +17,6 @@ public OnPlayerConnect(playerid)
 	return 1;
 }
 
-public fortest2()
-{
-	return 3;
-}
-
 public OnPlayerCommandText(playerid, cmdtext[])
 {
 	new idx;
@@ -72,11 +67,6 @@ public OnGameModeInit()
 
 	AddPlayerClass(265,1958.3783,1343.1572,15.3746,270.1425,0,0,0,0,-1,-1);
 
-	return 1;
-}
-
-public ForTest()
-{
 	return 1;
 }
 
