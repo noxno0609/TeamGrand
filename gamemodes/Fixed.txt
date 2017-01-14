@@ -1,0 +1,5 @@
+Fixed the exits houses after buying
+More speed on the GameMode
+Fixed instant show level after login
+Added 3D Text at houses pickup
+85% of objects was converted on streamer code
