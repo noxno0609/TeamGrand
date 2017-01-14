@@ -1037,3 +1037,144 @@ v0.3.7-R2, (C)2005-2015 SA-MP Team
 [15:03:21] (( [0] Andy_Tools Says: :)) ))
 [15:03:36] [chat] [Andy_Tools]: mode hay vkl
 [15:06:16] [part] Trau_Dai_Hiep has left the server (3:1)
+
+----------
+Loaded log file: "server_log.txt".
+----------
+
+SA-MP Dedicated Server
+----------------------
+v0.3.7-R2, (C)2005-2015 SA-MP Team
+
+[15:39:13] filterscripts = ""  (string)
+[15:39:13] 
+[15:39:13] Server Plugins
+[15:39:13] --------------
+[15:39:13]  Loading plugin: streamer
+[15:39:13] 
+
+*** Streamer Plugin v2.5 by Incognito loaded ***
+
+[15:39:13]   Loaded.
+[15:39:13]  Loaded 1 plugins.
+
+[15:39:13] 
+[15:39:13] Filterscripts
+[15:39:13] ---------------
+[15:39:13]   Loaded 0 filterscripts.
+
+[15:39:13] HouseInfo:0 Owner:The State hTakings 182 hVec 418
+[15:39:13] HouseInfo:1 Owner:The State hTakings 0 hVec 418
+[15:39:13] HouseInfo:2 Owner:The State hTakings 0 hVec 418
+[15:39:13] HouseInfo:3 Owner:The State hTakings 0 hVec 418
+[15:39:13] HouseInfo:4 Owner:The State hTakings 0 hVec 418
+[15:39:13] HouseInfo:5 Owner:The State hTakings 0 hVec 418
+[15:39:13] HouseInfo:6 Owner:The State hTakings 0 hVec 418
+[15:39:13] HouseInfo:7 Owner:The State hTakings 0 hVec 418
+[15:39:13] HouseInfo:8 Owner:The State hTakings 0 hVec 418
+[15:39:13] HouseInfo:9 Owner:The State hTakings 0 hVec 418
+[15:39:13] HouseInfo:10 Owner:The State hTakings 0 hVec 418
+[15:39:13] HouseInfo:11 Owner:The State hTakings 59560 hVec 418
+[15:39:13] HouseInfo:12 Owner:The State hTakings 0 hVec 418
+[15:39:13] HouseInfo:13 Owner:The State hTakings 27500 hVec 418
+[15:39:13] HouseInfo:14 Owner:The State hTakings 0 hVec 418
+[15:39:13] HouseInfo:15 Owner:The State hTakings 11000 hVec 418
+[15:39:13] HouseInfo:16 Owner:The State hTakings 200 hVec 418
+[15:39:13] HouseInfo:17 Owner:The State hTakings 0 hVec 418
+[15:39:13] HouseInfo:18 Owner:The State hTakings 60000 hVec 418
+[15:39:13] HouseInfo:19 Owner:The State hTakings 213000 hVec 418
+[15:39:13] HouseInfo:20 Owner:The State hTakings 245900 hVec 418
+[15:39:13] HouseInfo:21 Owner:The State hTakings 0 hVec 418
+[15:39:13] HouseInfo:22 Owner:The State hTakings 0 hVec 418
+[15:39:13] HouseInfo:23 Owner:The State hTakings 0 hVec 418
+[15:39:13] HouseInfo:24 Owner:The State hTakings 0 hVec 418
+[15:39:13] HouseInfo:25 Owner:The State hTakings 0 hVec 418
+[15:39:13] HouseInfo:26 Owner:The State hTakings 0 hVec 418
+[15:39:13] HouseInfo:27 Owner:The State hTakings 0 hVec 418
+[15:39:13] HouseInfo:28 Owner:The State hTakings 0 hVec 418
+[15:39:13] HouseInfo:29 Owner:The State hTakings 0 hVec 418
+[15:39:13] HouseInfo:30 Owner:The State hTakings 0 hVec 418
+[15:39:13] HouseInfo:31 Owner:The State hTakings 0 hVec 418
+[15:39:13] HouseInfo:32 Owner:Ben_X hTakings 1600 hVec 418
+[15:39:13] HouseInfo:33 Owner:The State hTakings 0 hVec 418
+[15:39:13] HouseInfo:34 Owner:The State hTakings 0 hVec 418
+[15:39:13] HouseInfo:35 Owner:The State hTakings 0 hVec 418
+[15:39:13] BizzInfo:0 Owner:The State Message:~w~Gun Shop 1 Entfee:0 Till:0 Products:100/500 Interior:1.
+
+[15:39:13] BizzInfo:1 Owner:The State Message:~w~Gun Shop 2 Entfee:0 Till:0 Products:100/500 Interior:4.
+
+[15:39:13] BizzInfo:2 Owner:Ben_X Message: Entfee:50 Till:325000 Products:148/500 Interior:1.
+
+[15:39:13] BizzInfo:3 Owner:The State Message:~w~Police Armoury Entfee:0 Till:0 Products:500/500 Interior:10.
+
+[15:39:13] BizzInfo:4 Owner:The State Message:~w~City Bank Entfee:0 Till:0 Products:99998/100000 Interior:0.
+
+[15:39:13] BizzInfo:5 Owner:The State Message:~w~The Welcome Pump bar Entfee:0 Till:0 Products:499/500 Interior:18.
+
+[15:39:13] BizzInfo:6 Owner:The State Message:~w~The Welcome Pump bar Entfee:0 Till:0 Products:499/500 Interior:18.
+
+[15:39:13] SBizzInfo:0 Owner:The State Message:~w~Bikes renting Entfee:5 Till:445 Products:0/100 Interior:0.
+
+[15:39:13] SBizzInfo:1 Owner:The State Message:~w~Wang Cars Entfee:30 Till:1080 Products:55/100 Interior:0.
+
+[15:39:13] SBizzInfo:2 Owner:The State Message:~w~Phone Company Entfee:0 Till:45 Products:100/100 Interior:0.
+
+[15:39:13] SBizzInfo:3 Owner:The State Message:~w~Gas Company Entfee:1 Till:8546 Products:100/100 Interior:0.
+
+[15:39:13] SBizzInfo:4 Owner:The State Message:~w~Electricity Company Entfee:0 Till:59402 Products:100/100 Interior:0.
+
+[15:39:13] SBizzInfo:5 Owner:The State Message:~w~Pay & Spray Entfee:1 Till:6 Products:94/100 Interior:0.
+
+[15:39:13] SBizzInfo:6 Owner:The State Message:~w~House Upgrade Entfee:0 Till:151500 Products:98/100 Interior:0.
+
+[15:39:13] SBizzInfo:7 Owner:The State Message:~w~CNN Studio Entfee:0 Till:24725 Products:100/100 Interior:0.
+
+[15:39:13] SBizzInfo:8 Owner:No-One Message:Un Named Entfee:0 Till:250 Products:97/100 Interior:0.
+
+[15:39:13] SBizzInfo:9 Owner:The State Message:~w~General Store Entfee:0 Till:352010 Products:100/100 Interior:0.
+
+[15:39:13] SBizzInfo:10 Owner:The State Message:~w~Paintball Arena Entfee:0 Till:0 Products:100/100 Interior:0.
+
+[15:39:13] SBizzInfo:11 Owner:The State Message:~w~Kart Track Entfee:0 Till:0 Products:100/100 Interior:0.
+
+[15:39:13] SBizzInfo:12 Owner:The State Message:~w~Kart Track Entfee:0 Till:0 Products:100/100 Interior:0.
+
+[15:39:13] Family:0 Taken: 0 Name: MOTD: Leader: Members:0 SpawnX:0.000000 SpawnY:0.000000 SpawnZ:0.000000 Int:0
+[15:39:13] Family:1 Taken: 0 Name: MOTD: Leader: Members:0 SpawnX:0.000000 SpawnY:0.000000 SpawnZ:0.000000 Int:0
+[15:39:14] Family:2 Taken: 0 Name: MOTD: Leader: Members:0 SpawnX:0.000000 SpawnY:0.000000 SpawnZ:0.000000 Int:0
+[15:39:14] Family:3 Taken: 0 Name: MOTD: Leader: Members:0 SpawnX:0.000000 SpawnY:0.000000 SpawnZ:0.000000 Int:0
+[15:39:14] Family:4 Taken: 0 Name: MOTD: Leader: Members:0 SpawnX:0.000000 SpawnY:0.000000 SpawnZ:0.000000 Int:0
+[15:39:14] Family:5 Taken: 0 Name: MOTD: Leader: Members:0 SpawnX:0.000000 SpawnY:0.000000 SpawnZ:0.000000 Int:0
+[15:39:14] Family:6 Taken: 0 Name: MOTD: Leader: Members:0 SpawnX:0.000000 SpawnY:0.000000 SpawnZ:0.000000 Int:0
+[15:39:14] Family:7 Taken: 0 Name: MOTD: Leader: Members:0 SpawnX:0.000000 SpawnY:0.000000 SpawnZ:0.000000 Int:0
+[15:39:14] Family:8 Taken: 0 Name: MOTD: Leader: Members:0 SpawnX:0.000000 SpawnY:0.000000 SpawnZ:0.000000 Int:0
+[15:39:14] Family:9 Taken: 0 Name: MOTD: Leader: Members:0 SpawnX:0.000000 SpawnY:0.000000 SpawnZ:0.000000 Int:0
+[15:39:14] CK:0 Taken: 0 Sendername:No-one Giveplayer: No-one
+[15:39:14] CK:1 Taken: 0 Sendername:No-one Giveplayer: No-one
+[15:39:14] CK:2 Taken: 0 Sendername:No-one Giveplayer: No-one
+[15:39:14] CK:3 Taken: 0 Sendername:No-one Giveplayer: No-one
+[15:39:14] CK:4 Taken: 0 Sendername:No-one Giveplayer: No-one
+[15:39:14] CK:5 Taken: 0 Sendername:No-one Giveplayer: No-one
+[15:39:14] CK:6 Taken: 0 Sendername:No-one Giveplayer: No-one
+[15:39:14] CK:7 Taken: 0 Sendername:No-one Giveplayer: No-one
+[15:39:14] CK:8 Taken: 0 Sendername:No-one Giveplayer: No-one
+[15:39:14] CK:9 Taken: 0 Sendername:No-one Giveplayer: No-one
+[15:39:14] Paper:0 Used: 0 Maker: Title:  Text1:  Text2:  Text3:  Text4:  Text5:  Text6:  Text7: 
+[15:39:14] Paper:1 Used: 0 Maker: Title:  Text1:  Text2:  Text3:  Text4:  Text5:  Text6:  Text7: 
+[15:39:14] Paper:2 Used: 0 Maker: Title:  Text1:  Text2:  Text3:  Text4:  Text5:  Text6:  Text7: 
+[15:39:14] Paper:3 Used: 0 Maker: Title:  Text1:  Text2:  Text3:  Text4:  Text5:  Text6:  Text7: 
+[15:39:14] Paper:4 Used: 0 Maker: Title:  Text1:  Text2:  Text3:  Text4:  Text5:  Text6:  Text7: 
+[15:39:14] Paper:5 Used: 0 Maker: Title:  Text1:  Text2:  Text3:  Text4:  Text5:  Text6:  Text7: 
+[15:39:14] Paper:6 Used: 0 Maker: Title:  Text1:  Text2:  Text3:  Text4:  Text5:  Text6:  Text7: 
+[15:39:14] Paper:7 Used: 0 Maker: Title:  Text1:  Text2:  Text3:  Text4:  Text5:  Text6:  Text7: 
+[15:39:14] Paper:8 Used: 0 Maker: Title:  Text1:  Text2:  Text3:  Text4:  Text5:  Text6:  Text7: 
+[15:39:14] Paper:9 Used: 0 Maker: Title:  Text1:  Text2:  Text3:  Text4:  Text5:  Text6:  Text7: 
+[15:39:14] weburl = "www.sa-mp.com"  (string)
+[15:39:14] AllowAdminTeleport() : function is deprecated. Please see OnPlayerClickMap()
+[15:39:14] Loading 136 pickups... Loaded successfuly !
+[15:39:14]  
+[15:39:14]      Los Angeles Roleplay 
+[15:39:14] ___________________________
+[15:39:14]      By: Ellis & Hoodstar
+[15:39:14]  
+[15:39:14] Number of vehicle models: 46
