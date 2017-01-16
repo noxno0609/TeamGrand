@@ -15,6 +15,7 @@
     <None Include="..\pawno\include\ProjectInc\ben.inc" />
     <None Include="..\pawno\include\ProjectInc\declare.inc" />
     <None Include="..\pawno\include\ProjectInc\onevent.inc" />
+    <None Include="..\server.cfg" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{C188D80F-D665-4243-B3B6-79047BCB5CDA}</ProjectGuid>
