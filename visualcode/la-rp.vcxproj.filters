@@ -2,19 +2,22 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <None Include="..\gamemodes\larp.pwn" />
-    <None Include="..\pawno\include\ProjectInc\ben.inc">
-      <Filter>Code</Filter>
-    </None>
     <None Include="..\pawno\include\ProjectInc\declare.inc">
       <Filter>Code</Filter>
     </None>
     <None Include="..\pawno\include\ProjectInc\onevent.inc">
       <Filter>Code</Filter>
     </None>
+    <None Include="..\pawno\include\ProjectInc\ben.inc">
+      <Filter>Code\Private</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Code">
       <UniqueIdentifier>{230c4f19-75cd-4bb0-8c55-3df963b3f5a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Code\Private">
+      <UniqueIdentifier>{6604bbe7-50a0-49f5-b77a-b7b8ed9bad14}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
