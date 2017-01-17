@@ -15,6 +15,7 @@
     <None Include="..\pawno\include\ProjectInc\ben.inc" />
     <None Include="..\pawno\include\ProjectInc\declare.inc" />
     <None Include="..\pawno\include\ProjectInc\onevent.inc" />
+    <None Include="..\scriptfiles\mysql.ini" />
     <None Include="..\server.cfg" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -44,11 +45,11 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <NMakeBuildCommandLine>"D:\SA-MP Code Source\pawno\pawncc.exe" "D:\SA-MP Code Source\gamemodes\$(TargetName).pwn"</NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>"D:\SA-MP\TeamGrand\pawno\pawncc.exe" "D:\SA-MP\TeamGrand\gamemodes\$(TargetName).pwn"</NMakeBuildCommandLine>
     <NMakeOutput>$(TargetName).amx</NMakeOutput>
-    <NMakeCleanCommandLine>"D:\SA-MP Code Source\pawno\pawncc.exe" "D:\SA-MP Code Source\gamemodes\$(TargetName).pwn"</NMakeCleanCommandLine>
+    <NMakeCleanCommandLine>"D:\SA-MP\TeamGrand\pawno\pawncc.exe" "D:\SA-MP\TeamGrand\gamemodes\$(TargetName).pwn"</NMakeCleanCommandLine>
     <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
-    <NMakeIncludeSearchPath>D:\SA-MP Code Source\pawno\include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
+    <NMakeIncludeSearchPath>D:\SA-MP\TeamGrand\pawno\include;$(NMakeIncludeSearchPath)</NMakeIncludeSearchPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <NMakeBuildCommandLine>"D:\SA-MP Code Source\pawno\pawncc.exe" "D:\SA-MP Code Source\gamemodes\$(TargetName)..pwn" -r -%3b -(</NMakeBuildCommandLine>

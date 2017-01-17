@@ -1,6 +1,7 @@
 CREATE TABLE user
 (
 ID int PRIMARY KEY AUTO_INCREMENT,
+`Name` varchar(255) NOT NULL,
 `Password` varchar(255) NOT NULL,
 Level int(11) NOT NULL,
 AdminLevel int(11) NOT NULL,

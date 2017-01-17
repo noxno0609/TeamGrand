@@ -271,7 +271,7 @@ forward SetPlayerToTeamColor(playerid);
 forward GameModeInitExitFunc();
 forward split(const strsrc[], strdest[][], delimiter);
 forward OnPlayerLogin(playerid,password[]);
-forward OnPlayerUpdate(playerid);
+forward SavePlayer(playerid);
 forward OnPlayerRegister(playerid, password[]);
 forward BroadCast(color,const string[]);
 forward OOCOff(color,const string[]);
@@ -1504,6 +1504,10 @@ enum hNews
 };
 new News[hNews];
 
+const noteSize1 = 5;
+const noteSize2 = 128;
+const noteSize = noteSize1 * noteSize2;
+
 enum pInfo
 {
 	pKey[128],
@@ -1562,9 +1566,7 @@ Float:pHealth,
 			  pModel,
 			  pPnumber,
 			  pPhousekey,
-			  pPcarkey,
-			  pPcarkey2,
-			  pPcarkey3,
+			  pPcarkey[3],
 			  pGangKey,
 			  pPbiskey,
 		  Float:pPos_x,
@@ -1575,14 +1577,8 @@ Float:pHealth,
 								pBoatLic,
 								pFishLic,
 								pGunLic,
-								pGun1,
-								pGun2,
-								pGun3,
-								pGun4,
-								pAmmo1,
-								pAmmo2,
-								pAmmo3,
-								pAmmo4,
+								pGun[4],
+								pAmmo[4],
 								pCarTime,
 								pPayDay,
 								pPayDayHad,
@@ -1603,16 +1599,8 @@ Float:pHealth,
 								pMarried,
 								pMarriedTo[128],
 								pFishTool,
-								pNote1[128],
-								pNote1s,
-								pNote2[128],
-								pNote2s,
-								pNote3[128],
-								pNote3s,
-								pNote4[128],
-								pNote4s,
-								pNote5[128],
-								pNote5s,
+								pNote[noteSize],
+								pNotes[5],
 								pInvWeapon,
 								pInvAmmo,
 								pLighter,
@@ -1627,6 +1615,8 @@ Float:pHealth,
 								//pSQLID,
 };
 new PlayerInfo[MAX_PLAYERS][pInfo];
+
+#define pNote][%1][%2] pNote][((%1)*noteSize2)+(%2)]
 
 enum p2Info
 {
@@ -1871,7 +1861,6 @@ main()
 	print("\tBy: Team Grand");
 	print("\tAuthor: Ellis & Hoodstar");
 	print("\n");
-	ConnectMySQL();
 }
 
 #include <ProjectInc/onevent>
@@ -1880,12 +1869,12 @@ main()
 forward ConnectMySQL();
 public ConnectMySQL()
 {
-	conn = mysql_connect_file("mysql.ini");
+	conn = mysql_connect_file();
 	mysql_log(ALL);
 	if (mysql_errno(conn) == 0)
-		print("[MySQL] Connection successful!");
+		print("[MySQL] Connection successful!\n");
 	else
-		print("[MySQL] Connection failed!");
+		print("[MySQL] Connection failed!\n");
 	return 1;
 }
 
@@ -1896,7 +1885,7 @@ public SaveAccounts()
 	{
 		if (IsPlayerConnected(i))
 		{
-			OnPlayerUpdate(i);
+			SavePlayer(i);
 			if (PlayerInfo[i][pJob] > 0)
 			{
 				if (PlayerInfo[i][pContractTime] < 25)
@@ -1906,6 +1895,258 @@ public SaveAccounts()
 			}
 		}
 	}
+}
+public SavePlayer(playerid)
+{
+	if (IsPlayerConnected(playerid))
+	{
+		if (gPlayerLogged[playerid])
+		{
+			new playername3[MAX_PLAYER_NAME];
+			GetPlayerName(playerid, playername3, sizeof(playername3));
+
+			//Save Befor Update
+			PlayerInfo[playerid][pCash] = GetPlayerMoney(playerid);
+			GetPlayerHealth(playerid, PlayerInfo[playerid][pHealth]);
+			if ((PlayerInfo[playerid][pPos_x] == 0.0 && PlayerInfo[playerid][pPos_y] == 0.0 && PlayerInfo[playerid][pPos_z] == 0.0))
+			{
+				PlayerInfo[playerid][pPos_x] = 1684.9;
+				PlayerInfo[playerid][pPos_y] = -2244.5;
+				PlayerInfo[playerid][pPos_z] = 13.5;
+			}
+			if (Spectate[playerid] != 255)
+			{
+				PlayerInfo[playerid][pPos_x] = Unspec[playerid][sPx];
+				PlayerInfo[playerid][pPos_y] = Unspec[playerid][sPy];
+				PlayerInfo[playerid][pPos_z] = Unspec[playerid][sPz];
+				PlayerInfo[playerid][pInt] = Unspec[playerid][sPint];
+				PlayerInfo[playerid][pLocal] = Unspec[playerid][sLocal];
+			}
+			new Float:x, Float:y, Float:z;
+			GetPlayerPos(playerid, x, y, z);
+			PlayerInfo[playerid][pPos_x] = x;
+			PlayerInfo[playerid][pPos_y] = y;
+			PlayerInfo[playerid][pPos_z] = z;
+			if (PlayerInfo[playerid][pDonateRank] < 1) { PlayerInfo[playerid][pFuel] = 0; }
+
+			//Query
+			new sql[3000];
+			format(sql, sizeof(sql), "UPDATE user SET \
+				Level=%d,\
+				AdminLevel=%d,\
+				DonateRank=%d,\
+				UpgradePoints=%d,\
+				ConnectedTime=%d,\
+				Registered=%d,\
+				Sex=%d,\
+				Age=%d,\
+				Origin=%d,\
+				CK=%d,\
+				Muted=%d,\
+				Respect=%d,\
+				`Money`=%d,\
+				Bank=%d,\
+				Crimes=%d,\
+				Kills=%d,\
+				Deaths=%d,\
+				Arrested=%d,", 
+				PlayerInfo[playerid][pLevel],
+				PlayerInfo[playerid][pAdmin],
+				PlayerInfo[playerid][pDonateRank],
+				PlayerInfo[playerid][gPupgrade],
+				PlayerInfo[playerid][pConnectTime],
+				PlayerInfo[playerid][pReg],
+				PlayerInfo[playerid][pSex],
+				PlayerInfo[playerid][pAge],
+				PlayerInfo[playerid][pOrigin],
+				PlayerInfo[playerid][pCK],
+				PlayerInfo[playerid][pMuted],
+				PlayerInfo[playerid][pExp],
+				PlayerInfo[playerid][pCash],
+				PlayerInfo[playerid][pAccount],
+				PlayerInfo[playerid][pCrimes],
+				PlayerInfo[playerid][pKills],
+				PlayerInfo[playerid][pDeaths],
+				PlayerInfo[playerid][pArrested]);
+
+			format(sql, sizeof(sql), "%s \
+				WantedDeaths=%d,\
+				Phonebook=%d,\
+				LottoNr=%d,\
+				Fishes=%d,\
+				BiggestFish=%d,\
+				Job=%d,\
+				Paycheck=%d,\
+				HeadValue=%d,\
+				Jailed=%d,\
+				JailTime=%d,\
+				Materials=%d,\
+				Drugs=%d,\
+				Leader=%d,\
+				Member=%d,\
+				FMember=%d,\
+				Rank=%d,\
+				`Char`=%d,\
+				ContractTime=%d,",
+				sql,
+				PlayerInfo[playerid][pWantedDeaths],
+				PlayerInfo[playerid][pPhoneBook],
+				PlayerInfo[playerid][pLottoNr],
+				PlayerInfo[playerid][pFishes],
+				PlayerInfo[playerid][pBiggestFish],
+				PlayerInfo[playerid][pJob],
+				PlayerInfo[playerid][pPayCheck],
+				PlayerInfo[playerid][pHeadValue],
+				PlayerInfo[playerid][pJailed],
+				PlayerInfo[playerid][pJailTime],
+				PlayerInfo[playerid][pMats],
+				PlayerInfo[playerid][pDrugs],
+				PlayerInfo[playerid][pLeader], 
+				PlayerInfo[playerid][pMember],
+				PlayerInfo[playerid][pFMember],
+				PlayerInfo[playerid][pRank],
+				PlayerInfo[playerid][pChar],
+				PlayerInfo[playerid][pContractTime]);
+
+			format(sql, sizeof(sql), "%s \
+				DetSkill=%d,\
+				SexSkill=%d,\
+				BoxSkill=%d,\
+				LawSkill=%d,\
+				MechSkill=%d,\
+				JackSkill=%d,\
+				CarSkill=%d,\
+				NewsSkill=%d,\
+				DrugsSkill=%d,\
+				CookSkill=%d,\
+				FishSkill=%d,\
+				pSHealth=%f,\
+				pHealth=%f,\
+				`Int`=%d,\
+				Local=%d,\
+				`Team`=%d,\
+				Model=%d,\
+				PhoneNr=%d,",
+				sql,
+				PlayerInfo[playerid][pDetSkill],
+				PlayerInfo[playerid][pSexSkill],
+				PlayerInfo[playerid][pBoxSkill],
+				PlayerInfo[playerid][pLawSkill],
+				PlayerInfo[playerid][pMechSkill],
+				PlayerInfo[playerid][pJackSkill],
+				PlayerInfo[playerid][pCarSkill],
+				PlayerInfo[playerid][pNewsSkill],
+				PlayerInfo[playerid][pDrugsSkill],
+				PlayerInfo[playerid][pCookSkill],
+				PlayerInfo[playerid][pFishSkill],
+				PlayerInfo[playerid][pSHealth],
+				PlayerInfo[playerid][pHealth],
+				PlayerInfo[playerid][pInt],
+				PlayerInfo[playerid][pLocal],
+				PlayerInfo[playerid][pTeam],
+				PlayerInfo[playerid][pModel],
+				PlayerInfo[playerid][pPnumber]);
+
+			format(sql, sizeof(sql), "%s \
+				Car=%d,\
+				Car2=%d,\
+				Car3=%d,\
+				House=%d,\
+				Biz=%d,\
+				Pos_x=%f,\
+				Pos_y=%f,\
+				Pos_z=%f,\
+				CarLic=%d,\
+				FlyLic=%d,\
+				BoatLic=%d,\
+				FishLic=%d,\
+				GunLic=%d,\
+				CarTime=%d,\
+				PayDay=%d,\
+				PayDayHad=%d,\
+				Watch=%d,\
+				Crashed=%d,",
+				sql,
+				PlayerInfo[playerid][pPcarkey][0],
+				PlayerInfo[playerid][pPcarkey][1],
+				PlayerInfo[playerid][pPcarkey][2],
+				PlayerInfo[playerid][pPhousekey],
+				PlayerInfo[playerid][pPbiskey],
+				PlayerInfo[playerid][pPos_x],
+				PlayerInfo[playerid][pPos_y],
+				PlayerInfo[playerid][pPos_z],
+				PlayerInfo[playerid][pCarLic],
+				PlayerInfo[playerid][pFlyLic],
+				PlayerInfo[playerid][pBoatLic],
+				PlayerInfo[playerid][pFishLic],
+				PlayerInfo[playerid][pGunLic],
+				PlayerInfo[playerid][pCarTime],
+				PlayerInfo[playerid][pPayDay],
+				PlayerInfo[playerid][pPayDayHad],
+				PlayerInfo[playerid][pWatch],
+				PlayerInfo[playerid][pCrashed]);
+
+			for (new i = 1; i < 6; i++)
+			{
+				if (i < 5)
+				{
+					format(sql, sizeof(sql), "%s Gun%d=%d", sql, i, PlayerInfo[playerid][pGun][i - 1]);
+					format(sql, sizeof(sql), "%s Ammo%d=%d", sql, i, PlayerInfo[playerid][pAmmo][i - 1]);
+				}
+				format(sql, sizeof(sql), "%s Note%d='%s'", sql, i, PlayerInfo[playerid][pNote][i - 1]);
+				format(sql, sizeof(sql), "%s Note%ds=%d", sql, i, PlayerInfo[playerid][pNotes][i - 1]);
+			}
+		
+			format(sql, sizeof(sql), "%s \
+				Wins=%d,\
+				Loses=%d,\
+				AlcoholPerk=%d,\
+				DrugPerk=%d,\
+				MiserPerk=%d,\
+				PainPerk=%d,\
+				TraderPerk=%d,\
+				Tutorial=%d,\
+				Mission=%d,\
+				Warnings=%d,\
+				VirWorld=%d,\
+				Fuel=%d,\
+				Married=%d,\
+				MarriedTo=%s,\
+				FishTool=%d,\
+				InvWeapon=%d,\
+				InvAmmo=%d,\
+				Lighter=%d,\
+				Cigarettes=%d,\
+				Locked=%d,\
+				HouseEntered=%d WHERE `Name` = '%s'",
+				sql,
+				PlayerInfo[playerid][pWins],
+				PlayerInfo[playerid][pLoses],
+				PlayerInfo[playerid][pAlcoholPerk],
+				PlayerInfo[playerid][pDrugPerk],
+				PlayerInfo[playerid][pMiserPerk],
+				PlayerInfo[playerid][pPainPerk],
+				PlayerInfo[playerid][pTraderPerk],
+				PlayerInfo[playerid][pTut],
+				PlayerInfo[playerid][pMissionNr],
+				PlayerInfo[playerid][pWarns],
+				PlayerInfo[playerid][pVirWorld],
+				PlayerInfo[playerid][pFuel],
+				PlayerInfo[playerid][pMarried],
+				PlayerInfo[playerid][pMarriedTo],
+				PlayerInfo[playerid][pFishTool],
+				PlayerInfo[playerid][pInvWeapon],
+				PlayerInfo[playerid][pInvAmmo],
+				PlayerInfo[playerid][pLighter],
+				PlayerInfo[playerid][pCigarettes],
+				PlayerInfo[playerid][pLocked],
+				PlayerInfo2[HouseEntered][playerid],
+				playername3);
+
+			mysql_query(conn, sql);
+		}
+	}
+	return 1;
 }
 public SaveMission(playerid, name[])
 {
@@ -4992,7 +5233,7 @@ public GlobalHackCheck()
 					SendClientMessageToAll(COLOR_LIGHTRED, string);
 */
 					PlayerInfo[i][pLocked] = 1;
-					OnPlayerUpdate(i);
+					SavePlayer(i);
 					GetPlayerIp(i, banip, sizeof(banip));
 					new spawnedamount = plactualmoney-ScriptMoney[i];
 					format(string, sizeof(string), "AdmCmd: %s was locked by DUCK, reason: money cheat ($%d)", plname, spawnedamount);
@@ -5032,7 +5273,7 @@ public GlobalHackCheck()
 					SendClientMessageToAll(COLOR_LIGHTRED, string);
 					BanLog(string);
 					PlayerInfo[i][pLocked] = 1;
-					OnPlayerUpdate(i);
+					SavePlayer(i);
 					GetPlayerIp(i, banip, sizeof(banip));
 					BanAdd(4, PlayerInfo[i][pSQLID], banip, hacking);
 					//format(string, sizeof(string), "Anticheat: %s [SQL: %d] has just been locked and kicked for weapon hacking. Please check the account.", plname, PlayerInfo[i][pSQLID]);
@@ -5053,7 +5294,7 @@ public GlobalHackCheck()
     				SendClientMessageToAll(COLOR_LIGHTRED, string);
     				BanLog(string);
 					PlayerInfo[i][pLocked] = 1;
-					OnPlayerUpdate(i);
+					SavePlayer(i);
 					Kick(i);
 			    }
 
@@ -5064,7 +5305,7 @@ public GlobalHackCheck()
     				SendClientMessageToAll(COLOR_LIGHTRED, string);
     				BanLog(string);
 //					PlayerInfo[i][pLocked] = 1;
-//					OnPlayerUpdate(i);
+//					SavePlayer(i);
 					Ban(i);
 			    }
 			}
@@ -5079,7 +5320,7 @@ public GlobalHackCheck()
 				SendClientMessage(i, COLOR_LIGHTRED, "Anticheat: Please contact an admin on ventrilo or on the forum immediately if you feel this is in error.");
 				SendClientMessage(i, COLOR_RED, "DUCK Anticheat 1.5 by Luk0r (Edited by Ellis/Scorcher)");
 				//PlayerInfo[i][pLocked] = 1;
-				OnPlayerUpdate(i);
+				SavePlayer(i);
 				//GetPlayerIp(i, banip, sizeof(banip));
 				//BanAdd(4, PlayerInfo[i][pSQLID], banip, 38);
 				GetPlayerName(i, plname, sizeof(plname));
@@ -6297,38 +6538,38 @@ public SetPlayerWeapons(playerid)
 			}
 			if(PlayerInfo[playerid][pDonateRank] > 0)
 			{
-				if (PlayerInfo[playerid][pGun1] > 0)
+				if (PlayerInfo[playerid][pGun][0] > 0)
 				{
-					SafeGivePlayerWeapon(playerid, PlayerInfo[playerid][pGun1], PlayerInfo[playerid][pAmmo1]);
-					PlayerInfo[playerid][pGun1] = 0; PlayerInfo[playerid][pAmmo1] = 0;
+					SafeGivePlayerWeapon(playerid, PlayerInfo[playerid][pGun][0], PlayerInfo[playerid][pAmmo][0]);
+					PlayerInfo[playerid][pGun][0] = 0; PlayerInfo[playerid][pAmmo][0] = 0;
 				}
-				if (PlayerInfo[playerid][pGun2] > 0)
+				if (PlayerInfo[playerid][pGun][1] > 0)
 				{
-					SafeGivePlayerWeapon(playerid, PlayerInfo[playerid][pGun2], PlayerInfo[playerid][pAmmo2]);
-					PlayerInfo[playerid][pGun2] = 0; PlayerInfo[playerid][pAmmo2] = 0;
+					SafeGivePlayerWeapon(playerid, PlayerInfo[playerid][pGun][1], PlayerInfo[playerid][pAmmo][1]);
+					PlayerInfo[playerid][pGun][1] = 0; PlayerInfo[playerid][pAmmo][1] = 0;
 				}
-				if (PlayerInfo[playerid][pGun3] > 0)
+				if (PlayerInfo[playerid][pGun][2] > 0)
 				{
-					SafeGivePlayerWeapon(playerid, PlayerInfo[playerid][pGun3], PlayerInfo[playerid][pAmmo3]);
-					PlayerInfo[playerid][pGun3] = 0; PlayerInfo[playerid][pAmmo3] = 0;
+					SafeGivePlayerWeapon(playerid, PlayerInfo[playerid][pGun][2], PlayerInfo[playerid][pAmmo][2]);
+					PlayerInfo[playerid][pGun][2] = 0; PlayerInfo[playerid][pAmmo][2] = 0;
 				}
-				if (PlayerInfo[playerid][pGun4] > 0)
+				if (PlayerInfo[playerid][pGun][3] > 0)
 				{
-					SafeGivePlayerWeapon(playerid, PlayerInfo[playerid][pGun4], PlayerInfo[playerid][pAmmo4]);
-					PlayerInfo[playerid][pGun4] = 0; PlayerInfo[playerid][pAmmo4] = 0;
+					SafeGivePlayerWeapon(playerid, PlayerInfo[playerid][pGun][3], PlayerInfo[playerid][pAmmo][3]);
+					PlayerInfo[playerid][pGun][3] = 0; PlayerInfo[playerid][pAmmo][3] = 0;
 				}
 			}
 			else
 			{
-			    if (PlayerInfo[playerid][pGun1] > 0)
+			    if (PlayerInfo[playerid][pGun][0] > 0)
 				{
-					SafeGivePlayerWeapon(playerid, PlayerInfo[playerid][pGun1], PlayerInfo[playerid][pAmmo1]);
-					PlayerInfo[playerid][pGun1] = 0; PlayerInfo[playerid][pAmmo1] = 0;
+					SafeGivePlayerWeapon(playerid, PlayerInfo[playerid][pGun][0], PlayerInfo[playerid][pAmmo][0]);
+					PlayerInfo[playerid][pGun][0] = 0; PlayerInfo[playerid][pAmmo][0] = 0;
 				}
-				if (PlayerInfo[playerid][pGun2] > 0)
+				if (PlayerInfo[playerid][pGun][1] > 0)
 				{
-					SafeGivePlayerWeapon(playerid, PlayerInfo[playerid][pGun2], PlayerInfo[playerid][pAmmo2]);
-					PlayerInfo[playerid][pGun2] = 0; PlayerInfo[playerid][pAmmo2] = 0;
+					SafeGivePlayerWeapon(playerid, PlayerInfo[playerid][pGun][1], PlayerInfo[playerid][pAmmo][1]);
+					PlayerInfo[playerid][pGun][1] = 0; PlayerInfo[playerid][pAmmo][1] = 0;
 				}
 			}
 		}
@@ -6625,9 +6866,9 @@ public ShowStats(playerid,targetid)
 		//new costlevel = nxtlevel*levelcost;//10k for testing purposes
 		new housekey = PlayerInfo[targetid][pPhousekey];
 		new bizkey = PlayerInfo[targetid][pPbiskey];
-		new carkey = PlayerInfo[targetid][pPcarkey];
-		new carkey2 = PlayerInfo[targetid][pPcarkey2];
-		new carkey3 = PlayerInfo[targetid][pPcarkey3];
+		new carkey = PlayerInfo[targetid][pPcarkey][0];
+		new carkey2 = PlayerInfo[targetid][pPcarkey][1];
+		new carkey3 = PlayerInfo[targetid][pPcarkey][2];
 		new intir = PlayerInfo[targetid][pInt];
 		new virworld = PlayerInfo[targetid][pVirWorld];
 		new local = PlayerInfo[targetid][pLocal];
@@ -6647,17 +6888,17 @@ public ShowStats(playerid,targetid)
 		SendClientMessage(playerid, COLOR_GRAD3,coordsstring);
 		format(coordsstring, sizeof(coordsstring), "Drugs:[%d] Materials:[%d] Team:[%s] To chuc:[%s] Rank:[%s]",drugs,mats,ttext,ftext,rtext);
 		SendClientMessage(playerid, COLOR_GRAD5,coordsstring);
-		if (PlayerInfo[targetid][pPcarkey] != 999)
+		if (PlayerInfo[targetid][pPcarkey][0] != 999)
 		{
 		    format(coordsstring, sizeof(coordsstring), "1| VehModel:[%s] VehValue:[%d] VehColor1:[%d] VehColor2:[%d] VehLocked:[%d]", CarInfo[carkey][cDescription], CarInfo[carkey][cValue], CarInfo[carkey][cColorOne], CarInfo[carkey][cColorTwo], CarInfo[carkey][cLock]);
 		    SendClientMessage(playerid, COLOR_GRAD5,coordsstring);
 		}
-		if (PlayerInfo[targetid][pPcarkey2] != 999)
+		if (PlayerInfo[targetid][pPcarkey][1] != 999)
 		{
 		    format(coordsstring, sizeof(coordsstring), "2| VehModel:[%s] VehValue:[%d] VehColor1:[%d] VehColor2:[%d] VehLocked:[%d]", CarInfo[carkey2][cDescription], CarInfo[carkey2][cValue], CarInfo[carkey2][cColorOne], CarInfo[carkey2][cColorTwo], CarInfo[carkey2][cLock]);
 		    SendClientMessage(playerid, COLOR_GRAD5,coordsstring);
 		}
-		if (PlayerInfo[targetid][pPcarkey3] != 999)
+		if (PlayerInfo[targetid][pPcarkey][2] != 999)
 		{
 		    format(coordsstring, sizeof(coordsstring), "3| VehModel:[%s] VehValue:[%d] VehColor1:[%d] VehColor2:[%d] VehLocked:[%d]", CarInfo[carkey3][cDescription], CarInfo[carkey3][cValue], CarInfo[carkey3][cColorOne], CarInfo[carkey3][cColorTwo], CarInfo[carkey3][cLock]);
 		    SendClientMessage(playerid, COLOR_GRAD5,coordsstring);
@@ -6703,7 +6944,7 @@ public SetPlayerToTeamColor(playerid)
 			GameTextForPlayer(i, string, 4000, 5);
 			SetPlayerCameraPos(i,1460.0, -1324.0, 287.2);
 			SetPlayerCameraLookAt(i,1374.5, -1291.1, 239.0);
-			OnPlayerUpdate(i);
+			SavePlayer(i);
 			gPlayerLogged[i] = 0;
 		}
 	}

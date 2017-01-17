@@ -16,6 +16,9 @@
     <None Include="..\gamemodes\larp.pwn">
       <Filter>Server</Filter>
     </None>
+    <None Include="..\scriptfiles\mysql.ini">
+      <Filter>Server</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Code">
