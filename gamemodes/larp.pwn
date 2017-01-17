@@ -30,12 +30,16 @@
 #include <morphinc>
 #include <streamer>
 #include <zcmd>
+#include <sscanf2>
 
 //MYSQLDEFINE
 new MySQL:conn;
 
 //DEFINE
 #include <ProjectInc/declare>
+
+#define DIALOG_REG 1
+#define DIALOG_LOGIN 2
 
 #define SCRIPT_OWNCARS 85 //
 #define SCRIPT_MAXPLAYERS 50 //
@@ -393,8 +397,8 @@ new gTeam[MAX_PLAYERS];
 //new cartrack[256];
 //new street_zone;
 new GangCar[MAX_PLAYERS];
-new tactical[MAX_PLAYERS];
-new authorizetactical;
+new togtactical[MAX_PLAYERS];
+new togauthorizetactical;
 //new surenos;
 //new black_yakuza;
 //new nortenos;
@@ -567,7 +571,7 @@ new DrugGram[MAX_PLAYERS];
 new JailPrice[MAX_PLAYERS];
 new WantedPoints[MAX_PLAYERS];
 new WantedLevel[MAX_PLAYERS];
-new swat[MAX_PLAYERS];
+new togswat[MAX_PLAYERS];
 new OnDuty[MAX_PLAYERS];
 new gPlayerCheckpointStatus[MAX_PLAYERS];
 new gPlayerLogged[MAX_PLAYERS];
@@ -607,7 +611,7 @@ new InAFoodPlace[MAX_PLAYERS];
 new gLastDriver[302];
 new gCarLock[265];
 new MissionPlayable = 0;
-new noooc = 0;
+new togOOC = 0;
 new adds = 1;
 new addtimer = 60000;
 new Float:rx, Float:ry, Float:rz;
@@ -654,7 +658,7 @@ new suecost = 100;
 new cchargetime = 60;
 new txtcost = 1;
 new pickups;
-new authorizeswat;
+new togauthorizeswat;
 new PizzaBoys = 0;
 new PizzaCall = 999;
 new PizzaCallTime[MAX_PLAYERS];
@@ -1507,7 +1511,6 @@ new News[hNews];
 const noteSize1 = 5;
 const noteSize2 = 128;
 const noteSize = noteSize1 * noteSize2;
-
 enum pInfo
 {
 	pKey[128],
@@ -1611,7 +1614,7 @@ Float:pHealth,
 								pMaskuse,
 								pHideNumber,
 								pSpeaker,
-								pLocked,
+								pLocked
 								//pSQLID,
 };
 new PlayerInfo[MAX_PLAYERS][pInfo];
@@ -1627,36 +1630,36 @@ new PlayerInfo2[p2Info][MAX_PLAYERS];
 
 enum hInfo
 {
-Float:hEntrancex,
+	Float:hEntrancex,
 	Float:hEntrancey,
-		  Float:hEntrancez,
-				 Float:hExitx,
-						Float:hExity,
-							  Float:hExitz,
-										 hHealthx,
-										 hHealthy,
-										 hHealthz,
-										 hArmourx,
-										 hArmoury,
-										 hArmourz,
-										 hOwner[MAX_PLAYER_NAME],
-										 hDiscription[MAX_PLAYER_NAME],
-										 hValue,
-										 hHel,
-										 hArm,
-										 hInt,
-										 hLock,
-										 hOwned,
-										 hRooms,
-										 hRent,
-										 hRentabil,
-										 hTakings,
-										 hVec,
-										 hVcol1,
-										 hVcol2,
-										 hDate,
-										 hLevel,
-										 hWorld
+	Float:hEntrancez,
+	Float:hExitx,
+	Float:hExity,
+	Float:hExitz,
+	hHealthx,
+	hHealthy,
+	hHealthz,
+	hArmourx,
+	hArmoury,
+	hArmourz,
+	hOwner[MAX_PLAYER_NAME],
+	hDiscription[MAX_PLAYER_NAME],
+	hValue,
+	hHel,
+	hArm,
+	hInt,
+	hLock,
+	hOwned,
+	hRooms,
+	hRent,
+	hRentabil,
+	hTakings,
+	hVec,
+	hVcol1,
+	hVcol2,
+	hDate,
+	hLevel,
+	hWorld
 };
 
 new HouseInfo[SCRIPT_MAXHOUSES][hInfo];
@@ -1875,7 +1878,6 @@ public ConnectMySQL()
 		print("[MySQL] Connection successful!\n");
 	else
 		print("[MySQL] Connection failed!\n");
-	return 1;
 }
 
 //SAVE+LOAD
