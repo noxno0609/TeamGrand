@@ -8211,6 +8211,7 @@ CMD:xemnote(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
+		new string[128];
 		if (gPlayerLogged[playerid] == 0)
 		{
 			SendClientMessage(playerid, COLOR_GREY, "   Ban can phai dang nhap truoc. ! ");
