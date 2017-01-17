@@ -4385,7 +4385,6 @@ public OnPlayerUpdate(playerid)
 	if (IsPlayerConnected(playerid))
 	{
 		OnPIDUpdate(playerid);
-
 		if (gPlayerLogged[playerid])
 		{
 			new string3[64];

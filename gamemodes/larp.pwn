@@ -21,7 +21,7 @@
 
 //INCLUDE
 #include <a_samp>
-//#include <a_sampmysql>
+#include <a_mysql>
 #include <core>
 #include <float>
 #include <time>
@@ -32,10 +32,7 @@
 #include <zcmd>
 
 //MYSQLDEFINE
-/*#define MYSQL_HOST "127.0.0.1"
-#define MYSQL_USER "root"
-#define MYSQL_PASS ""
-#define MYSQL_DB   "samp"*/
+new MySQL:conn;
 
 //DEFINE
 #include <ProjectInc/declare>
@@ -153,22 +150,6 @@ new Menu:burgermenu, Menu:chickenmenu, Menu:pizzamenu, Menu:donutshop;
 new Menu:Guide, Menu:JobLocations, Menu:JobLocations2;
 
 forward CheckForWalkingTeleport(playerid);
-/*forward MySQLConnect(sqlhost[], sqluser[], sqlpass[], sqldb[]);
-forward MySQLDisconnect();
-forward MySQLCheckConnection();
-forward MySQLUpdateBuild(query[], sqlplayerid);
-forward MySQLUpdateFinish(query[], sqlplayerid);
-forward MySQLUpdatePlayerInt(query[], sqlplayerid, sqlvalname[], sqlupdateint);
-forward MySQLUpdatePlayerIntSingle(sqlplayerid, sqlvalname[], sqlupdateint);
-forward MySQLUpdatePlayerFlo(query[], sqlplayerid, sqlvalname[], Float:sqlupdateflo);
-forward MySQLUpdatePlayerStr(query[], sqlplayerid, sqlvalname[], sqlupdatestr[]);
-forward MySQLCheckAccount(sqlplayersname[]);
-forward MySQLCheckAccountLocked(sqlplayerid);
-forward MySQLCheckIPBanned(ip[]);
-forward MySQLFetchAcctSingle(sqlplayerid, sqlvalname[], sqlresult[]);
-forward MySQLFetchAcctRecord(sqlplayerid, sqlresult[]);
-forward MySQLCreateAccount(newplayersname[], newpassword[]);
-forward MySQLAddLoginRecord(sqlplayerid, ipaddr[]);*/
 forward ResetRoadblockTimer();
 forward RemoveRoadblock(playerid);
 forward BackupClear(playerid, calledbytimer);
@@ -1884,16 +1865,874 @@ new hqlock[hqLocks];
 
 main()
 {
-	print(" ");
-	print("     Los Angeles Roleplay ");
-	print("___________________________");
-	print("     By: Ellis & Hoodstar");
-	print(" ");
-	//print("MYSQL: MySQL Player Accounts v0.1 by Luk0r");
-	//MySQLConnect(MYSQL_HOST,MYSQL_USER,MYSQL_PASS,MYSQL_DB);
+	print("\n");
+	print("\tLos Angeles Roleplay ");
+	print("----------------------------------------");
+	print("\tBy: Team Grand");
+	print("\tAuthor: Ellis & Hoodstar");
+	print("\n");
+	ConnectMySQL();
 }
 
 #include <ProjectInc/onevent>
+
+//CONNECTMYSQL
+forward ConnectMySQL();
+public ConnectMySQL()
+{
+	conn = mysql_connect_file("mysql.ini");
+	mysql_log(ALL);
+	if (mysql_errno(conn) == 0)
+		print("[MySQL] Connection successful!");
+	else
+		print("[MySQL] Connection failed!");
+	return 1;
+}
+
+//SAVE+LOAD
+public SaveAccounts()
+{
+	for (new i = 0; i < MAX_PLAYERS; i++)
+	{
+		if (IsPlayerConnected(i))
+		{
+			OnPlayerUpdate(i);
+			if (PlayerInfo[i][pJob] > 0)
+			{
+				if (PlayerInfo[i][pContractTime] < 25)
+				{
+					PlayerInfo[i][pContractTime] ++;
+				}
+			}
+		}
+	}
+}
+public SaveMission(playerid, name[])
+{
+	if (IsPlayerConnected(playerid))
+	{
+		new coordsstring[256];
+		new missionname[64];
+		new var[128];
+		new makername[MAX_PLAYER_NAME];
+		GetPlayerName(playerid, makername, sizeof(makername));
+		new rand = random(999);
+		if (rand == 0) { rand = 1; }
+		new number = rand;
+		if (MissionInfo[mToggle] == 0 || MissionInfo[mToggle] == 1) {}
+		else { MissionInfo[mToggle] = 1; }
+		format(missionname, sizeof(missionname), "%s.mis", name);
+		new File: hFile = fopen(missionname, io_write);
+		format(var, 128, "Title=%s\n", MissionInfo[mTitle]); fwrite(hFile, var);
+		format(var, 128, "Maker=%s\n", makername); fwrite(hFile, var);
+		format(var, 128, "Text1=%s\n", MissionInfo[mText1]); fwrite(hFile, var);
+		format(var, 128, "Text2=%s\n", MissionInfo[mText2]); fwrite(hFile, var);
+		format(var, 128, "Text3=%s\n", MissionInfo[mText3]); fwrite(hFile, var);
+		format(var, 128, "Text4=%s\n", MissionInfo[mText4]); fwrite(hFile, var);
+		format(var, 128, "Text5=%s\n", MissionInfo[mText5]); fwrite(hFile, var);
+		format(var, 128, "Text6=%s\n", MissionInfo[mText6]); fwrite(hFile, var);
+		format(var, 128, "Text7=%s\n", MissionInfo[mText7]); fwrite(hFile, var);
+		format(var, 128, "Text8=%s\n", MissionInfo[mText8]); fwrite(hFile, var);
+		format(var, 128, "Text9=%s\n", MissionInfo[mText9]); fwrite(hFile, var);
+		format(var, 128, "Text10=%s\n", MissionInfo[mText10]); fwrite(hFile, var);
+		format(var, 128, "Text11=%s\n", MissionInfo[mText11]); fwrite(hFile, var);
+		format(var, 128, "Text12=%s\n", MissionInfo[mText12]); fwrite(hFile, var);
+		format(var, 128, "Text13=%s\n", MissionInfo[mText13]); fwrite(hFile, var);
+		format(var, 128, "Text14=%s\n", MissionInfo[mText14]); fwrite(hFile, var);
+		format(var, 128, "Text15=%s\n", MissionInfo[mText15]); fwrite(hFile, var);
+		format(var, 128, "Text16=%s\n", MissionInfo[mText16]); fwrite(hFile, var);
+		format(var, 128, "Text17=%s\n", MissionInfo[mText17]); fwrite(hFile, var);
+		format(var, 128, "Text18=%s\n", MissionInfo[mText18]); fwrite(hFile, var);
+		format(var, 128, "GText1=%s\n", MissionInfo[mGText1]); fwrite(hFile, var);
+		format(var, 128, "GText2=%s\n", MissionInfo[mGText2]); fwrite(hFile, var);
+		format(var, 128, "GText3=%s\n", MissionInfo[mGText3]); fwrite(hFile, var);
+		format(var, 128, "GText4=%s\n", MissionInfo[mGText4]); fwrite(hFile, var);
+		format(var, 128, "GText5=%s\n", MissionInfo[mGText5]); fwrite(hFile, var);
+		format(var, 128, "GText6=%s\n", MissionInfo[mGText6]); fwrite(hFile, var);
+		format(var, 128, "CP1X=%f\n", MissionInfo[mCP1][0]); fwrite(hFile, var);
+		format(var, 128, "CP1Y=%f\n", MissionInfo[mCP1][1]); fwrite(hFile, var);
+		format(var, 128, "CP1Z=%f\n", MissionInfo[mCP1][2]); fwrite(hFile, var);
+		format(var, 128, "CP2X=%f\n", MissionInfo[mCP2][0]); fwrite(hFile, var);
+		format(var, 128, "CP2Y=%f\n", MissionInfo[mCP2][1]); fwrite(hFile, var);
+		format(var, 128, "CP2Z=%f\n", MissionInfo[mCP2][2]); fwrite(hFile, var);
+		format(var, 128, "CP3X=%f\n", MissionInfo[mCP3][0]); fwrite(hFile, var);
+		format(var, 128, "CP3Y=%f\n", MissionInfo[mCP3][1]); fwrite(hFile, var);
+		format(var, 128, "CP3Z=%f\n", MissionInfo[mCP3][2]); fwrite(hFile, var);
+		format(var, 128, "CP4X=%f\n", MissionInfo[mCP4][0]); fwrite(hFile, var);
+		format(var, 128, "CP4Y=%f\n", MissionInfo[mCP4][1]); fwrite(hFile, var);
+		format(var, 128, "CP4Z=%f\n", MissionInfo[mCP4][2]); fwrite(hFile, var);
+		format(var, 128, "CP5X=%f\n", MissionInfo[mCP5][0]); fwrite(hFile, var);
+		format(var, 128, "CP5Y=%f\n", MissionInfo[mCP5][1]); fwrite(hFile, var);
+		format(var, 128, "CP5Z=%f\n", MissionInfo[mCP5][2]); fwrite(hFile, var);
+		format(var, 128, "CP6X=%f\n", MissionInfo[mCP6][0]); fwrite(hFile, var);
+		format(var, 128, "CP6Y=%f\n", MissionInfo[mCP6][1]); fwrite(hFile, var);
+		format(var, 128, "CP6Z=%f\n", MissionInfo[mCP6][2]); fwrite(hFile, var);
+		format(var, 128, "Number=%d\n", number); fwrite(hFile, var);
+		format(var, 128, "Reward=%d\n", MissionInfo[mReward]); fwrite(hFile, var);
+		format(var, 128, "Toggle=%d\n", MissionInfo[mToggle]); fwrite(hFile, var);
+		fclose(hFile);
+		format(coordsstring, sizeof(coordsstring), "%s Mission Saved.", name);
+		SendClientMessage(playerid, COLOR_GREEN, coordsstring);
+	}
+	return 1;
+}
+public SaveBoxer()
+{
+	new coordsstring[256];
+	format(coordsstring, sizeof(coordsstring), "%d,%s,%d", Titel[TitelWins], Titel[TitelName], Titel[TitelLoses]);
+	new File: file2 = fopen("boxer.ini", io_write);
+	fwrite(file2, coordsstring);
+	fclose(file2);
+	return 1;
+}
+public SaveStuff()
+{
+	new coordsstring[256];
+	format(coordsstring, sizeof(coordsstring), "%d,%d,%d,%d", Jackpot, Tax, TaxValue, Security);
+	new File: file2 = fopen("stuff.ini", io_write);
+	fwrite(file2, coordsstring);
+	fclose(file2);
+	return 1;
+}
+public SaveTurfs()
+{
+	new idx;
+	new File: file2;
+	while (idx < sizeof(TurfInfo))
+	{
+		new coordsstring[256];
+		format(coordsstring, sizeof(coordsstring), "%s|%s|%f|%f|%f|%f|%f|%f\n",
+			TurfInfo[idx][zOwner],
+			TurfInfo[idx][zColor],
+			TurfInfo[idx][zMinX],
+			TurfInfo[idx][zMinY],
+			TurfInfo[idx][zMaxX],
+			TurfInfo[idx][zMaxY]);
+		if (idx == 0)
+		{
+			file2 = fopen("turfs.cfg", io_write);
+		}
+		else
+		{
+			file2 = fopen("turfs.cfg", io_append);
+		}
+		fwrite(file2, coordsstring);
+		idx++;
+		fclose(file2);
+	}
+	return 1;
+}
+public SaveCK()
+{
+	new idx;
+	new File: file2;
+	while (idx < sizeof(CKInfo))
+	{
+		new coordsstring[256];
+		format(coordsstring, sizeof(coordsstring), "%s|%s|%d\n",
+			CKInfo[idx][cSendername],
+			CKInfo[idx][cGiveplayer],
+			CKInfo[idx][cUsed]);
+		if (idx == 0)
+		{
+			file2 = fopen("ck.cfg", io_write);
+		}
+		else
+		{
+			file2 = fopen("ck.cfg", io_append);
+		}
+		fwrite(file2, coordsstring);
+		idx++;
+		fclose(file2);
+	}
+	return 1;
+}
+public SaveIRC()
+{
+	new idx;
+	new File: file2;
+	while (idx < sizeof(IRCInfo))
+	{
+		new coordsstring[256];
+		format(coordsstring, sizeof(coordsstring), "%s|%s|%s|%d|%d\n",
+			IRCInfo[idx][iAdmin],
+			IRCInfo[idx][iMOTD],
+			IRCInfo[idx][iPassword],
+			IRCInfo[idx][iNeedPass],
+			IRCInfo[idx][iLock]);
+		if (idx == 0)
+		{
+			file2 = fopen("channels.cfg", io_write);
+		}
+		else
+		{
+			file2 = fopen("channels.cfg", io_append);
+		}
+		fwrite(file2, coordsstring);
+		idx++;
+		fclose(file2);
+	}
+	return 1;
+}
+public SaveFamilies()
+{
+	new idx;
+	new File: file2;
+	while (idx < sizeof(FamilyInfo))
+	{
+		new coordsstring[256];
+		format(coordsstring, sizeof(coordsstring), "%d|%s|%s|%s|%s|%d|%f|%f|%f|%f|%d\n",
+			FamilyInfo[idx][FamilyTaken],
+			FamilyInfo[idx][FamilyName],
+			FamilyInfo[idx][FamilyMOTD],
+			FamilyInfo[idx][FamilyColor],
+			FamilyInfo[idx][FamilyLeader],
+			FamilyInfo[idx][FamilyMembers],
+			FamilyInfo[idx][FamilySpawn][0],
+			FamilyInfo[idx][FamilySpawn][1],
+			FamilyInfo[idx][FamilySpawn][2],
+			FamilyInfo[idx][FamilySpawn][3],
+			FamilyInfo[idx][FamilyInterior]);
+		if (idx == 0)
+		{
+			file2 = fopen("families.cfg", io_write);
+		}
+		else
+		{
+			file2 = fopen("families.cfg", io_append);
+		}
+		fwrite(file2, coordsstring);
+		idx++;
+		fclose(file2);
+	}
+	return 1;
+}
+public SavePapers()
+{
+	new idx;
+	new File: file2;
+	while (idx < sizeof(IRCInfo))
+	{
+		new coordsstring[256];
+		format(coordsstring, sizeof(coordsstring), "%d|%s|%s|%s|%s|%s|%s|%s|%s|%s|%d\n",
+			PaperInfo[idx][PaperUsed],
+			PaperInfo[idx][PaperMaker],
+			PaperInfo[idx][PaperTitle],
+			PaperInfo[idx][PaperText1],
+			PaperInfo[idx][PaperText2],
+			PaperInfo[idx][PaperText3],
+			PaperInfo[idx][PaperText4],
+			PaperInfo[idx][PaperText5],
+			PaperInfo[idx][PaperText6],
+			PaperInfo[idx][PaperText7],
+			PaperInfo[idx][SafeSaving]);
+		if (idx == 0)
+		{
+			file2 = fopen("papers.cfg", io_write);
+		}
+		else
+		{
+			file2 = fopen("papers.cfg", io_append);
+		}
+		fwrite(file2, coordsstring);
+		idx++;
+		fclose(file2);
+	}
+	return 1;
+}
+public SaveCarCoords()
+{
+	new idx;
+	new File: file2;
+	while (idx < sizeof(CarInfo))
+	{
+		new coordsstring[256];
+		format(coordsstring, sizeof(coordsstring), "%d|%f|%f|%f|%f|%d|%d\n",
+			CarInfo[idx][cModel],
+			CarInfo[idx][cLocationx],
+			CarInfo[idx][cLocationy],
+			CarInfo[idx][cLocationz],
+			CarInfo[idx][cAngle],
+			CarInfo[idx][cColorOne],
+			CarInfo[idx][cColorTwo]);
+		if (idx == 0)
+		{
+			file2 = fopen("cars.cfg", io_write);
+		}
+		else
+		{
+			file2 = fopen("cars.cfg", io_append);
+		}
+		fwrite(file2, coordsstring);
+		idx++;
+		fclose(file2);
+	}
+	return 1;
+}
+public SaveDrugSystem()
+{
+	new coordsstring[256];
+	format(coordsstring, sizeof(coordsstring), "%d", drugsys[DrugAmmount]);
+	new File: file2 = fopen("drugs_system.ini", io_write);
+	fwrite(file2, coordsstring);
+	fclose(file2);
+	return 1;
+}
+public SaveMatsSystem()
+{
+	new coordsstring[256];
+	format(coordsstring, sizeof(coordsstring), "%d", matssys[MatsAmmount]);
+	new File: file2 = fopen("mats_system.ini", io_write);
+	fwrite(file2, coordsstring);
+	fclose(file2);
+	return 1;
+}
+public SaveHQLocks()
+{
+	new coordsstring[256];
+	format(coordsstring, sizeof(coordsstring), "%d,%d,%d,%d", hqlock[surlock], hqlock[luclock], hqlock[stlock], hqlock[iolock]);
+	new File: file2 = fopen("hq_locks.ini", io_write);
+	fwrite(file2, coordsstring);
+	fclose(file2);
+	return 1;
+}
+public SaveTrunk()
+{
+	new idx;
+	new File: file2;
+	idx = 1;
+	while (idx < sizeof(CarInfo))
+	{
+		new coordsstring[256];
+		format(coordsstring, sizeof(coordsstring), "%i,%i,%i,%i,%i,%i,%i,%i,%i,%f\n",
+			vehTrunk[idx][1],
+			vehTrunkAmmo[idx][1],
+			vehTrunk[idx][2],
+			vehTrunkAmmo[idx][2],
+			vehTrunk[idx][3],
+			vehTrunkAmmo[idx][3],
+			vehTrunk[idx][4],
+			vehTrunkAmmo[idx][4],
+			vehTrunkCounter[idx],
+			vehTrunkArmour[idx]);
+		if (idx == 1)
+		{
+			file2 = fopen("trunk.cfg", io_write);
+		}
+		else
+		{
+			file2 = fopen("trunk.cfg", io_append);
+		}
+		fwrite(file2, coordsstring);
+		idx++;
+		fclose(file2);
+	}
+	return 1;
+}
+
+public LoadMission(playerid, name[])
+{
+	if (IsPlayerConnected(playerid))
+	{
+		new strFromFile2[128];
+		new missionname[64];
+		format(missionname, sizeof(missionname), "%s.mis", name);
+		new File: file = fopen(missionname, io_read);
+		if (file)
+		{
+			new key[256], val[256];
+			new Data[256];
+			while (fread(file, Data, sizeof(Data)))
+			{
+				key = ini_GetKey(Data);
+				if (strcmp(key, "Title", true) == 0) { val = ini_GetValue(Data); strmid(PlayMission[kTitle], val, 0, strlen(val), 255); }
+				if (strcmp(key, "Maker", true) == 0) { val = ini_GetValue(Data); strmid(PlayMission[kMaker], val, 0, strlen(val), 255); }
+				if (strcmp(key, "Text1", true) == 0) { val = ini_GetValue(Data); strmid(PlayMission[kText1], val, 0, strlen(val), 255); }
+				if (strcmp(key, "Text2", true) == 0) { val = ini_GetValue(Data); strmid(PlayMission[kText2], val, 0, strlen(val), 255); }
+				if (strcmp(key, "Text3", true) == 0) { val = ini_GetValue(Data); strmid(PlayMission[kText3], val, 0, strlen(val), 255); }
+				if (strcmp(key, "Text4", true) == 0) { val = ini_GetValue(Data); strmid(PlayMission[kText4], val, 0, strlen(val), 255); }
+				if (strcmp(key, "Text5", true) == 0) { val = ini_GetValue(Data); strmid(PlayMission[kText5], val, 0, strlen(val), 255); }
+				if (strcmp(key, "Text6", true) == 0) { val = ini_GetValue(Data); strmid(PlayMission[kText6], val, 0, strlen(val), 255); }
+				if (strcmp(key, "Text7", true) == 0) { val = ini_GetValue(Data); strmid(PlayMission[kText7], val, 0, strlen(val), 255); }
+				if (strcmp(key, "Text8", true) == 0) { val = ini_GetValue(Data); strmid(PlayMission[kText8], val, 0, strlen(val), 255); }
+				if (strcmp(key, "Text9", true) == 0) { val = ini_GetValue(Data); strmid(PlayMission[kText9], val, 0, strlen(val), 255); }
+				if (strcmp(key, "Text10", true) == 0) { val = ini_GetValue(Data); strmid(PlayMission[kText10], val, 0, strlen(val), 255); }
+				if (strcmp(key, "Text11", true) == 0) { val = ini_GetValue(Data); strmid(PlayMission[kText11], val, 0, strlen(val), 255); }
+				if (strcmp(key, "Text12", true) == 0) { val = ini_GetValue(Data); strmid(PlayMission[kText12], val, 0, strlen(val), 255); }
+				if (strcmp(key, "Text13", true) == 0) { val = ini_GetValue(Data); strmid(PlayMission[kText13], val, 0, strlen(val), 255); }
+				if (strcmp(key, "Text14", true) == 0) { val = ini_GetValue(Data); strmid(PlayMission[kText14], val, 0, strlen(val), 255); }
+				if (strcmp(key, "Text15", true) == 0) { val = ini_GetValue(Data); strmid(PlayMission[kText15], val, 0, strlen(val), 255); }
+				if (strcmp(key, "Text16", true) == 0) { val = ini_GetValue(Data); strmid(PlayMission[kText16], val, 0, strlen(val), 255); }
+				if (strcmp(key, "Text17", true) == 0) { val = ini_GetValue(Data); strmid(PlayMission[kText17], val, 0, strlen(val), 255); }
+				if (strcmp(key, "Text18", true) == 0) { val = ini_GetValue(Data); strmid(PlayMission[kText18], val, 0, strlen(val), 255); }
+				if (strcmp(key, "GText1", true) == 0) { val = ini_GetValue(Data); strmid(PlayMission[kGText1], val, 0, strlen(val), 255); }
+				if (strcmp(key, "GText2", true) == 0) { val = ini_GetValue(Data); strmid(PlayMission[kGText2], val, 0, strlen(val), 255); }
+				if (strcmp(key, "GText3", true) == 0) { val = ini_GetValue(Data); strmid(PlayMission[kGText3], val, 0, strlen(val), 255); }
+				if (strcmp(key, "GText4", true) == 0) { val = ini_GetValue(Data); strmid(PlayMission[kGText4], val, 0, strlen(val), 255); }
+				if (strcmp(key, "GText5", true) == 0) { val = ini_GetValue(Data); strmid(PlayMission[kGText5], val, 0, strlen(val), 255); }
+				if (strcmp(key, "GText6", true) == 0) { val = ini_GetValue(Data); strmid(PlayMission[kGText6], val, 0, strlen(val), 255); }
+				if (strcmp(key, "CP1X", true) == 0) { val = ini_GetValue(Data); PlayMission[kCP1][0] = floatstr(val); }
+				if (strcmp(key, "CP1Y", true) == 0) { val = ini_GetValue(Data); PlayMission[kCP1][1] = floatstr(val); }
+				if (strcmp(key, "CP1Z", true) == 0) { val = ini_GetValue(Data); PlayMission[kCP1][2] = floatstr(val); }
+				if (strcmp(key, "CP2X", true) == 0) { val = ini_GetValue(Data); PlayMission[kCP2][0] = floatstr(val); }
+				if (strcmp(key, "CP2Y", true) == 0) { val = ini_GetValue(Data); PlayMission[kCP2][1] = floatstr(val); }
+				if (strcmp(key, "CP2Z", true) == 0) { val = ini_GetValue(Data); PlayMission[kCP2][2] = floatstr(val); }
+				if (strcmp(key, "CP3X", true) == 0) { val = ini_GetValue(Data); PlayMission[kCP3][0] = floatstr(val); }
+				if (strcmp(key, "CP3Y", true) == 0) { val = ini_GetValue(Data); PlayMission[kCP3][1] = floatstr(val); }
+				if (strcmp(key, "CP3Z", true) == 0) { val = ini_GetValue(Data); PlayMission[kCP3][2] = floatstr(val); }
+				if (strcmp(key, "CP4X", true) == 0) { val = ini_GetValue(Data); PlayMission[kCP4][0] = floatstr(val); }
+				if (strcmp(key, "CP4Y", true) == 0) { val = ini_GetValue(Data); PlayMission[kCP4][1] = floatstr(val); }
+				if (strcmp(key, "CP4Z", true) == 0) { val = ini_GetValue(Data); PlayMission[kCP4][2] = floatstr(val); }
+				if (strcmp(key, "CP5X", true) == 0) { val = ini_GetValue(Data); PlayMission[kCP5][0] = floatstr(val); }
+				if (strcmp(key, "CP5Y", true) == 0) { val = ini_GetValue(Data); PlayMission[kCP5][1] = floatstr(val); }
+				if (strcmp(key, "CP5Z", true) == 0) { val = ini_GetValue(Data); PlayMission[kCP5][2] = floatstr(val); }
+				if (strcmp(key, "CP6X", true) == 0) { val = ini_GetValue(Data); PlayMission[kCP6][0] = floatstr(val); }
+				if (strcmp(key, "CP6Y", true) == 0) { val = ini_GetValue(Data); PlayMission[kCP6][1] = floatstr(val); }
+				if (strcmp(key, "CP6Z", true) == 0) { val = ini_GetValue(Data); PlayMission[kCP6][2] = floatstr(val); }
+				if (strcmp(key, "Number", true) == 0) { val = ini_GetValue(Data); PlayMission[kNumber] = strval(val); }
+				if (strcmp(key, "Reward", true) == 0) { val = ini_GetValue(Data); PlayMission[kReward] = strval(val); }
+				if (strcmp(key, "Toggle", true) == 0) { val = ini_GetValue(Data); PlayMission[kToggle] = strval(val); }
+			}
+			fclose(file);
+			format(strFromFile2, sizeof(strFromFile2), "%s Mission Loaded.", name);
+			SendClientMessage(playerid, COLOR_GREEN, strFromFile2);
+			format(strFromFile2, sizeof(strFromFile2), "Mission Available: %s, By : %s | Reward: $%d", PlayMission[kTitle], PlayMission[kMaker], PlayMission[kReward]);
+			SendClientMessageToAll(COLOR_GREEN, strFromFile2);
+			MissionPlayable = PlayMission[kNumber];
+		}
+		else
+		{
+			SendClientMessage(playerid, COLOR_GREEN, "Mission File not found.");
+		}
+	}
+	return 1;
+}
+public LoadBoxer()
+{
+	new arrCoords[3][64];
+	new strFromFile2[256];
+	new File: file = fopen("boxer.ini", io_read);
+	if (file)
+	{
+		fread(file, strFromFile2);
+		split(strFromFile2, arrCoords, ',');
+		Titel[TitelWins] = strval(arrCoords[0]);
+		strmid(Titel[TitelName], arrCoords[1], 0, strlen(arrCoords[1]), 255);
+		Titel[TitelLoses] = strval(arrCoords[2]);
+		fclose(file);
+	}
+	return 1;
+}
+public LoadStuff()
+{
+	new arrCoords[4][64];
+	new strFromFile2[256];
+	new File: file = fopen("stuff.ini", io_read);
+	if (file)
+	{
+		fread(file, strFromFile2);
+		split(strFromFile2, arrCoords, ',');
+		Jackpot = strval(arrCoords[0]);
+		Tax = strval(arrCoords[1]);
+		TaxValue = strval(arrCoords[2]);
+		Security = strval(arrCoords[3]);
+		fclose(file);
+		if (Security == 0 || Security == 1)
+		{
+		}
+		else
+		{
+			GameModeExit();
+		}
+	}
+	else
+	{
+		GameModeExit();
+	}
+	return 1;
+}
+public LoadTurfs()
+{
+	new arrCoords[6][64];
+	new strFromFile2[256];
+	new File: file = fopen("turfs.cfg", io_read);
+	if (file)
+	{
+		new idx;
+		while (idx < sizeof(TurfInfo))
+		{
+			fread(file, strFromFile2);
+			split(strFromFile2, arrCoords, '|');
+			strmid(TurfInfo[idx][zOwner], arrCoords[0], 0, strlen(arrCoords[0]), 255);
+			strmid(TurfInfo[idx][zColor], arrCoords[1], 0, strlen(arrCoords[1]), 255);
+			TurfInfo[idx][zMinX] = floatstr(arrCoords[2]);
+			TurfInfo[idx][zMinY] = floatstr(arrCoords[3]);
+			TurfInfo[idx][zMaxX] = floatstr(arrCoords[4]);
+			TurfInfo[idx][zMaxY] = floatstr(arrCoords[5]);
+			//printf("Turf:%d Name: %s Owner:%s MinX:%f MinY:%f MinZ:%f MaxX:%f MaxY:%f MaxZ:%f\n",
+			//idx,TurfInfo[idx][zName],TurfInfo[idx][zOwner],TurfInfo[idx][zMinX],TurfInfo[idx][zMinY],TurfInfo[idx][zMinZ],TurfInfo[idx][zMaxX],TurfInfo[idx][zMaxY],TurfInfo[idx][zMaxZ]);
+			idx++;
+		}
+		fclose(file);
+	}
+	return 1;
+}
+public LoadCK()
+{
+	new arrCoords[3][64];
+	new strFromFile2[256];
+	new File: file = fopen("ck.cfg", io_read);
+	if (file)
+	{
+		new idx;
+		while (idx < sizeof(CKInfo))
+		{
+			fread(file, strFromFile2);
+			split(strFromFile2, arrCoords, '|');
+			strmid(CKInfo[idx][cSendername], arrCoords[0], 0, strlen(arrCoords[0]), 255);
+			strmid(CKInfo[idx][cGiveplayer], arrCoords[1], 0, strlen(arrCoords[1]), 255);
+			CKInfo[idx][cUsed] = strval(arrCoords[2]);
+			printf("CK:%d Taken: %d Sendername:%s Giveplayer: %s",
+				idx, CKInfo[idx][cUsed], CKInfo[idx][cSendername], CKInfo[idx][cGiveplayer]);
+			idx++;
+		}
+		fclose(file);
+	}
+	return 1;
+}
+public LoadIRC()
+{
+	new arrCoords[5][64];
+	new strFromFile2[256];
+	new File: file = fopen("channels.cfg", io_read);
+	if (file)
+	{
+		new idx;
+		while (idx < sizeof(IRCInfo))
+		{
+			fread(file, strFromFile2);
+			split(strFromFile2, arrCoords, '|');
+			strmid(IRCInfo[idx][iAdmin], arrCoords[0], 0, strlen(arrCoords[0]), 255);
+			strmid(IRCInfo[idx][iMOTD], arrCoords[1], 0, strlen(arrCoords[1]), 255);
+			strmid(IRCInfo[idx][iPassword], arrCoords[2], 0, strlen(arrCoords[2]), 255);
+			IRCInfo[idx][iNeedPass] = strval(arrCoords[3]);
+			IRCInfo[idx][iLock] = strval(arrCoords[4]);
+			printf("IRC:%d Admin:%s MOTD: %s Password: %s NeedPass: %d Lock: %d", idx, IRCInfo[idx][iAdmin], IRCInfo[idx][iMOTD], IRCInfo[idx][iPassword], IRCInfo[idx][iNeedPass], IRCInfo[idx][iLock]);
+			idx++;
+		}
+		fclose(file);
+	}
+	return 1;
+}
+public LoadFamilies()
+{
+	new arrCoords[11][64];
+	new strFromFile2[256];
+	new File: file = fopen("families.cfg", io_read);
+	if (file)
+	{
+		new idx;
+		while (idx < sizeof(FamilyInfo))
+		{
+			fread(file, strFromFile2);
+			split(strFromFile2, arrCoords, '|');
+			FamilyInfo[idx][FamilyTaken] = strval(arrCoords[0]);
+			strmid(FamilyInfo[idx][FamilyName], arrCoords[1], 0, strlen(arrCoords[1]), 255);
+			strmid(FamilyInfo[idx][FamilyMOTD], arrCoords[2], 0, strlen(arrCoords[2]), 255);
+			strmid(FamilyInfo[idx][FamilyColor], arrCoords[3], 0, strlen(arrCoords[3]), 255);
+			strmid(FamilyInfo[idx][FamilyLeader], arrCoords[4], 0, strlen(arrCoords[4]), 255);
+			FamilyInfo[idx][FamilyMembers] = strval(arrCoords[5]);
+			FamilyInfo[idx][FamilySpawn][0] = floatstr(arrCoords[6]);
+			FamilyInfo[idx][FamilySpawn][1] = floatstr(arrCoords[7]);
+			FamilyInfo[idx][FamilySpawn][2] = floatstr(arrCoords[8]);
+			FamilyInfo[idx][FamilySpawn][3] = floatstr(arrCoords[9]);
+			FamilyInfo[idx][FamilyInterior] = strval(arrCoords[10]);
+			printf("Family:%d Taken: %d Name:%s MOTD:%s Leader:%s Members:%d SpawnX:%f SpawnY:%f SpawnZ:%f Int:%d",
+				idx, FamilyInfo[idx][FamilyTaken], FamilyInfo[idx][FamilyName], FamilyInfo[idx][FamilyMOTD], FamilyInfo[idx][FamilyLeader], FamilyInfo[idx][FamilyMembers], FamilyInfo[idx][FamilySpawn][0], FamilyInfo[idx][FamilySpawn][1], FamilyInfo[idx][FamilySpawn][2], FamilyInfo[idx][FamilyInterior]);
+			idx++;
+		}
+		fclose(file);
+	}
+	return 1;
+}
+public LoadPapers()
+{
+	new arrCoords[11][64];
+	new strFromFile2[256];
+	new File: file = fopen("papers.cfg", io_read);
+	if (file)
+	{
+		new idx;
+		while (idx < sizeof(PaperInfo))
+		{
+			fread(file, strFromFile2);
+			split(strFromFile2, arrCoords, '|');
+			PaperInfo[idx][PaperUsed] = strval(arrCoords[0]);
+			strmid(PaperInfo[idx][PaperMaker], arrCoords[1], 0, strlen(arrCoords[1]), 255);
+			strmid(PaperInfo[idx][PaperTitle], arrCoords[2], 0, strlen(arrCoords[2]), 255);
+			strmid(PaperInfo[idx][PaperText1], arrCoords[3], 0, strlen(arrCoords[3]), 255);
+			strmid(PaperInfo[idx][PaperText2], arrCoords[4], 0, strlen(arrCoords[4]), 255);
+			strmid(PaperInfo[idx][PaperText3], arrCoords[5], 0, strlen(arrCoords[5]), 255);
+			strmid(PaperInfo[idx][PaperText4], arrCoords[6], 0, strlen(arrCoords[6]), 255);
+			strmid(PaperInfo[idx][PaperText5], arrCoords[7], 0, strlen(arrCoords[7]), 255);
+			strmid(PaperInfo[idx][PaperText6], arrCoords[8], 0, strlen(arrCoords[8]), 255);
+			strmid(PaperInfo[idx][PaperText7], arrCoords[9], 0, strlen(arrCoords[9]), 255);
+			PaperInfo[idx][SafeSaving] = strval(arrCoords[10]);
+			printf("Paper:%d Used: %d Maker:%s Title: %s Text1: %s Text2: %s Text3: %s Text4: %s Text5: %s Text6: %s Text7: %s",
+				idx, PaperInfo[idx][PaperUsed], PaperInfo[idx][PaperMaker], PaperInfo[idx][PaperTitle], PaperInfo[idx][PaperText1], PaperInfo[idx][PaperText2], PaperInfo[idx][PaperText3], PaperInfo[idx][PaperText4], PaperInfo[idx][PaperText5], PaperInfo[idx][PaperText6], PaperInfo[idx][PaperText7]);
+			idx++;
+		}
+		fclose(file);
+	}
+	return 1;
+}
+public LoadCar()
+{
+	new arrCoords[13][64];
+	new strFromFile2[256];
+	new File: file = fopen("cars.cfg", io_read);
+	if (file)
+	{
+		new idx = 184;
+		while (idx < sizeof(CarInfo))
+		{
+			fread(file, strFromFile2);
+			split(strFromFile2, arrCoords, ',');
+			CarInfo[idx][cModel] = strval(arrCoords[0]);
+			CarInfo[idx][cLocationx] = floatstr(arrCoords[1]);
+			CarInfo[idx][cLocationy] = floatstr(arrCoords[2]);
+			CarInfo[idx][cLocationz] = floatstr(arrCoords[3]);
+			CarInfo[idx][cAngle] = floatstr(arrCoords[4]);
+			CarInfo[idx][cColorOne] = strval(arrCoords[5]);
+			CarInfo[idx][cColorTwo] = strval(arrCoords[6]);
+			strmid(CarInfo[idx][cOwner], arrCoords[7], 0, strlen(arrCoords[7]), 255);
+			strmid(CarInfo[idx][cDescription], arrCoords[8], 0, strlen(arrCoords[8]), 255);
+			CarInfo[idx][cValue] = strval(arrCoords[9]);
+			CarInfo[idx][cLicense] = strval(arrCoords[10]);
+			CarInfo[idx][cOwned] = strval(arrCoords[11]);
+			CarInfo[idx][cLock] = strval(arrCoords[12]);
+			printf("CarInfo: %d Owner:%s LicensePlate %s", idx, CarInfo[idx][cOwner], CarInfo[idx][cLicense]);
+			idx++;
+		}
+	}
+	return 1;
+}
+public LoadProperty()
+{
+	new arrCoords[30][64];
+	new strFromFile2[256];
+	new File: file = fopen("property.cfg", io_read);
+	if (file)
+	{
+		new idx;
+		while (idx < sizeof(HouseInfo))
+		{
+			fread(file, strFromFile2);
+			split(strFromFile2, arrCoords, ',');
+			HouseInfo[idx][hEntrancex] = floatstr(arrCoords[0]);
+			HouseInfo[idx][hEntrancey] = floatstr(arrCoords[1]);
+			HouseInfo[idx][hEntrancez] = floatstr(arrCoords[2]);
+			HouseInfo[idx][hExitx] = floatstr(arrCoords[3]);
+			HouseInfo[idx][hExity] = floatstr(arrCoords[4]);
+			HouseInfo[idx][hExitz] = floatstr(arrCoords[5]);
+			HouseInfo[idx][hHealthx] = strval(arrCoords[6]);
+			HouseInfo[idx][hHealthy] = strval(arrCoords[7]);
+			HouseInfo[idx][hHealthz] = strval(arrCoords[8]);
+			HouseInfo[idx][hArmourx] = strval(arrCoords[9]);
+			HouseInfo[idx][hArmoury] = strval(arrCoords[10]);
+			HouseInfo[idx][hArmourz] = strval(arrCoords[11]);
+			//printf("HouseInfo hEntrancez %f",HouseInfo[idx][hEntrancez]);
+			strmid(HouseInfo[idx][hOwner], arrCoords[12], 0, strlen(arrCoords[12]), 255);
+			strmid(HouseInfo[idx][hDiscription], arrCoords[13], 0, strlen(arrCoords[13]), 255);
+			HouseInfo[idx][hValue] = strval(arrCoords[14]);
+			HouseInfo[idx][hHel] = strval(arrCoords[15]);
+			HouseInfo[idx][hArm] = strval(arrCoords[16]);
+			HouseInfo[idx][hInt] = strval(arrCoords[17]);
+			HouseInfo[idx][hLock] = strval(arrCoords[18]);
+			HouseInfo[idx][hOwned] = strval(arrCoords[19]);
+			HouseInfo[idx][hRooms] = strval(arrCoords[20]);
+			HouseInfo[idx][hRent] = strval(arrCoords[21]);
+			HouseInfo[idx][hRentabil] = strval(arrCoords[22]);
+			HouseInfo[idx][hTakings] = strval(arrCoords[23]);
+			HouseInfo[idx][hVec] = strval(arrCoords[24]);
+			if (HouseInfo[idx][hVec] == 457)
+			{
+				HouseInfo[idx][hVec] = 411;
+			}
+			HouseInfo[idx][hVcol1] = strval(arrCoords[25]);
+			HouseInfo[idx][hVcol2] = strval(arrCoords[26]);
+			HouseInfo[idx][hDate] = strval(arrCoords[27]);
+			HouseInfo[idx][hLevel] = strval(arrCoords[28]);
+			HouseInfo[idx][hWorld] = strval(arrCoords[29]);
+
+			printf("HouseInfo:%d Owner:%s hTakings %d hVec %d", idx, HouseInfo[idx][hOwner], HouseInfo[idx][hTakings], HouseInfo[idx][hVec]);
+			idx++;
+		}
+		fclose(file);
+	}
+	return 1;
+}
+public LoadBizz()
+{
+	new arrCoords[19][64];
+	new strFromFile2[256];
+	new File: file = fopen("bizz.cfg", io_read);
+	if (file)
+	{
+		new idx;
+		while (idx < sizeof(BizzInfo))
+		{
+			fread(file, strFromFile2);
+			split(strFromFile2, arrCoords, '|');
+			BizzInfo[idx][bOwned] = strval(arrCoords[0]);
+			strmid(BizzInfo[idx][bOwner], arrCoords[1], 0, strlen(arrCoords[1]), 255);
+			strmid(BizzInfo[idx][bMessage], arrCoords[2], 0, strlen(arrCoords[2]), 255);
+			strmid(BizzInfo[idx][bExtortion], arrCoords[3], 0, strlen(arrCoords[3]), 255);
+			BizzInfo[idx][bEntranceX] = floatstr(arrCoords[4]);
+			BizzInfo[idx][bEntranceY] = floatstr(arrCoords[5]);
+			BizzInfo[idx][bEntranceZ] = floatstr(arrCoords[6]);
+			BizzInfo[idx][bExitX] = floatstr(arrCoords[7]);
+			BizzInfo[idx][bExitY] = floatstr(arrCoords[8]);
+			BizzInfo[idx][bExitZ] = floatstr(arrCoords[9]);
+			BizzInfo[idx][bLevelNeeded] = strval(arrCoords[10]);
+			BizzInfo[idx][bBuyPrice] = strval(arrCoords[11]);
+			BizzInfo[idx][bEntranceCost] = strval(arrCoords[12]);
+			BizzInfo[idx][bTill] = strval(arrCoords[13]);
+			BizzInfo[idx][bLocked] = strval(arrCoords[14]);
+			BizzInfo[idx][bInterior] = strval(arrCoords[15]);
+			BizzInfo[idx][bProducts] = strval(arrCoords[16]);
+			BizzInfo[idx][bMaxProducts] = strval(arrCoords[17]);
+			BizzInfo[idx][bPriceProd] = strval(arrCoords[18]);
+			printf("BizzInfo:%d Owner:%s Message:%s Entfee:%d Till:%d Products:%d/%d Interior:%d.\n",
+				idx,
+				BizzInfo[idx][bOwner],
+				BizzInfo[idx][bMessage],
+				BizzInfo[idx][bEntranceCost],
+				BizzInfo[idx][bTill],
+				BizzInfo[idx][bProducts],
+				BizzInfo[idx][bMaxProducts],
+				BizzInfo[idx][bInterior]);
+			idx++;
+		}
+		fclose(file);
+	}
+	return 1;
+}
+public LoadSBizz()
+{
+	new arrCoords[16][64];
+	new strFromFile2[256];
+	new File: file = fopen("sbizz.cfg", io_read);
+	if (file)
+	{
+		new idx;
+		while (idx < sizeof(SBizzInfo))
+		{
+			fread(file, strFromFile2);
+			split(strFromFile2, arrCoords, '|');
+			SBizzInfo[idx][sbOwned] = strval(arrCoords[0]);
+			strmid(SBizzInfo[idx][sbOwner], arrCoords[1], 0, strlen(arrCoords[1]), 255);
+			strmid(SBizzInfo[idx][sbMessage], arrCoords[2], 0, strlen(arrCoords[2]), 255);
+			strmid(SBizzInfo[idx][sbExtortion], arrCoords[3], 0, strlen(arrCoords[3]), 255);
+			SBizzInfo[idx][sbEntranceX] = floatstr(arrCoords[4]);
+			SBizzInfo[idx][sbEntranceY] = floatstr(arrCoords[5]);
+			SBizzInfo[idx][sbEntranceZ] = floatstr(arrCoords[6]);
+			SBizzInfo[idx][sbLevelNeeded] = strval(arrCoords[7]);
+			SBizzInfo[idx][sbBuyPrice] = strval(arrCoords[8]);
+			SBizzInfo[idx][sbEntranceCost] = strval(arrCoords[9]);
+			SBizzInfo[idx][sbTill] = strval(arrCoords[10]);
+			SBizzInfo[idx][sbLocked] = strval(arrCoords[11]);
+			SBizzInfo[idx][sbInterior] = strval(arrCoords[12]);
+			SBizzInfo[idx][sbProducts] = strval(arrCoords[13]);
+			SBizzInfo[idx][sbMaxProducts] = strval(arrCoords[14]);
+			SBizzInfo[idx][sbPriceProd] = strval(arrCoords[15]);
+			printf("SBizzInfo:%d Owner:%s Message:%s Entfee:%d Till:%d Products:%d/%d Interior:%d.\n",
+				idx,
+				SBizzInfo[idx][sbOwner],
+				SBizzInfo[idx][sbMessage],
+				SBizzInfo[idx][sbEntranceCost],
+				SBizzInfo[idx][sbTill],
+				SBizzInfo[idx][sbProducts],
+				SBizzInfo[idx][sbMaxProducts],
+				SBizzInfo[idx][sbInterior]);
+			idx++;
+		}
+		fclose(file);
+	}
+	return 1;
+}
+public LoadDrugSystem()
+{
+	new arrCoords[1][64];
+	new strFromFile2[256];
+	new File: file = fopen("drugs_system.ini", io_read);
+	if (file)
+	{
+		fread(file, strFromFile2);
+		split(strFromFile2, arrCoords, ',');
+		drugsys[DrugAmmount] = strval(arrCoords[0]);
+		fclose(file);
+	}
+	return 1;
+}
+public LoadMatsSystem()
+{
+	new arrCoords[1][64];
+	new strFromFile2[256];
+	new File: file = fopen("mats_system.ini", io_read);
+	if (file)
+	{
+		fread(file, strFromFile2);
+		split(strFromFile2, arrCoords, ',');
+		matssys[MatsAmmount] = strval(arrCoords[0]);
+		fclose(file);
+	}
+	return 1;
+}
+public LoadHQLocks()
+{
+	new arrCoords[4][64];
+	new strFromFile2[256];
+	new File: file = fopen("hq_locks.ini", io_read);
+	if (file)
+	{
+		fread(file, strFromFile2);
+		split(strFromFile2, arrCoords, ',');
+		hqlock[surlock] = strval(arrCoords[0]);
+		hqlock[luclock] = strval(arrCoords[1]);
+		hqlock[stlock] = strval(arrCoords[2]);
+		hqlock[iolock] = strval(arrCoords[3]);
+		fclose(file);
+	}
+	return 1;
+}
+public LoadTrunk()
+{
+	new arrCoords[13][64];
+	new strFromFile2[256];
+	new File: file = fopen("trunk.cfg", io_read);
+	if (file)
+	{
+		new idx = 1;
+		while (idx < sizeof(CarInfo))
+		{
+			fread(file, strFromFile2);
+			split(strFromFile2, arrCoords, ',');
+			vehTrunk[idx][1] = strval(arrCoords[0]);
+			vehTrunkAmmo[idx][1] = strval(arrCoords[1]);
+			vehTrunk[idx][2] = strval(arrCoords[2]);
+			vehTrunkAmmo[idx][2] = strval(arrCoords[3]);
+			vehTrunk[idx][3] = strval(arrCoords[4]);
+			vehTrunkAmmo[idx][3] = strval(arrCoords[5]);
+			vehTrunk[idx][4] = strval(arrCoords[6]);
+			vehTrunkAmmo[idx][4] = strval(arrCoords[7]);
+			vehTrunkCounter[idx] = strval(arrCoords[8]);
+			vehTrunkArmour[idx] = floatstr(arrCoords[9]);
+			idx++;
+		}
+	}
+	return 1;
+}
 
 //FUNCTION+STOCK
 public Float:GetDistanceBetweenPlayers(p1, p2)
@@ -5899,721 +6738,6 @@ public GameModeExitFunc()
 	GameModeExit();
 }
 
-public SaveMission(playerid,name[])
-{
-	if(IsPlayerConnected(playerid))
-	{
-	    new coordsstring[256];
-	    new missionname[64];
-		new var[128];
-		new makername[MAX_PLAYER_NAME];
-		GetPlayerName(playerid, makername, sizeof(makername));
-		new rand = random(999);
-		if(rand == 0) { rand = 1; }
-		new number = rand;
-		if(MissionInfo[mToggle] == 0 || MissionInfo[mToggle] == 1) { }
-		else { MissionInfo[mToggle] = 1; }
-		format(missionname, sizeof(missionname), "%s.mis",name);
-		new File: hFile = fopen(missionname, io_write);
-		format(var, 128, "Title=%s\n", MissionInfo[mTitle]);fwrite(hFile, var);
-		format(var, 128, "Maker=%s\n", makername);fwrite(hFile, var);
-		format(var, 128, "Text1=%s\n", MissionInfo[mText1]);fwrite(hFile, var);
-		format(var, 128, "Text2=%s\n", MissionInfo[mText2]);fwrite(hFile, var);
-		format(var, 128, "Text3=%s\n", MissionInfo[mText3]);fwrite(hFile, var);
-		format(var, 128, "Text4=%s\n", MissionInfo[mText4]);fwrite(hFile, var);
-		format(var, 128, "Text5=%s\n", MissionInfo[mText5]);fwrite(hFile, var);
-		format(var, 128, "Text6=%s\n", MissionInfo[mText6]);fwrite(hFile, var);
-		format(var, 128, "Text7=%s\n", MissionInfo[mText7]);fwrite(hFile, var);
-		format(var, 128, "Text8=%s\n", MissionInfo[mText8]);fwrite(hFile, var);
-		format(var, 128, "Text9=%s\n", MissionInfo[mText9]);fwrite(hFile, var);
-		format(var, 128, "Text10=%s\n", MissionInfo[mText10]);fwrite(hFile, var);
-		format(var, 128, "Text11=%s\n", MissionInfo[mText11]);fwrite(hFile, var);
-		format(var, 128, "Text12=%s\n", MissionInfo[mText12]);fwrite(hFile, var);
-		format(var, 128, "Text13=%s\n", MissionInfo[mText13]);fwrite(hFile, var);
-		format(var, 128, "Text14=%s\n", MissionInfo[mText14]);fwrite(hFile, var);
-		format(var, 128, "Text15=%s\n", MissionInfo[mText15]);fwrite(hFile, var);
-		format(var, 128, "Text16=%s\n", MissionInfo[mText16]);fwrite(hFile, var);
-		format(var, 128, "Text17=%s\n", MissionInfo[mText17]);fwrite(hFile, var);
-		format(var, 128, "Text18=%s\n", MissionInfo[mText18]);fwrite(hFile, var);
-		format(var, 128, "GText1=%s\n", MissionInfo[mGText1]);fwrite(hFile, var);
-		format(var, 128, "GText2=%s\n", MissionInfo[mGText2]);fwrite(hFile, var);
-		format(var, 128, "GText3=%s\n", MissionInfo[mGText3]);fwrite(hFile, var);
-		format(var, 128, "GText4=%s\n", MissionInfo[mGText4]);fwrite(hFile, var);
-		format(var, 128, "GText5=%s\n", MissionInfo[mGText5]);fwrite(hFile, var);
-		format(var, 128, "GText6=%s\n", MissionInfo[mGText6]);fwrite(hFile, var);
-		format(var, 128, "CP1X=%f\n", MissionInfo[mCP1][0]);fwrite(hFile, var);
-		format(var, 128, "CP1Y=%f\n", MissionInfo[mCP1][1]);fwrite(hFile, var);
-		format(var, 128, "CP1Z=%f\n", MissionInfo[mCP1][2]);fwrite(hFile, var);
-		format(var, 128, "CP2X=%f\n", MissionInfo[mCP2][0]);fwrite(hFile, var);
-		format(var, 128, "CP2Y=%f\n", MissionInfo[mCP2][1]);fwrite(hFile, var);
-		format(var, 128, "CP2Z=%f\n", MissionInfo[mCP2][2]);fwrite(hFile, var);
-		format(var, 128, "CP3X=%f\n", MissionInfo[mCP3][0]);fwrite(hFile, var);
-		format(var, 128, "CP3Y=%f\n", MissionInfo[mCP3][1]);fwrite(hFile, var);
-		format(var, 128, "CP3Z=%f\n", MissionInfo[mCP3][2]);fwrite(hFile, var);
-		format(var, 128, "CP4X=%f\n", MissionInfo[mCP4][0]);fwrite(hFile, var);
-		format(var, 128, "CP4Y=%f\n", MissionInfo[mCP4][1]);fwrite(hFile, var);
-		format(var, 128, "CP4Z=%f\n", MissionInfo[mCP4][2]);fwrite(hFile, var);
-		format(var, 128, "CP5X=%f\n", MissionInfo[mCP5][0]);fwrite(hFile, var);
-		format(var, 128, "CP5Y=%f\n", MissionInfo[mCP5][1]);fwrite(hFile, var);
-		format(var, 128, "CP5Z=%f\n", MissionInfo[mCP5][2]);fwrite(hFile, var);
-		format(var, 128, "CP6X=%f\n", MissionInfo[mCP6][0]);fwrite(hFile, var);
-		format(var, 128, "CP6Y=%f\n", MissionInfo[mCP6][1]);fwrite(hFile, var);
-		format(var, 128, "CP6Z=%f\n", MissionInfo[mCP6][2]);fwrite(hFile, var);
-		format(var, 128, "Number=%d\n", number);fwrite(hFile, var);
-		format(var, 128, "Reward=%d\n", MissionInfo[mReward]);fwrite(hFile, var);
-		format(var, 128, "Toggle=%d\n", MissionInfo[mToggle]);fwrite(hFile, var);
-		fclose(hFile);
-		format(coordsstring, sizeof(coordsstring), "%s Mission Saved.",name);
-		SendClientMessage(playerid, COLOR_GREEN,coordsstring);
-	}
-	return 1;
-}
-
-public LoadMission(playerid,name[])
-{
-	if(IsPlayerConnected(playerid))
-	{
-		new strFromFile2[128];
-		new missionname[64];
-		format(missionname, sizeof(missionname), "%s.mis",name);
-		new File: file = fopen(missionname, io_read);
-		if (file)
-		{
-		    new key[ 256 ] , val[ 256 ];
-		    new Data[ 256 ];
-		    while ( fread( file , Data , sizeof( Data ) ) )
-			{
-				key = ini_GetKey( Data );
-				if( strcmp( key , "Title" , true ) == 0 ) { val = ini_GetValue( Data ); strmid(PlayMission[kTitle], val, 0, strlen(val), 255); }
-				if( strcmp( key , "Maker" , true ) == 0 ) { val = ini_GetValue( Data ); strmid(PlayMission[kMaker], val, 0, strlen(val), 255); }
-				if( strcmp( key , "Text1" , true ) == 0 ) { val = ini_GetValue( Data ); strmid(PlayMission[kText1], val, 0, strlen(val), 255); }
-				if( strcmp( key , "Text2" , true ) == 0 ) { val = ini_GetValue( Data ); strmid(PlayMission[kText2], val, 0, strlen(val), 255); }
-				if( strcmp( key , "Text3" , true ) == 0 ) { val = ini_GetValue( Data ); strmid(PlayMission[kText3], val, 0, strlen(val), 255); }
-				if( strcmp( key , "Text4" , true ) == 0 ) { val = ini_GetValue( Data ); strmid(PlayMission[kText4], val, 0, strlen(val), 255); }
-				if( strcmp( key , "Text5" , true ) == 0 ) { val = ini_GetValue( Data ); strmid(PlayMission[kText5], val, 0, strlen(val), 255); }
-				if( strcmp( key , "Text6" , true ) == 0 ) { val = ini_GetValue( Data ); strmid(PlayMission[kText6], val, 0, strlen(val), 255); }
-				if( strcmp( key , "Text7" , true ) == 0 ) { val = ini_GetValue( Data ); strmid(PlayMission[kText7], val, 0, strlen(val), 255); }
-				if( strcmp( key , "Text8" , true ) == 0 ) { val = ini_GetValue( Data ); strmid(PlayMission[kText8], val, 0, strlen(val), 255); }
-				if( strcmp( key , "Text9" , true ) == 0 ) { val = ini_GetValue( Data ); strmid(PlayMission[kText9], val, 0, strlen(val), 255); }
-				if( strcmp( key , "Text10" , true ) == 0 ) { val = ini_GetValue( Data ); strmid(PlayMission[kText10], val, 0, strlen(val), 255); }
-				if( strcmp( key , "Text11" , true ) == 0 ) { val = ini_GetValue( Data ); strmid(PlayMission[kText11], val, 0, strlen(val), 255); }
-				if( strcmp( key , "Text12" , true ) == 0 ) { val = ini_GetValue( Data ); strmid(PlayMission[kText12], val, 0, strlen(val), 255); }
-				if( strcmp( key , "Text13" , true ) == 0 ) { val = ini_GetValue( Data ); strmid(PlayMission[kText13], val, 0, strlen(val), 255); }
-				if( strcmp( key , "Text14" , true ) == 0 ) { val = ini_GetValue( Data ); strmid(PlayMission[kText14], val, 0, strlen(val), 255); }
-				if( strcmp( key , "Text15" , true ) == 0 ) { val = ini_GetValue( Data ); strmid(PlayMission[kText15], val, 0, strlen(val), 255); }
-				if( strcmp( key , "Text16" , true ) == 0 ) { val = ini_GetValue( Data ); strmid(PlayMission[kText16], val, 0, strlen(val), 255); }
-				if( strcmp( key , "Text17" , true ) == 0 ) { val = ini_GetValue( Data ); strmid(PlayMission[kText17], val, 0, strlen(val), 255); }
-				if( strcmp( key , "Text18" , true ) == 0 ) { val = ini_GetValue( Data ); strmid(PlayMission[kText18], val, 0, strlen(val), 255); }
-				if( strcmp( key , "GText1" , true ) == 0 ) { val = ini_GetValue( Data ); strmid(PlayMission[kGText1], val, 0, strlen(val), 255); }
-				if( strcmp( key , "GText2" , true ) == 0 ) { val = ini_GetValue( Data ); strmid(PlayMission[kGText2], val, 0, strlen(val), 255); }
-				if( strcmp( key , "GText3" , true ) == 0 ) { val = ini_GetValue( Data ); strmid(PlayMission[kGText3], val, 0, strlen(val), 255); }
-				if( strcmp( key , "GText4" , true ) == 0 ) { val = ini_GetValue( Data ); strmid(PlayMission[kGText4], val, 0, strlen(val), 255); }
-				if( strcmp( key , "GText5" , true ) == 0 ) { val = ini_GetValue( Data ); strmid(PlayMission[kGText5], val, 0, strlen(val), 255); }
-				if( strcmp( key , "GText6" , true ) == 0 ) { val = ini_GetValue( Data ); strmid(PlayMission[kGText6], val, 0, strlen(val), 255); }
-				if( strcmp( key , "CP1X" , true ) == 0 ) { val = ini_GetValue( Data ); PlayMission[kCP1][0] = floatstr( val ); }
-				if( strcmp( key , "CP1Y" , true ) == 0 ) { val = ini_GetValue( Data ); PlayMission[kCP1][1] = floatstr( val ); }
-				if( strcmp( key , "CP1Z" , true ) == 0 ) { val = ini_GetValue( Data ); PlayMission[kCP1][2] = floatstr( val ); }
-				if( strcmp( key , "CP2X" , true ) == 0 ) { val = ini_GetValue( Data ); PlayMission[kCP2][0] = floatstr( val ); }
-				if( strcmp( key , "CP2Y" , true ) == 0 ) { val = ini_GetValue( Data ); PlayMission[kCP2][1] = floatstr( val ); }
-				if( strcmp( key , "CP2Z" , true ) == 0 ) { val = ini_GetValue( Data ); PlayMission[kCP2][2] = floatstr( val ); }
-				if( strcmp( key , "CP3X" , true ) == 0 ) { val = ini_GetValue( Data ); PlayMission[kCP3][0] = floatstr( val ); }
-				if( strcmp( key , "CP3Y" , true ) == 0 ) { val = ini_GetValue( Data ); PlayMission[kCP3][1] = floatstr( val ); }
-				if( strcmp( key , "CP3Z" , true ) == 0 ) { val = ini_GetValue( Data ); PlayMission[kCP3][2] = floatstr( val ); }
-				if( strcmp( key , "CP4X" , true ) == 0 ) { val = ini_GetValue( Data ); PlayMission[kCP4][0] = floatstr( val ); }
-				if( strcmp( key , "CP4Y" , true ) == 0 ) { val = ini_GetValue( Data ); PlayMission[kCP4][1] = floatstr( val ); }
-				if( strcmp( key , "CP4Z" , true ) == 0 ) { val = ini_GetValue( Data ); PlayMission[kCP4][2] = floatstr( val ); }
-				if( strcmp( key , "CP5X" , true ) == 0 ) { val = ini_GetValue( Data ); PlayMission[kCP5][0] = floatstr( val ); }
-				if( strcmp( key , "CP5Y" , true ) == 0 ) { val = ini_GetValue( Data ); PlayMission[kCP5][1] = floatstr( val ); }
-				if( strcmp( key , "CP5Z" , true ) == 0 ) { val = ini_GetValue( Data ); PlayMission[kCP5][2] = floatstr( val ); }
-				if( strcmp( key , "CP6X" , true ) == 0 ) { val = ini_GetValue( Data ); PlayMission[kCP6][0] = floatstr( val ); }
-				if( strcmp( key , "CP6Y" , true ) == 0 ) { val = ini_GetValue( Data ); PlayMission[kCP6][1] = floatstr( val ); }
-				if( strcmp( key , "CP6Z" , true ) == 0 ) { val = ini_GetValue( Data ); PlayMission[kCP6][2] = floatstr( val ); }
-				if( strcmp( key , "Number" , true ) == 0 ) { val = ini_GetValue( Data ); PlayMission[kNumber] = strval( val ); }
-				if( strcmp( key , "Reward" , true ) == 0 ) { val = ini_GetValue( Data ); PlayMission[kReward] = strval( val ); }
-				if( strcmp( key , "Toggle" , true ) == 0 ) { val = ini_GetValue( Data ); PlayMission[kToggle] = strval( val ); }
-			}
-			fclose(file);
-			format(strFromFile2, sizeof(strFromFile2), "%s Mission Loaded.",name);
-			SendClientMessage(playerid, COLOR_GREEN,strFromFile2);
-			format(strFromFile2, sizeof(strFromFile2), "Mission Available: %s, By : %s | Reward: $%d",PlayMission[kTitle],PlayMission[kMaker],PlayMission[kReward]);
-			SendClientMessageToAll(COLOR_GREEN, strFromFile2);
-			MissionPlayable = PlayMission[kNumber];
-		}
-		else
-		{
-			SendClientMessage(playerid, COLOR_GREEN,"Mission File not found.");
-		}
-	}
-	return 1;
-}
-
-public LoadBoxer()
-{
-	new arrCoords[3][64];
-	new strFromFile2[256];
-	new File: file = fopen("boxer.ini", io_read);
-	if (file)
-	{
-		fread(file, strFromFile2);
-		split(strFromFile2, arrCoords, ',');
-		Titel[TitelWins] = strval(arrCoords[0]);
-		strmid(Titel[TitelName], arrCoords[1], 0, strlen(arrCoords[1]), 255);
-		Titel[TitelLoses] = strval(arrCoords[2]);
-		fclose(file);
-	}
-	return 1;
-}
-
-public SaveBoxer()
-{
-	new coordsstring[256];
-	format(coordsstring, sizeof(coordsstring), "%d,%s,%d", Titel[TitelWins],Titel[TitelName],Titel[TitelLoses]);
-	new File: file2 = fopen("boxer.ini", io_write);
-	fwrite(file2, coordsstring);
-	fclose(file2);
-	return 1;
-}
-
-public LoadStuff()
-{
-	new arrCoords[4][64];
-	new strFromFile2[256];
-	new File: file = fopen("stuff.ini", io_read);
-	if (file)
-	{
-		fread(file, strFromFile2);
-		split(strFromFile2, arrCoords, ',');
-		Jackpot = strval(arrCoords[0]);
-		Tax = strval(arrCoords[1]);
-		TaxValue = strval(arrCoords[2]);
-		Security = strval(arrCoords[3]);
-		fclose(file);
-		if(Security == 0 || Security == 1)
-		{
-		}
-		else
-		{
-		    GameModeExit();
-		}
-	}
-	else
-	{
-	    GameModeExit();
-	}
-	return 1;
-}
-
-public SaveStuff()
-{
-	new coordsstring[256];
-	format(coordsstring, sizeof(coordsstring), "%d,%d,%d,%d", Jackpot,Tax,TaxValue,Security);
-	new File: file2 = fopen("stuff.ini", io_write);
-	fwrite(file2, coordsstring);
-	fclose(file2);
-	return 1;
-}
-
-public LoadIRC()
-{
-	new arrCoords[5][64];
-	new strFromFile2[256];
-	new File: file = fopen("channels.cfg", io_read);
-	if (file)
-	{
-		new idx;
-		while (idx < sizeof(IRCInfo))
-		{
-			fread(file, strFromFile2);
-			split(strFromFile2, arrCoords, '|');
-			strmid(IRCInfo[idx][iAdmin], arrCoords[0], 0, strlen(arrCoords[0]), 255);
-			strmid(IRCInfo[idx][iMOTD], arrCoords[1], 0, strlen(arrCoords[1]), 255);
-			strmid(IRCInfo[idx][iPassword], arrCoords[2], 0, strlen(arrCoords[2]), 255);
-			IRCInfo[idx][iNeedPass] = strval(arrCoords[3]);
-			IRCInfo[idx][iLock] = strval(arrCoords[4]);
-			printf("IRC:%d Admin:%s MOTD: %s Password: %s NeedPass: %d Lock: %d",idx,IRCInfo[idx][iAdmin],IRCInfo[idx][iMOTD],IRCInfo[idx][iPassword],IRCInfo[idx][iNeedPass],IRCInfo[idx][iLock]);
-			idx++;
-		}
-		fclose(file);
-	}
-	return 1;
-}
-
-public SaveIRC()
-{
-	new idx;
-	new File: file2;
-	while (idx < sizeof(IRCInfo))
-	{
-		new coordsstring[256];
-		format(coordsstring, sizeof(coordsstring), "%s|%s|%s|%d|%d\n",
-		IRCInfo[idx][iAdmin],
-		IRCInfo[idx][iMOTD],
-		IRCInfo[idx][iPassword],
-		IRCInfo[idx][iNeedPass],
-		IRCInfo[idx][iLock]);
-		if(idx == 0)
-		{
-			file2 = fopen("channels.cfg", io_write);
-		}
-		else
-		{
-			file2 = fopen("channels.cfg", io_append);
-		}
-		fwrite(file2, coordsstring);
-		idx++;
-		fclose(file2);
-	}
-	return 1;
-}
-
-public LoadTurfs()
-{
-	new arrCoords[6][64];
-	new strFromFile2[256];
-	new File: file = fopen("turfs.cfg", io_read);
-	if (file)
-	{
-		new idx;
-		while (idx < sizeof(TurfInfo))
-		{
-			fread(file, strFromFile2);
-			split(strFromFile2, arrCoords, '|');
-			strmid(TurfInfo[idx][zOwner], arrCoords[0], 0, strlen(arrCoords[0]), 255);
-			strmid(TurfInfo[idx][zColor], arrCoords[1], 0, strlen(arrCoords[1]), 255);
-			TurfInfo[idx][zMinX] = floatstr(arrCoords[2]);
-			TurfInfo[idx][zMinY] = floatstr(arrCoords[3]);
-			TurfInfo[idx][zMaxX] = floatstr(arrCoords[4]);
-			TurfInfo[idx][zMaxY] = floatstr(arrCoords[5]);
-			//printf("Turf:%d Name: %s Owner:%s MinX:%f MinY:%f MinZ:%f MaxX:%f MaxY:%f MaxZ:%f\n",
-			//idx,TurfInfo[idx][zName],TurfInfo[idx][zOwner],TurfInfo[idx][zMinX],TurfInfo[idx][zMinY],TurfInfo[idx][zMinZ],TurfInfo[idx][zMaxX],TurfInfo[idx][zMaxY],TurfInfo[idx][zMaxZ]);
-			idx++;
-		}
-		fclose(file);
-	}
-	return 1;
-}
-
-public SaveTurfs()
-{
-	new idx;
-	new File: file2;
-	while (idx < sizeof(TurfInfo))
-	{
-		new coordsstring[256];
-		format(coordsstring, sizeof(coordsstring), "%s|%s|%f|%f|%f|%f|%f|%f\n",
-		TurfInfo[idx][zOwner],
-		TurfInfo[idx][zColor],
-		TurfInfo[idx][zMinX],
-		TurfInfo[idx][zMinY],
-		TurfInfo[idx][zMaxX],
-		TurfInfo[idx][zMaxY]);
-		if(idx == 0)
-		{
-			file2 = fopen("turfs.cfg", io_write);
-		}
-		else
-		{
-			file2 = fopen("turfs.cfg", io_append);
-		}
-		fwrite(file2, coordsstring);
-		idx++;
-		fclose(file2);
-	}
-	return 1;
-}
-
-public LoadCK()
-{
-	new arrCoords[3][64];
-	new strFromFile2[256];
-	new File: file = fopen("ck.cfg", io_read);
-	if (file)
-	{
-		new idx;
-		while (idx < sizeof(CKInfo))
-		{
-			fread(file, strFromFile2);
-			split(strFromFile2, arrCoords, '|');
-			strmid(CKInfo[idx][cSendername], arrCoords[0], 0, strlen(arrCoords[0]), 255);
-			strmid(CKInfo[idx][cGiveplayer], arrCoords[1], 0, strlen(arrCoords[1]), 255);
-			CKInfo[idx][cUsed] = strval(arrCoords[2]);
-			printf("CK:%d Taken: %d Sendername:%s Giveplayer: %s",
-			idx,CKInfo[idx][cUsed],CKInfo[idx][cSendername],CKInfo[idx][cGiveplayer]);
-			idx++;
-		}
-		fclose(file);
-	}
-	return 1;
-}
-
-public SaveCK()
-{
-	new idx;
-	new File: file2;
-	while (idx < sizeof(CKInfo))
-	{
-		new coordsstring[256];
-		format(coordsstring, sizeof(coordsstring), "%s|%s|%d\n",
-		CKInfo[idx][cSendername],
-		CKInfo[idx][cGiveplayer],
-		CKInfo[idx][cUsed]);
-		if(idx == 0)
-		{
-			file2 = fopen("ck.cfg", io_write);
-		}
-		else
-		{
-			file2 = fopen("ck.cfg", io_append);
-		}
-		fwrite(file2, coordsstring);
-		idx++;
-		fclose(file2);
-	}
-	return 1;
-}
-
-public LoadFamilies()
-{
-	new arrCoords[11][64];
-	new strFromFile2[256];
-	new File: file = fopen("families.cfg", io_read);
-	if (file)
-	{
-		new idx;
-		while (idx < sizeof(FamilyInfo))
-		{
-			fread(file, strFromFile2);
-			split(strFromFile2, arrCoords, '|');
-			FamilyInfo[idx][FamilyTaken] = strval(arrCoords[0]);
-			strmid(FamilyInfo[idx][FamilyName], arrCoords[1], 0, strlen(arrCoords[1]), 255);
-			strmid(FamilyInfo[idx][FamilyMOTD], arrCoords[2], 0, strlen(arrCoords[2]), 255);
-			strmid(FamilyInfo[idx][FamilyColor], arrCoords[3], 0, strlen(arrCoords[3]), 255);
-			strmid(FamilyInfo[idx][FamilyLeader], arrCoords[4], 0, strlen(arrCoords[4]), 255);
-			FamilyInfo[idx][FamilyMembers] = strval(arrCoords[5]);
-			FamilyInfo[idx][FamilySpawn][0] = floatstr(arrCoords[6]);
-			FamilyInfo[idx][FamilySpawn][1] = floatstr(arrCoords[7]);
-			FamilyInfo[idx][FamilySpawn][2] = floatstr(arrCoords[8]);
-			FamilyInfo[idx][FamilySpawn][3] = floatstr(arrCoords[9]);
-			FamilyInfo[idx][FamilyInterior] = strval(arrCoords[10]);
-			printf("Family:%d Taken: %d Name:%s MOTD:%s Leader:%s Members:%d SpawnX:%f SpawnY:%f SpawnZ:%f Int:%d",
-			idx,FamilyInfo[idx][FamilyTaken],FamilyInfo[idx][FamilyName],FamilyInfo[idx][FamilyMOTD],FamilyInfo[idx][FamilyLeader],FamilyInfo[idx][FamilyMembers],FamilyInfo[idx][FamilySpawn][0],FamilyInfo[idx][FamilySpawn][1],FamilyInfo[idx][FamilySpawn][2],FamilyInfo[idx][FamilyInterior]);
-			idx++;
-		}
-		fclose(file);
-	}
-	return 1;
-}
-
-public SaveFamilies()
-{
-	new idx;
-	new File: file2;
-	while (idx < sizeof(FamilyInfo))
-	{
-		new coordsstring[256];
-		format(coordsstring, sizeof(coordsstring), "%d|%s|%s|%s|%s|%d|%f|%f|%f|%f|%d\n",
-		FamilyInfo[idx][FamilyTaken],
-		FamilyInfo[idx][FamilyName],
-		FamilyInfo[idx][FamilyMOTD],
-		FamilyInfo[idx][FamilyColor],
-		FamilyInfo[idx][FamilyLeader],
-		FamilyInfo[idx][FamilyMembers],
-		FamilyInfo[idx][FamilySpawn][0],
-		FamilyInfo[idx][FamilySpawn][1],
-		FamilyInfo[idx][FamilySpawn][2],
-		FamilyInfo[idx][FamilySpawn][3],
-		FamilyInfo[idx][FamilyInterior]);
-		if(idx == 0)
-		{
-			file2 = fopen("families.cfg", io_write);
-		}
-		else
-		{
-			file2 = fopen("families.cfg", io_append);
-		}
-		fwrite(file2, coordsstring);
-		idx++;
-		fclose(file2);
-	}
-	return 1;
-}
-
-public LoadPapers()
-{
-	new arrCoords[11][64];
-	new strFromFile2[256];
-	new File: file = fopen("papers.cfg", io_read);
-	if (file)
-	{
-		new idx;
-		while (idx < sizeof(PaperInfo))
-		{
-			fread(file, strFromFile2);
-			split(strFromFile2, arrCoords, '|');
-			PaperInfo[idx][PaperUsed] = strval(arrCoords[0]);
-			strmid(PaperInfo[idx][PaperMaker], arrCoords[1], 0, strlen(arrCoords[1]), 255);
-			strmid(PaperInfo[idx][PaperTitle], arrCoords[2], 0, strlen(arrCoords[2]), 255);
-			strmid(PaperInfo[idx][PaperText1], arrCoords[3], 0, strlen(arrCoords[3]), 255);
-			strmid(PaperInfo[idx][PaperText2], arrCoords[4], 0, strlen(arrCoords[4]), 255);
-			strmid(PaperInfo[idx][PaperText3], arrCoords[5], 0, strlen(arrCoords[5]), 255);
-			strmid(PaperInfo[idx][PaperText4], arrCoords[6], 0, strlen(arrCoords[6]), 255);
-			strmid(PaperInfo[idx][PaperText5], arrCoords[7], 0, strlen(arrCoords[7]), 255);
-			strmid(PaperInfo[idx][PaperText6], arrCoords[8], 0, strlen(arrCoords[8]), 255);
-			strmid(PaperInfo[idx][PaperText7], arrCoords[9], 0, strlen(arrCoords[9]), 255);
-			PaperInfo[idx][SafeSaving] = strval(arrCoords[10]);
-			printf("Paper:%d Used: %d Maker:%s Title: %s Text1: %s Text2: %s Text3: %s Text4: %s Text5: %s Text6: %s Text7: %s",
-			idx,PaperInfo[idx][PaperUsed],PaperInfo[idx][PaperMaker],PaperInfo[idx][PaperTitle],PaperInfo[idx][PaperText1],PaperInfo[idx][PaperText2],PaperInfo[idx][PaperText3],PaperInfo[idx][PaperText4],PaperInfo[idx][PaperText5],PaperInfo[idx][PaperText6],PaperInfo[idx][PaperText7]);
-			idx++;
-		}
-		fclose(file);
-	}
-	return 1;
-}
-
-public SavePapers()
-{
-	new idx;
-	new File: file2;
-	while (idx < sizeof(IRCInfo))
-	{
-		new coordsstring[256];
-		format(coordsstring, sizeof(coordsstring), "%d|%s|%s|%s|%s|%s|%s|%s|%s|%s|%d\n",
-		PaperInfo[idx][PaperUsed],
-		PaperInfo[idx][PaperMaker],
-		PaperInfo[idx][PaperTitle],
-		PaperInfo[idx][PaperText1],
-		PaperInfo[idx][PaperText2],
-		PaperInfo[idx][PaperText3],
-		PaperInfo[idx][PaperText4],
-		PaperInfo[idx][PaperText5],
-		PaperInfo[idx][PaperText6],
-		PaperInfo[idx][PaperText7],
-		PaperInfo[idx][SafeSaving]);
-		if(idx == 0)
-		{
-			file2 = fopen("papers.cfg", io_write);
-		}
-		else
-		{
-			file2 = fopen("papers.cfg", io_append);
-		}
-		fwrite(file2, coordsstring);
-		idx++;
-		fclose(file2);
-	}
-	return 1;
-}
-
-public LoadCar()
-{
-	new arrCoords[13][64];
-	new strFromFile2[256];
-	new File: file = fopen("cars.cfg", io_read);
-	if (file)
-	{
-		new idx = 184;
-		while (idx < sizeof(CarInfo))
-		{
-			fread(file, strFromFile2);
-			split(strFromFile2, arrCoords, ',');
-			CarInfo[idx][cModel] = strval(arrCoords[0]);
-			CarInfo[idx][cLocationx] = floatstr(arrCoords[1]);
-			CarInfo[idx][cLocationy] = floatstr(arrCoords[2]);
-			CarInfo[idx][cLocationz] = floatstr(arrCoords[3]);
-			CarInfo[idx][cAngle] = floatstr(arrCoords[4]);
-			CarInfo[idx][cColorOne] = strval(arrCoords[5]);
-			CarInfo[idx][cColorTwo] = strval(arrCoords[6]);
-			strmid(CarInfo[idx][cOwner], arrCoords[7], 0, strlen(arrCoords[7]), 255);
-			strmid(CarInfo[idx][cDescription], arrCoords[8], 0, strlen(arrCoords[8]), 255);
-			CarInfo[idx][cValue] = strval(arrCoords[9]);
-			CarInfo[idx][cLicense] = strval(arrCoords[10]);
-			CarInfo[idx][cOwned] = strval(arrCoords[11]);
-			CarInfo[idx][cLock] = strval(arrCoords[12]);
-			printf("CarInfo: %d Owner:%s LicensePlate %s",idx,CarInfo[idx][cOwner],CarInfo[idx][cLicense]);
-			idx++;
-		}
-	}
-	return 1;
-}
-
-public SaveCarCoords()
-{
-	new idx;
-	new File: file2;
-	while (idx < sizeof(CarInfo))
-	{
-	    new coordsstring[256];
-	    format(coordsstring, sizeof(coordsstring), "%d|%f|%f|%f|%f|%d|%d\n",
-		CarInfo[idx][cModel],
-		CarInfo[idx][cLocationx],
-		CarInfo[idx][cLocationy],
-		CarInfo[idx][cLocationz],
-		CarInfo[idx][cAngle],
-		CarInfo[idx][cColorOne],
-		CarInfo[idx][cColorTwo]);
-		if(idx == 0)
-		{
-			file2 = fopen("cars.cfg", io_write);
-		}
-		else
-		{
-			file2 = fopen("cars.cfg", io_append);
-		}
-		fwrite(file2, coordsstring);
-		idx++;
-		fclose(file2);
-	}
-	return 1;
-}
-
-public LoadProperty()
-{
-	new arrCoords[30][64];
-	new strFromFile2[256];
-	new File: file = fopen("property.cfg", io_read);
-	if (file)
-	{
-		new idx;
-		while (idx < sizeof(HouseInfo))
-		{
-			fread(file, strFromFile2);
-			split(strFromFile2, arrCoords, ',');
-			HouseInfo[idx][hEntrancex] = floatstr(arrCoords[0]);
-			HouseInfo[idx][hEntrancey] = floatstr(arrCoords[1]);
-			HouseInfo[idx][hEntrancez] = floatstr(arrCoords[2]);
-			HouseInfo[idx][hExitx] = floatstr(arrCoords[3]);
-			HouseInfo[idx][hExity] = floatstr(arrCoords[4]);
-			HouseInfo[idx][hExitz] = floatstr(arrCoords[5]);
-			HouseInfo[idx][hHealthx] = strval(arrCoords[6]);
-			HouseInfo[idx][hHealthy] = strval(arrCoords[7]);
-			HouseInfo[idx][hHealthz] = strval(arrCoords[8]);
-			HouseInfo[idx][hArmourx] = strval(arrCoords[9]);
-			HouseInfo[idx][hArmoury] = strval(arrCoords[10]);
-			HouseInfo[idx][hArmourz] = strval(arrCoords[11]);
-			//printf("HouseInfo hEntrancez %f",HouseInfo[idx][hEntrancez]);
-			strmid(HouseInfo[idx][hOwner], arrCoords[12], 0, strlen(arrCoords[12]), 255);
-			strmid(HouseInfo[idx][hDiscription], arrCoords[13], 0, strlen(arrCoords[13]), 255);
-			HouseInfo[idx][hValue] = strval(arrCoords[14]);
-			HouseInfo[idx][hHel] = strval(arrCoords[15]);
-			HouseInfo[idx][hArm] = strval(arrCoords[16]);
-			HouseInfo[idx][hInt] = strval(arrCoords[17]);
-			HouseInfo[idx][hLock] = strval(arrCoords[18]);
-			HouseInfo[idx][hOwned] = strval(arrCoords[19]);
-			HouseInfo[idx][hRooms] = strval(arrCoords[20]);
-			HouseInfo[idx][hRent] = strval(arrCoords[21]);
-			HouseInfo[idx][hRentabil] = strval(arrCoords[22]);
-			HouseInfo[idx][hTakings] = strval(arrCoords[23]);
-			HouseInfo[idx][hVec] = strval(arrCoords[24]);
-  	        if(HouseInfo[idx][hVec] == 457)
-			{
-				HouseInfo[idx][hVec] = 411;
-			}
-			HouseInfo[idx][hVcol1] = strval(arrCoords[25]);
-			HouseInfo[idx][hVcol2] = strval(arrCoords[26]);
-			HouseInfo[idx][hDate] = strval(arrCoords[27]);
-			HouseInfo[idx][hLevel] = strval(arrCoords[28]);
-			HouseInfo[idx][hWorld] = strval(arrCoords[29]);
-
-			printf("HouseInfo:%d Owner:%s hTakings %d hVec %d",idx,HouseInfo[idx][hOwner],HouseInfo[idx][hTakings],HouseInfo[idx][hVec]);
-			idx++;
-		}
-		fclose(file);
-	}
-	return 1;
-}
-
-public LoadBizz()
-{
-	new arrCoords[19][64];
-	new strFromFile2[256];
-	new File: file = fopen("bizz.cfg", io_read);
-	if (file)
-	{
-		new idx;
-		while (idx < sizeof(BizzInfo))
-		{
-			fread(file, strFromFile2);
-			split(strFromFile2, arrCoords, '|');
-			BizzInfo[idx][bOwned] = strval(arrCoords[0]);
-			strmid(BizzInfo[idx][bOwner], arrCoords[1], 0, strlen(arrCoords[1]), 255);
-			strmid(BizzInfo[idx][bMessage], arrCoords[2], 0, strlen(arrCoords[2]), 255);
-			strmid(BizzInfo[idx][bExtortion], arrCoords[3], 0, strlen(arrCoords[3]), 255);
-			BizzInfo[idx][bEntranceX] = floatstr(arrCoords[4]);
-			BizzInfo[idx][bEntranceY] = floatstr(arrCoords[5]);
-			BizzInfo[idx][bEntranceZ] = floatstr(arrCoords[6]);
-			BizzInfo[idx][bExitX] = floatstr(arrCoords[7]);
-			BizzInfo[idx][bExitY] = floatstr(arrCoords[8]);
-			BizzInfo[idx][bExitZ] = floatstr(arrCoords[9]);
-			BizzInfo[idx][bLevelNeeded] = strval(arrCoords[10]);
-			BizzInfo[idx][bBuyPrice] = strval(arrCoords[11]);
-			BizzInfo[idx][bEntranceCost] = strval(arrCoords[12]);
-			BizzInfo[idx][bTill] = strval(arrCoords[13]);
-			BizzInfo[idx][bLocked] = strval(arrCoords[14]);
-			BizzInfo[idx][bInterior] = strval(arrCoords[15]);
-			BizzInfo[idx][bProducts] = strval(arrCoords[16]);
-			BizzInfo[idx][bMaxProducts] = strval(arrCoords[17]);
-			BizzInfo[idx][bPriceProd] = strval(arrCoords[18]);
-			printf("BizzInfo:%d Owner:%s Message:%s Entfee:%d Till:%d Products:%d/%d Interior:%d.\n",
-			idx,
-			BizzInfo[idx][bOwner],
-			BizzInfo[idx][bMessage],
-			BizzInfo[idx][bEntranceCost],
-			BizzInfo[idx][bTill],
-			BizzInfo[idx][bProducts],
-			BizzInfo[idx][bMaxProducts],
-			BizzInfo[idx][bInterior]);
-			idx++;
-		}
-		fclose(file);
-	}
-	return 1;
-}
-
-
-public LoadSBizz()
-{
-	new arrCoords[16][64];
-	new strFromFile2[256];
-	new File: file = fopen("sbizz.cfg", io_read);
-	if (file)
-	{
-		new idx;
-		while (idx < sizeof(SBizzInfo))
-		{
-			fread(file, strFromFile2);
-			split(strFromFile2, arrCoords, '|');
-			SBizzInfo[idx][sbOwned] = strval(arrCoords[0]);
-			strmid(SBizzInfo[idx][sbOwner], arrCoords[1], 0, strlen(arrCoords[1]), 255);
-			strmid(SBizzInfo[idx][sbMessage], arrCoords[2], 0, strlen(arrCoords[2]), 255);
-			strmid(SBizzInfo[idx][sbExtortion], arrCoords[3], 0, strlen(arrCoords[3]), 255);
-			SBizzInfo[idx][sbEntranceX] = floatstr(arrCoords[4]);
-			SBizzInfo[idx][sbEntranceY] = floatstr(arrCoords[5]);
-			SBizzInfo[idx][sbEntranceZ] = floatstr(arrCoords[6]);
-			SBizzInfo[idx][sbLevelNeeded] = strval(arrCoords[7]);
-			SBizzInfo[idx][sbBuyPrice] = strval(arrCoords[8]);
-			SBizzInfo[idx][sbEntranceCost] = strval(arrCoords[9]);
-			SBizzInfo[idx][sbTill] = strval(arrCoords[10]);
-			SBizzInfo[idx][sbLocked] = strval(arrCoords[11]);
-			SBizzInfo[idx][sbInterior] = strval(arrCoords[12]);
-			SBizzInfo[idx][sbProducts] = strval(arrCoords[13]);
-			SBizzInfo[idx][sbMaxProducts] = strval(arrCoords[14]);
-			SBizzInfo[idx][sbPriceProd] = strval(arrCoords[15]);
-			printf("SBizzInfo:%d Owner:%s Message:%s Entfee:%d Till:%d Products:%d/%d Interior:%d.\n",
-			idx,
-			SBizzInfo[idx][sbOwner],
-			SBizzInfo[idx][sbMessage],
-			SBizzInfo[idx][sbEntranceCost],
-			SBizzInfo[idx][sbTill],
-			SBizzInfo[idx][sbProducts],
-			SBizzInfo[idx][sbMaxProducts],
-			SBizzInfo[idx][sbInterior]);
-			idx++;
-		}
-		fclose(file);
-	}
-	return 1;
-}
-
 public SyncUp()
 {
 	SyncTime();
@@ -6638,24 +6762,6 @@ public SyncTime()
 		if (realtime)
 		{
 			SetWorldTime(tmphour);
-		}
-	}
-}
-
-public SaveAccounts()
-{
-    for(new i = 0; i < MAX_PLAYERS; i++)
-	{
-		if(IsPlayerConnected(i))
-		{
-			OnPlayerUpdate(i);
-			if(PlayerInfo[i][pJob] > 0)
-	    	{
-	    	    if(PlayerInfo[i][pContractTime] < 25)
-	    	    {
-					PlayerInfo[i][pContractTime] ++;
-				}
-	    	}
 		}
 	}
 }
@@ -9187,56 +9293,6 @@ public DrugFarmerExit(playerid)
 	return 1;
 }
 
-public LoadDrugSystem()
-{
-	new arrCoords[1][64];
-	new strFromFile2[256];
-	new File: file = fopen("drugs_system.ini", io_read);
-	if (file)
-	{
-		fread(file, strFromFile2);
-		split(strFromFile2, arrCoords, ',');
-		drugsys[DrugAmmount] = strval(arrCoords[0]);
-		fclose(file);
-	}
-	return 1;
-}
-
-public SaveDrugSystem()
-{
-	new coordsstring[256];
-	format(coordsstring, sizeof(coordsstring), "%d", drugsys[DrugAmmount]);
-	new File: file2 = fopen("drugs_system.ini", io_write);
-	fwrite(file2, coordsstring);
-	fclose(file2);
-	return 1;
-}
-
-public LoadMatsSystem()
-{
-	new arrCoords[1][64];
-	new strFromFile2[256];
-	new File: file = fopen("mats_system.ini", io_read);
-	if (file)
-	{
-		fread(file, strFromFile2);
-		split(strFromFile2, arrCoords, ',');
-		matssys[MatsAmmount] = strval(arrCoords[0]);
-		fclose(file);
-	}
-	return 1;
-}
-
-public SaveMatsSystem()
-{
-	new coordsstring[256];
-	format(coordsstring, sizeof(coordsstring), "%d", matssys[MatsAmmount]);
-	new File: file2 = fopen("mats_system.ini", io_write);
-	fwrite(file2, coordsstring);
-	fclose(file2);
-	return 1;
-}
-
 public LoadingDrugsForSmugglers(playerid)
 {
     new idcar = GetPlayerVehicleID(playerid);
@@ -9439,34 +9495,6 @@ public UnsetFirstSpawn(playerid)
 	FirstSpawn[playerid] = 0;
 }
 
-public LoadHQLocks()
-{
-	new arrCoords[4][64];
-	new strFromFile2[256];
-	new File: file = fopen("hq_locks.ini", io_read);
-	if (file)
-	{
-		fread(file, strFromFile2);
-		split(strFromFile2, arrCoords, ',');
-		hqlock[surlock] = strval(arrCoords[0]);
-		hqlock[luclock] = strval(arrCoords[1]);
-		hqlock[stlock] = strval(arrCoords[2]);
-		hqlock[iolock] = strval(arrCoords[3]);
-		fclose(file);
-	}
-	return 1;
-}
-
-public SaveHQLocks()
-{
-	new coordsstring[256];
-	format(coordsstring, sizeof(coordsstring), "%d,%d,%d,%d", hqlock[surlock], hqlock[luclock], hqlock[stlock], hqlock[iolock]);
-	new File: file2 = fopen("hq_locks.ini", io_write);
-	fwrite(file2, coordsstring);
-	fclose(file2);
-	return 1;
-}
-
 public ClearKnock(playerid)
 {
 	TogglePlayerControllable(playerid, 1);
@@ -9645,68 +9673,6 @@ stock CheckPlayerDistanceToVehicle(Float:radi, playerid, vehicleid)
 	    }
 	}
 	return 0;
-}
-
-public SaveTrunk()
-{
-	new idx;
-	new File: file2;
-	idx = 1;
-	while (idx < sizeof(CarInfo))
-	{
-		new coordsstring[256];
-		format(coordsstring, sizeof(coordsstring), "%i,%i,%i,%i,%i,%i,%i,%i,%i,%f\n",
-		vehTrunk[idx][1],
-		vehTrunkAmmo[idx][1],
-		vehTrunk[idx][2],
-		vehTrunkAmmo[idx][2],
-		vehTrunk[idx][3],
-		vehTrunkAmmo[idx][3],
-		vehTrunk[idx][4],
-		vehTrunkAmmo[idx][4],
-		vehTrunkCounter[idx],
-		vehTrunkArmour[idx]);
-		if(idx == 1)
-		{
-			file2 = fopen("trunk.cfg", io_write);
-		}
-		else
-		{
-			file2 = fopen("trunk.cfg", io_append);
-		}
-		fwrite(file2, coordsstring);
-		idx++;
-		fclose(file2);
-	}
-	return 1;
-}
-
-public LoadTrunk()
-{
-	new arrCoords[13][64];
-	new strFromFile2[256];
-	new File: file = fopen("trunk.cfg", io_read);
-	if (file)
-	{
-		new idx = 1;
-		while (idx < sizeof(CarInfo))
-		{
-		    fread(file, strFromFile2);
-		    split(strFromFile2, arrCoords, ',');
-		    vehTrunk[idx][1] = strval(arrCoords[0]);
-		    vehTrunkAmmo[idx][1] = strval(arrCoords[1]);
-		    vehTrunk[idx][2] = strval(arrCoords[2]);
-		    vehTrunkAmmo[idx][2] = strval(arrCoords[3]);
-		    vehTrunk[idx][3] = strval(arrCoords[4]);
-		    vehTrunkAmmo[idx][3] = strval(arrCoords[5]);
-		    vehTrunk[idx][4] = strval(arrCoords[6]);
-		    vehTrunkAmmo[idx][4] = strval(arrCoords[7]);
-		    vehTrunkCounter[idx] = strval(arrCoords[8]);
-		    vehTrunkArmour[idx] = floatstr(arrCoords[9]);
-		    idx++;
-		}
-	}
-	return 1;
 }
 
 public UpdateBurgerPositions()
