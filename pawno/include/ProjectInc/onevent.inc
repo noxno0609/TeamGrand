@@ -8245,9 +8245,8 @@ CMD:xoanote(playerid, params[])
 		}
 		new x_nr;
 		if (sscanf(params, "c", x_nr))
-			SendClientMessage(playerid, COLOR_WHITE, "Su dung: /xoanote [slot(1-5)]");
-			return 1;
-		}
+			return SendClientMessage(playerid, COLOR_WHITE, "Su dung: /xoanote [slot(1-5)]");
+
 		if (strcmp(x_nr, "1", true) == 0)
 		{
 			if (PlayerInfo[playerid][pNotes][0] == 1)
