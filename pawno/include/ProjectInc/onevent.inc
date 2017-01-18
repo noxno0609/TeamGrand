@@ -8245,78 +8245,19 @@ CMD:xoanote(playerid, params[])
 			return 1;
 		}
 		new x_nr;
-		if (sscanf(params, "c", x_nr))
+		if (sscanf(params, "i", x_nr))
 			return SendClientMessage(playerid, COLOR_WHITE, "Su dung: /xoanote [slot(1-5)]");
 
-		if (strcmp(x_nr, "1", true) == 0)
+		if (x_nr < 1 && x_nr > 5) return SendClientMessage(playerid, COLOR_GREY, "   Sai slot! ");
+		if (PlayerInfo[playerid][pNotes][x_nr-1] == 1)
 		{
-			if (PlayerInfo[playerid][pNotes][0] == 1)
-			{
-				strmid(PlayerInfo[playerid][pNote][0], "None", 0, strlen("None"), 255);
-				PlayerInfo[playerid][pNotes][0] = 0;
-				SendClientMessage(playerid, COLOR_WHITE, "Note (so 1) da duoc xoa thanh cong.");
-			}
-			else
-			{
-				SendClientMessage(playerid, COLOR_GREY, "   Ban khong co luu y o note 1 ! ");
-			}
-		}
-		else if (strcmp(x_nr, "2", true) == 0)
-		{
-			if (PlayerInfo[playerid][pNotes][1] == 1)
-			{
-				strmid(PlayerInfo[playerid][pNote][1], "None", 0, strlen("None"), 255);
-				PlayerInfo[playerid][pNotes][1] = 0;
-				SendClientMessage(playerid, COLOR_WHITE, "Note (so 2) da duoc xoa thanh cong.");
-			}
-			else
-			{
-				SendClientMessage(playerid, COLOR_GREY, "     Ban khong co luu y o note 2 ! ");
-			}
-		}
-		else if (strcmp(x_nr, "3", true) == 0)
-		{
-			if (PlayerInfo[playerid][pNotes][2] == 1)
-			{
-				strmid(PlayerInfo[playerid][pNote][2], "None", 0, strlen("None"), 255);
-				PlayerInfo[playerid][pNotes][2] = 0;
-				SendClientMessage(playerid, COLOR_WHITE, "Note (so 3) da duoc xoa thanh cong.");
-			}
-			else
-			{
-				SendClientMessage(playerid, COLOR_GREY, "    Ban khong co luu y o note 3! ");
-			}
-		}
-		else if (strcmp(x_nr, "4", true) == 0)
-		{
-			if (PlayerInfo[playerid][pNotes][3] == 1)
-			{
-				strmid(PlayerInfo[playerid][pNote][3], "None", 0, strlen("None"), 255);
-				PlayerInfo[playerid][pNotes][3] = 0;
-				SendClientMessage(playerid, COLOR_WHITE, "Note (so 4) da duoc xoa thanh cong .");
-			}
-			else
-			{
-				SendClientMessage(playerid, COLOR_GREY, "   Ban khong co luu y o note 4 ! ");
-			}
-		}
-		else if (strcmp(x_nr, "5", true) == 0)
-		{
-			if (PlayerInfo[playerid][pNotes][4] == 1)
-			{
-				strmid(PlayerInfo[playerid][pNote][4], "None", 0, strlen("None"), 255);
-				PlayerInfo[playerid][pNotes][4] = 0;
-				SendClientMessage(playerid, COLOR_WHITE, "Note (so 5) da duoc xoa thanh cong.");
-			}
-			else
-			{
-				SendClientMessage(playerid, COLOR_GREY, "    Ban khong co luu y o note 5 ! ");
-			}
+			strmid(PlayerInfo[playerid][pNote][x_nr - 1], "None", 0, strlen("None"), 255);
+			PlayerInfo[playerid][pNotes][x_nr - 1] = 0;
+			SendClientMessage(playerid, COLOR_WHITE, "Note %d da duoc xoa thanh cong.", x_nr);
 		}
 		else
 		{
-			SendClientMessage(playerid, COLOR_GREY, "   Sai slot! ");
-			return 1;
+			SendClientMessage(playerid, COLOR_GREY, "   Ban khong co luu y o note 1 ! ");
 		}
 	}
 	return 1;
@@ -8330,69 +8271,22 @@ CMD:themnote(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREY, "    Ban can phai dang nhap truoc. ! ");
 			return 1;
 		}
-		new length = strlen(cmdtext);
-		while ((idx < length) && (cmdtext[idx] <= ' '))
+		
+		new result[64], string[128];
+		if(sscanf(params, "s", result))
+			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung lenh: /themnote [text]");
+
+		for (new i = 0; i < 5; i++)
 		{
-			idx++;
+			if (PlayerInfo[playerid][pNotes][i] == 0)
+			{
+				strmid(PlayerInfo[playerid][pNote][i], result, 0, strlen(result), 255);
+				PlayerInfo[playerid][pNotes][i] = 1;
+				SendClientMessage(playerid, COLOR_WHITE, "Them note thanh cong.");
+				return 1;
+			}
 		}
-		new offset = idx;
-		new result[64];
-		while ((idx < length) && ((idx - offset) < (sizeof(result)-1)))
-		{
-			result[idx - offset] = cmdtext[idx];
-			idx++;
-		}
-		result[idx - offset] = EOS;
-		if (length > 60)
-		{
-			SendClientMessage(playerid, COLOR_GREY, "    Luu y qua dai! ");
-			return 1;
-		}
-		if (!strlen(result))
-		{
-			SendClientMessage(playerid, COLOR_GRAD2, "Su dung lenh: /themnote [text]");
-			return 1;
-		}
-		if (PlayerInfo[playerid][pNotes][0] == 0)
-		{
-			strmid(PlayerInfo[playerid][pNote][0], result, 0, strlen(result), 255);
-			PlayerInfo[playerid][pNotes][0] = 1;
-			SendClientMessage(playerid, COLOR_WHITE, "Them note thanh cong.");
-			return 1;
-		}
-		else if (PlayerInfo[playerid][pNotes][1] == 0)
-		{
-			strmid(PlayerInfo[playerid][pNote][1], result, 0, strlen(result), 255);
-			PlayerInfo[playerid][pNotes][1] = 1;
-			SendClientMessage(playerid, COLOR_WHITE, "Them note thanh cong.");
-			return 1;
-		}
-		else if (PlayerInfo[playerid][pNotes][2] == 0)
-		{
-			strmid(PlayerInfo[playerid][pNote][2], result, 0, strlen(result), 255);
-			PlayerInfo[playerid][pNotes][2] = 1;
-			SendClientMessage(playerid, COLOR_WHITE, "Them note thanh cong.");
-			return 1;
-		}
-		else if (PlayerInfo[playerid][pNotes][3] == 0)
-		{
-			strmid(PlayerInfo[playerid][pNote][3], result, 0, strlen(result), 255);
-			PlayerInfo[playerid][pNotes][3] = 1;
-			SendClientMessage(playerid, COLOR_WHITE, "Them note thanh cong.");
-			return 1;
-		}
-		else if (PlayerInfo[playerid][pNotes][4] == 0)
-		{
-			strmid(PlayerInfo[playerid][pNote][4], result, 0, strlen(result), 255);
-			PlayerInfo[playerid][pNotes][4] = 1;
-			SendClientMessage(playerid, COLOR_WHITE, "Them note thanh cong.");
-			return 1;
-		}
-		else
-		{
-			SendClientMessage(playerid, COLOR_GREY, "    Ban khong con trang tron de them note ! ");
-			return 1;
-		}
+		SendClientMessage(playerid, COLOR_GREY, "    Ban khong con trang trong de them note ! ");
 	}
 	return 1;
 }
@@ -8405,13 +8299,12 @@ CMD:duanote(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREY, "    Ban can phai dang nhap truoc. ! ");
 			return 1;
 		}
-		tmp = strtok(cmdtext, idx);
-		if (!strlen(tmp))
-		{
-			SendClientMessage(playerid, COLOR_WHITE, "Su dung: /duanote [playerid/PartOfName] [Slot note]");
-			return 1;
-		}
-		giveplayerid = ReturnUser(tmp);
+		new x_nr, giveplayerid, giveplayer[50], string[256];
+		if (sscanf(params, "ui", giveplayerid, x_nr))
+			return SendClientMessage(playerid, COLOR_WHITE, "Su dung: /duanote [playerid/PartOfName] [Slot note]");
+
+		if (x_nr <1 || x_nr > 5) return SendClientMessage(playerid, COLOR_GREY, "   Sai id note ! ");
+
 		if (IsPlayerConnected(giveplayerid))
 		{
 			if (giveplayerid != INVALID_PLAYER_ID)
@@ -8423,373 +8316,28 @@ CMD:duanote(playerid, params[])
 					SendClientMessage(playerid, COLOR_GREY, "    Nguoi choi do khong gan ban ! ");
 					return 1;
 				}
-				new x_nr[64];
-				x_nr = strtok(cmdtext, idx);
-				if (!strlen(x_nr))
+				if (PlayerInfo[playerid][pNotes][x_nr-1] == 0)
 				{
-					SendClientMessage(playerid, COLOR_WHITE, "Su dung lenh: /duanote [playerid/PartOfName] [Slot note");
-					return 1;
+					format(string, sizeof(string), "   Ban khong co luu y o note %d ! ", x_nr);
+					return SendClientMessage(playerid, COLOR_GREY, string);
 				}
-				if (strcmp(x_nr, "1", true) == 0)
+
+				for (new i = 0; i < 5; i++)
 				{
-					if (PlayerInfo[playerid][pNotes][0] == 1)
+					if (PlayerInfo[giveplayerid][pNotes][i] == 0)
 					{
-						if (PlayerInfo[giveplayerid][pNotes][0] == 0)
-						{
-							strmid(PlayerInfo[giveplayerid][pNote][0], PlayerInfo[playerid][pNote][0], 0, strlen(PlayerInfo[playerid][pNote][0]), 255);
-							PlayerInfo[giveplayerid][pNotes][0] = 1;
-							
-							GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
-							format(string, sizeof(string), "Ban da gui note cho[ID:%d] %s.", giveplayerid, giveplayer);
-							SendClientMessage(playerid, COLOR_WHITE, string);
-							format(string, sizeof(string), "Ban nhan duoc mot note tu [ID:%d] %s.", playerid, GN(playerid));
-							SendClientMessage(giveplayerid, COLOR_WHITE, string);
-						}
-						else if (PlayerInfo[giveplayerid][pNotes][1] == 0)
-						{
-							strmid(PlayerInfo[giveplayerid][pNote][1], PlayerInfo[playerid][pNote][0], 0, strlen(PlayerInfo[playerid][pNote][0]), 255);
-							PlayerInfo[giveplayerid][pNotes][1] = 1;
-							
-							GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
-							format(string, sizeof(string), "Ban da gui note cho [ID:%d] %s.", giveplayerid, giveplayer);
-							SendClientMessage(playerid, COLOR_WHITE, string);
-							format(string, sizeof(string), "Ban da nhan duoc mot note tu [ID:%d] %s.", playerid, GN(playerid));
-							SendClientMessage(giveplayerid, COLOR_WHITE, string);
-						}
-						else if (PlayerInfo[giveplayerid][pNotes][2] == 0)
-						{
-							strmid(PlayerInfo[giveplayerid][pNote][2], PlayerInfo[playerid][pNote][0], 0, strlen(PlayerInfo[playerid][pNote][0]), 255);
-							PlayerInfo[giveplayerid][pNotes][2] = 1;
-							
-							GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
-							format(string, sizeof(string), "Ban da gui note cho [ID:%d] %s.", giveplayerid, giveplayer);
-							SendClientMessage(playerid, COLOR_WHITE, string);
-							format(string, sizeof(string), "Ban da nhan duoc mot note tu [ID:%d] %s.", playerid, GN(playerid));
-							SendClientMessage(giveplayerid, COLOR_WHITE, string);
-						}
-						else if (PlayerInfo[giveplayerid][pNotes][3] == 0)
-						{
-							strmid(PlayerInfo[giveplayerid][pNote][3], PlayerInfo[playerid][pNote][0], 0, strlen(PlayerInfo[playerid][pNote][0]), 255);
-							PlayerInfo[giveplayerid][pNotes][3] = 1;
-							
-							GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
-							format(string, sizeof(string), "Ban da gui note cho [ID:%d] %s.", giveplayerid, giveplayer);
-							SendClientMessage(playerid, COLOR_WHITE, string);
-							format(string, sizeof(string), "Ban da nhan duoc mot note tu [ID:%d] %s.", playerid, GN(playerid));
-							SendClientMessage(giveplayerid, COLOR_WHITE, string);
-						}
-						else if (PlayerInfo[giveplayerid][pNotes][4] == 0)
-						{
-							strmid(PlayerInfo[giveplayerid][pNote][4], PlayerInfo[playerid][pNote][0], 0, strlen(PlayerInfo[playerid][pNote][0]), 255);
-							PlayerInfo[giveplayerid][pNotes][4] = 1;
-							
-							GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
-							format(string, sizeof(string), "Ban da gui note cho [ID:%d] %s.", giveplayerid, giveplayer);
-							SendClientMessage(playerid, COLOR_WHITE, string);
-							format(string, sizeof(string), "Ban nhan duoc mot note tu[ID:%d] %s.", playerid, GN(playerid));
-							SendClientMessage(giveplayerid, COLOR_WHITE, string);
-						}
-						else
-						{
-							SendClientMessage(playerid, COLOR_GREY, "    Notebook nguoi do da day ! ");
-							return 1;
-						}
-					}
-					else
-					{
-						SendClientMessage(playerid, COLOR_GREY, "   Ban khong co luu y o note 1 ! ");
+						strmid(PlayerInfo[giveplayerid][pNote][i], PlayerInfo[playerid][pNote][i], 0, strlen(PlayerInfo[playerid][pNote][i]), 255);
+						PlayerInfo[giveplayerid][pNotes][i] = 1;
+
+						GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
+						format(string, sizeof(string), "Ban da gui note cho[ID:%d] %s.", giveplayerid, giveplayer);
+						SendClientMessage(playerid, COLOR_WHITE, string);
+						format(string, sizeof(string), "Ban nhan duoc mot note tu [ID:%d] %s.", playerid, GN(playerid));
+						SendClientMessage(giveplayerid, COLOR_WHITE, string);
 						return 1;
 					}
 				}
-				else if (strcmp(x_nr, "2", true) == 0)
-				{
-					if (PlayerInfo[playerid][pNotes][1] == 1)
-					{
-						if (PlayerInfo[giveplayerid][pNotes][0] == 0)
-						{
-							strmid(PlayerInfo[giveplayerid][pNote][0], PlayerInfo[playerid][pNote][1], 0, strlen(PlayerInfo[playerid][pNote][1]), 255);
-							PlayerInfo[giveplayerid][pNotes][0] = 1;
-							
-							GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
-							format(string, sizeof(string), "Ban da gui note cho [ID:%d] %s.", giveplayerid, giveplayer);
-							SendClientMessage(playerid, COLOR_WHITE, string);
-							format(string, sizeof(string), "Ban nhan duoc mot note tu [ID:%d] %s.", playerid, GN(playerid));
-							SendClientMessage(giveplayerid, COLOR_WHITE, string);
-						}
-						else if (PlayerInfo[giveplayerid][pNotes][1] == 0)
-						{
-							strmid(PlayerInfo[giveplayerid][pNote][1], PlayerInfo[playerid][pNote][1], 0, strlen(PlayerInfo[playerid][pNote][1]), 255);
-							PlayerInfo[giveplayerid][pNotes][1] = 1;
-							
-							GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
-							format(string, sizeof(string), "Ban da gui note cho [ID:%d] %s.", giveplayerid, giveplayer);
-							SendClientMessage(playerid, COLOR_WHITE, string);
-							format(string, sizeof(string), "Ban nhan duoc mot note tu [ID:%d] %s.", playerid, GN(playerid));
-							SendClientMessage(giveplayerid, COLOR_WHITE, string);
-						}
-						else if (PlayerInfo[giveplayerid][pNotes][2] == 0)
-						{
-							strmid(PlayerInfo[giveplayerid][pNote][2], PlayerInfo[playerid][pNote][1], 0, strlen(PlayerInfo[playerid][pNote][1]), 255);
-							PlayerInfo[giveplayerid][pNotes][2] = 1;
-							
-							GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
-							format(string, sizeof(string), "Ban da gui note cho [ID:%d] %s.", giveplayerid, giveplayer);
-							SendClientMessage(playerid, COLOR_WHITE, string);
-							format(string, sizeof(string), "Ban nhan duoc mot note tu [ID:%d] %s.", playerid, GN(playerid));
-							SendClientMessage(giveplayerid, COLOR_WHITE, string);
-						}
-						else if (PlayerInfo[giveplayerid][pNotes][3] == 0)
-						{
-							strmid(PlayerInfo[giveplayerid][pNote][3], PlayerInfo[playerid][pNote][1], 0, strlen(PlayerInfo[playerid][pNote][1]), 255);
-							PlayerInfo[giveplayerid][pNotes][3] = 1;
-							
-							GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
-							format(string, sizeof(string), "Ban da gui note cho [ID:%d] %s.", giveplayerid, giveplayer);
-							SendClientMessage(playerid, COLOR_WHITE, string);
-							format(string, sizeof(string), "Ban nhan duoc mot note tu [ID:%d] %s.", playerid, GN(playerid));
-							SendClientMessage(giveplayerid, COLOR_WHITE, string);
-						}
-						else if (PlayerInfo[giveplayerid][pNotes][4] == 0)
-						{
-							strmid(PlayerInfo[giveplayerid][pNote][4], PlayerInfo[playerid][pNote][1], 0, strlen(PlayerInfo[playerid][pNote][1]), 255);
-							PlayerInfo[giveplayerid][pNotes][4] = 1;
-							
-							GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
-							format(string, sizeof(string), "Ban da gui note cho [ID:%d] %s.", giveplayerid, giveplayer);
-							SendClientMessage(playerid, COLOR_WHITE, string);
-							format(string, sizeof(string), "Ban da nhan duoc mot note tu [ID:%d] %s.", playerid, GN(playerid));
-							SendClientMessage(giveplayerid, COLOR_WHITE, string);
-						}
-						else
-						{
-							SendClientMessage(playerid, COLOR_GREY, "   Notebook nguoi do da day ! ");
-							return 1;
-						}
-					}
-					else
-					{
-						SendClientMessage(playerid, COLOR_GREY, "   Ban khong co luu y o note 2 ! ");
-						return 1;
-					}
-				}
-				else if (strcmp(x_nr, "3", true) == 0)
-				{
-					if (PlayerInfo[playerid][pNotes][2] == 1)
-					{
-						if (PlayerInfo[giveplayerid][pNotes][0] == 0)
-						{
-							strmid(PlayerInfo[giveplayerid][pNote][0], PlayerInfo[playerid][pNote][2], 0, strlen(PlayerInfo[playerid][pNote][2]), 255);
-							PlayerInfo[giveplayerid][pNotes][0] = 1;
-							
-							GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
-							format(string, sizeof(string), "Ban da gui note cho [ID:%d] %s.", giveplayerid, giveplayer);
-							SendClientMessage(playerid, COLOR_WHITE, string);
-							format(string, sizeof(string), "Ban nhan duoc mot note tu [ID:%d] %s.", playerid, GN(playerid));
-							SendClientMessage(giveplayerid, COLOR_WHITE, string);
-						}
-						else if (PlayerInfo[giveplayerid][pNotes][1] == 0)
-						{
-							strmid(PlayerInfo[giveplayerid][pNote][1], PlayerInfo[playerid][pNote][2], 0, strlen(PlayerInfo[playerid][pNote][2]), 255);
-							PlayerInfo[giveplayerid][pNotes][1] = 1;
-							
-							GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
-							format(string, sizeof(string), "Ban da gui note cho [ID:%d] %s.", giveplayerid, giveplayer);
-							SendClientMessage(playerid, COLOR_WHITE, string);
-							format(string, sizeof(string), "Ban nhan duoc mot note tu [ID:%d] %s.", playerid, GN(playerid));
-							SendClientMessage(giveplayerid, COLOR_WHITE, string);
-						}
-						else if (PlayerInfo[giveplayerid][pNotes][2] == 0)
-						{
-							strmid(PlayerInfo[giveplayerid][pNote][2], PlayerInfo[playerid][pNote][2], 0, strlen(PlayerInfo[playerid][pNote][2]), 255);
-							PlayerInfo[giveplayerid][pNotes][2] = 1;
-							
-							GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
-							format(string, sizeof(string), "Ban da gui note cho [ID:%d] %s.", giveplayerid, giveplayer);
-							SendClientMessage(playerid, COLOR_WHITE, string);
-							format(string, sizeof(string), "Ban nhan duoc mot note tu [ID:%d] %s.", playerid, GN(playerid));
-							SendClientMessage(giveplayerid, COLOR_WHITE, string);
-						}
-						else if (PlayerInfo[giveplayerid][pNotes][3] == 0)
-						{
-							strmid(PlayerInfo[giveplayerid][pNote][3], PlayerInfo[playerid][pNote][3], 0, strlen(PlayerInfo[playerid][pNote][3]), 255);
-							PlayerInfo[giveplayerid][pNotes][3] = 1;
-							
-							GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
-							format(string, sizeof(string), "Ban da gui note cho [ID:%d] %s.", giveplayerid, giveplayer);
-							SendClientMessage(playerid, COLOR_WHITE, string);
-							format(string, sizeof(string), "Ban nhan duoc mot note tu [ID:%d] %s.", playerid, GN(playerid));
-							SendClientMessage(giveplayerid, COLOR_WHITE, string);
-						}
-						else if (PlayerInfo[giveplayerid][pNotes][4] == 0)
-						{
-							strmid(PlayerInfo[giveplayerid][pNote][4], PlayerInfo[playerid][pNote][4], 0, strlen(PlayerInfo[playerid][pNote][4]), 255);
-							PlayerInfo[giveplayerid][pNotes][4] = 1;
-							
-							GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
-							format(string, sizeof(string), "Ban da gui note cho [ID:%d] %s.", giveplayerid, giveplayer);
-							SendClientMessage(playerid, COLOR_WHITE, string);
-							format(string, sizeof(string), "Ban nhan duoc mot note tu [ID:%d] %s.", playerid, GN(playerid));
-							SendClientMessage(giveplayerid, COLOR_WHITE, string);
-						}
-						else
-						{
-							SendClientMessage(playerid, COLOR_GREY, "    Notebook nguoi do da day ! ");
-							return 1;
-						}
-					}
-					else
-					{
-						SendClientMessage(playerid, COLOR_GREY, "    Ban khong co luu y o note 3 ! ");
-						return 1;
-					}
-				}
-				else if (strcmp(x_nr, "4", true) == 0)
-				{
-					if (PlayerInfo[playerid][pNotes][3] == 1)
-					{
-						if (PlayerInfo[giveplayerid][pNotes][0] == 0)
-						{
-							strmid(PlayerInfo[giveplayerid][pNote][0], PlayerInfo[playerid][pNote][3], 0, strlen(PlayerInfo[playerid][pNote][3]), 255);
-							PlayerInfo[giveplayerid][pNotes][0] = 1;
-							
-							GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
-							format(string, sizeof(string), "Ban da gui note cho [ID:%d] %s.", giveplayerid, giveplayer);
-							SendClientMessage(playerid, COLOR_WHITE, string);
-							format(string, sizeof(string), "Ban nhan duoc mot note tu [ID:%d] %s.", playerid, GN(playerid));
-							SendClientMessage(giveplayerid, COLOR_WHITE, string);
-						}
-						else if (PlayerInfo[giveplayerid][pNotes][1] == 0)
-						{
-							strmid(PlayerInfo[giveplayerid][pNote][1], PlayerInfo[playerid][pNote][3], 0, strlen(PlayerInfo[playerid][pNote][3]), 255);
-							PlayerInfo[giveplayerid][pNotes][1] = 1;
-							
-							GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
-							format(string, sizeof(string), "Ban da gui note cho [ID:%d] %s.", giveplayerid, giveplayer);
-							SendClientMessage(playerid, COLOR_WHITE, string);
-							format(string, sizeof(string), "Ban nhan duoc mot note tu [ID:%d] %s.", playerid, GN(playerid));
-							SendClientMessage(giveplayerid, COLOR_WHITE, string);
-						}
-						else if (PlayerInfo[giveplayerid][pNotes][2] == 0)
-						{
-							strmid(PlayerInfo[giveplayerid][pNote][2], PlayerInfo[playerid][pNote][3], 0, strlen(PlayerInfo[playerid][pNote][3]), 255);
-							PlayerInfo[giveplayerid][pNotes][2] = 1;
-							
-							GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
-							format(string, sizeof(string), "Ban da gui note cho [ID:%d] %s.", giveplayerid, giveplayer);
-							SendClientMessage(playerid, COLOR_WHITE, string);
-							format(string, sizeof(string), "Ban nhan duoc mot note tu [ID:%d] %s.", playerid, GN(playerid));
-							SendClientMessage(giveplayerid, COLOR_WHITE, string);
-						}
-						else if (PlayerInfo[giveplayerid][pNotes][3] == 0)
-						{
-							strmid(PlayerInfo[giveplayerid][pNote][3], PlayerInfo[playerid][pNote][3], 0, strlen(PlayerInfo[playerid][pNote][3]), 255);
-							PlayerInfo[giveplayerid][pNotes][3] = 1;
-							
-							GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
-							format(string, sizeof(string), "Ban da gui note cho [ID:%d] %s.", giveplayerid, giveplayer);
-							SendClientMessage(playerid, COLOR_WHITE, string);
-							format(string, sizeof(string), "Ban nhan duoc mot note tu [ID:%d] %s.", playerid, GN(playerid));
-							SendClientMessage(giveplayerid, COLOR_WHITE, string);
-						}
-						else if (PlayerInfo[giveplayerid][pNotes][4] == 0)
-						{
-							strmid(PlayerInfo[giveplayerid][pNote][4], PlayerInfo[playerid][pNote][3], 0, strlen(PlayerInfo[playerid][pNote][3]), 255);
-							PlayerInfo[giveplayerid][pNotes][4] = 1;
-							
-							GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
-							format(string, sizeof(string), "Ban da gui note cho [ID:%d] %s.", giveplayerid, giveplayer);
-							SendClientMessage(playerid, COLOR_WHITE, string);
-							format(string, sizeof(string), "Ban da nhan duoc mot note tu [ID:%d] %s.", playerid, GN(playerid));
-							SendClientMessage(giveplayerid, COLOR_WHITE, string);
-						}
-						else
-						{
-							SendClientMessage(playerid, COLOR_GREY, "    Notebook nguoi do da day ! ");
-							return 1;
-						}
-					}
-					else
-					{
-						SendClientMessage(playerid, COLOR_GREY, "    Ban khong co luu y o note 4 ! ");
-						return 1;
-					}
-				}
-				else if (strcmp(x_nr, "5", true) == 0)
-				{
-					if (PlayerInfo[playerid][pNotes][4] == 1)
-					{
-						if (PlayerInfo[giveplayerid][pNotes][0] == 0)
-						{
-							strmid(PlayerInfo[giveplayerid][pNote][0], PlayerInfo[playerid][pNote][4], 0, strlen(PlayerInfo[playerid][pNote][4]), 255);
-							PlayerInfo[giveplayerid][pNotes][0] = 1;
-							
-							GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
-							format(string, sizeof(string), "Ban da gui note cho [ID:%d] %s.", giveplayerid, giveplayer);
-							SendClientMessage(playerid, COLOR_WHITE, string);
-							format(string, sizeof(string), "Ban nhan duoc mot note tu [ID:%d] %s.", playerid, GN(playerid));
-							SendClientMessage(giveplayerid, COLOR_WHITE, string);
-						}
-						else if (PlayerInfo[giveplayerid][pNotes][1] == 0)
-						{
-							strmid(PlayerInfo[giveplayerid][pNote][1], PlayerInfo[playerid][pNote][4], 0, strlen(PlayerInfo[playerid][pNote][4]), 255);
-							PlayerInfo[giveplayerid][pNotes][1] = 1;
-							
-							GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
-							format(string, sizeof(string), "Ban da gui note cho [ID:%d] %s.", giveplayerid, giveplayer);
-							SendClientMessage(playerid, COLOR_WHITE, string);
-							format(string, sizeof(string), "Ban nhan duoc mot note tu [ID:%d] %s.", playerid, GN(playerid));
-							SendClientMessage(giveplayerid, COLOR_WHITE, string);
-						}
-						else if (PlayerInfo[giveplayerid][pNotes][2] == 0)
-						{
-							strmid(PlayerInfo[giveplayerid][pNote][2], PlayerInfo[playerid][pNote][4], 0, strlen(PlayerInfo[playerid][pNote][4]), 255);
-							PlayerInfo[giveplayerid][pNotes][2] = 1;
-							
-							GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
-							format(string, sizeof(string), "Ban da gui note cho [ID:%d] %s.", giveplayerid, giveplayer);
-							SendClientMessage(playerid, COLOR_WHITE, string);
-							format(string, sizeof(string), "Ban nhan duoc mot note tu [ID:%d] %s.", playerid, GN(playerid));
-							SendClientMessage(giveplayerid, COLOR_WHITE, string);
-						}
-						else if (PlayerInfo[giveplayerid][pNotes][3] == 0)
-						{
-							strmid(PlayerInfo[giveplayerid][pNote][3], PlayerInfo[playerid][pNote][4], 0, strlen(PlayerInfo[playerid][pNote][4]), 255);
-							PlayerInfo[giveplayerid][pNotes][3] = 1;
-							
-							GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
-							format(string, sizeof(string), "Ban da gui note cho [ID:%d] %s.", giveplayerid, giveplayer);
-							SendClientMessage(playerid, COLOR_WHITE, string);
-							format(string, sizeof(string), "Ban da nhan duoc mot note tu [ID:%d] %s.", playerid, GN(playerid));
-							SendClientMessage(giveplayerid, COLOR_WHITE, string);
-						}
-						else if (PlayerInfo[giveplayerid][pNotes][4] == 0)
-						{
-							strmid(PlayerInfo[giveplayerid][pNote][4], PlayerInfo[playerid][pNote][4], 0, strlen(PlayerInfo[playerid][pNote][4]), 255);
-							PlayerInfo[giveplayerid][pNotes][4] = 1;
-							
-							GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
-							format(string, sizeof(string), "Ban da gui note cho [ID:%d] %s.", giveplayerid, giveplayer);
-							SendClientMessage(playerid, COLOR_WHITE, string);
-							format(string, sizeof(string), "Ban nhan duoc mot note tu [ID:%d] %s.", playerid, GN(playerid));
-							SendClientMessage(giveplayerid, COLOR_WHITE, string);
-						}
-						else
-						{
-							SendClientMessage(playerid, COLOR_GREY, "    Notebook nguoi do da day ! ");
-							return 1;
-						}
-					}
-					else
-					{
-						SendClientMessage(playerid, COLOR_GREY, "    Ban khong co luu y o note 5 ! ");
-						return 1;
-					}
-				}
-				else
-				{
-					SendClientMessage(playerid, COLOR_GREY, "   Sai id note ! ");
-					return 1;
-				}
+				SendClientMessage(playerid, COLOR_GREY, "    Notebook nguoi do da day ! ");
 			}
 		}
 	}
@@ -8806,13 +8354,10 @@ CMD:govinvite(playerid, params[])
 		}
 		if (PlayerInfo[playerid][pLeader] == 7)
 		{
-			tmp = strtok(cmdtext, idx);
-			if (!strlen(tmp))
-			{
-				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /govinvite [playerid/PartOfName]");
-				return 1;
-			}
-			giveplayerid = ReturnUser(tmp);
+			new giveplayerid, giveplayer[50], string[256];
+			if (sscanf(params, "u", giveplayerid))
+				return SendClientMessage(playerid, COLOR_WHITE, "Su dung: /govinvite [playerid/PartOfName]");
+
 			if (IsPlayerConnected(giveplayerid))
 			{
 				if (giveplayerid != INVALID_PLAYER_ID)
@@ -8855,13 +8400,10 @@ CMD:govuninvite(playerid, params[])
 		}
 		if (PlayerInfo[playerid][pLeader] == 7)
 		{
-			tmp = strtok(cmdtext, idx);
-			if (!strlen(tmp))
-			{
-				SendClientMessage(playerid, COLOR_WHITE, "Su dung lenh: /govuninvite [playerid/PartOfName]");
-				return 1;
-			}
-			giveplayerid = ReturnUser(tmp);
+			new giveplayerid, giveplayer[50], string[256];
+			if (sscanf(params, "u", giveplayerid))
+				return SendClientMessage(playerid, COLOR_WHITE, "Su dung lenh: /govuninvite [playerid/PartOfName]");
+
 			if (IsPlayerConnected(giveplayerid))
 			{
 				if (giveplayerid != INVALID_PLAYER_ID)
@@ -8908,14 +8450,13 @@ CMD:setrole(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREY, "  You're not the mayor ! ");
 			return 1;
 		}
-		tmp = strtok(cmdtext, idx);
-		if (!strlen(tmp))
+		new giveplayerid, giveplayer[50], string[256], x_nr[64];
+		if (sscanf(params, "u", giveplayerid))
 		{
 			SendClientMessage(playerid, COLOR_WHITE, "Su dung: /setrole [playerid/PartOfName] [role name]");
 			SendClientMessage(playerid, COLOR_WHITE, "Available names: driver, bodyguard");
 			return 1;
 		}
-		giveplayerid = ReturnUser(tmp);
 		if (IsPlayerConnected(giveplayerid))
 		{
 			if (giveplayerid != INVALID_PLAYER_ID)
@@ -8923,14 +8464,6 @@ CMD:setrole(playerid, params[])
 				if (PlayerInfo[giveplayerid][pMember] != 7)
 				{
 					SendClientMessage(playerid, COLOR_GREY, "   Player is not in your organisation ! ");
-					return 1;
-				}
-				new x_nr[64];
-				x_nr = strtok(cmdtext, idx);
-				if (!strlen(x_nr))
-				{
-					SendClientMessage(playerid, COLOR_WHITE, "Su dung: /setrole [playerid/PartOfName] [role name]");
-					SendClientMessage(playerid, COLOR_WHITE, "Available names: driver, bodyguard");
 					return 1;
 				}
 				if (strcmp(x_nr, "driver", true) == 0)
@@ -8963,7 +8496,7 @@ CMD:gocua(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
-		
+		new string[256];
 		for (new i = 0; i < sizeof(HouseInfo); i++)
 		{
 			if (PlayerToPoint(3, playerid, HouseInfo[i][hEntrancex], HouseInfo[i][hEntrancey], HouseInfo[i][hEntrancez]))
@@ -9038,7 +8571,7 @@ CMD:inv(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREY, "   Ban chua dang nhap ! ");
 			return 1;
 		}
-		new gunname[100];
+		new gunname[100], string[256];
 		GetWeaponName(PlayerInfo[playerid][pInvWeapon], gunname, sizeof(gunname));
 		SendClientMessage(playerid, COLOR_LIGHT_BLUE, "__________ Inventory __________");
 		if (PlayerInfo[playerid][pInvWeapon] != 0 && PlayerInfo[playerid][pInvAmmo] != 0)
@@ -9059,6 +8592,7 @@ CMD:takegun(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
+		new string[256];
 		if (gPlayerLogged[playerid] == 0)
 		{
 			SendClientMessage(playerid, COLOR_GREY, "   Ban chua dang nhap ! ");
@@ -9112,6 +8646,7 @@ CMD:putgun(playerid, params[])
 
 		new gunID = GetPlayerWeapon(playerid);
 		new gunAmmo = GetPlayerAmmo(playerid);
+		new string[256]
 
 		if (gunID != 0 && gunAmmo != 0)
 		{
@@ -9142,13 +8677,10 @@ CMD:checkweapons(playerid, params[])
 		SendClientMessage(playerid, COLOR_GREY, "Ban khong co quyen nay");
 		return 1;
 	}
-	tmp = strtok(cmdtext, idx);
-	if (!strlen(tmp))
-	{
-		SendClientMessage(playerid, COLOR_GREY, "Su dung: /checkweapons [playerid/partOfName]");
-		return 1;
-	}
-	giveplayerid = ReturnUser(tmp);
+	new giveplayerid, giveplayer[50], string[256];
+	if (sscanf(params, "u", giveplayerid))
+		return SendClientMessage(playerid, COLOR_GREY, "Su dung: /checkweapons [playerid/partOfName]");
+
 	if (giveplayerid == INVALID_PLAYER_ID)
 	{
 		SendClientMessage(playerid, COLOR_GREY, "Nguoi choi nay khong ton tai");
@@ -9178,9 +8710,8 @@ CMD:v(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREY, "   Ban chua dang nhap ! ");
 			return 1;
 		}
-		new x_nr[64];
-		x_nr = strtok(cmdtext, idx);
-		if (!strlen(x_nr))
+		new x_nr[64], string[256], giveplayerid, giveplayer[50], playername[50];
+		if(sscanf(params, "s", x_nr))
 		{
 			SendClientMessage(playerid, COLOR_WHITE, "Meo: (/v)ehicle [name]");
 			SendClientMessage(playerid, COLOR_WHITE, "Available names: park, lock(1-3), sell, sellto, color");
@@ -9249,7 +8780,7 @@ CMD:v(playerid, params[])
 		{
 			if (GetPlayerVehicleID(playerid) == PlayerInfo[playerid][pPcarkey][0] || GetPlayerVehicleID(playerid) == PlayerInfo[playerid][pPcarkey][1] || GetPlayerVehicleID(playerid) == PlayerInfo[playerid][pPcarkey][2])
 			{
-				
+				new price;
 				new ownvehkey;
 				if (GetPlayerVehicleID(playerid) == PlayerInfo[playerid][pPcarkey][0]) { ownvehkey = PlayerInfo[playerid][pPcarkey][0]; }
 				else if (GetPlayerVehicleID(playerid) == PlayerInfo[playerid][pPcarkey][1]) { ownvehkey = PlayerInfo[playerid][pPcarkey][1]; }
@@ -9257,13 +8788,9 @@ CMD:v(playerid, params[])
 				else { return 1; }
 				if (strcmp(GN(playerid), CarInfo[ownvehkey][cOwner], true) == 0)
 				{
-					tmp = strtok(cmdtext, idx);
-					if (!strlen(tmp))
-					{
-						SendClientMessage(playerid, COLOR_WHITE, "Meo: /v sellto [playerid/PartOfName] [price]");
-						return 1;
-					}
-					giveplayerid = ReturnUser(tmp);
+					if (sscanf(params, "sui", x_nr, giveplayerid, price))
+						return SendClientMessage(playerid, COLOR_WHITE, "Meo: /v sellto [playerid/PartOfName] [price]");
+
 					if (IsPlayerConnected(giveplayerid))
 					{
 						if (giveplayerid != INVALID_PLAYER_ID)
@@ -9272,14 +8799,6 @@ CMD:v(playerid, params[])
 							{
 								if (PlayerInfo[giveplayerid][pPcarkey][0] == 999)
 								{
-									tmp = strtok(cmdtext, idx);
-									if (!strlen(tmp))
-									{
-										SendClientMessage(playerid, COLOR_WHITE, "Meo: /v sellto [playerid/PartOfName] [price]");
-										return 1;
-									}
-									new price;
-									price = strval(tmp);
 									if (price < 1 || price > 1500000)
 									{
 										SendClientMessage(playerid, COLOR_GREY, "  Gia tien khong the nho hon 1 hoac lon hon 1500000. ");
@@ -9297,14 +8816,6 @@ CMD:v(playerid, params[])
 								}
 								else if (PlayerInfo[giveplayerid][pPcarkey][1] == 999)
 								{
-									tmp = strtok(cmdtext, idx);
-									if (!strlen(tmp))
-									{
-										SendClientMessage(playerid, COLOR_WHITE, "Meo: /v sellto [playerid/PartOfName] [price]");
-										return 1;
-									}
-									new price;
-									price = strval(tmp);
 									if (price < 1 || price > 1500000)
 									{
 										SendClientMessage(playerid, COLOR_GREY, "  Gia tien khong the nho hon 1 hoac lon hon 1500000. ");
@@ -9322,14 +8833,6 @@ CMD:v(playerid, params[])
 								}
 								else if (PlayerInfo[giveplayerid][pPcarkey][2] == 999)
 								{
-									tmp = strtok(cmdtext, idx);
-									if (!strlen(tmp))
-									{
-										SendClientMessage(playerid, COLOR_WHITE, "Meo: /v sellto [playerid/PartOfName] [price]");
-										return 1;
-									}
-									new price;
-									price = strval(tmp);
 									if (price < 1 || price > 1500000)
 									{
 										SendClientMessage(playerid, COLOR_GREY, "  Gia tien khong the nho hon 1 hoac lon hon 1500000. ");
@@ -9554,33 +9057,20 @@ CMD:v(playerid, params[])
 				SendClientMessage(playerid, COLOR_GREY, "   Khong du tien de respray.");
 				return 1;
 			}
-			tmp = strtok(cmdtext, idx);
-			if (!strlen(tmp))
-			{
-				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /v color [ColorOneID] [ColorTwoID]");
-				return 1;
-			}
-			new color1;
-			color1 = strval(tmp);
+			new color1, color2, string[128];
+			if (sscanf(params, "sii", x_nr, color1, color2))
+				return SendClientMessage(playerid, COLOR_WHITE, "Su dung: /v color [ColorOneID] [ColorTwoID]");
+
 			if (color1 < 0 && color1 > 126)
 			{
 				SendClientMessage(playerid, COLOR_GREY, "   Sai color id!");
 				return 1;
 			}
-			tmp = strtok(cmdtext, idx);
-			if (!strlen(tmp))
-			{
-				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /v color [ColorOneID] [ColorTwoID]");
-				return 1;
-			}
-			new color2;
-			color2 = strval(tmp);
 			if (color2 < 0 && color2 > 126)
 			{
 				SendClientMessage(playerid, COLOR_GREY, "   Sai color id!");
 				return 1;
 			}
-
 			new vehid;
 			if (GetPlayerVehicleID(playerid) == PlayerInfo[playerid][pPcarkey][0]) { vehid = PlayerInfo[playerid][pPcarkey][0]; }
 			else if (GetPlayerVehicleID(playerid) == PlayerInfo[playerid][pPcarkey][1]) { vehid = PlayerInfo[playerid][pPcarkey][1]; }
@@ -9624,6 +9114,7 @@ CMD:v(playerid, params[])
 				}
 				if (GetPlayerMoney(playerid) >= CarInfo[idcar][cValue])
 				{
+					new idcar = GetPlayerVehicleID(playerid);
 					if (PlayerInfo[playerid][pPcarkey][0] == 999) { PlayerInfo[playerid][pPcarkey][0] = idcar; }
 					else if (PlayerInfo[playerid][pPcarkey][1] == 999) { PlayerInfo[playerid][pPcarkey][1] = idcar; }
 					else if (PlayerInfo[playerid][pPcarkey][2] == 999) { PlayerInfo[playerid][pPcarkey][2] = idcar; }
@@ -9664,9 +9155,8 @@ CMD:trunk(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
-		new x_nr[64];
-		x_nr = strtok(cmdtext, idx);
-		if (!strlen(x_nr))
+		new x_nr[64], string[256];
+		if (sscanf(params, "s", x_nr))
 		{
 			SendClientMessage(playerid, COLOR_WHITE, "Meo: /trunk [name]");
 			SendClientMessage(playerid, COLOR_WHITE, "Available names: info, putgun, takegun, putarmour, takearmour");
@@ -10184,6 +9674,7 @@ CMD:windows(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREY, "  Ban can phai dang nhap truoc. ! ");
 			return 1;
 		}
+		new string[256];
 		if (IsPlayerInAnyVehicle(playerid))
 		{
 			new carid = GetPlayerVehicleID(playerid);
@@ -10220,6 +9711,7 @@ CMD:windows(playerid, params[])
 }
 CMD:adminduty(playerid, params[])
 {
+		 new string[256];
 	if (IsPlayerConnected(playerid))
 	{
 		if (gPlayerLogged[playerid] == 0)
@@ -10276,13 +9768,10 @@ CMD:moctui(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREY, "   Ban can phai dang nhap truoc. !");
 			return 1;
 		}
-		tmp = strtok(cmdtext, idx);
-		if (!strlen(tmp))
-		{
-			SendClientMessage(playerid, COLOR_WHITE, "Meo: /moctui [playerid/PartOfName]");
-			return 1;
-		}
-		giveplayerid = ReturnUser(tmp);
+		new giveplayerid, giveplayer[50], string[256];
+		if (sscanf(params, "u", giveplayerid))
+			return SendClientMessage(playerid, COLOR_WHITE, "Meo: /moctui [playerid/PartOfName]");
+
 		if (IsPlayerConnected(giveplayerid))
 		{
 			if (giveplayerid != INVALID_PLAYER_ID)
@@ -10314,6 +9803,7 @@ CMD:vehid(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
+		new string[256];
 		if (IsPlayerInAnyVehicle(playerid))
 		{
 			format(string, sizeof(string), "* Vehicle ID: %d.", GetPlayerVehicleID(playerid));
@@ -10353,13 +9843,10 @@ CMD:sid(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREY, "   Ban chua dang nhap !");
 			return 1;
 		}
-		tmp = strtok(cmdtext, idx);
-		if (!strlen(tmp))
-		{
-			SendClientMessage(playerid, COLOR_WHITE, "Meo: /sid [playerid/PartOfName]");
-			return 1;
-		}
-		giveplayerid = ReturnUser(tmp);
+		new giveplayerid, giveplayer[50], string[256];
+		if (sscanf(params, "u", giveplayerid))
+			return SendClientMessage(playerid, COLOR_WHITE, "Meo: /sid [playerid/PartOfName]");
+
 		if (IsPlayerConnected(giveplayerid))
 		{
 			if (giveplayerid != INVALID_PLAYER_ID)
@@ -10437,13 +9924,10 @@ CMD:acceptreport(playerid, params[])
 		}
 		if (PlayerInfo[playerid][pAdmin] > 0)
 		{
-			tmp = strtok(cmdtext, idx);
-			if (!strlen(tmp))
-			{
-				SendClientMessage(playerid, COLOR_WHITE, "Meo: /acceptreport [playerid/PartOfName]");
-				return 1;
-			}
-			giveplayerid = ReturnUser(tmp);
+			new giveplayerid, giveplayer[50], string[256];
+			if (sscanf(params, "u", giveplayerid))
+				return SendClientMessage(playerid, COLOR_WHITE, "Meo: /acceptreport [playerid/PartOfName]");
+
 			if (IsPlayerConnected(giveplayerid))
 			{
 				if (giveplayerid != INVALID_PLAYER_ID)
@@ -10485,13 +9969,10 @@ CMD:trashreport(playerid, params[])
 		}
 		if (PlayerInfo[playerid][pAdmin] > 0)
 		{
-			tmp = strtok(cmdtext, idx);
-			if (!strlen(tmp))
-			{
-				SendClientMessage(playerid, COLOR_WHITE, "Meo: /trashreport [playerid/PartOfName]");
-				return 1;
-			}
-			giveplayerid = ReturnUser(tmp);
+			new giveplayerid, giveplayer[50], string[256];
+			if (sscanf(params, "u", giveplayerid))
+				return SendClientMessage(playerid, COLOR_WHITE, "Meo: /trashreport [playerid/PartOfName]");
+
 			if (IsPlayerConnected(giveplayerid))
 			{
 				if (giveplayerid != INVALID_PLAYER_ID)
@@ -10570,6 +10051,7 @@ CMD:smoke(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
+		new string[256];
 		if (gPlayerLogged[playerid] == 0)
 		{
 			SendClientMessage(playerid, COLOR_GREY, "   Ban can phai dang nhap truoc. !");
@@ -10623,6 +10105,7 @@ CMD:dropcigarette(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
+		new string[256];
 		if (gPlayerLogged[playerid] == 0)
 		{
 			SendClientMessage(playerid, COLOR_GREY, "   Ban can phai dang nhap truoc. !");
@@ -10783,14 +10266,10 @@ CMD:buymats(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREY, "   Ban khong o noi giao vat lieu!");
 			return 1;
 		}
-		tmp = strtok(cmdtext, idx);
-		if (!strlen(tmp))
-		{
-			SendClientMessage(playerid, COLOR_WHITE, "Su dung: /buymats [ammount]");
-			return 1;
-		}
-		new mammount;
-		mammount = strval(tmp);
+		new mammount, string[256];
+		if(sscanf(params, "i", mammount))
+			return SendClientMessage(playerid, COLOR_WHITE, "Su dung: /buymats [ammount]");
+
 		if (mammount > matssys[MatsAmmount])
 		{
 			SendClientMessage(playerid, COLOR_GREY, "   Ho khong du vat lieu ! ");
@@ -10813,6 +10292,7 @@ CMD:buymats(playerid, params[])
 }
 CMD:gateopen(playerid, params[])
 {
+	new string[256];
 	if (PlayerInfo[playerid][pLeader] == 1 || PlayerInfo[playerid][pLeader] == 2 || PlayerInfo[playerid][pLeader] == 3 || PlayerInfo[playerid][pMember] == 1 || PlayerInfo[playerid][pMember] == 2 || PlayerInfo[playerid][pMember] == 3)
 	{
 		if (PlayerToPoint(15, playerid, 1589.053344, -1638.123168, 14.122960))
@@ -10904,6 +10384,7 @@ CMD:tuningopen(playerid, params[])
 {
 	if (PlayerInfo[playerid][pLeader] == 6)
 	{
+		new string[256];
 		if (PlayerToPoint(30, playerid, 1042.2530, -1026.0344, 32.1016))
 		{
 			MoveObject(tugate, 1049.2530, -1026.0344, 31.1016, 3.5000);
@@ -10921,6 +10402,7 @@ CMD:tuningclose(playerid, params[])
 {
 	if (PlayerInfo[playerid][pLeader] == 6 || PlayerInfo[playerid][pMember] == 6)
 	{
+		new string[256];
 		if (PlayerToPoint(30, playerid, 1042.2530, -1026.0344, 32.1016))
 		{
 			MoveObject(tugate, 1042.2530, -1026.0344, 32.1016, 3.5000);
@@ -10936,6 +10418,7 @@ CMD:tuningclose(playerid, params[])
 }
 CMD:docoropen(playerid, params[])
 {
+	new string[256];
 	if (PlayerInfo[playerid][pLeader] == 1 || PlayerInfo[playerid][pLeader] == 2 || PlayerInfo[playerid][pLeader] == 3 || PlayerInfo[playerid][pMember] == 1 || PlayerInfo[playerid][pMember] == 2 || PlayerInfo[playerid][pMember] == 3)
 	{
 		if (PlayerToPoint(30, playerid, 245.0578, 72.4314, 1002.5406))
@@ -10954,6 +10437,7 @@ CMD:docoropen(playerid, params[])
 }
 CMD:doorclose(playerid, params[])
 {
+	new string[256];
 	if (PlayerInfo[playerid][pLeader] == 1 || PlayerInfo[playerid][pLeader] == 2 || PlayerInfo[playerid][pLeader] == 3 || PlayerInfo[playerid][pMember] == 1 || PlayerInfo[playerid][pMember] == 2 || PlayerInfo[playerid][pMember] == 3)
 	{
 		if (PlayerToPoint(30, playerid, 245.0578, 72.4314, 1002.5406))
@@ -11082,13 +10566,10 @@ CMD:aunlock(playerid, params[])
 {
 	if (PlayerInfo[playerid][pAdmin] >= 3)
 	{
-		tmp = strtok(cmdtext, idx);
-		if (!strlen(tmp))
-		{
-			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /aunlock [playerid/PartOfName]");
-			return 1;
-		}
-		giveplayerid = ReturnUser(tmp);
+		new giveplayerid, giveplayer[50], string[256];
+		if (sscanf(params, "u", giveplayerid))
+			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /aunlock [playerid/PartOfName]");
+
 		if (IsPlayerConnected(giveplayerid))
 		{
 			if (giveplayerid != INVALID_PLAYER_ID)
@@ -11142,24 +10623,10 @@ CMD:ooc(playerid, params[])
 			return 1;
 		}
 		
-		new length = strlen(cmdtext);
-		while ((idx < length) && (cmdtext[idx] <= ' '))
-		{
-			idx++;
-		}
-		new offset = idx;
-		new result[64];
-		while ((idx < length) && ((idx - offset) < (sizeof(result)-1)))
-		{
-			result[idx - offset] = cmdtext[idx];
-			idx++;
-		}
-		result[idx - offset] = EOS;
-		if (!strlen(result))
-		{
-			SendClientMessage(playerid, COLOR_GRAD2, "Su dung lenh: (/o)oc [ooc chat]");
-			return 1;
-		}
+		new result[128], string[256];
+		if(sscanf(params, "s", result))
+			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung lenh: (/o)oc [ooc chat]");
+
 		format(string, sizeof(string), "[OOC] %s: %s ", GN(playerid), result);
 		OOCOff(COLOR_OOC, string);
 		printf("%s", string);
@@ -11202,24 +10669,10 @@ CMD:aooc(playerid, params[])
 			return 1;
 		}
 		
-		new length = strlen(cmdtext);
-		while ((idx < length) && (cmdtext[idx] <= ' '))
-		{
-			idx++;
-		}
-		new offset = idx;
-		new result[64];
-		while ((idx < length) && ((idx - offset) < (sizeof(result)-1)))
-		{
-			result[idx - offset] = cmdtext[idx];
-			idx++;
-		}
-		result[idx - offset] = EOS;
-		if (!strlen(result))
-		{
-			SendClientMessage(playerid, COLOR_GRAD2, "Su dung lenh: (/ao)oc [aooc chat]");
-			return 1;
-		}
+		new result[128], string[256];
+		if (sscanf(params, "s", result))
+			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung lenh: (/ao)oc [aooc chat]");
+
 		format(string, sizeof(string), "[AOOC] Admin %s: %s ", GN(playerid), result);
 		OOCOff(0x62B382AA, string);
 		printf("%s", string);
@@ -11228,6 +10681,7 @@ CMD:aooc(playerid, params[])
 }
 CMD:authorizeswat(playerid, params[])
 {
+	new string[256];
 	if (PlayerInfo[playerid][pLeader] == 1 || PlayerInfo[playerid][pRank] >= 4)
 	{
 		togauthorizeswat = 1;
@@ -11239,6 +10693,7 @@ CMD:authorizeswat(playerid, params[])
 }
 CMD:deauthorizeswat(playerid, params[])
 {
+	new string[256];
 	if (PlayerInfo[playerid][pLeader] == 1 || PlayerInfo[playerid][pRank] >= 4)
 	{
 		togauthorizeswat = 0;
@@ -11250,6 +10705,7 @@ CMD:deauthorizeswat(playerid, params[])
 }
 CMD:swat(playerid, params[])
 {
+	new string[256];
 	if (PlayerInfo[playerid][pMember] == 1 || PlayerInfo[playerid][pLeader] == 1)
 	{
 		if (togswat[playerid] == 0)
@@ -11306,6 +10762,7 @@ CMD:swat(playerid, params[])
 //Made by Ehren, modified by Luk0r
 CMD:backup(playerid, params[])
 {
+	new string[256];
 	if (IsPlayerConnected(playerid))
 	{
 		if (PlayerInfo[playerid][pMember] == 1 || PlayerInfo[playerid][pLeader] == 1)
@@ -11356,6 +10813,7 @@ CMD:roadblock(playerid, params[])
 	if (PlayerInfo[playerid][pMember] != 1 && PlayerInfo[playerid][pLeader] != 1) return SendClientMessage(playerid, COLOR_GREY, "Ban khong phai la canh sat!");
 	if (PlayerInfo[playerid][pRoadblock] != 0) return SendClientMessage(playerid, COLOR_GREY, "Ban chi co the trien khai rao can mot lan, /rrb de loai bo trien khai rao can.");
 	if (roadblocktimer != 0) return SendClientMessage(playerid, COLOR_GREY, "Xin cho de mo rao can tiep theo!");
+	new string[256];
 	new Float:X, Float:Y, Float:Z, Float:A;
 	GetPlayerPos(playerid, X, Y, Z);
 	GetPlayerFacingAngle(playerid, A);
@@ -11416,7 +10874,7 @@ CMD:roadunblockall(playerid, params[])
 				RemoveRoadblock(i);
 			}
 		}
-		
+		new string[256];
 		format(string, sizeof(string), "HQ: Tat ca cac rao can trong khu vuc duoc xoa ngay lap tuc boi %s.", GN(playerid));
 		for (new i = 0; i < MAX_PLAYERS; i++)
 		{
@@ -11439,21 +10897,10 @@ CMD:pay(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
-		tmp = strtok(cmdtext, idx);
-		if (!strlen(tmp))
-		{
-			SendClientMessage(playerid, COLOR_GRAD1, "Su dung: /pay [playerid/PartOfName] [amount]");
-			return 1;
-		}
-		//giveplayerid = strval(tmp);
-		giveplayerid = ReturnUser(tmp);
-		tmp = strtok(cmdtext, idx);
-		if (!strlen(tmp))
-		{
-			SendClientMessage(playerid, COLOR_GRAD1, "Su dung: /pay [playerid/PartOfName] [amount]");
-			return 1;
-		}
-		moneys = strval(tmp);
+		new giveplayerid, moneys, giveplayer[50], string[256];
+		if(sscanf(params, "ui", giveplayerid, moneys))
+			return SendClientMessage(playerid, COLOR_GRAD1, "Su dung: /pay [playerid/PartOfName] [amount]");
+
 		if (moneys > 1000 && PlayerInfo[playerid][pLevel] < 3)
 		{
 			SendClientMessage(playerid, COLOR_GRAD1, "Ban can lv3 de pay hon 1000");
@@ -11480,8 +10927,10 @@ CMD:pay(playerid, params[])
 						SendClientMessage(playerid, COLOR_GREY, "  Ban khong the tra tien cho chinh minh !");
 						return 1;
 					}
+
 					GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
 					
+					new playermoney;
 					playermoney = GetPlayerMoney(playerid);
 					if (moneys > 0 && playermoney >= moneys)
 					{
@@ -11527,18 +10976,15 @@ CMD:charity(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
-		tmp = strtok(cmdtext, idx);
-		if (!strlen(tmp))
-		{
-			SendClientMessage(playerid, COLOR_GRAD1, "Su dung: /charity [amount]");
-			return 1;
-		}
+		new moneys, string[256];
+		if(sscanf(params, "i", moneys))
+			return SendClientMessage(playerid, COLOR_GRAD1, "Su dung: /charity [amount]");
+
 		if (PlayerInfo[playerid][pLocal] == 106)
 		{
 			SendClientMessage(playerid, COLOR_GRAD1, "Khong duoc phep su dung lenh o vi tri nay");
 			return 1;
 		}
-		moneys = strval(tmp);
 		if (moneys < 0)
 		{
 			SendClientMessage(playerid, COLOR_GRAD1, "Khong du.");
@@ -11563,6 +11009,7 @@ CMD:authorizetactical(playerid, params[])
 {
 	if (PlayerInfo[playerid][pLeader] == 2 || PlayerInfo[playerid][pRank] >= 5)
 	{
+		new string[256];
 		togauthorizetactical = 1;
 		
 		format(string, sizeof(string), "** HQ: Director %s has authorized the Tactical Response uniform **", GN(playerid));
@@ -11574,6 +11021,7 @@ CMD:deauthorizetactical(playerid, params[])
 {
 	if (PlayerInfo[playerid][pLeader] == 2 || PlayerInfo[playerid][pRank] >= 5)
 	{
+		new string[256];
 		togauthorizetactical = 0;
 		
 		format(string, sizeof(string), "** HQ: Director %s has deauthorized the Tactical Response uniform", GN(playerid));
@@ -11583,6 +11031,7 @@ CMD:deauthorizetactical(playerid, params[])
 }
 CMD:tactical(playerid, params[])
 {
+		 new string[256];
 	if (PlayerInfo[playerid][pMember] == 2 || PlayerInfo[playerid][pLeader] == 2)
 	{
 		if (togtactical[playerid] == 0)
@@ -11968,14 +11417,10 @@ CMD:check(playerid, params[])
 	{
 		if (PlayerInfo[playerid][pAdmin] >= 1)
 		{
-			tmp = strtok(cmdtext, idx);
-			if (!strlen(tmp))
-			{
-				SendClientMessage(playerid, COLOR_GRAD1, "Su dung: /check [playerid/PartOfName]");
-				return 1;
-			}
-			//giveplayerid = strval(tmp);
-			giveplayerid = ReturnUser(tmp);
+			new giveplayerid, giveplayer[50], string[256];
+			if (sscanf(params, "u", giveplayerid))
+				return SendClientMessage(playerid, COLOR_GRAD1, "Su dung: /check [playerid/PartOfName]");
+
 			if (IsPlayerConnected(giveplayerid))
 			{
 				if (giveplayerid != INVALID_PLAYER_ID)
@@ -12001,27 +11446,21 @@ CMD:number(playerid, params[])
 	{
 		if (PlayerInfo[playerid][pPhoneBook] == 1)
 		{
-			tmp = strtok(cmdtext, idx);
-			if (!strlen(tmp))
-			{
-				SendClientMessage(playerid, COLOR_GRAD1, "Su dung: /number [playerid/PartOfName]");
-				return 1;
-			}
-			//giveplayerid = strval(tmp);
-			giveplayerid = ReturnUser(tmp);
+			new giveplayerid, giveplayer[50], string[256];
+			if (sscanf(params, "u", giveplayerid))
+				return SendClientMessage(playerid, COLOR_GRAD1, "Su dung: /number [playerid/PartOfName]");
+
 			if (IsPlayerConnected(giveplayerid))
 			{
 				if (giveplayerid != INVALID_PLAYER_ID)
 				{
 					if (PlayerInfo[giveplayerid][pHideNumber] == 1)
 					{
-						GetPlayerName(giveplayerid, GN(playerid), sizeof(GN(playerid)));
 						format(string, 256, "Name: %s, Ph: HIDDEN", GN(playerid));
 						SendClientMessage(playerid, COLOR_GRAD1, string);
 					}
 					else
 					{
-						GetPlayerName(giveplayerid, GN(playerid), sizeof(GN(playerid)));
 						format(string, 256, "Name: %s, Ph: %d", GN(playerid), PlayerInfo[giveplayerid][pPnumber]);
 						SendClientMessage(playerid, COLOR_GRAD1, string);
 					}
@@ -12051,7 +11490,7 @@ CMD:levelup(playerid, params[])
 				new nxtlevel = PlayerInfo[playerid][pLevel] + 1;
 				/*new costlevel = nxtlevel*levelcost;//10k for testing purposes*/
 				new expamount = nxtlevel*levelexp;
-				new infostring[256];
+				new infostring[256], string[256];
 				/*if(GetPlayerMoney(playerid) < costlevel)
 				{
 				format(infostring, 256, "   You do not have enough Cash ($%d)!",costlevel);
@@ -12422,6 +11861,7 @@ CMD:buygun(playerid, params[])
 		}
 		new gun;
 		new gunid[16];
+		new ammo, string[256];
 		new gunstring1[256];
 		new gunstring2[256];
 		new gunstring3[256];
@@ -12439,8 +11879,7 @@ CMD:buygun(playerid, params[])
 				return 1;
 			}
 			new mod = 100;
-			tmp = strtok(cmdtext, idx);
-			if (!strlen(tmp))
+			if(sscanf(params, "si", gun, ammo))
 			{
 				format(string, sizeof(string), "Su dung: /buygun [gunname] [ammoamount]");
 				SendClientMessage(playerid, COLOR_GREEN, "_______________________________________");
@@ -12464,14 +11903,6 @@ CMD:buygun(playerid, params[])
 				SendClientMessage(playerid, COLOR_GREEN, "_______________________________________");
 				return 1;
 			}
-			strmid(gunid, tmp, 0, strlen(cmdtext), 255);
-			tmp = strtok(cmdtext, idx);
-			if (!strlen(tmp))
-			{
-				format(string, sizeof(string), "Su dung: /buygun [gunname] [ammoamount]");
-				return 1;
-			}
-			new ammo = strval(tmp);
 			if (ammo < 1 || ammo > 999) { SendClientMessage(playerid, COLOR_GREY, "   Ammo ammount not lower then 1 or higher then 999 !"); return 1; }
 			if (strcmp(gunid, "parachute", true, strlen(gunid)) == 0)
 			{
@@ -12612,11 +12043,10 @@ CMD:upgrade(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
-		new gunid[16];
+		new gunid[16], string[256];
 		new infostring[256];
 		new upgradepoints = PlayerInfo[playerid][gPupgrade] - 1;
-		tmp = strtok(cmdtext, idx);
-		if (!strlen(tmp))
+		if (sscanf(params, "s", gunid))
 		{
 			format(string, sizeof(string), "Su dung: /upgrade [upgradename] (You have %d Upgrade points)", upgradepoints);
 			SendClientMessage(playerid, COLOR_GREEN, "_______________________________________");
@@ -12642,7 +12072,6 @@ CMD:upgrade(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREEN, "_______________________________________");
 			return 1;
 		}
-		strmid(gunid, tmp, 0, strlen(cmdtext), 255);
 		if (PlayerInfo[playerid][gPupgrade] > 1)
 		{
 			if (PlayerInfo[playerid][pLevel] >= 1 && (strcmp(gunid, "health", true, strlen(gunid)) == 0))
@@ -12754,13 +12183,9 @@ CMD:login(playerid, params[])
 			SendClientMessage(playerid, TEAM_AZTECAS_COLOR, "SERVER: Ban da dang nhap.");
 			return 1;
 		}
-		tmp = strtok(cmdtext, idx);
-		if (!strlen(tmp))
-		{
-			SendClientMessage(playerid, TEAM_AZTECAS_COLOR, "Su dung: (/l)ogin [password]");
-			return 1;
-		}
-		strmid(tmppass, tmp, 0, strlen(cmdtext), 255);
+		if(sscanf(params, "s", tmppass))
+			return SendClientMessage(playerid, TEAM_AZTECAS_COLOR, "Su dung: (/l)ogin [password]");
+
 		//Encrypt(tmppass);
 		OnPlayerLogin(playerid, tmppass);
 	}
@@ -12925,25 +12350,10 @@ CMD:advertise(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREY, "   Ban khong o ABC Studio !");
 			return 1;
 		}
-		
-		new length = strlen(cmdtext);
-		while ((idx < length) && (cmdtext[idx] <= ' '))
-		{
-			idx++;
-		}
-		new offset = idx;
-		new result[64];
-		while ((idx < length) && ((idx - offset) < (sizeof(result)-1)))
-		{
-			result[idx - offset] = cmdtext[idx];
-			idx++;
-		}
-		result[idx - offset] = EOS;
-		if (!strlen(result))
-		{
-			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/ad)vertise [advert text]");
-			return 1;
-		}
+		new result[50], string[256];
+		if(sscanf(params, "s", result))
+			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/ad)vertise [advert text]");
+
 		if ((!adds) && (PlayerInfo[playerid][pAdmin] < 1))
 		{
 			format(string, sizeof(string), "  Vui long thu lai sau %d Vai giay giua quang cao !", (addtimer / 1000));
@@ -12989,24 +12399,10 @@ CMD:government(playerid, params[])
 			return 1;
 		}
 		
-		new length = strlen(cmdtext);
-		while ((idx < length) && (cmdtext[idx] <= ' '))
-		{
-			idx++;
-		}
-		new offset = idx;
-		new result[64];
-		while ((idx < length) && ((idx - offset) < (sizeof(result)-1)))
-		{
-			result[idx - offset] = cmdtext[idx];
-			idx++;
-		}
-		result[idx - offset] = EOS;
-		if (!strlen(result))
-		{
-			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/gov)ernment [text]");
-			return 1;
-		}
+		new result[50], string[256];
+		if(sscanf(params, "s", result))
+			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/gov)ernment [text]");
+
 		SendClientMessageToAll(COLOR_WHITE, "|___________ Government News Announcement ___________|");
 		if (PlayerInfo[playerid][pMember] == 1 || PlayerInfo[playerid][pLeader] == 1)
 		{
@@ -13127,25 +12523,10 @@ CMD:me(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREY, "  Ban chua dang nhap !");
 			return 1;
 		}
-		
-		new length = strlen(cmdtext);
-		while ((idx < length) && (cmdtext[idx] <= ' '))
-		{
-			idx++;
-		}
-		new offset = idx;
-		new result[64];
-		while ((idx < length) && ((idx - offset) < (sizeof(result)-1)))
-		{
-			result[idx - offset] = cmdtext[idx];
-			idx++;
-		}
-		result[idx - offset] = EOS;
-		if (!strlen(result))
-		{
-			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /me [action]");
-			return 1;
-		}
+		new string[256], result[50];
+		if(sscanf(params, "s", result))
+			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /me [action]");
+
 		if (PlayerInfo[playerid][pMaskuse] == 1)
 		{
 			format(string, sizeof(string), "* Stranger %s", result);
@@ -13212,24 +12593,10 @@ CMD:local(playerid, params[])
 			return 1;
 		}
 		
-		new length = strlen(cmdtext);
-		while ((idx < length) && (cmdtext[idx] <= ' '))
-		{
-			idx++;
-		}
-		new offset = idx;
-		new result[64];
-		while ((idx < length) && ((idx - offset) < (sizeof(result)-1)))
-		{
-			result[idx - offset] = cmdtext[idx];
-			idx++;
-		}
-		result[idx - offset] = EOS;
-		if (!strlen(result))
-		{
-			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /local [local chat]");
-			return 1;
-		}
+		new string[256], result[50];
+		if (sscanf(params, "s", result))
+			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /local [local chat]");
+
 		if (!IsPlayerInAnyVehicle(playerid))
 		{
 			if (PlayerInfo[playerid][pMaskuse] == 1)
@@ -13303,24 +12670,10 @@ CMD:b(playerid, params[])
 			return 1;
 		}
 		
-		new length = strlen(cmdtext);
-		while ((idx < length) && (cmdtext[idx] <= ' '))
-		{
-			idx++;
-		}
-		new offset = idx;
-		new result[64];
-		while ((idx < length) && ((idx - offset) < (sizeof(result)-1)))
-		{
-			result[idx - offset] = cmdtext[idx];
-			idx++;
-		}
-		result[idx - offset] = EOS;
-		if (!strlen(result))
-		{
-			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /b [local ooc chat]");
-			return 1;
-		}
+		new string[256], result[50];
+		if (sscanf(params, "s", result))
+			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /b [local ooc chat]");
+
 		if (PlayerInfo[playerid][pMaskuse] == 1)
 		{
 			format(string, sizeof(string), "(( Stranger Says:  %s ))", result);
@@ -13344,24 +12697,10 @@ CMD:close(playerid, params[])
 			return 1;
 		}
 		
-		new length = strlen(cmdtext);
-		while ((idx < length) && (cmdtext[idx] <= ' '))
-		{
-			idx++;
-		}
-		new offset = idx;
-		new result[64];
-		while ((idx < length) && ((idx - offset) < (sizeof(result)-1)))
-		{
-			result[idx - offset] = cmdtext[idx];
-			idx++;
-		}
-		result[idx - offset] = EOS;
-		if (!strlen(result))
-		{
-			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /(c)lose [close chat text]");
-			return 1;
-		}
+		new string[256], result[50];
+		if (sscanf(params, "s", result))
+			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /(c)lose [close chat text]");
+
 		if (PlayerInfo[playerid][pMaskuse] == 1)
 		{
 			format(string, sizeof(string), "Stranger Says: %s", result);
@@ -13385,24 +12724,10 @@ CMD:low(playerid, params[])
 			return 1;
 		}
 		
-		new length = strlen(cmdtext);
-		while ((idx < length) && (cmdtext[idx] <= ' '))
-		{
-			idx++;
-		}
-		new offset = idx;
-		new result[64];
-		while ((idx < length) && ((idx - offset) < (sizeof(result)-1)))
-		{
-			result[idx - offset] = cmdtext[idx];
-			idx++;
-		}
-		result[idx - offset] = EOS;
-		if (!strlen(result))
-		{
-			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /low [chat text]");
-			return 1;
-		}
+		new string[256], result[50];
+		if (sscanf(params, "s", result))
+			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /low [chat text]");
+
 		if (PlayerInfo[playerid][pMaskuse] == 1)
 		{
 			format(string, sizeof(string), "Stranger Says: [LOW] %s", result);
@@ -13426,24 +12751,10 @@ CMD:shout(playerid, params[])
 			return 1;
 		}
 		
-		new length = strlen(cmdtext);
-		while ((idx < length) && (cmdtext[idx] <= ' '))
-		{
-			idx++;
-		}
-		new offset = idx;
-		new result[64];
-		while ((idx < length) && ((idx - offset) < (sizeof(result)-1)))
-		{
-			result[idx - offset] = cmdtext[idx];
-			idx++;
-		}
-		result[idx - offset] = EOS;
-		if (!strlen(result))
-		{
-			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/s)hout [local chat]");
-			return 1;
-		}
+		new string[256], result[50];
+		if (sscanf(params, "s", result))
+			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/s)hout [local chat]");
+
 		if (PlayerInfo[playerid][pMaskuse] == 1)
 		{
 			format(string, sizeof(string), "Sranger Shouts: %s!!", result);
@@ -13463,24 +12774,11 @@ CMD:megaphone(playerid, params[])
 	{
 		new tmpcar = GetPlayerVehicleID(playerid);
 		
-		new length = strlen(cmdtext);
-		while ((idx < length) && (cmdtext[idx] <= ' '))
-		{
-			idx++;
-		}
-		new offset = idx;
 		new result[64];
-		while ((idx < length) && ((idx - offset) < (sizeof(result)-1)))
-		{
-			result[idx - offset] = cmdtext[idx];
-			idx++;
-		}
-		result[idx - offset] = EOS;
-		if (!strlen(result))
-		{
-			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/m)egaphone [megaphone chat]");
-			return 1;
-		}
+		new string[256];
+		if (sscanf(params, "s", result))
+			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/m)egaphone [megaphone chat]");
+
 		if (gTeam[playerid] == 2 || IsACop(playerid) || IsAnFbiCar(playerid))
 		{
 			if (!IsACopCar(tmpcar) || !IsAnFbiCar(tmpcar))
@@ -13526,24 +12824,11 @@ CMD:radio(playerid, params[])
 	if (IsPlayerConnected(playerid))
 	{
 		
-		new length = strlen(cmdtext);
-		while ((idx < length) && (cmdtext[idx] <= ' '))
-		{
-			idx++;
-		}
-		new offset = idx;
 		new result[64];
-		while ((idx < length) && ((idx - offset) < (sizeof(result)-1)))
-		{
-			result[idx - offset] = cmdtext[idx];
-			idx++;
-		}
-		result[idx - offset] = EOS;
-		if (!strlen(result))
-		{
-			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/r)adio [radio chat]");
-			return 1;
-		}
+		new string[256];
+		if (sscanf(params, "s", result))
+			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/r)adio [radio chat]");
+
 		if (PlayerInfo[playerid][pMember] == 1 || PlayerInfo[playerid][pLeader] == 1)
 		{
 			if (PlayerInfo[playerid][pRank] == 8) { format(string, sizeof(string), "** %s(radio): %s, over. **", GN(playerid), result); }
@@ -13784,7 +13069,7 @@ CMD:duty(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
-		
+		new string[256];
 		if (PlayerInfo[playerid][pMember] == 1 || PlayerInfo[playerid][pLeader] == 1 || PlayerInfo[playerid][pMember] == 2 || PlayerInfo[playerid][pLeader] == 2)
 		{
 			if (PlayerToPoint(3, playerid, 255.3, 77.4, 1003.6) || PlayerToPoint(3, playerid, -1616.1294, 681.1594, 7.1875) || PlayerInfo[playerid][pLocal] != 255)
@@ -13893,25 +13178,10 @@ CMD:departments(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
-		
-		new length = strlen(cmdtext);
-		while ((idx < length) && (cmdtext[idx] <= ' '))
-		{
-			idx++;
-		}
-		new offset = idx;
-		new result[64];
-		while ((idx < length) && ((idx - offset) < (sizeof(result)-1)))
-		{
-			result[idx - offset] = cmdtext[idx];
-			idx++;
-		}
-		result[idx - offset] = EOS;
-		if (!strlen(result))
-		{
-			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/d)epartments [department chat]");
-			return 1;
-		}
+		new string[256], result[50];
+		if (sscanf(params, "s", result))
+			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/d)epartments [department chat]");
+
 		if (PlayerInfo[playerid][pMember] == 1 || PlayerInfo[playerid][pLeader] == 1)
 		{
 			if (PlayerInfo[playerid][pRank] == 8) { format(string, sizeof(string), "** Chief %s: %s, over. **", GN(playerid), result); }
@@ -14006,22 +13276,18 @@ CMD:mdc(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREY, "   You are not a Cop !");
 			return 1;
 		}
-		new tmpcar = GetPlayerVehicleID(playerid);
-		tmp = strtok(cmdtext, idx);
-		if (!strlen(tmp))
-		{
-			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /mdc [playerid/PartOfName]");
-			return 1;
-		}
-		//giveplayerid = strval(tmp);
-		giveplayerid = ReturnUser(tmp);
+		new tmpcar;
+		tmpcar = GetPlayerVehicleID(playerid);
+		new giveplayerid, giveplayer[50], string[256];
+		if (sscanf(params, "u", giveplayerid))
+			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /mdc [playerid/PartOfName]");
+
 		if (IsACopCar(tmpcar) || IsAHspdCar(tmpcar) || IsAnFbiCar(tmpcar) || PlayerToPoint(5.0, playerid, 253.9280, 69.6094, 1003.6406))
 		{
 			if (IsPlayerConnected(giveplayerid))
 			{
 				if (giveplayerid != INVALID_PLAYER_ID)
 				{
-					GetPlayerName(giveplayerid, GN(playerid), sizeof(GN(playerid)));
 					SendClientMessage(playerid, TEAM_BLUE_COLOR, "______-=MOBILE DATA COMPUTER=-_______");
 					format(string, sizeof(string), "Name : %s", GN(playerid));
 					SendClientMessage(playerid, COLOR_WHITE, string);
@@ -14060,13 +13326,10 @@ CMD:suspect(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREY, "   You are not on Duty!");
 			return 1;
 		}
-		tmp = strtok(cmdtext, idx);
-		if (!strlen(tmp))
-		{
-			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/su)spect [playerid/PartOfName] [crime discription]");
-			return 1;
-		}
-		giveplayerid = ReturnUser(tmp);
+		new giveplayerid, giveplayer[50], result[50], string[256];
+		if(sscanf(params, "us", giveplayerid, result))
+			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/su)spect [playerid/PartOfName] [crime discription]");
+
 		if (gTeam[playerid] == 2 || IsACop(playerid))
 		{
 			if (IsPlayerConnected(giveplayerid))
@@ -14076,25 +13339,6 @@ CMD:suspect(playerid, params[])
 					if (gTeam[giveplayerid] != 2)
 					{
 						GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
-						
-						new length = strlen(cmdtext);
-						while ((idx < length) && (cmdtext[idx] <= ' '))
-						{
-							idx++;
-						}
-						new offset = idx;
-						new result[64];
-						while ((idx < length) && ((idx - offset) < (sizeof(result)-1)))
-						{
-							result[idx - offset] = cmdtext[idx];
-							idx++;
-						}
-						result[idx - offset] = EOS;
-						if (!strlen(result))
-						{
-							SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/su)spect [playerid/PartOfName] [crime text]");
-							return 1;
-						}
 						if (WantedPoints[giveplayerid] == 0) { WantedPoints[giveplayerid] = 3; }
 						else { WantedPoints[giveplayerid] += 2; }
 						SetPlayerCriminalEx(giveplayerid, playerid, result);
@@ -14446,13 +13690,10 @@ CMD:pme(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREY, "   You havent logged in yet!");
 			return 1;
 		}
-		tmp = strtok(cmdtext, idx);
-		if (!strlen(tmp))
-		{
-			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/p)me [playerid/PartOfName] [text]");
-			return 1;
-		}
-		giveplayerid = ReturnUser(tmp);
+		new giveplayerid, giveplayer[50], result[50], string[256];
+		if (sscanf(params, "us", giveplayerid, result))
+			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/p)me [playerid/PartOfName] [text]");
+			
 		if (IsPlayerConnected(giveplayerid))
 		{
 			if (giveplayerid != INVALID_PLAYER_ID)
@@ -14468,24 +13709,6 @@ CMD:pme(playerid, params[])
 				{
 					format(string, sizeof(string), "* %s mutters something to himself.", GN(playerid));
 					ProxDetector(5.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
-				}
-				new length = strlen(cmdtext);
-				while ((idx < length) && (cmdtext[idx] <= ' '))
-				{
-					idx++;
-				}
-				new offset = idx;
-				new result[64];
-				while ((idx < length) && ((idx - offset) < (sizeof(result)-1)))
-				{
-					result[idx - offset] = cmdtext[idx];
-					idx++;
-				}
-				result[idx - offset] = EOS;
-				if (!strlen(result))
-				{
-					SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/p)me [playerid/PartOfName] [text]");
-					return 1;
 				}
 				format(string, sizeof(string), "[ID:%d] %s pm: %s", playerid, GN(playerid), (result));
 				SendClientMessage(giveplayerid, 0xBBA033AA, string);
@@ -14511,13 +13734,10 @@ CMD:whisper(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREY, "   Ban chua dang nhap!");
 			return 1;
 		}
-		tmp = strtok(cmdtext, idx);
-		if (!strlen(tmp))
-		{
-			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/w)hisper [playerid/PartOfName] [whisper text]");
-			return 1;
-		}
-		giveplayerid = ReturnUser(tmp);
+		new giveplayerid, giveplayer[50], string[256], result;
+		if (sscanf(params, "us"))
+			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/w)hisper [playerid/PartOfName] [whisper text]");
+
 		if (IsPlayerConnected(giveplayerid))
 		{
 			if (giveplayerid != INVALID_PLAYER_ID)
@@ -14526,7 +13746,6 @@ CMD:whisper(playerid, params[])
 				GetPlayerPos(giveplayerid, x, y, z);
 				if (PlayerToPoint(5, playerid, x, y, z))
 				{
-					
 					GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
 					if (giveplayerid == playerid)
 					{
@@ -14537,24 +13756,6 @@ CMD:whisper(playerid, params[])
 					{
 						format(string, sizeof(string), "* %s whispers something to %s", GN(playerid), giveplayer);
 						ProxDetector(15.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
-					}
-					new length = strlen(cmdtext);
-					while ((idx < length) && (cmdtext[idx] <= ' '))
-					{
-						idx++;
-					}
-					new offset = idx;
-					new result[64];
-					while ((idx < length) && ((idx - offset) < (sizeof(result)-1)))
-					{
-						result[idx - offset] = cmdtext[idx];
-						idx++;
-					}
-					result[idx - offset] = EOS;
-					if (!strlen(result))
-					{
-						SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/w)isper [playerid/PartOfName] [whisper text]");
-						return 1;
 					}
 					format(string, sizeof(string), "%s whispers: %s", GN(playerid), (result));
 					SendClientMessage(giveplayerid, COLOR_YELLOW, string);
@@ -14591,25 +13792,10 @@ CMD:cw(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREY, "   Ban khong co trong xe!");
 			return 1;
 		}
-		
-		new length = strlen(cmdtext);
-		while ((idx < length) && (cmdtext[idx] <= ' '))
-		{
-			idx++;
-		}
-		new offset = idx;
-		new result[64];
-		while ((idx < length) && ((idx - offset) < (sizeof(result)-1)))
-		{
-			result[idx - offset] = cmdtext[idx];
-			idx++;
-		}
-		result[idx - offset] = EOS;
-		if (!strlen(result))
-		{
-			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/cw)hisper [text]");
-			return 1;
-		}
+		new result[50],string[256];
+		if(sscanf(params, "s", result))
+			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/cw)hisper [text]");
+	
 		new vehicle = GetPlayerVehicleID(playerid);
 		for (new i = 0; i != MAX_PLAYERS; i++)
 		{
@@ -14639,19 +13825,11 @@ CMD:withdraw(playerid, params[])
 	{
 		if (PlayerInfo[playerid][pLocal] == 103 || PlayerToPoint(1.5, playerid, 1346.5016, -1758.7649, 13.5156) || PlayerToPoint(1.5, playerid, 1592.7152, -2335.3748, 13.5400) || PlayerToPoint(1.5, playerid, 2308.4612, -1634.4176, 14.8270) || PlayerToPoint(1.5, playerid, 2865.9014, -1415.4203, 11.0061) || PlayerToPoint(1.5, playerid, 2404.5913, -1229.8973, 23.8301) || PlayerToPoint(1.5, playerid, 1172.5912, -1328.4365, 15.4034))
 		{
-			tmp = strtok(cmdtext, idx);
-			if (!strlen(tmp))
+			new cashdeposit, string[256];
+			if(sscanf(params, "i", cashdeposit))
 			{
 				SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /withdraw [amount]");
 				format(string, sizeof(string), "  Ban co $%d trong tai khoan.", PlayerInfo[playerid][pAccount]);
-				SendClientMessage(playerid, COLOR_GRAD3, string);
-				return 1;
-			}
-			new cashdeposit = strval(tmp);
-			if (!strlen(tmp))
-			{
-				SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /withdraw [amount]");
-				format(string, sizeof(string), " Ban co $%d trong tai khoan.", PlayerInfo[playerid][pAccount]);
 				SendClientMessage(playerid, COLOR_GRAD3, string);
 				return 1;
 			}
@@ -14684,19 +13862,11 @@ CMD:bank(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREY, "   Ban khong co o ngan hang !");
 			return 1;
 		}
-		tmp = strtok(cmdtext, idx);
-		if (!strlen(tmp))
+		new cashdeposit, string[256];
+		if (sscanf(params, "i", cashdeposit))
 		{
 			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /bank [amount]");
 			format(string, sizeof(string), "  You Have $%d in your account.", PlayerInfo[playerid][pAccount]);
-			SendClientMessage(playerid, COLOR_GRAD3, string);
-			return 1;
-		}
-		new cashdeposit = strval(tmp);
-		if (!strlen(tmp))
-		{
-			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /bank [amount]");
-			format(string, sizeof(string), "  Ban co $%d Trong tai khoan.", PlayerInfo[playerid][pAccount]);
 			SendClientMessage(playerid, COLOR_GRAD3, string);
 			return 1;
 		}
@@ -14724,6 +13894,7 @@ CMD:balance(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
+		new string[256];
 		if (PlayerInfo[playerid][pLocal] == 103 || PlayerToPoint(1.5, playerid, 1346.5016, -1758.7649, 13.5156) || PlayerToPoint(1.5, playerid, 1592.7152, -2335.3748, 13.5400) || PlayerToPoint(1.5, playerid, 2308.4612, -1634.4176, 14.8270) || PlayerToPoint(1.5, playerid, 2865.9014, -1415.4203, 11.0061) || PlayerToPoint(1.5, playerid, 2404.5913, -1229.8973, 23.8301) || PlayerToPoint(1.5, playerid, 1172.5912, -1328.4365, 15.4034))
 		{
 			format(string, sizeof(string), "  Ban co $%d trong tai khoan.", PlayerInfo[playerid][pAccount]);
@@ -14741,6 +13912,7 @@ CMD:dice(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
+		new string[256];
 		new dice = random(6) + 1;
 		if (gDice[playerid] == 1)
 		{
@@ -14760,6 +13932,7 @@ CMD:coin(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
+		new string[256];
 		new coin = random(2) + 1;
 		
 		new coinname[20];
@@ -14784,20 +13957,10 @@ CMD:transfer(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREY, "   Ban khong co o ngan hang!");
 			return 1;
 		}
-		tmp = strtok(cmdtext, idx);
-		if (!strlen(tmp))
-		{
-			SendClientMessage(playerid, COLOR_GRAD1, "Su dung: /transfer [playerid/PartOfName] [amount]");
-			return 1;
-		}
-		giveplayerid = ReturnUser(tmp);
-		tmp = strtok(cmdtext, idx);
-		if (!strlen(tmp))
-		{
-			SendClientMessage(playerid, COLOR_GRAD1, "Su dung: /transfer [playerid/PartOfName] [amount]");
-			return 1;
-		}
-		moneys = strval(tmp);
+		new giveplayerid, moneys, string[256], giveplayer[50];
+		if(sscanf(params, "ui", giveplayerid, moneys))
+			return SendClientMessage(playerid, COLOR_GRAD1, "Su dung: /transfer [playerid/PartOfName] [amount]");
+
 		if (IsPlayerConnected(giveplayerid))
 		{
 			if (giveplayerid != INVALID_PLAYER_ID)
@@ -14841,10 +14004,11 @@ CMD:equip(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
+		new string[256];
 		if (PlayerToPoint(100, playerid, 244.9618, -1348.2435, 107.1833))//centerpoint 24-7
 		{
-			tmp = strtok(cmdtext, idx);
-			if (!strlen(tmp))
+			new item;
+			if(sscanf(params, "i", item))
 			{
 				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /equip [item number]");
 				SendClientMessage(playerid, COLOR_BLUE, "|_______ LSPD Police Armory _______|");
@@ -14856,7 +14020,6 @@ CMD:equip(playerid, params[])
 				SendClientMessage(playerid, COLOR_GRAD5, "| 11: Default ((WARNING: It kills you))");
 				return 1;
 			}
-			new item = strval(tmp);
 			if (item == 1)
 			{
 				if (PlayerInfo[playerid][pMember] == 2 || PlayerInfo[playerid][pLeader] == 2 || PlayerInfo[playerid][pMember] == 1 || PlayerInfo[playerid][pLeader] == 1)
@@ -15023,8 +14186,8 @@ CMD:equip(playerid, params[])
 		}
 		if (PlayerToPoint(100, playerid, 222.6434, 115.1870, 999.0156))//centerpoint 24-7
 		{
-			tmp = strtok(cmdtext, idx);
-			if (!strlen(tmp))
+			new item;
+			if (sscanf(params, "i", item))
 			{
 				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /equip [item number]");
 				SendClientMessage(playerid, COLOR_GREEN, "|_______ LSPD Police Armory _______|");
@@ -15036,7 +14199,6 @@ CMD:equip(playerid, params[])
 				SendClientMessage(playerid, COLOR_GRAD5, "| 11: Thermal Goggles     12: Default");
 				return 1;
 			}
-			new item = strval(tmp);
 			if (item == 1)
 			{
 				if (PlayerInfo[playerid][pMember] == 2 || PlayerInfo[playerid][pLeader] == 2 || PlayerInfo[playerid][pMember] == 1 || PlayerInfo[playerid][pLeader] == 1)
@@ -15203,8 +14365,8 @@ CMD:buy(playerid, params[])
 			SendClientMessage(playerid, COLOR_GRAD2, "   You are not in a 24-7 !");
 			return 1;
 		}
-		tmp = strtok(cmdtext, idx);
-		if (!strlen(tmp))
+		new item, string[256];
+		if (sscanf(params, "i", item))
 		{
 			SendClientMessage(playerid, COLOR_WHITE, "Su dung: /buy [item number]");
 			SendClientMessage(playerid, COLOR_LIGHTBLUE, "|_______ 24-7 _______|");
@@ -15217,7 +14379,6 @@ CMD:buy(playerid, params[])
 			SendClientMessage(playerid, COLOR_GRAD4, "| 13: Lighter 5$              14: Cigarettes 30$");
 			return 1;
 		}
-		new item = strval(tmp);
 		if (SBizzInfo[9][sbProducts] == 0)
 		{
 			GameTextForPlayer(playerid, "~r~Out Of Stock", 5000, 1);
@@ -15789,7 +14950,7 @@ CMD:apark(playerid, params[])
 	{
 		new Float:x, Float:y, Float:z;
 		new Float:a;
-		new carid;
+		new carid, playername[50], string[256];
 		carid = GetPlayerVehicleID(playerid);
 		GetPlayerName(playerid, playername, sizeof(playername));
 		GetVehiclePos(carid, x, y, z);
