@@ -8517,6 +8517,8 @@ CMD:gocua(playerid, params[])
 }
 CMD:batdauquet(playerid, params[])
 {
+	new idcar;
+	idcar = GetPlayerVehicleID(playerid);
 	if (IsPlayerConnected(playerid))
 	{
 		if (PlayerInfo[playerid][pJob] != 21)
@@ -8542,6 +8544,8 @@ CMD:batdauquet(playerid, params[])
 }
 CMD:dungquet(playerid, params[])
 {
+	new idcar;
+	idcar = GetPlayerVehicleID(playerid);
 	if (IsPlayerConnected(playerid))
 	{
 		if (PlayerIsSweeping[playerid] == 1)
@@ -8711,6 +8715,8 @@ CMD:v(playerid, params[])
 			return 1;
 		}
 		new x_nr[64], string[256], giveplayerid, giveplayer[50], playername[50];
+		new idcar;
+		idcar = GetPlayerVehicleID(playerid);
 		if(sscanf(params, "s", x_nr))
 		{
 			SendClientMessage(playerid, COLOR_WHITE, "Meo: (/v)ehicle [name]");
@@ -8918,8 +8924,6 @@ CMD:v(playerid, params[])
 			new keycar = PlayerInfo[playerid][pPcarkey][0];
 			if (keycar != 999)
 			{
-				new locked[256];
-				locked = strtok(cmdtext, idx);
 				if (CarInfo[keycar][cLock] == 1)
 				{
 					for (new i = 0; i < MAX_PLAYERS; i++)
@@ -8962,8 +8966,6 @@ CMD:v(playerid, params[])
 			new keycar = PlayerInfo[playerid][pPcarkey][1];
 			if (keycar != 999)
 			{
-				new locked[256];
-				locked = strtok(cmdtext, idx);
 				if (CarInfo[keycar][cLock] == 1)
 				{
 					for (new i = 0; i < MAX_PLAYERS; i++)
@@ -9006,8 +9008,6 @@ CMD:v(playerid, params[])
 			new keycar = PlayerInfo[playerid][pPcarkey][2];
 			if (keycar != 999)
 			{
-				new locked[256];
-				locked = strtok(cmdtext, idx);
 				if (CarInfo[keycar][cLock] == 1)
 				{
 					for (new i = 0; i < MAX_PLAYERS; i++)
@@ -10218,8 +10218,7 @@ CMD:creategun(playerid, params[])
 			return 1;
 		}
 		new x_weapon[256];
-		x_weapon = strtok(cmdtext, idx);
-		if (!strlen(x_weapon))
+		if (sscanf(params, "s", xweapon))
 		{
 			SendClientMessage(playerid, COLOR_GREEN, "________________________________________________");
 			SendClientMessage(playerid, COLOR_WHITE, "Su dung: /creategun [weapon name]");
@@ -11844,7 +11843,7 @@ CMD:resetupgrades(playerid, params[])
 		PlayerInfo[playerid][pPainPerk] = 0;
 		PlayerInfo[playerid][pTraderPerk] = 0;
 		SafeGivePlayerMoney(playerid, -50000);
-		PlayerPlaySound(giveplayerid, 1052, 0.0, 0.0, 0.0);
+		PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
 		format(string, 256, "   You have %d unspent Upgrade Points !", PlayerInfo[playerid][gPupgrade]);
 		SendClientMessage(playerid, COLOR_GRAD2, string);
 	}
@@ -12361,10 +12360,10 @@ CMD:advertise(playerid, params[])
 			return 1;
 
 		}
-		new payout = idx * 5;
+		new payout = strlen(result) * 5;
 		if (GetPlayerMoney(playerid) < payout)
 		{
-			format(string, sizeof(string), "* You used %d characters which cost $%d, you don't have enough.", offset, payout);
+			format(string, sizeof(string), "* You used %d characters which cost $%d, you don't have enough.", strlen(result), payout);
 			SendClientMessage(playerid, COLOR_WHITE, string);
 			return 1;
 
@@ -12375,7 +12374,7 @@ CMD:advertise(playerid, params[])
 		ExtortionSBiz(7, payout);
 		format(string, sizeof(string), "[Advert] %s, Phone: %d", result, PlayerInfo[playerid][pPnumber]);
 		OOCNews(TEAM_GROVE_COLOR, string);
-		format(string, sizeof(string), "~r~Paid $%d~n~~w~Message contained: %d Characters", payout, idx);
+		format(string, sizeof(string), "~r~Paid $%d~n~~w~Message contained: %d Characters", payout, strlen(result));
 		GameTextForPlayer(playerid, string, 5000, 1);
 		if (PlayerInfo[playerid][pAdmin] < 1){ SetTimer("AddsOn", addtimer, 0); adds = 0; }
 	}
@@ -13966,7 +13965,7 @@ CMD:transfer(playerid, params[])
 			if (giveplayerid != INVALID_PLAYER_ID)
 			{
 				GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
-				
+				new playermoney;
 				playermoney = PlayerInfo[playerid][pAccount];
 				if (moneys > 0 && playermoney >= moneys)
 				{
