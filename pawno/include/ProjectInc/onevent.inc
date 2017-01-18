@@ -4713,7 +4713,6 @@ public OnPlayerExitFood(playerid)
 public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 {
 	new string[256];
-	new sendername[MAX_PLAYER_NAME];
 	new pveh = GetVehicleModel(GetPlayerVehicleID(playerid));
 	new newcar = GetPlayerVehicleID(playerid);
 	if (newkeys == KEY_JUMP)
@@ -4803,7 +4802,6 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 public OnPlayerText(playerid, text[])
 {
 	new giver[MAX_PLAYER_NAME];
-	new sendername[MAX_PLAYER_NAME];
 	new giveplayer[MAX_PLAYER_NAME];
 	new tmp[256];
 	new string[256];
@@ -6232,6 +6230,7 @@ CMD:handsup(playerid, params[]) {
 		SetPlayerSpecialAction(playerid, SPECIAL_ACTION_HANDSUP);
 		return 1;
 	}
+	return 1;
 }
 CMD:engine(playerid, params[])
 {
@@ -6562,6 +6561,7 @@ CMD:guide(playerid, params[])
 		return 1;
 	}
 	else { SendClientMessage(playerid, COLOR_GREY, "You don't have a guide book."); }
+	return 1;
 }
 CMD:respawnthiscar(playerid, params[])
 {
@@ -6913,6 +6913,7 @@ CMD:houseentrance(playerid, params[])
 			return 1;
 		}
 	}
+	return 1;
 }
 CMD:houseexit(playerid, params[])
 {
@@ -8244,7 +8245,7 @@ CMD:xoanote(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREY, "    Ban can phai dang nhap truoc. ! ");
 			return 1;
 		}
-		new x_nr;
+		new x_nr, string[256];
 		if (sscanf(params, "i", x_nr))
 			return SendClientMessage(playerid, COLOR_WHITE, "Su dung: /xoanote [slot(1-5)]");
 
@@ -8253,7 +8254,8 @@ CMD:xoanote(playerid, params[])
 		{
 			strmid(PlayerInfo[playerid][pNote][x_nr - 1], "None", 0, strlen("None"), 255);
 			PlayerInfo[playerid][pNotes][x_nr - 1] = 0;
-			SendClientMessage(playerid, COLOR_WHITE, "Note %d da duoc xoa thanh cong.", x_nr);
+			format(string, sizeof(string), "Note %d da duoc xoa thanh cong.", x_nr);
+			SendClientMessage(playerid, COLOR_WHITE, string);
 		}
 		else
 		{
@@ -8272,7 +8274,7 @@ CMD:themnote(playerid, params[])
 			return 1;
 		}
 		
-		new result[64], string[128];
+		new result[64];
 		if(sscanf(params, "s", result))
 			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung lenh: /themnote [text]");
 
@@ -8354,7 +8356,7 @@ CMD:govinvite(playerid, params[])
 		}
 		if (PlayerInfo[playerid][pLeader] == 7)
 		{
-			new giveplayerid, giveplayer[50], string[256];
+			new giveplayerid;
 			if (sscanf(params, "u", giveplayerid))
 				return SendClientMessage(playerid, COLOR_WHITE, "Su dung: /govinvite [playerid/PartOfName]");
 
@@ -8400,7 +8402,7 @@ CMD:govuninvite(playerid, params[])
 		}
 		if (PlayerInfo[playerid][pLeader] == 7)
 		{
-			new giveplayerid, giveplayer[50], string[256];
+			new giveplayerid;
 			if (sscanf(params, "u", giveplayerid))
 				return SendClientMessage(playerid, COLOR_WHITE, "Su dung lenh: /govuninvite [playerid/PartOfName]");
 
@@ -8450,7 +8452,7 @@ CMD:setrole(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREY, "  You're not the mayor ! ");
 			return 1;
 		}
-		new giveplayerid, giveplayer[50], string[256], x_nr[64];
+		new giveplayerid, x_nr[64];
 		if (sscanf(params, "u", giveplayerid))
 		{
 			SendClientMessage(playerid, COLOR_WHITE, "Su dung: /setrole [playerid/PartOfName] [role name]");
@@ -9057,7 +9059,7 @@ CMD:v(playerid, params[])
 				SendClientMessage(playerid, COLOR_GREY, "   Khong du tien de respray.");
 				return 1;
 			}
-			new color1, color2, string[128];
+			new color1, color2;
 			if (sscanf(params, "sii", x_nr, color1, color2))
 				return SendClientMessage(playerid, COLOR_WHITE, "Su dung: /v color [ColorOneID] [ColorTwoID]");
 
@@ -9114,7 +9116,6 @@ CMD:v(playerid, params[])
 				}
 				if (GetPlayerMoney(playerid) >= CarInfo[idcar][cValue])
 				{
-					new idcar = GetPlayerVehicleID(playerid);
 					if (PlayerInfo[playerid][pPcarkey][0] == 999) { PlayerInfo[playerid][pPcarkey][0] = idcar; }
 					else if (PlayerInfo[playerid][pPcarkey][1] == 999) { PlayerInfo[playerid][pPcarkey][1] = idcar; }
 					else if (PlayerInfo[playerid][pPcarkey][2] == 999) { PlayerInfo[playerid][pPcarkey][2] = idcar; }
@@ -10565,7 +10566,7 @@ CMD:aunlock(playerid, params[])
 {
 	if (PlayerInfo[playerid][pAdmin] >= 3)
 	{
-		new giveplayerid, giveplayer[50], string[256];
+		new giveplayerid;
 		if (sscanf(params, "u", giveplayerid))
 			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /aunlock [playerid/PartOfName]");
 
@@ -11416,7 +11417,7 @@ CMD:check(playerid, params[])
 	{
 		if (PlayerInfo[playerid][pAdmin] >= 1)
 		{
-			new giveplayerid, giveplayer[50], string[256];
+			new giveplayerid;
 			if (sscanf(params, "u", giveplayerid))
 				return SendClientMessage(playerid, COLOR_GRAD1, "Su dung: /check [playerid/PartOfName]");
 
@@ -11445,7 +11446,7 @@ CMD:number(playerid, params[])
 	{
 		if (PlayerInfo[playerid][pPhoneBook] == 1)
 		{
-			new giveplayerid, giveplayer[50], string[256];
+			new giveplayerid, string[256];
 			if (sscanf(params, "u", giveplayerid))
 				return SendClientMessage(playerid, COLOR_GRAD1, "Su dung: /number [playerid/PartOfName]");
 
@@ -13278,7 +13279,7 @@ CMD:mdc(playerid, params[])
 		}
 		new tmpcar;
 		tmpcar = GetPlayerVehicleID(playerid);
-		new giveplayerid, giveplayer[50], string[256];
+		new giveplayerid, string[256];
 		if (sscanf(params, "u", giveplayerid))
 			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /mdc [playerid/PartOfName]");
 
@@ -14355,6 +14356,7 @@ CMD:equip(playerid, params[])
 		}
 		return 1;
 	}
+	return 1;
 }
 CMD:buy(playerid, params[])
 {
@@ -15100,7 +15102,7 @@ CMD:rentroom(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
-		new string[255], playername[255];
+		new playername[255];
 		new Float:oldposx, Float:oldposy, Float:oldposz;
 		GetPlayerName(playerid, playername, sizeof(playername));
 		GetPlayerPos(playerid, oldposx, oldposy, oldposz);
@@ -18777,7 +18779,6 @@ CMD:fourdive(playerid, params[])
 		new para2;
 		new para3;
 		new para4;
-		new string[255];
 		if (sscanf(params, "uuuu", para1, para2, para3, para4))
 		{
 			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /fourdive [playerid1] [playerid2] [playerid3] [playerid4]");
@@ -19881,7 +19882,7 @@ CMD:entercar(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
-		new testcar, string[255];
+		new testcar;
 		if (sscanf(params, "i", testcar))
 		{
 			SendClientMessage(playerid, COLOR_GRAD1, "Su dung: /entercar [carid]");
@@ -19903,7 +19904,7 @@ CMD:gotocar(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
-		new testcar, string[255];
+		new testcar;
 		if (sscanf(params, "i", testcar))
 		{
 			SendClientMessage(playerid, COLOR_GRAD1, "Su dung: /gotocar [carid]");
@@ -20182,7 +20183,7 @@ CMD:getcar(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
-		new plo, string[255];
+		new plo;
 		if (sscanf(params, "u", plo))
 		{
 			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /getcar [carid]");
@@ -20833,7 +20834,7 @@ CMD:kickres(playerid, params[])
 		{
 			return 1;
 		}
-		new level, ammount, string[255];
+		new level, ammount;
 		if (sscanf(params, "ui", level, ammount))
 		{
 			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /kickres [level] [ammount]");
@@ -21447,7 +21448,7 @@ CMD:mk(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREY, "   Ban khong phai la Admin !");
 			return 1;
 		}
-		new x_mk[50], number, text[255];
+		new x_mk[50];
 		if(sscanf(params, "sis", x_mk)) {
 			SendClientMessage(playerid, COLOR_WHITE, "Su dung: /mk [name]");
 			SendClientMessage(playerid, COLOR_GREY, "Available names: (/mk text [number] [text]) (/mk game [number] [text]) (/mk cp [number])");
@@ -21456,7 +21457,7 @@ CMD:mk(playerid, params[])
 		}
 		if (strcmp(x_mk, "text", true) == 0)
 		{
-			new number, result[255], string[255];
+			new number, result[255];
 			if (sscanf(params, "sis", x_mk, number, result))
 			{
 				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /mk text [number] [text]");
@@ -21559,7 +21560,7 @@ CMD:mk(playerid, params[])
 		}
 		else if (strcmp(x_mk, "game", true) == 0)
 		{
-			new number, result[255], string[255];
+			new number, result[255];
 			if (sscanf(params, "sis", x_mk, number, result))
 			{
 				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /mk game [number] [text]");
@@ -21602,7 +21603,7 @@ CMD:mk(playerid, params[])
 		}
 		else if (strcmp(x_mk, "cp", true) == 0)
 		{
-			new number, string[255];
+			new number;
 			if (sscanf(params, "si", x_mk, number))
 			{
 				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /mk cp [number]");
@@ -21647,7 +21648,7 @@ CMD:mk(playerid, params[])
 		}
 		else if (strcmp(x_mk, "usecp", true) == 0)
 		{
-			new toggle, string[255];
+			new toggle;
 			if (sscanf(params, "si", x_mk, toggle))
 			{
 				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /mk usecp [0/1]");
@@ -21661,7 +21662,7 @@ CMD:mk(playerid, params[])
 		}
 		else if (strcmp(x_mk, "title", true) == 0)
 		{
-			new result[255], string[255];
+			new result[255];
 			if (sscanf(params, "ss", x_mk, result))
 			{
 				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /mk title [text]");
@@ -21673,7 +21674,7 @@ CMD:mk(playerid, params[])
 		}
 		else if (strcmp(x_mk, "reward", true) == 0)
 		{
-			new price, string[255];
+			new price;
 			if (sscanf(params, "si", x_mk, price))
 			{
 				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /mk reward [price]");
@@ -22835,7 +22836,7 @@ CMD:camera(playerid, params[])
 				SendClientMessage(playerid, COLOR_GREY, "   Ban khong o trong khu vuc Area51 Security Panel !");
 				return 1;
 			}
-			new number, string[255];
+			new number;
 			if (sscanf(params, "i", number))
 			{
 				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /camera [number 1 - 6]  (6 = OFF)");
@@ -23040,261 +23041,261 @@ CMD:irc(playerid, params[])
 			SendClientMessage(playerid, COLOR_WHITE, "Available names: MOTD, Password, NeedPass, Lock, Kick, Status");
 			return 1;
 		}
+		new string[255], channel;
 		if (strcmp(x_nr, "join", true) == 0)
 		{
-			new channel, string[255];
-			if (sscanf(params, "si", x_nr, channel)) {
+			if (sscanf(params, "si", x_nr, channel)) 
+			{
+				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /irc join [channelnr] or /irc join [channelnr] [password]");
+				return 1;
+			}
+			if (channel < 1 || channel > 10)
+				return SendClientMessage(playerid, COLOR_GREY, "   So kenh khong the duoi 1 hoac tren 10 !");
+
+			channel -= 1;
+			if (IRCInfo[channel][iLock] == 0)
+			{
+				if (IRCInfo[channel][iNeedPass] == 0)
 				{
-					SendClientMessage(playerid, COLOR_WHITE, "Su dung: /irc join [channelnr] or /irc join [channelnr] [password]");
+					JoinChannelNr(playerid, channel);
+				}
+				else
+				{
+					new pass[50];
+					if (sscanf(params, "sis", x_nr, channel, pass))
+					{
+						SendClientMessage(playerid, COLOR_WHITE, "Ban can mat khau de gia nhap kenh nay.");
+						SendClientMessage(playerid, COLOR_WHITE, "Su dung: /irc join [channelnr] [password]");
+						return 1;
+					}
+					JoinChannel(playerid, channel, pass);
+				}
+			}
+			else
+			{
+				SendClientMessage(playerid, COLOR_GREY, "   Kenh nay da bi khoa, vui long chon kenh khac !");
+				return 1;
+			}
+		}
+		else if (strcmp(x_nr, "status", true) == 0)
+		{
+			for (new i = 0; i < sizeof(IRCInfo); i++)
+			{
+				format(string, sizeof(string), "Channel %d: %d Nguoi choi da ket noi.", i + 1, IRCInfo[i][iPlayers]);
+				SendClientMessage(playerid, COLOR_WHITE, string);
+			}
+			return 1;
+		}
+		else if (strcmp(x_nr, "password", true) == 0)
+		{
+			new pass[255];
+			if(sscanf(params, "sis", x_nr, channel, pass))
+			{
+				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /irc password [channelnr] [password]");
+				return 1;
+			}
+			if (channel < 1 || channel > 10) { SendClientMessage(playerid, COLOR_GREY, "   So kenh khong the duoi 1 hoac tren 10 !"); return 1; }
+			channel -= 1;
+			new wstring[128];
+
+			format(string, sizeof(string), "%s", GN(playerid));
+			strmid(wstring, string, 0, strlen(string), 255);
+			if (strcmp(IRCInfo[channel][iAdmin], wstring, true) == 0)
+			{
+				strmid(IRCInfo[channel][iPassword], pass, 0, strlen(pass), 255);
+				format(string, sizeof(string), "Ban da thay doi mat khau kenh IRC thanh: %s.", IRCInfo[channel][iPassword]);
+				SendClientMessage(playerid, COLOR_YELLOW, string);
+				SaveIRC();
+				return 1;
+			}
+			else
+			{
+				SendClientMessage(playerid, COLOR_GREY, "   Ban khong phai la Admin cua kenh do !");
+				return 1;
+			}
+		}
+		else if (strcmp(x_nr, "needpass", true) == 0)
+		{
+			if(sscanf(params, "si", x_nr, channel))
+			{
+				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /irc needpass [channelnr]");
+				return 1;
+			}
+			if (channel < 1 || channel > 10) { SendClientMessage(playerid, COLOR_GREY, "   So kenh khong the duoi 1 hoac tren 10 !"); return 1; }
+			channel -= 1;
+			new wstring[128];
+
+			format(string, sizeof(string), "%s", GN(playerid));
+			strmid(wstring, string, 0, strlen(string), 255);
+			if (strcmp(IRCInfo[channel][iAdmin], wstring, true) == 0)
+			{
+				if (IRCInfo[channel][iNeedPass] != 0)
+				{
+					IRCInfo[channel][iNeedPass] = 0;
+					SendClientMessage(playerid, COLOR_YELLOW, "Nguoi choi khong can phai dien mat khau de vao kenh ngay luc nay.");
+				}
+				else
+				{
+					IRCInfo[channel][iNeedPass] = 1;
+					SendClientMessage(playerid, COLOR_YELLOW, "Nguoi choi can phai dien mat khau de vao kenh ngay luc nay.");
+				}
+				SaveIRC();
+				return 1;
+			}
+			else
+			{
+				SendClientMessage(playerid, COLOR_GREY, "   Ban khong phai la Admin cua kenh do !");
+				return 1;
+			}
+		}
+		else if (strcmp(x_nr, "lock", true) == 0)
+		{
+			if (sscanf(params, "si", x_nr, channel))
+			{
+				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /irc lock [channelnr]");
+				return 1;
+			}
+			if (channel < 1 || channel > 10) { SendClientMessage(playerid, COLOR_GREY, "   So kenh khong the duoi 1 hoac tren 10 !"); return 1; }
+			channel -= 1;
+			new wstring[128];
+
+			format(string, sizeof(string), "%s", GN(playerid));
+			strmid(wstring, string, 0, strlen(string), 255);
+			if (strcmp(IRCInfo[channel][iAdmin], wstring, true) == 0)
+			{
+				if (IRCInfo[channel][iLock] != 0)
+				{
+					IRCInfo[channel][iLock] = 0;
+					SendClientMessage(playerid, COLOR_YELLOW, "Ban da mo khoa kenh IRC.");
+				}
+				else
+				{
+					IRCInfo[channel][iLock] = 1;
+					SendClientMessage(playerid, COLOR_YELLOW, "Ban da khoa kenh IRC.");
+				}
+				SaveIRC();
+				return 1;
+			}
+			else
+			{
+				SendClientMessage(playerid, COLOR_GREY, "   Ban khong phai la Admin cua kenh do !");
+				return 1;
+			}
+		}
+		else if (strcmp(x_nr, "motd", true) == 0)
+		{
+			new result[255];
+			if (sscanf(params, "sis", x_nr, channel, result))
+			{
+				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /irc motd [channelnr] [motdtext]");
+				return 1;
+			}
+			if (channel < 1 || channel > 10) { SendClientMessage(playerid, COLOR_GREY, "   So kenh khong the duoi 1 hoac tren 10 !"); return 1; }
+			channel -= 1;
+			new wstring[128];
+
+			format(string, sizeof(string), "%s", GN(playerid));
+			strmid(wstring, string, 0, strlen(string), 255);
+			if (strcmp(IRCInfo[channel][iAdmin], wstring, true) == 0)
+			{
+				strmid(IRCInfo[channel][iMOTD], result, 0, strlen(result), 255);
+				SendClientMessage(playerid, COLOR_YELLOW, "Ban da dieu chinh MOTD Text cho kenh IRC.");
+				SaveIRC();
+				return 1;
+			}
+			else
+			{
+				SendClientMessage(playerid, COLOR_GREY, "   Ban khong phai la Admin cua kenh do !");
+				return 1;
+			}
+		}
+		else if (strcmp(x_nr, "leave", true) == 0)
+		{
+			if (PlayersChannel[playerid] < 999)
+			{
+				format(string, sizeof(string), "* %s da roi khoi kenh.", GN(playerid));
+				SendIRCMessage(PlayersChannel[playerid], COLOR_GREEN, string);
+				IRCInfo[PlayersChannel[playerid]][iPlayers] -= 1;
+				PlayersChannel[playerid] = 999;
+				return 1;
+			}
+			else
+			{
+				SendClientMessage(playerid, COLOR_GREY, "   Ban khong o trong kenh IRC !");
+				return 1;
+			}
+		}
+		else if (strcmp(x_nr, "admins", true) == 0)
+		{
+			for (new i = 0; i < sizeof(IRCInfo); i++)
+			{
+				format(string, sizeof(string), "Channel %d: %s.", i + 1, IRCInfo[i][iAdmin]);
+				SendClientMessage(playerid, COLOR_WHITE, string);
+			}
+			return 1;
+		}
+		else if (strcmp(x_nr, "kick", true) == 0)
+		{
+			if (PlayersChannel[playerid] == 999)
+			{
+				SendClientMessage(playerid, COLOR_GREY, "   Ban khong o trong kenh IRC !");
+				return 1;
+			}
+			new wstring[128];
+
+			format(string, sizeof(string), "%s", GN(playerid));
+			strmid(wstring, string, 0, strlen(string), 255);
+			if (strcmp(IRCInfo[PlayersChannel[playerid]][iAdmin], wstring, true) == 0)
+			{
+				new giveplayerid;
+				if (sscanf(params, "su", x_nr, giveplayerid))
+				{
+					SendClientMessage(playerid, COLOR_WHITE, "Su dung: /irc kick [playerid/Ten]");
 					return 1;
 				}
-				if (channel < 1 || channel > 10) { SendClientMessage(playerid, COLOR_GREY, "   So kenh khong the duoi 1 hoac tren 10 !"); return 1; }
-				channel -= 1;
-				if (IRCInfo[channel][iLock] == 0)
+				if (IsPlayerConnected(giveplayerid))
 				{
-					if (IRCInfo[channel][iNeedPass] == 0)
+					if (giveplayerid != INVALID_PLAYER_ID)
 					{
-						JoinChannelNr(playerid, channel);
-					}
-					else
-					{
-						new pass[50];
-						if (sscanf(params, "sis", x_nr, channel, pass))
+						if (PlayersChannel[giveplayerid] == PlayersChannel[playerid])
 						{
-							SendClientMessage(playerid, COLOR_WHITE, "Ban can mat khau de gia nhap kenh nay.");
-							SendClientMessage(playerid, COLOR_WHITE, "Su dung: /irc join [channelnr] [password]");
+
+							format(string, sizeof(string), "* Ban da kick %s ra khoi kenh IRC cua ban.", GN(giveplayerid));
+							SendClientMessage(playerid, COLOR_YELLOW, string);
+							format(string, sizeof(string), "* Ban da bi kick ra khoi kenh IRC nay boi Admin kenh: %s.", GN(playerid));
+							SendClientMessage(giveplayerid, COLOR_YELLOW, string);
+							format(string, sizeof(string), "* %s da roi khoi kenh (Kicked).", GN(playerid));
+							SendIRCMessage(PlayersChannel[playerid], COLOR_GREEN, string);
+							IRCInfo[PlayersChannel[giveplayerid]][iPlayers] -= 1;
+							PlayersChannel[giveplayerid] = 999;
+						}
+						else
+						{
+							SendClientMessage(playerid, COLOR_GREY, "   Nguoi choi khong o trong kenh IRC cua ban !");
 							return 1;
 						}
-						JoinChannel(playerid, channel, pass);
 					}
 				}
 				else
 				{
-					SendClientMessage(playerid, COLOR_GREY, "   Kenh nay da bi khoa, vui long chon kenh khac !");
-					return 1;
-				}
-			}
-			else if (strcmp(x_nr, "status", true) == 0)
-			{
-				for (new i = 0; i < sizeof(IRCInfo); i++)
-				{
-					format(string, sizeof(string), "Channel %d: %d Nguoi choi da ket noi.", i + 1, IRCInfo[i][iPlayers]);
-					SendClientMessage(playerid, COLOR_WHITE, string);
-				}
-				return 1;
-			}
-			else if (strcmp(x_nr, "password", true) == 0)
-			{
-				new channel, pass[255];
-				if(sscanf(params, "sis", x_nr, channel, pass))
-				{
-					SendClientMessage(playerid, COLOR_WHITE, "Su dung: /irc password [channelnr] [password]");
-					return 1;
-				}
-				if (channel < 1 || channel > 10) { SendClientMessage(playerid, COLOR_GREY, "   So kenh khong the duoi 1 hoac tren 10 !"); return 1; }
-				channel -= 1;
-				new wstring[128];
-
-				format(string, sizeof(string), "%s", GN(playerid));
-				strmid(wstring, string, 0, strlen(string), 255);
-				if (strcmp(IRCInfo[channel][iAdmin], wstring, true) == 0)
-				{
-					strmid(IRCInfo[channel][iPassword], pass, 0, strlen(pass), 255);
-					format(string, sizeof(string), "Ban da thay doi mat khau kenh IRC thanh: %s.", IRCInfo[channel][iPassword]);
-					SendClientMessage(playerid, COLOR_YELLOW, string);
-					SaveIRC();
-					return 1;
-				}
-				else
-				{
-					SendClientMessage(playerid, COLOR_GREY, "   Ban khong phai la Admin cua kenh do !");
-					return 1;
-				}
-			}
-			else if (strcmp(x_nr, "needpass", true) == 0)
-			{
-				new channel;
-				if(sscanf(params, "si", x_nr, channel))
-				{
-					SendClientMessage(playerid, COLOR_WHITE, "Su dung: /irc needpass [channelnr]");
-					return 1;
-				}
-				if (channel < 1 || channel > 10) { SendClientMessage(playerid, COLOR_GREY, "   So kenh khong the duoi 1 hoac tren 10 !"); return 1; }
-				channel -= 1;
-				new wstring[128];
-
-				format(string, sizeof(string), "%s", GN(playerid));
-				strmid(wstring, string, 0, strlen(string), 255);
-				if (strcmp(IRCInfo[channel][iAdmin], wstring, true) == 0)
-				{
-					if (IRCInfo[channel][iNeedPass] != 0)
-					{
-						IRCInfo[channel][iNeedPass] = 0;
-						SendClientMessage(playerid, COLOR_YELLOW, "Nguoi choi khong can phai dien mat khau de vao kenh ngay luc nay.");
-					}
-					else
-					{
-						IRCInfo[channel][iNeedPass] = 1;
-						SendClientMessage(playerid, COLOR_YELLOW, "Nguoi choi can phai dien mat khau de vao kenh ngay luc nay.");
-					}
-					SaveIRC();
-					return 1;
-				}
-				else
-				{
-					SendClientMessage(playerid, COLOR_GREY, "   Ban khong phai la Admin cua kenh do !");
-					return 1;
-				}
-			}
-			else if (strcmp(x_nr, "lock", true) == 0)
-			{
-				new channel;
-				if (sscanf(params, "si", x_nr, channel))
-				{
-					SendClientMessage(playerid, COLOR_WHITE, "Su dung: /irc lock [channelnr]");
-					return 1;
-				}
-				if (channel < 1 || channel > 10) { SendClientMessage(playerid, COLOR_GREY, "   So kenh khong the duoi 1 hoac tren 10 !"); return 1; }
-				channel -= 1;
-				new wstring[128];
-
-				format(string, sizeof(string), "%s", GN(playerid));
-				strmid(wstring, string, 0, strlen(string), 255);
-				if (strcmp(IRCInfo[channel][iAdmin], wstring, true) == 0)
-				{
-					if (IRCInfo[channel][iLock] != 0)
-					{
-						IRCInfo[channel][iLock] = 0;
-						SendClientMessage(playerid, COLOR_YELLOW, "Ban da mo khoa kenh IRC.");
-					}
-					else
-					{
-						IRCInfo[channel][iLock] = 1;
-						SendClientMessage(playerid, COLOR_YELLOW, "Ban da khoa kenh IRC.");
-					}
-					SaveIRC();
-					return 1;
-				}
-				else
-				{
-					SendClientMessage(playerid, COLOR_GREY, "   Ban khong phai la Admin cua kenh do !");
-					return 1;
-				}
-			}
-			else if (strcmp(x_nr, "motd", true) == 0)
-			{
-				new channel, result[255];
-				if (sscanf(params, "sis", x_nr, channel, result))
-				{
-					SendClientMessage(playerid, COLOR_WHITE, "Su dung: /irc motd [channelnr] [motdtext]");
-					return 1;
-				}
-				if (channel < 1 || channel > 10) { SendClientMessage(playerid, COLOR_GREY, "   So kenh khong the duoi 1 hoac tren 10 !"); return 1; }
-				channel -= 1;
-				new wstring[128];
-
-				format(string, sizeof(string), "%s", GN(playerid));
-				strmid(wstring, string, 0, strlen(string), 255);
-				if (strcmp(IRCInfo[channel][iAdmin], wstring, true) == 0)
-				{
-					strmid(IRCInfo[channel][iMOTD], result, 0, strlen(result), 255);
-					SendClientMessage(playerid, COLOR_YELLOW, "Ban da dieu chinh MOTD Text cho kenh IRC.");
-					SaveIRC();
-					return 1;
-				}
-				else
-				{
-					SendClientMessage(playerid, COLOR_GREY, "   Ban khong phai la Admin cua kenh do !");
-					return 1;
-				}
-			}
-			else if (strcmp(x_nr, "leave", true) == 0)
-			{
-				if (PlayersChannel[playerid] < 999)
-				{
-					format(string, sizeof(string), "* %s da roi khoi kenh.", GN(playerid));
-					SendIRCMessage(PlayersChannel[playerid], COLOR_GREEN, string);
-					IRCInfo[PlayersChannel[playerid]][iPlayers] -= 1;
-					PlayersChannel[playerid] = 999;
-					return 1;
-				}
-				else
-				{
-					SendClientMessage(playerid, COLOR_GREY, "   Ban khong o trong kenh IRC !");
-					return 1;
-				}
-			}
-			else if (strcmp(x_nr, "admins", true) == 0)
-			{
-				for (new i = 0; i < sizeof(IRCInfo); i++)
-				{
-					format(string, sizeof(string), "Channel %d: %s.", i + 1, IRCInfo[i][iAdmin]);
-					SendClientMessage(playerid, COLOR_WHITE, string);
-				}
-				return 1;
-			}
-			else if (strcmp(x_nr, "kick", true) == 0)
-			{
-				if (PlayersChannel[playerid] == 999)
-				{
-					SendClientMessage(playerid, COLOR_GREY, "   Ban khong o trong kenh IRC !");
-					return 1;
-				}
-				new wstring[128];
-
-				format(string, sizeof(string), "%s", GN(playerid));
-				strmid(wstring, string, 0, strlen(string), 255);
-				if (strcmp(IRCInfo[PlayersChannel[playerid]][iAdmin], wstring, true) == 0)
-				{
-					new giveplayerid;
-					if (sscanf(params, "su", x_nr, giveplayerid))
-					{
-						SendClientMessage(playerid, COLOR_WHITE, "Su dung: /irc kick [playerid/Ten]");
-						return 1;
-					}
-					if (IsPlayerConnected(giveplayerid))
-					{
-						if (giveplayerid != INVALID_PLAYER_ID)
-						{
-							if (PlayersChannel[giveplayerid] == PlayersChannel[playerid])
-							{
-
-								format(string, sizeof(string), "* Ban da kick %s ra khoi kenh IRC cua ban.", GN(giveplayerid));
-								SendClientMessage(playerid, COLOR_YELLOW, string);
-								format(string, sizeof(string), "* Ban da bi kick ra khoi kenh IRC nay boi Admin kenh: %s.", GN(playerid));
-								SendClientMessage(giveplayerid, COLOR_YELLOW, string);
-								format(string, sizeof(string), "* %s da roi khoi kenh (Kicked).", GN(playerid));
-								SendIRCMessage(PlayersChannel[playerid], COLOR_GREEN, string);
-								IRCInfo[PlayersChannel[giveplayerid]][iPlayers] -= 1;
-								PlayersChannel[giveplayerid] = 999;
-							}
-							else
-							{
-								SendClientMessage(playerid, COLOR_GREY, "   Nguoi choi khong o trong kenh IRC cua ban !");
-								return 1;
-							}
-						}
-					}
-					else
-					{
-						SendClientMessage(playerid, COLOR_GREY, "   Nguoi choi dang Offline !");
-						return 1;
-					}
-				}
-				else
-				{
-					SendClientMessage(playerid, COLOR_GREY, "   Ban khong phai la Admin kenh !");
+					SendClientMessage(playerid, COLOR_GREY, "   Nguoi choi dang Offline !");
 					return 1;
 				}
 			}
 			else
 			{
-				SendClientMessage(playerid, COLOR_GREY, "   So kenh IRC khong hop le ! ");
+				SendClientMessage(playerid, COLOR_GREY, "   Ban khong phai la Admin kenh !");
 				return 1;
 			}
 		}
+		else
+		{
+			SendClientMessage(playerid, COLOR_GREY, "   So kenh IRC khong hop le ! ");
+			return 1;
+		}
 		return 1;
 	}
+	return 1;
 }
 CMD:i(playerid, params[])
 {
@@ -23585,7 +23586,6 @@ CMD:deliver(playerid, params[])
 					SendClientMessage(playerid, COLOR_GREY, "   Ban chua nhan bao tai News Reporters Building trong ngay hom nay !");
 					return 1;
 				}
-				new giveplayerid;
 				if (sscanf(params, "u", giveplayerid))
 				{
 					SendClientMessage(playerid, COLOR_GRAD1, "Su dung: /deliver [playerid/Ten]");
@@ -26651,7 +26651,7 @@ CMD:releasefish(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
-		new fishid, string[256];
+		new fishid;
 		if (sscanf(params, "i", fishid))
 			return SendClientMessage(playerid, COLOR_WHITE, "Su dung: /releasefish [fish]");
 
@@ -27605,8 +27605,6 @@ CMD:fill(playerid, params[])
 {
 	new idcar;
 	idcar = GetPlayerVehicleID(playerid);
-	new pveh, string[256];
-	pveh = GetVehicleModel(GetPlayerVehicleID(playerid));
 	if (IsPlayerConnected(playerid))
 	{
 		if (IsAtGasStation(playerid))
@@ -27729,7 +27727,7 @@ CMD:agent(playerid, params[])
 	{
 		if (PlayerInfo[playerid][pMember] == 2 || PlayerInfo[playerid][pLeader] == 2)
 		{
-			new x_nr[256], string[256];
+			new x_nr[256];
 			if (sscanf(params, "s", x_nr))
 				return SendClientMessage(playerid, COLOR_WHITE, "Su dung: /agent list then /agent [skin id]");
 		
@@ -28112,7 +28110,7 @@ CMD:find(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREY, "   Ban dang tim kiem ai do, xin thu lai sau 2 phut !");
 			return 1;
 		}
-		new giveplayerid, giveplayer[50], string[256];
+		new giveplayerid, giveplayer[50];
 		if (sscanf(params, "u", giveplayerid))
 			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /find [playerid/Ten]");
 
