@@ -359,7 +359,7 @@ CREATE TABLE `user` (
   `MarriedTo` varchar(255) DEFAULT NULL,
   `FishTool` int(11) DEFAULT '0',
   `Note1` varchar(255) DEFAULT NULL,
-  `Notes` int(11) DEFAULT '0',
+  `Note1s` int(11) DEFAULT '0',
   `Note2` varchar(255) DEFAULT NULL,
   `Note2s` int(11) DEFAULT '0',
   `Note3` varchar(255) DEFAULT NULL,

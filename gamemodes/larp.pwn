@@ -1873,7 +1873,7 @@ forward ConnectMySQL();
 public ConnectMySQL()
 {
 	conn = mysql_connect_file();
-	mysql_log(ALL);
+	mysql_log(ERROR);
 	if (mysql_errno(conn) == 0)
 		print("[MySQL] Connection successful!\n");
 	else
@@ -2092,11 +2092,11 @@ public SavePlayer(playerid)
 			{
 				if (i < 5)
 				{
-					format(sql, sizeof(sql), "%s Gun%d=%d", sql, i, PlayerInfo[playerid][pGun][i - 1]);
-					format(sql, sizeof(sql), "%s Ammo%d=%d", sql, i, PlayerInfo[playerid][pAmmo][i - 1]);
+					format(sql, sizeof(sql), "%s Gun%d=%d,", sql, i, PlayerInfo[playerid][pGun][i - 1]);
+					format(sql, sizeof(sql), "%s Ammo%d=%d,", sql, i, PlayerInfo[playerid][pAmmo][i - 1]);
 				}
-				format(sql, sizeof(sql), "%s Note%d='%s'", sql, i, PlayerInfo[playerid][pNote][i - 1]);
-				format(sql, sizeof(sql), "%s Note%ds=%d", sql, i, PlayerInfo[playerid][pNotes][i - 1]);
+				format(sql, sizeof(sql), "%s Note%d='%s',", sql, i, PlayerInfo[playerid][pNote][i - 1]);
+				format(sql, sizeof(sql), "%s Note%ds=%d,", sql, i, PlayerInfo[playerid][pNotes][i - 1]);
 			}
 		
 			format(sql, sizeof(sql), "%s \
@@ -2113,7 +2113,7 @@ public SavePlayer(playerid)
 				VirWorld=%d,\
 				Fuel=%d,\
 				Married=%d,\
-				MarriedTo=%s,\
+				MarriedTo='%s',\
 				FishTool=%d,\
 				InvWeapon=%d,\
 				InvAmmo=%d,\
@@ -4401,7 +4401,7 @@ public SetPlayerSpawn(playerid)
 			TogglePlayerControllable(playerid, 0);
 			RegistrationStep[playerid] = 1;
 			SendClientMessage(playerid, COLOR_YELLOW, "Chao mung ban den voi may chu Los Angeles Roleplay. Truoc tien ban can tra loi mot vai cau hoi");
-			SendClientMessage(playerid, COLOR_LIGHTRED, "Cau hoi dau tien: Ban la Nam/Nu? (Go cau tra loi).");
+			SendClientMessage(playerid, COLOR_LIGHTRED, "Cau hoi dau tien: Ban la 'Nam' hay 'Nu'? (Go cau tra loi).");
 			return 1;
 	    }
 	    if(AdminSpec[playerid] == 1)

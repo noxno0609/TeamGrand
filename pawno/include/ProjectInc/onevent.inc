@@ -4326,15 +4326,15 @@ public OnPlayerLogin(playerid, password[])
 	GetPlayerName(playerid, playername2, sizeof(playername2));
 
 	new sql[256];
-	format(sql, sizeof(sql), "SELECT * FROM user WHERE `Name` = '%s'", playername2);
+	format(sql, sizeof(sql), "SELECT * FROM `user` WHERE `Name` = '%s'", playername2);
 	mysql_query(conn, sql);
 	new rowcount;
 	cache_get_row_count(rowcount);
-	if (rowcount != 0)
+	if (rowcount > 0)
 	{
 		cache_get_value_name(0, "Password", PlayerInfo[playerid][pKey]);
 
-		if (strcmp(PlayerInfo[playerid][pKey], password, true) == 0)
+		if (!strcmp(PlayerInfo[playerid][pKey], password, true))
 		{
 			new temp;
 			new Float:tempf;
@@ -5052,11 +5052,11 @@ public OnPlayerText(playerid, text[])
 		{
 			new idx;
 			tmp = strtok(text, idx);
-			if ((strcmp("male", tmp, true, strlen(tmp)) == 0) && (strlen(tmp) == strlen("male")))
+			if ((strcmp("nam", tmp, true, strlen(tmp)) == 0) && (strlen(tmp) == strlen("nam")))
 			{
 				PlayerInfo[playerid][pSex] = 1;
-				SendClientMessage(playerid, COLOR_YELLOW2, "Ok, so you are a Male.");
-				SendClientMessage(playerid, COLOR_LIGHTRED, "What is your birthdate? (Use dd/mm/yyyy)");
+				SendClientMessage(playerid, COLOR_YELLOW2, "Gioi tinh cua ban la nam.");
+				SendClientMessage(playerid, COLOR_LIGHTRED, "Ban sinh ngay may? (Tra loi dang: dd/mm/yyyy)");
 				new maleskin;
 				maleskin = random(sizeof(CivMalePeds));
 				SetPlayerSkin(playerid, maleskin);
@@ -5064,11 +5064,11 @@ public OnPlayerText(playerid, text[])
 				RegistrationStep[playerid] = 2;
 				return 0;
 			}
-			else if ((strcmp("female", tmp, true, strlen(tmp)) == 0) && (strlen(tmp) == strlen("female")))
+			else if ((strcmp("nu", tmp, true, strlen(tmp)) == 0) && (strlen(tmp) == strlen("nu")))
 			{
 				PlayerInfo[playerid][pSex] = 2;
-				SendClientMessage(playerid, COLOR_YELLOW2, "Ok, so you are a Female.");
-				SendClientMessage(playerid, COLOR_LIGHTRED, "What is your birthdate? (Use dd/mm/yyyy)");
+				SendClientMessage(playerid, COLOR_YELLOW2, "Gioi tinh cua ban la nu.");
+				SendClientMessage(playerid, COLOR_LIGHTRED, "Ban sinh ngay may? (Tra loi dang: dd/mm/yyyy)");
 				new femaleskin;
 				femaleskin = random(sizeof(CivFemalePeds));
 				SetPlayerSkin(playerid, femaleskin);
@@ -5079,7 +5079,7 @@ public OnPlayerText(playerid, text[])
 			}
 			else
 			{
-				SendClientMessage(playerid, COLOR_LIGHTRED, "Are you a Male or Female? (Type in what you are).");
+				SendClientMessage(playerid, COLOR_LIGHTRED, "Ban la 'Nam' hay 'Nu'? (Go cau tra loi).");
 			}
 			return 0;
 		}
@@ -5091,13 +5091,13 @@ public OnPlayerText(playerid, text[])
 			split(text, DateInfo, '/');
 			if (year - strvalEx(DateInfo[2]) > 100 || strvalEx(DateInfo[2]) < 1 || strvalEx(DateInfo[2]) >= year)
 			{
-				SendClientMessage(playerid, COLOR_LIGHTRED, "What is your Birthdate? (Use dd/mm/yyyy)");
+				SendClientMessage(playerid, COLOR_LIGHTRED, "Ban sinh ngay may? (Tra loi dang: dd/mm/yyyy)");
 				return 0;
 			}
 			new check = year - strvalEx(DateInfo[2]);
 			if (check == year)
 			{
-				SendClientMessage(playerid, COLOR_LIGHTRED, "What is your Birthdate? (Use dd/mm/yyyy)");
+				SendClientMessage(playerid, COLOR_LIGHTRED, "Ban sinh ngay may? (Tra loi dang: dd/mm/yyyy)");
 				return 0;
 			}
 			if (strvalEx(DateInfo[1]) > month)
@@ -5109,10 +5109,10 @@ public OnPlayerText(playerid, text[])
 				check -= 1;
 			}
 			PlayerInfo[playerid][pAge] = check;
-			format(string, sizeof(string), "Ok, so you are %d year old.", PlayerInfo[playerid][pAge]);
+			format(string, sizeof(string), "Ban hien nay %d tuoi.", PlayerInfo[playerid][pAge]);
 			SendClientMessage(playerid, COLOR_YELLOW2, string);
 			RegistrationStep[playerid] = 3;
-			SendClientMessage(playerid, COLOR_LIGHTRED, "What is your Origin? (Type in: USA, Europe, Asia or Africa)");
+			SendClientMessage(playerid, COLOR_LIGHTRED, "Ban hien dang sinh song o? (Go: USA, Europe, Asia hoac Africa)");
 			return 0;
 		}
 		else if (RegistrationStep[playerid] == 3)
@@ -5122,17 +5122,17 @@ public OnPlayerText(playerid, text[])
 			if ((strcmp("usa", tmp, true, strlen(tmp)) == 0) && (strlen(tmp) == strlen("usa")))
 			{
 				PlayerInfo[playerid][pOrigin] = 1;
-				SendClientMessage(playerid, COLOR_YELLOW2, "Ok, so you are from the USA.");
-				SendClientMessage(playerid, COLOR_LIGHTRED, "Thank you for filling in all the information, now you will proceed to the Tutorial.");
+				SendClientMessage(playerid, COLOR_YELLOW2, "Ban da khai bao minh den tu USA.");
+				SendClientMessage(playerid, COLOR_LIGHTRED, "Cam on ban da tra loi cau hoi cua chung toi, chung ta se bat dau phan huong dan.");
 				RegistrationStep[playerid] = 0;
 				TutTime[playerid] = 1;
 				return 0;
 			}
-			else if ((strcmp("europe", tmp, true, strlen(tmp)) == 0) && (strlen(tmp) == strlen("europe")))
+			else if ((strcmp("europe", tmp, true, strlen(tmp)) == 0) && (strlen(tmp) == strlen("")))
 			{
 				PlayerInfo[playerid][pOrigin] = 2;
-				SendClientMessage(playerid, COLOR_YELLOW2, "Ok, so you are from Europe.");
-				SendClientMessage(playerid, COLOR_LIGHTRED, "Thank you for filling in all the information, now you will proceed to the Tutorial.");
+				SendClientMessage(playerid, COLOR_YELLOW2, "Ban da khai bao minh den tu Europe.");
+				SendClientMessage(playerid, COLOR_LIGHTRED, "Cam on ban da tra loi cau hoi cua chung toi, chung ta se bat dau phan huong dan.");
 				RegistrationStep[playerid] = 0;
 				TutTime[playerid] = 1;
 				return 0;
@@ -5140,8 +5140,8 @@ public OnPlayerText(playerid, text[])
 			else if ((strcmp("asia", tmp, true, strlen(tmp)) == 0) && (strlen(tmp) == strlen("asia")))
 			{
 				PlayerInfo[playerid][pOrigin] = 3;
-				SendClientMessage(playerid, COLOR_YELLOW2, "Ok, so you are from Asia.");
-				SendClientMessage(playerid, COLOR_LIGHTRED, "Thank you for filling in all the information, now you will proceed to the Tutorial.");
+				SendClientMessage(playerid, COLOR_YELLOW2, "Ban da khai bao minh den tu Asia.");
+				SendClientMessage(playerid, COLOR_LIGHTRED, "Cam on ban da tra loi cau hoi cua chung toi, chung ta se bat dau phan huong dan.");
 				RegistrationStep[playerid] = 0;
 				TutTime[playerid] = 1;
 				return 0;
@@ -5149,15 +5149,15 @@ public OnPlayerText(playerid, text[])
 			else if ((strcmp("africa", tmp, true, strlen(tmp)) == 0) && (strlen(tmp) == strlen("africa")))
 			{
 				PlayerInfo[playerid][pOrigin] = 4;
-				SendClientMessage(playerid, COLOR_YELLOW2, "Ok, so you are from Africa.");
-				SendClientMessage(playerid, COLOR_LIGHTRED, "Thank you for filling in all the information, now you will proceed to the Tutorial.");
+				SendClientMessage(playerid, COLOR_YELLOW2, "Ban da khai bao minh den tu Africa.");
+				SendClientMessage(playerid, COLOR_LIGHTRED, "Cam on ban da tra loi cau hoi cua chung toi, chung ta se bat dau phan huong dan.");
 				RegistrationStep[playerid] = 0;
 				TutTime[playerid] = 1;
 				return 0;
 			}
 			else
 			{
-				SendClientMessage(playerid, COLOR_LIGHTRED, "What is your Origin? (Type in: USA, Europe, Asia or Africa)");
+				SendClientMessage(playerid, COLOR_LIGHTRED, "Ban hien dang sinh song o? (Go: USA, Europe, Asia hoac Africa)");
 			}
 			return 0;
 		}
