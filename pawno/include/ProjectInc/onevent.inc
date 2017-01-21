@@ -13752,31 +13752,38 @@ CMD:whisper(playerid, params[])
 		{
 			if (giveplayerid != INVALID_PLAYER_ID)
 			{
-				new Float:x, Float:y, Float:z;
-				GetPlayerPos(giveplayerid, x, y, z);
-				if (PlayerToPoint(5, playerid, x, y, z))
+				if (PlayerInfo[playerid][pAdmin] > 0)
 				{
-					GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
-					if (giveplayerid == playerid)
+					format(string, sizeof(string), "[Admin] %s: %s", GN(playerid), result);
+					SendClientMessage(playa, COLOR_YELLOW, mess);
+				}
+				else {
+					new Float:x, Float : y, Float : z;
+					GetPlayerPos(giveplayerid, x, y, z);
+					if (PlayerToPoint(5, playerid, x, y, z))
 					{
-						format(string, sizeof(string), "* %s mutters something to himself.", GN(playerid));
-						ProxDetector(5.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+						GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
+						if (giveplayerid == playerid)
+						{
+							format(string, sizeof(string), "* %s mutters something to himself.", GN(playerid));
+							ProxDetector(5.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+						}
+						else
+						{
+							format(string, sizeof(string), "* %s whispers something to %s", GN(playerid), giveplayer);
+							ProxDetector(15.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+						}
+						format(string, sizeof(string), "%s whispers: %s", GN(playerid), (result));
+						SendClientMessage(giveplayerid, COLOR_YELLOW, string);
+						format(string, sizeof(string), "%s whispers: %s", GN(playerid), (result));
+						SendClientMessage(playerid, COLOR_YELLOW, string);
+						return 1;
 					}
 					else
 					{
-						format(string, sizeof(string), "* %s whispers something to %s", GN(playerid), giveplayer);
-						ProxDetector(15.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+						SendClientMessage(playerid, COLOR_GREY, "    Nguoi choi do khong gan ban !");
+						return 1;
 					}
-					format(string, sizeof(string), "%s whispers: %s", GN(playerid), (result));
-					SendClientMessage(giveplayerid, COLOR_YELLOW, string);
-					format(string, sizeof(string), "%s whispers: %s", GN(playerid), (result));
-					SendClientMessage(playerid, COLOR_YELLOW, string);
-					return 1;
-				}
-				else
-				{
-					SendClientMessage(playerid, COLOR_GREY, "    Nguoi choi do khong gan ban !");
-					return 1;
 				}
 			}
 		}
