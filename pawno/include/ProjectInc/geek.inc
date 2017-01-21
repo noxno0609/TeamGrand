@@ -9,4 +9,5 @@ CMD:w(playerid, params[])
 		SCM(playa, COLOR_YELLOW, mess);
 		return 1;
 	}
+	return 1;
 }

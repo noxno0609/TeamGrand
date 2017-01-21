@@ -18183,7 +18183,6 @@ CMD:tv(playerid, params[])
 	}
 	return 1;
 	}*/
-
 CMD:admin(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -18963,7 +18962,6 @@ CMD:uninvite(playerid, params[])
 				{
 					if (PlayerInfo[para1][pMember] > 0)
 					{
-
 						printf("AdmCMD: %s da moi %s ra.", GN(playerid), GN(para1));
 						format(string, sizeof(string), "* Ban da bi kick ra khoi Family / Luc luong canh sat, boi Leader %s.", GN(playerid));
 						SendClientMessage(para1, COLOR_WHITE, string);
@@ -20193,7 +20191,7 @@ CMD:getcar(playerid, params[])
 	if (IsPlayerConnected(playerid))
 	{
 		new plo;
-		if (sscanf(params, "u", plo))
+		if (sscanf(params, "i", plo))
 		{
 			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /getcar [carid]");
 			return 1;
@@ -27485,22 +27483,22 @@ CMD:takejob(playerid, params[])
 			}*/
 			else if (GetPlayerState(playerid) == 1 && PlayerToPoint(3.0, playerid, 347.7374, 193.7241, 1014.1875))
 			{
-				SendClientMessage(playerid, COLOR_WHITE, "* Ban muon tro thanh mot luat su, dam nhan 5 gio hop dong.");
-				SendClientMessage(playerid, COLOR_WHITE, "* Ban phai thuc hien hop dong nay dau tien, neu ban muon nghi viec sau.");
+				/*SendClientMessage(playerid, COLOR_WHITE, "* Ban muon tro thanh mot luat su, dam nhan 5 gio hop dong.");
+				SendClientMessage(playerid, COLOR_WHITE, "* Ban phai thuc hien hop dong nay dau tien, neu ban muon nghi viec sau.");*/
 				SendClientMessage(playerid, COLOR_WHITE, "* Neu ban chac chan muon lam viec nay, go /accept job.");
 				GettingJob[playerid] = 2;
 			}
 			else if (GetPlayerState(playerid) == 1 && PlayerToPoint(3.0, playerid, 1215.1304, -11.8431, 1000.9219))
 			{
-				SendClientMessage(playerid, COLOR_WHITE, "* Ban muon tro thanh mot tu ba, dam nhan 5 gio hop dong.");
-				SendClientMessage(playerid, COLOR_WHITE, "* Ban phai thuc hien hop dong nay dau tien, if you want to Quit the job later.");
+				/*SendClientMessage(playerid, COLOR_WHITE, "* Ban muon tro thanh mot tu ba, dam nhan 5 gio hop dong.");
+				SendClientMessage(playerid, COLOR_WHITE, "* Ban phai thuc hien hop dong nay dau tien, if you want to Quit the job later.");*/
 				SendClientMessage(playerid, COLOR_WHITE, "* Neu ban chac chan muon lam viec nay, go /accept job.");
 				GettingJob[playerid] = 3;
 			}
 			else if (GetPlayerState(playerid) == 1 && PlayerToPoint(3.0, playerid, 2072.5486, -1582.8029, 13.4741))
 			{
-				SendClientMessage(playerid, COLOR_WHITE, "* Ban muon tro thanh mot ke buon thuoc phien, dam nhan 5 gio hop dong.");
-				SendClientMessage(playerid, COLOR_WHITE, "* Ban phai thuc hien hop dong nay dau tien, neu ban muon nghi viec sau.");
+				/*SendClientMessage(playerid, COLOR_WHITE, "* Ban muon tro thanh mot ke buon thuoc phien, dam nhan 5 gio hop dong.");
+				SendClientMessage(playerid, COLOR_WHITE, "* Ban phai thuc hien hop dong nay dau tien, neu ban muon nghi viec sau.");*/
 				SendClientMessage(playerid, COLOR_WHITE, "* Neu ban chac chan muon lam viec nay, go /accept job.");
 				GettingJob[playerid] = 4;
 			}
@@ -27513,22 +27511,22 @@ CMD:takejob(playerid, params[])
 			}*/
 			else if (GetPlayerState(playerid) == 1 && PlayerToPoint(3.0, playerid, 2077.52, -2013.56, 13.54))
 			{
-				SendClientMessage(playerid, COLOR_WHITE, "* Ban muon tro thanh mot tho sua xe, dam nhan 5 gio hop dong.");
-				SendClientMessage(playerid, COLOR_WHITE, "* Ban phai thuc hien hop dong nay dau tien, neu ban muon nghi viec sau.");
+				/*SendClientMessage(playerid, COLOR_WHITE, "* Ban muon tro thanh mot tho sua xe, dam nhan 5 gio hop dong.");
+				SendClientMessage(playerid, COLOR_WHITE, "* Ban phai thuc hien hop dong nay dau tien, neu ban muon nghi viec sau.");*/
 				SendClientMessage(playerid, COLOR_WHITE, "* Neu ban chac chan muon lam viec nay, go /accept job.");
 				GettingJob[playerid] = 7;
 			}
 			else if (GetPlayerState(playerid) == 1 && PlayerToPoint(3.0, playerid, 2226.1716, -1718.1792, 13.5165))
 			{
-				SendClientMessage(playerid, COLOR_WHITE, "* Ban muon tro thanh mot ve si, dam nhan 5 gio hop dong.");
-				SendClientMessage(playerid, COLOR_WHITE, "* Ban phai thuc hien hop dong nay dau tien, neu ban muon nghi viec sau.");
+				/*SendClientMessage(playerid, COLOR_WHITE, "* Ban muon tro thanh mot ve si, dam nhan 5 gio hop dong.");
+				SendClientMessage(playerid, COLOR_WHITE, "* Ban phai thuc hien hop dong nay dau tien, neu ban muon nghi viec sau.");*/
 				SendClientMessage(playerid, COLOR_WHITE, "* Neu ban chac chan muon lam viec nay, go /accept job.");
 				GettingJob[playerid] = 8;
 			}
 			else if (GetPlayerState(playerid) == 1 && PlayerToPoint(3.0, playerid, 213.8549, -230.5761, 1.7786))
-			{
+			{/*
 				SendClientMessage(playerid, COLOR_WHITE, "* Ban muon tro thanh mot ke buon vat lieu, dam nhan 5 gio hop dong.");
-				SendClientMessage(playerid, COLOR_WHITE, "* Ban phai thuc hien hop dong nay dau tien, neu ban muon nghi viec sau.");
+				SendClientMessage(playerid, COLOR_WHITE, "* Ban phai thuc hien hop dong nay dau tien, neu ban muon nghi viec sau.");*/
 				SendClientMessage(playerid, COLOR_WHITE, "* Neu ban chac chan muon lam viec nay, go /accept job.");
 				GettingJob[playerid] = 22;
 			}
@@ -27541,15 +27539,15 @@ CMD:takejob(playerid, params[])
 			}*/
 			else if (GetPlayerState(playerid) == 1 && PlayerToPoint(3.0, playerid, 766.0804, 14.5133, 1000.7004))
 			{
-				SendClientMessage(playerid, COLOR_WHITE, "* Ban muon tro thanh mot boxer, dam nhan 5 gio hop dong.");
-				SendClientMessage(playerid, COLOR_WHITE, "* Ban phai thuc hien hop dong nay dau tien, neu ban muon nghi viec sau.");
+				/*SendClientMessage(playerid, COLOR_WHITE, "* Ban muon tro thanh mot boxer, dam nhan 5 gio hop dong.");
+				SendClientMessage(playerid, COLOR_WHITE, "* Ban phai thuc hien hop dong nay dau tien, neu ban muon nghi viec sau.");*/
 				SendClientMessage(playerid, COLOR_WHITE, "* Neu ban chac chan muon lam viec nay, go /accept job.");
 				GettingJob[playerid] = 12;
 			}
 			else if (GetPlayerState(playerid) == 1 && PlayerToPoint(3.0, playerid, 1154.2208, -1770.8203, 16.5992))
 			{
-				SendClientMessage(playerid, COLOR_WHITE, "* Ban muon tro thanh mot nguoi lai xe bus, dam nhan 5 gio hop dong.");
-				SendClientMessage(playerid, COLOR_WHITE, "* Ban phai thuc hien hop dong nay dau tien, neu ban muon nghi viec sau.");
+				/*SendClientMessage(playerid, COLOR_WHITE, "* Ban muon tro thanh mot nguoi lai xe bus, dam nhan 5 gio hop dong.");
+				SendClientMessage(playerid, COLOR_WHITE, "* Ban phai thuc hien hop dong nay dau tien, neu ban muon nghi viec sau.");*/
 				SendClientMessage(playerid, COLOR_WHITE, "* Neu ban chac chan muon lam viec nay, go /accept job.");
 				GettingJob[playerid] = 14;
 			}
@@ -27562,22 +27560,22 @@ CMD:takejob(playerid, params[])
 			}*/
 			else if (GetPlayerState(playerid) == 1 && PlayerToPoint(3.0, playerid, 2439.7710, -2120.9285, 13.5469))
 			{
-				SendClientMessage(playerid, COLOR_WHITE, "* Ban muon tro thanh mot trucker, dam nhan 5 gio hop dong.");
-				SendClientMessage(playerid, COLOR_WHITE, "* Ban phai thuc hien hop dong nay dau tien, neu ban muon nghi viec sau.");
+				/*SendClientMessage(playerid, COLOR_WHITE, "* Ban muon tro thanh mot trucker, dam nhan 5 gio hop dong.");
+				SendClientMessage(playerid, COLOR_WHITE, "* Ban phai thuc hien hop dong nay dau tien, neu ban muon nghi viec sau.");*/
 				SendClientMessage(playerid, COLOR_WHITE, "* Neu ban chac chan muon lam viec nay, go /accept job.");
 				GettingJob[playerid] = 16;
 			}
 			else if (GetPlayerState(playerid) == 1 && PlayerToPoint(3.0, playerid, 2101.7620, -1812.5922, 13.5547))
 			{
-				SendClientMessage(playerid, COLOR_WHITE, "* Ban muon tro thanh mot pizza boy, dam nhan 5 gio hop dong.");
-				SendClientMessage(playerid, COLOR_WHITE, "* Ban phai thuc hien hop dong nay dau tien, neu ban muon nghi viec sau.");
+				/*SendClientMessage(playerid, COLOR_WHITE, "* Ban muon tro thanh mot pizza boy, dam nhan 5 gio hop dong.");
+				SendClientMessage(playerid, COLOR_WHITE, "* Ban phai thuc hien hop dong nay dau tien, neu ban muon nghi viec sau.");*/
 				SendClientMessage(playerid, COLOR_WHITE, "* Neu ban chac chan muon lam viec nay, go /accept job.");
 				GettingJob[playerid] = 17;
 			}
 			else if (GetPlayerState(playerid) == 1 && PlayerToPoint(3.0, playerid, -382.6660, -1426.5121, 26.2410))
 			{
-				SendClientMessage(playerid, COLOR_WHITE, "* Ban muon tro thanh mot nong dan, dam nhan 5 gio hop dong.");
-				SendClientMessage(playerid, COLOR_WHITE, "* Ban phai thuc hien hop dong nay dau tien, neu ban muon nghi viec sau.");
+				/*SendClientMessage(playerid, COLOR_WHITE, "* Ban muon tro thanh mot nong dan, dam nhan 5 gio hop dong.");
+				SendClientMessage(playerid, COLOR_WHITE, "* Ban phai thuc hien hop dong nay dau tien, neu ban muon nghi viec sau.");*/
 				SendClientMessage(playerid, COLOR_WHITE, "* Neu ban chac chan muon lam viec nay, go /accept job.");
 				GettingJob[playerid] = 18;
 			}
@@ -27585,16 +27583,16 @@ CMD:takejob(playerid, params[])
 			{
 				if (PlayerInfo[playerid][pMember] == 16 || PlayerInfo[playerid][pLeader] == 16)
 				{
-					SendClientMessage(playerid, COLOR_WHITE, "* Ban muon tro thanh mot ke buon lau thuoc, dam nhan 5 gio hop dong.");
-					SendClientMessage(playerid, COLOR_WHITE, "* Ban phai thuc hien hop dong nay dau tien, neu ban muon nghi viec sau.");
+					/*SendClientMessage(playerid, COLOR_WHITE, "* Ban muon tro thanh mot ke buon lau thuoc, dam nhan 5 gio hop dong.");
+					SendClientMessage(playerid, COLOR_WHITE, "* Ban phai thuc hien hop dong nay dau tien, neu ban muon nghi viec sau.");*/
 					SendClientMessage(playerid, COLOR_WHITE, "* Neu ban chac chan muon lam viec nay, go /accept job.");
 					GettingJob[playerid] = 20;
 				}
 			}
 			else if (GetPlayerState(playerid) == 1 && PlayerToPoint(3.0, playerid, 1611.5129, -1893.6997, 13.5469))
 			{
-				SendClientMessage(playerid, COLOR_WHITE, "* Ban muon tro thanh mot cong nhan don dep duong pho, dam nhan 5 gio hop dong.");
-				SendClientMessage(playerid, COLOR_WHITE, "* Ban phai thuc hien hop dong nay dau tien, neu ban muon nghi viec sau.");
+				/*SendClientMessage(playerid, COLOR_WHITE, "* Ban muon tro thanh mot cong nhan don dep duong pho, dam nhan 5 gio hop dong.");
+				SendClientMessage(playerid, COLOR_WHITE, "* Ban phai thuc hien hop dong nay dau tien, neu ban muon nghi viec sau.");*/
 				SendClientMessage(playerid, COLOR_WHITE, "* Neu ban chac chan muon lam viec nay, go /accept job.");
 				GettingJob[playerid] = 21;
 			}
@@ -28999,12 +28997,12 @@ CMD:accept(playerid, params[])
 		{
 			if (GettingJob[playerid] > 0)
 			{
-				if (PlayerInfo[playerid][pMember] >= 1 && PlayerInfo[playerid][pMember] <= 4 || PlayerInfo[playerid][pMember] > 5 && PlayerInfo[playerid][pMember] < 15 || PlayerInfo[playerid][pFMember] < 255)
+				/*if (PlayerInfo[playerid][pMember] >= 1 && PlayerInfo[playerid][pMember] <= 4 || PlayerInfo[playerid][pMember] > 5 && PlayerInfo[playerid][pMember] < 15 || PlayerInfo[playerid][pFMember] < 255)
 				{
 					SendClientMessage(playerid, COLOR_GREY, "   Khong the nhan viec, ban dang trong Family !");
 					return 1;
-				}
-				SendClientMessage(playerid, COLOR_WHITE, "* Bay gio ban da chap nhan cong viec ban muon lam, ban co 5 gio lam viec trong hop dong cong viec.");
+				}*/
+				//SendClientMessage(playerid, COLOR_WHITE, "* Bay gio ban da chap nhan cong viec ban muon lam, ban co 5 gio lam viec trong hop dong cong viec.");
 				SendClientMessage(playerid, COLOR_WHITE, "* Chuc mung ban da co cong viec moi, go /help de xem huong dan cong viec.");
 				PlayerInfo[playerid][pJob] = GettingJob[playerid];
 				GettingJob[playerid] = 0;
@@ -30112,7 +30110,7 @@ CMD:family(playerid, params[])
 		}
 		else
 		{
-			SendClientMessage(playerid, COLOR_GRAD2, "   you are not part of a Family!");
+			SendClientMessage(playerid, COLOR_GRAD2, "   You are not part of a Family!");
 			return 1;
 		}
 	}//not connected
@@ -31408,10 +31406,10 @@ return 1;
 }*/
 CMD:quitjob(playerid, params[])
 {
-		 new string[256];
+	//new string[256];
 	if (IsPlayerConnected(playerid))
 	{
-		if (PlayerInfo[playerid][pJob] > 1)
+		if (PlayerInfo[playerid][pJob] > 0)
 		{
 			SendClientMessage(playerid, COLOR_WHITE, "* Ban da bo viec thanh cong!");
 			PlayerInfo[playerid][pJob] = 0;
@@ -31449,10 +31447,8 @@ CMD:quitjob(playerid, params[])
 				}
 			}*/
 		}
-		else
-		{
-			SendClientMessage(playerid, COLOR_GREY, "   You don't even have a Job !");
-		}
+		else SendClientMessage(playerid, COLOR_GREY, "   You don't even have a Job !");
+		
 	}//not connected
 	return 1;
 }

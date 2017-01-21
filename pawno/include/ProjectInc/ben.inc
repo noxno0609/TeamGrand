@@ -1,9 +1,3 @@
-CMD:haha(playerid, params[])
-{
-	SCM(playerid, COLOR_RED, "ABCDXYZ");
-	return 1;
-}
-
 forward OnPIDUpdate(playerid);
 public OnPIDUpdate(playerid)
 {
