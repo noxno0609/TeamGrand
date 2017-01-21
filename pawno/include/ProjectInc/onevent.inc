@@ -6205,7 +6205,7 @@ CMD:report(playerid, params[])
 			return 1;
 		}
 		new giveplayerid, resultz[128];
-		if (sscanf(params, "us", giveplayerid, resultz))
+		if (sscanf(params, "us[128]", giveplayerid, resultz))
 			return SCM(playerid, COLOR_GRAD2, "Su dung: (/re)port [playerid/PartOfName] [text]");
 
 		if (IsPlayerConnected(giveplayerid))
@@ -6231,8 +6231,8 @@ CMD:askq(playerid, params[])
 	if (IsPlayerConnected(playerid))
 	{
 		new string[128];
-		new result;
-		if (sscanf(params, "s", result )) return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /askq [text]");
+		new result[128];
+		if (sscanf(params, "s[128]", result)) return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /askq [text]");
 		format(string, sizeof(string), "Cau hoi tu %s: %s", GN(playerid), (result));
 		ABroadCast(COLOR_ASKQ, string, 1);
 		SendClientMessage(playerid, COLOR_ASKQ, "Cau hoi cua ban da duoc gui den Admins.");
@@ -6558,7 +6558,7 @@ CMD:givedrugs(playerid, params[])
 		{
 			new giveplayerid, money;
 			new string[256];
-			if (sscanf(params, "us", giveplayerid, money)) return SendClientMessage(playerid, COLOR_GRAD1, "Su dung: /givedrugs [playerid/PartOfName] [amount]");
+			if (sscanf(params, "ui", giveplayerid, money)) return SendClientMessage(playerid, COLOR_GRAD1, "Su dung: /givedrugs [playerid/PartOfName] [amount]");
 			PlayerInfo[giveplayerid][pDrugs] += money;
 			format(string, 256, "AdmWarning: %s has given %s %d drugs.", GN(playerid), GN(giveplayerid), money);
 			ABroadCast(COLOR_YELLOW, string, 1);
@@ -7207,7 +7207,7 @@ CMD:changepass(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREY, "   Thay doi nay se duoc cap nhat trong lan dang nhap tiep theo.");
 		}
 		new tmp[256];
-		if (sscanf(params, "s", tmp))
+		if (sscanf(params, "s[256]", tmp))
 			return SendClientMessage(playerid, COLOR_GRAD1, "Su dung: /changepass [password]");
 
 		format(PlayerInfo[playerid][pKey], 128, tmp);
@@ -7944,7 +7944,7 @@ CMD:spa(playerid, params[])
 		if (PlayerInfo[playerid][pLeader] == 5 || PlayerInfo[playerid][pMember] == 5)
 		{
 			new result[128], string[256];
-			if (sscanf(params, "s", result))
+			if (sscanf(params, "s[128]", result))
 				return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/spa)nish [chat]");
 
 			new Float:x, Float:y, Float:z;
@@ -7988,7 +7988,7 @@ CMD:jap(playerid, params[])
 		if (PlayerInfo[playerid][pLeader] == 14 || PlayerInfo[playerid][pMember] == 14)
 		{
 			new result[128], string[256];
-			if (sscanf(params, "s", result))
+			if (sscanf(params, "s[128]", result))
 				return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/jap)aneese [chat]");
 		
 			new Float:x, Float:y, Float:z;
@@ -8084,7 +8084,7 @@ CMD:showbadge(playerid, params[])
 		if (PlayerInfo[playerid][pMember] == 1 || PlayerInfo[playerid][pLeader] == 1)
 		{
 			new giveplayerid, string[256];
-			if (sscanf(params, "s", giveplayerid))
+			if (sscanf(params, "u", giveplayerid))
 				return SendClientMessage(playerid, COLOR_WHITE, "Su dung: /showbadge [playerid/PartOfName]");
 
 			if (IsPlayerConnected(giveplayerid))
@@ -8284,7 +8284,7 @@ CMD:themnote(playerid, params[])
 		}
 		
 		new result[64];
-		if(sscanf(params, "s", result))
+		if(sscanf(params, "s[64]", result))
 			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung lenh: /themnote [text]");
 
 		for (new i = 0; i < 5; i++)
@@ -8728,7 +8728,7 @@ CMD:v(playerid, params[])
 		new x_nr[64], string[256], giveplayerid, giveplayer[50], playername[50];
 		new idcar;
 		idcar = GetPlayerVehicleID(playerid);
-		if(sscanf(params, "s", x_nr))
+		if(sscanf(params, "s[256]", x_nr))
 		{
 			SendClientMessage(playerid, COLOR_WHITE, "Meo: (/v)ehicle [name]");
 			SendClientMessage(playerid, COLOR_WHITE, "Available names: park, lock(1-3), sell, sellto, color");
@@ -8805,7 +8805,7 @@ CMD:v(playerid, params[])
 				else { return 1; }
 				if (strcmp(GN(playerid), CarInfo[ownvehkey][cOwner], true) == 0)
 				{
-					if (sscanf(params, "sui", x_nr, giveplayerid, price))
+					if (sscanf(params, "s[256]ui", x_nr, giveplayerid, price))
 						return SendClientMessage(playerid, COLOR_WHITE, "Meo: /v sellto [playerid/PartOfName] [price]");
 
 					if (IsPlayerConnected(giveplayerid))
@@ -9069,7 +9069,7 @@ CMD:v(playerid, params[])
 				return 1;
 			}
 			new color1, color2;
-			if (sscanf(params, "sii", x_nr, color1, color2))
+			if (sscanf(params, "s[256]ii", x_nr, color1, color2))
 				return SendClientMessage(playerid, COLOR_WHITE, "Su dung: /v color [ColorOneID] [ColorTwoID]");
 
 			if (color1 < 0 && color1 > 126)
@@ -9166,7 +9166,7 @@ CMD:trunk(playerid, params[])
 	if (IsPlayerConnected(playerid))
 	{
 		new x_nr[64], string[256];
-		if (sscanf(params, "s", x_nr))
+		if (sscanf(params, "s[256]", x_nr))
 		{
 			SendClientMessage(playerid, COLOR_WHITE, "Meo: /trunk [name]");
 			SendClientMessage(playerid, COLOR_WHITE, "Available names: info, putgun, takegun, putarmour, takearmour");
@@ -10228,7 +10228,7 @@ CMD:creategun(playerid, params[])
 			return 1;
 		}
 		new x_weapon[256];
-		if (sscanf(params, "s", x_weapon))
+		if (sscanf(params, "s[256]", x_weapon))
 		{
 			SendClientMessage(playerid, COLOR_GREEN, "________________________________________________");
 			SendClientMessage(playerid, COLOR_WHITE, "Su dung: /creategun [weapon name]");
@@ -10633,7 +10633,7 @@ CMD:ooc(playerid, params[])
 		}
 		
 		new result[128], string[256];
-		if(sscanf(params, "s", result))
+		if(sscanf(params, "s[256]", result))
 			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung lenh: (/o)oc [ooc chat]");
 
 		format(string, sizeof(string), "[OOC] %s: %s ", GN(playerid), result);
@@ -10679,7 +10679,7 @@ CMD:aooc(playerid, params[])
 		}
 		
 		new result[128], string[256];
-		if (sscanf(params, "s", result))
+		if (sscanf(params, "s[256]", result))
 			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung lenh: (/ao)oc [aooc chat]");
 
 		format(string, sizeof(string), "[AOOC] Admin %s: %s ", GN(playerid), result);
@@ -11889,7 +11889,7 @@ CMD:buygun(playerid, params[])
 				return 1;
 			}
 			new mod = 100;
-			if(sscanf(params, "si", gun, ammo))
+			if(sscanf(params, "s[256]i", gun, ammo))
 			{
 				format(string, sizeof(string), "Su dung: /buygun [gunname] [ammoamount]");
 				SendClientMessage(playerid, COLOR_GREEN, "_______________________________________");
@@ -12056,7 +12056,7 @@ CMD:upgrade(playerid, params[])
 		new gunid[16], string[256];
 		new infostring[256];
 		new upgradepoints = PlayerInfo[playerid][gPupgrade] - 1;
-		if (sscanf(params, "s", gunid))
+		if (sscanf(params, "s[256]", gunid))
 		{
 			format(string, sizeof(string), "Su dung: /upgrade [upgradename] (You have %d Upgrade points)", upgradepoints);
 			SendClientMessage(playerid, COLOR_GREEN, "_______________________________________");
@@ -12361,7 +12361,7 @@ CMD:advertise(playerid, params[])
 			return 1;
 		}
 		new result[50], string[256];
-		if(sscanf(params, "s", result))
+		if(sscanf(params, "s[256]", result))
 			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/ad)vertise [advert text]");
 
 		if ((!adds) && (PlayerInfo[playerid][pAdmin] < 1))
@@ -12410,7 +12410,7 @@ CMD:government(playerid, params[])
 		}
 		
 		new result[50], string[256];
-		if(sscanf(params, "s", result))
+		if(sscanf(params, "s[256]", result))
 			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/gov)ernment [text]");
 
 		SendClientMessageToAll(COLOR_WHITE, "|___________ Government News Announcement ___________|");
@@ -12534,7 +12534,7 @@ CMD:me(playerid, params[])
 			return 1;
 		}
 		new string[256], result[50];
-		if(sscanf(params, "s", result))
+		if(sscanf(params, "s[256]", result))
 			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /me [action]");
 
 		if (PlayerInfo[playerid][pMaskuse] == 1)
@@ -12560,7 +12560,7 @@ CMD:try(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREY, "   Ban chua dang nhap !");
 			return 1;
 		}
-		if (sscanf(params, "s", result)) return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /try [action]");
+		if (sscanf(params, "s[256]", result)) return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /try [action]");
 		new randa = random(2) + 1;
 		if (PlayerInfo[playerid][pMaskuse] == 1)
 		{
@@ -12583,7 +12583,7 @@ CMD:do(playerid, params[])
 	if (gPlayerLogged[playerid] == 0) return SendClientMessage(playerid, COLOR_GREY, "  Ban chua dang nhap !");
 
 	new result[128];
-	if (sscanf(params, "s", result)) return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /do [action]");
+	if (sscanf(params, "s[256]", result)) return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /do [action]");
 	if (PlayerInfo[playerid][pMaskuse] == 1)
 		format(str, sizeof(str), "* %s (( Stranger ))", result);
 	else
@@ -12604,7 +12604,7 @@ CMD:local(playerid, params[])
 		}
 		
 		new string[256], result[50];
-		if (sscanf(params, "s", result))
+		if (sscanf(params, "s[256]", result))
 			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /local [local chat]");
 
 		if (!IsPlayerInAnyVehicle(playerid))
@@ -12681,7 +12681,7 @@ CMD:b(playerid, params[])
 		}
 		
 		new string[256], result[50];
-		if (sscanf(params, "s", result))
+		if (sscanf(params, "s[256]", result))
 			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /b [local ooc chat]");
 
 		if (PlayerInfo[playerid][pMaskuse] == 1)
@@ -12708,7 +12708,7 @@ CMD:close(playerid, params[])
 		}
 		
 		new string[256], result[50];
-		if (sscanf(params, "s", result))
+		if (sscanf(params, "s[256]", result))
 			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /(c)lose [close chat text]");
 
 		if (PlayerInfo[playerid][pMaskuse] == 1)
@@ -12735,7 +12735,7 @@ CMD:low(playerid, params[])
 		}
 		
 		new string[256], result[50];
-		if (sscanf(params, "s", result))
+		if (sscanf(params, "s[256]", result))
 			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /low [chat text]");
 
 		if (PlayerInfo[playerid][pMaskuse] == 1)
@@ -12762,7 +12762,7 @@ CMD:shout(playerid, params[])
 		}
 		
 		new string[256], result[50];
-		if (sscanf(params, "s", result))
+		if (sscanf(params, "s[256]", result))
 			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/s)hout [local chat]");
 
 		if (PlayerInfo[playerid][pMaskuse] == 1)
@@ -12786,7 +12786,7 @@ CMD:megaphone(playerid, params[])
 		
 		new result[64];
 		new string[256];
-		if (sscanf(params, "s", result))
+		if (sscanf(params, "s[256]", result))
 			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/m)egaphone [megaphone chat]");
 
 		if (gTeam[playerid] == 2 || IsACop(playerid) || IsAnFbiCar(playerid))
@@ -12836,7 +12836,7 @@ CMD:radio(playerid, params[])
 		
 		new result[64];
 		new string[256];
-		if (sscanf(params, "s", result))
+		if (sscanf(params, "s[256]", result))
 			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/r)adio [radio chat]");
 
 		if (PlayerInfo[playerid][pMember] == 1 || PlayerInfo[playerid][pLeader] == 1)
@@ -13189,7 +13189,7 @@ CMD:departments(playerid, params[])
 	if (IsPlayerConnected(playerid))
 	{
 		new string[256], result[50];
-		if (sscanf(params, "s", result))
+		if (sscanf(params, "s[256]", result))
 			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/d)epartments [department chat]");
 
 		if (PlayerInfo[playerid][pMember] == 1 || PlayerInfo[playerid][pLeader] == 1)
@@ -13337,7 +13337,7 @@ CMD:suspect(playerid, params[])
 			return 1;
 		}
 		new giveplayerid, giveplayer[50], result[50], string[256];
-		if(sscanf(params, "us", giveplayerid, result))
+		if(sscanf(params, "us[50]", giveplayerid, result))
 			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/su)spect [playerid/PartOfName] [crime discription]");
 
 		if (gTeam[playerid] == 2 || IsACop(playerid))
@@ -13701,7 +13701,7 @@ CMD:pme(playerid, params[])
 			return 1;
 		}
 		new giveplayerid, giveplayer[50], result[50], string[256];
-		if (sscanf(params, "us", giveplayerid, result))
+		if (sscanf(params, "us[50]", giveplayerid, result))
 			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/p)me [playerid/PartOfName] [text]");
 			
 		if (IsPlayerConnected(giveplayerid))
@@ -13744,8 +13744,8 @@ CMD:whisper(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREY, "   Ban chua dang nhap!");
 			return 1;
 		}
-		new giveplayerid, giveplayer[50], string[256], result;
-		if (sscanf(params, "us"))
+		new giveplayerid, giveplayer[50], string[256], result[256];
+		if (sscanf(params, "us[256]", giveplayerid, result))
 			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/w)hisper [playerid/PartOfName] [whisper text]");
 
 		if (IsPlayerConnected(giveplayerid))
@@ -13755,17 +13755,17 @@ CMD:whisper(playerid, params[])
 				if (PlayerInfo[playerid][pAdmin] > 0)
 				{
 					format(string, sizeof(string), "[Admin] %s: %s", GN(playerid), result);
-					SendClientMessage(playa, COLOR_YELLOW, mess);
+					SendClientMessage(giveplayerid, COLOR_YELLOW, string);
 				}
 				else {
-					new Float:x, Float : y, Float : z;
+					new Float:x, Float:y, Float:z;
 					GetPlayerPos(giveplayerid, x, y, z);
 					if (PlayerToPoint(5, playerid, x, y, z))
 					{
 						GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
 						if (giveplayerid == playerid)
 						{
-							format(string, sizeof(string), "* %s mutters something to himself.", GN(playerid));
+							format(string, sizeof(string), "* %s dang tu lam nham gi do.", GN(playerid));
 							ProxDetector(5.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 						}
 						else
@@ -13810,7 +13810,7 @@ CMD:cw(playerid, params[])
 			return 1;
 		}
 		new result[50],string[256];
-		if(sscanf(params, "s", result))
+		if(sscanf(params, "s[256]", result))
 			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/cw)hisper [text]");
 	
 		new vehicle = GetPlayerVehicleID(playerid);
@@ -16158,7 +16158,7 @@ CMD:txt(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREY, "   Ban chua dang nhap!");
 			return 1;
 		}
-		if (sscanf(params, "is", phonenumb, result))
+		if (sscanf(params, "is[256]", phonenumb, result))
 		{
 			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/t)xt [So dien thoai] [Noi dung]");
 			return 1;
@@ -16579,7 +16579,7 @@ CMD:edit(playerid, params[])
 			return 1;
 		}
 		new x_job[256], proplev, string[255];
-		if (sscanf(params, "si", x_job, proplev)) {
+		if (sscanf(params, "s[256]i", x_job, proplev)) {
 			SendClientMessage(playerid, COLOR_WHITE, "|__________________ Edit __________________|");
 			SendClientMessage(playerid, COLOR_WHITE, "Su dung: /edit [name] [So luong] (Dung cho nha va cua hang)");
 			SendClientMessage(playerid, COLOR_GREY, "Available names: Level, Gia, Nganquy, SanPham");
@@ -17544,7 +17544,7 @@ CMD:bizname(playerid, params[])
 		}
 		new string[255];
 		new result[64];
-		if(sscanf(params, "s", result))
+		if(sscanf(params, "s[64]", result))
 		{
 			SendClientMessage(playerid, COLOR_WHITE, "Sudung: /bizname [Ten]");
 		}
@@ -17875,7 +17875,7 @@ CMD:agl(playerid, params[])
 		if (PlayerInfo[playerid][pAdmin] >= 2)
 		{
 			new x_nr[256], giveplayerid, string[255];
-			if (sscanf(params, "su", x_nr, giveplayerid)) {
+			if (sscanf(params, "s[256]u", x_nr, giveplayerid)) {
 				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /agl [Ten] [playerid/Ten]");
 				SendClientMessage(playerid, COLOR_WHITE, "Available names: LaiXe, MayBay, Thuyen, Cauca, VuKhi.");
 				return 1;
@@ -17995,7 +17995,7 @@ CMD:mole(playerid, params[])
 	{
 		new string[255];
 		new result[255];
-		if (sscanf(params, "s", result))
+		if (sscanf(params, "s[255]", result))
 		{
 			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /mole [mole text]");
 			return 1;
@@ -18195,7 +18195,7 @@ CMD:admin(playerid, params[])
 	if (IsPlayerConnected(playerid))
 	{
 		new result[255], string[255];
-		if (sscanf(params, "s", result))
+		if (sscanf(params, "s[255]", result))
 		{
 			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/a)dmin [admin chat]");
 			return 1;
@@ -18293,7 +18293,7 @@ CMD:cnnn(playerid, params[])
 		{
 			new txtid;
 			new result[255], string[255];
-			if (sscanf(params, "is", txtid, result))
+			if (sscanf(params, "is[255]", txtid, result))
 			{
 				SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /cnnn <type> [cnnc textformat ~n~=Newline ~r~=Red ~g~=Green ~b~=Blue ~w~=White ~y~=Yellow]");
 				return 1;
@@ -18403,7 +18403,7 @@ CMD:ajail(playerid, params[])
 	if (IsPlayerConnected(playerid))
 	{
 		new result[255], playa, string[255], money;
-		if (sscanf(params, "uis", playa, money, result))
+		if (sscanf(params, "uis[255]", playa, money, result))
 		{
 			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /ajail [playerid/Ten] [time(minutes)] [Ly do]");
 			return 1;
@@ -20739,7 +20739,7 @@ CMD:changename(playerid, params[])
 {
 
 	new giveplayerid, tmp[255], string[255];
-	if (sscanf(params, "us", giveplayerid, tmp))
+	if (sscanf(params, "us[255]", giveplayerid, tmp))
 	{
 		SendClientMessage(playerid, COLOR_DBLUE, "Su dung: /changename [playerid] [new nick]");
 		return 1;
@@ -20781,7 +20781,7 @@ CMD:kick(playerid, params[])
 	if (IsPlayerConnected(playerid))
 	{
 		new giveplayerid, result[255], string[255];
-		if (sscanf(params, "us", giveplayerid, result))
+		if (sscanf(params, "us[255]", giveplayerid, result))
 		{
 			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /kick [playerid/PartOfName] [Ly do]");
 			return 1;
@@ -20893,7 +20893,7 @@ CMD:unban(playerid, params[])
 	if ((IsPlayerAdmin(playerid)) || PlayerInfo[playerid][pAdmin] >= 3)
 	{
 		new tmp[255], string[255];
-		if (sscanf(params, "s", tmp))
+		if (sscanf(params, "s[255]", tmp))
 		{
 			SendClientMessage(playerid, COLOR_WHITE, "Su dung: /unban [PlayerName_PlayerLastName]");
 			return 1;
@@ -20916,7 +20916,7 @@ CMD:ban(playerid, params[])
 	if (IsPlayerConnected(playerid))
 	{
 		new giveplayerid, result[255], string[255];
-		if (sscanf(params, "us", giveplayerid, result))
+		if (sscanf(params, "us[255]", giveplayerid, result))
 		{
 			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /ban [playerid/PartOfName] [Ly do]");
 			return 1;
@@ -21463,7 +21463,7 @@ CMD:mk(playerid, params[])
 			return 1;
 		}
 		new x_mk[50];
-		if(sscanf(params, "sis", x_mk)) {
+		if(sscanf(params, "s[50]", x_mk)) {
 			SendClientMessage(playerid, COLOR_WHITE, "Su dung: /mk [name]");
 			SendClientMessage(playerid, COLOR_GREY, "Available names: (/mk text [number] [text]) (/mk game [number] [text]) (/mk cp [number])");
 			SendClientMessage(playerid, COLOR_GREY, "Available names: (/mk title [text]) (/mk reward [price]) (/mk usecp)");
@@ -21472,7 +21472,7 @@ CMD:mk(playerid, params[])
 		if (strcmp(x_mk, "text", true) == 0)
 		{
 			new number, result[255];
-			if (sscanf(params, "sis", x_mk, number, result))
+			if (sscanf(params, "s[50]is[255]", x_mk, number, result))
 			{
 				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /mk text [number] [text]");
 				return 1;
@@ -21575,7 +21575,7 @@ CMD:mk(playerid, params[])
 		else if (strcmp(x_mk, "game", true) == 0)
 		{
 			new number, result[255];
-			if (sscanf(params, "sis", x_mk, number, result))
+			if (sscanf(params, "s[50]is[255]", x_mk, number, result))
 			{
 				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /mk game [number] [text]");
 				return 1;
@@ -21618,7 +21618,7 @@ CMD:mk(playerid, params[])
 		else if (strcmp(x_mk, "cp", true) == 0)
 		{
 			new number;
-			if (sscanf(params, "si", x_mk, number))
+			if (sscanf(params, "s[50]i", x_mk, number))
 			{
 				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /mk cp [number]");
 				return 1;
@@ -21663,7 +21663,7 @@ CMD:mk(playerid, params[])
 		else if (strcmp(x_mk, "usecp", true) == 0)
 		{
 			new toggle;
-			if (sscanf(params, "si", x_mk, toggle))
+			if (sscanf(params, "s[50]i", x_mk, toggle))
 			{
 				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /mk usecp [0/1]");
 				return 1;
@@ -21677,7 +21677,7 @@ CMD:mk(playerid, params[])
 		else if (strcmp(x_mk, "title", true) == 0)
 		{
 			new result[255];
-			if (sscanf(params, "ss", x_mk, result))
+			if (sscanf(params, "s[50]s[255]", x_mk, result))
 			{
 				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /mk title [text]");
 				return 1;
@@ -21689,7 +21689,7 @@ CMD:mk(playerid, params[])
 		else if (strcmp(x_mk, "reward", true) == 0)
 		{
 			new price;
-			if (sscanf(params, "si", x_mk, price))
+			if (sscanf(params, "s[50]i", x_mk, price))
 			{
 				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /mk reward [price]");
 				return 1;
@@ -21713,7 +21713,7 @@ CMD:savemission(playerid, params[])
 		if (PlayerInfo[playerid][pAdmin] >= 1337)
 		{
 			new name[255];
-			if(sscanf(params, "s", name))
+			if(sscanf(params, "s[255]", name))
 			{
 				SendClientMessage(playerid, COLOR_GRAD1, "Su dung: /savemission [missionname]");
 				return 1;
@@ -21734,7 +21734,7 @@ CMD:loadmission(playerid, params[])
 		if (PlayerInfo[playerid][pAdmin] >= 1337)
 		{
 			new name[255];
-			if (sscanf(params, "s", name))
+			if (sscanf(params, "s[255]", name))
 			{
 				SendClientMessage(playerid, COLOR_GRAD1, "Su dung: /loadmission [missionname]");
 				return 1;
@@ -21883,14 +21883,14 @@ CMD:cks(playerid, params[])
 			}
 			return 1;
 		}
-		if (sscanf(params, "s", x_nr))
+		if (sscanf(params, "s[256]", x_nr))
 		{
 			SendClientMessage(playerid, COLOR_WHITE, "Su dung: /cks [accept/delete]");
 			return 1;
 		}
 		if (strcmp(x_nr, "accept", true) == 0)
 		{
-			if (sscanf(params, "si", x_nr, ck))
+			if (sscanf(params, "s[256]i", x_nr, ck))
 			{
 				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /cks accept [cknumber]");
 				return 1;
@@ -21935,7 +21935,7 @@ CMD:cks(playerid, params[])
 		}
 		else if (strcmp(x_nr, "delete", true) == 0)
 		{
-			if (sscanf(params, "si", x_nr, ck))
+			if (sscanf(params, "s[256]i", x_nr, ck))
 			{
 				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /cks delete [cknumber]");
 				return 1;
@@ -22035,7 +22035,7 @@ CMD:givelicense(playerid, params[])
 				return 1;
 			}
 			new x_nr[256], string[255];
-			if (sscanf(params, "s", x_nr)) {
+			if (sscanf(params, "s[256]", x_nr)) {
 				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /givelicense [name] [playerid/PartOfName] [price]");
 				SendClientMessage(playerid, COLOR_WHITE, "Available names: Laxe, MayBay, Thuyen, CauCa.");
 				return 1;
@@ -22201,7 +22201,7 @@ CMD:weplicense(playerid, params[])
 				return 1;
 			}
 			new x_nr[256], giveplayerid, string[255];
-			if (sscanf(params, "su", x_nr, giveplayerid)) {
+			if (sscanf(params, "s[256]u", x_nr, giveplayerid)) {
 				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /weplicense [name] [playerid/PartOfName]");
 				SendClientMessage(playerid, COLOR_WHITE, "Available names: VuKhi.");
 				return 1;
@@ -22209,7 +22209,7 @@ CMD:weplicense(playerid, params[])
 			if (strcmp(x_nr, "vukhi", true) == 0)
 			{
 				new price;
-				if (sscanf(params, "sui", x_nr, giveplayerid, price))
+				if (sscanf(params, "s[256]ui", x_nr, giveplayerid, price))
 				{
 					SendClientMessage(playerid, COLOR_WHITE, "Su dung: /weplicense vukhi [playerid/PartOfName] [Gia]");
 					return 1;
@@ -23049,7 +23049,7 @@ CMD:irc(playerid, params[])
 	if (IsPlayerConnected(playerid))
 	{
 		new x_nr[256];
-		if (sscanf(params, "s", x_nr)) {
+		if (sscanf(params, "s[256]", x_nr)) {
 			SendClientMessage(playerid, COLOR_WHITE, "Su dung: (/irc join [channelnr] or /irc join [channelnr] [password])  (/irc Leave)  (/irc Admins)");
 			SendClientMessage(playerid, COLOR_WHITE, "Su dung: /irc [name] [channelnr]");
 			SendClientMessage(playerid, COLOR_WHITE, "Available names: MOTD, Password, NeedPass, Lock, Kick, Status");
@@ -23058,7 +23058,7 @@ CMD:irc(playerid, params[])
 		new string[255], channel;
 		if (strcmp(x_nr, "join", true) == 0)
 		{
-			if (sscanf(params, "si", x_nr, channel)) 
+			if (sscanf(params, "s[256]i", x_nr, channel)) 
 			{
 				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /irc join [channelnr] or /irc join [channelnr] [password]");
 				return 1;
@@ -23076,7 +23076,7 @@ CMD:irc(playerid, params[])
 				else
 				{
 					new pass[50];
-					if (sscanf(params, "sis", x_nr, channel, pass))
+					if (sscanf(params, "s[256]is[50]", x_nr, channel, pass))
 					{
 						SendClientMessage(playerid, COLOR_WHITE, "Ban can mat khau de gia nhap kenh nay.");
 						SendClientMessage(playerid, COLOR_WHITE, "Su dung: /irc join [channelnr] [password]");
@@ -23103,7 +23103,7 @@ CMD:irc(playerid, params[])
 		else if (strcmp(x_nr, "password", true) == 0)
 		{
 			new pass[255];
-			if(sscanf(params, "sis", x_nr, channel, pass))
+			if(sscanf(params, "s[256]is[256]", x_nr, channel, pass))
 			{
 				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /irc password [channelnr] [password]");
 				return 1;
@@ -23130,7 +23130,7 @@ CMD:irc(playerid, params[])
 		}
 		else if (strcmp(x_nr, "needpass", true) == 0)
 		{
-			if(sscanf(params, "si", x_nr, channel))
+			if(sscanf(params, "s[256]i", x_nr, channel))
 			{
 				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /irc needpass [channelnr]");
 				return 1;
@@ -23164,7 +23164,7 @@ CMD:irc(playerid, params[])
 		}
 		else if (strcmp(x_nr, "lock", true) == 0)
 		{
-			if (sscanf(params, "si", x_nr, channel))
+			if (sscanf(params, "s[256]i", x_nr, channel))
 			{
 				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /irc lock [channelnr]");
 				return 1;
@@ -23199,7 +23199,7 @@ CMD:irc(playerid, params[])
 		else if (strcmp(x_nr, "motd", true) == 0)
 		{
 			new result[255];
-			if (sscanf(params, "sis", x_nr, channel, result))
+			if (sscanf(params, "s[256]is[255]", x_nr, channel, result))
 			{
 				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /irc motd [channelnr] [motdtext]");
 				return 1;
@@ -23262,7 +23262,7 @@ CMD:irc(playerid, params[])
 			if (strcmp(IRCInfo[PlayersChannel[playerid]][iAdmin], wstring, true) == 0)
 			{
 				new giveplayerid;
-				if (sscanf(params, "su", x_nr, giveplayerid))
+				if (sscanf(params, "s[256]u", x_nr, giveplayerid))
 				{
 					SendClientMessage(playerid, COLOR_WHITE, "Su dung: /irc kick [playerid/Ten]");
 					return 1;
@@ -23326,7 +23326,7 @@ CMD:i(playerid, params[])
 			return 1;
 		}
 		new result[255], string[255];
-		if(sscanf(params, "s", result))
+		if(sscanf(params, "s[255]", result))
 		{
 			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /i [irc chat]");
 			return 1;
@@ -23453,7 +23453,7 @@ CMD:read(playerid, params[])
 	if (IsPlayerConnected(playerid))
 	{
 		new x_job[256], string[255];
-		if(sscanf(params, "s", x_job)) {
+		if(sscanf(params, "s[256]", x_job)) {
 			SendClientMessage(playerid, COLOR_WHITE, "Su dung: /read [Ten]");
 			SendClientMessage(playerid, COLOR_GREY, "Available names: Paper, TestPaper");
 			return 1;
@@ -23493,7 +23493,7 @@ CMD:read(playerid, params[])
 			if (PlayerInfo[playerid][pMember] == 9 || PlayerInfo[playerid][pLeader] == 9)
 			{
 				new paper;
-				if (sscanf(params, "si", x_job, paper)) {
+				if (sscanf(params, "s[256]i", x_job, paper)) {
 					SendClientMessage(playerid, COLOR_WHITE, "Su dung: /read testpaper [papernr]");
 					return 1;
 				}
@@ -23743,7 +23743,7 @@ CMD:paper(playerid, params[])
 				return 1;
 			}
 			new x_nr[256], string[256], paper;
-			if (sscanf(params, "si", x_nr, paper))
+			if (sscanf(params, "s[256]i", x_nr, paper))
 				return SendClientMessage(playerid, COLOR_WHITE, "Su dung: /paper write [papernr] hoac /paper delete [papernr]");
 	
 			if (strcmp(x_nr, "write", true) == 0)
@@ -23972,7 +23972,7 @@ CMD:take(playerid, params[])
 				return 1;
 			}
 			new x_nr[256], giveplayerid, string[256];
-			if (sscanf(params, "su", x_nr, giveplayerid))
+			if (sscanf(params, "s[256]u", x_nr, giveplayerid))
 			{
 				SendClientMessage(playerid, COLOR_WHITE, "|__________________ Take Licenses __________________|");
 				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /take [licensename] [playerid/Ten]");
@@ -24219,7 +24219,7 @@ CMD:drink(playerid, params[])
 			{
 				new Float:health;
 				new x_nr[256], string[256];
-				if (sscanf(params, "s", x_nr))
+				if (sscanf(params, "s[256]", x_nr))
 				{
 					SendClientMessage(playerid, COLOR_WHITE, "|____________________ Bar Drinks ______________________|");
 					SendClientMessage(playerid, COLOR_WHITE, "Su dung: /drink [drinkname]");
@@ -24366,7 +24366,7 @@ CMD:drink(playerid, params[])
 			{
 				new Float:health;
 				new x_nr[256], string[256];
-				if (sscanf(params, "s", x_nr))
+				if (sscanf(params, "s[256]", x_nr))
 				{
 					SendClientMessage(playerid, COLOR_WHITE, "|____________________ Bar Drinks ______________________|");
 					SendClientMessage(playerid, COLOR_WHITE, "Su dung: /drink [drinkname]");
@@ -25085,7 +25085,7 @@ CMD:sell(playerid, params[])
 	if (IsPlayerConnected(playerid))
 	{
 		new x_nr[256], fishid, string[128];
-		if (sscanf(params, "si", x_nr, fishid))
+		if (sscanf(params, "s[256]i", x_nr, fishid))
 		{
 			SendClientMessage(playerid, COLOR_WHITE, "|__________________ Selling __________________|");
 			SendClientMessage(playerid, COLOR_WHITE, "Su dung: /sell [name] [fishid/cookid]");
@@ -25230,7 +25230,7 @@ CMD:sell(playerid, params[])
 			else if (cookid == 4 && Cooking[playerid][pCWeight4] < 1) { SendClientMessage(playerid, COLOR_GREY, "   Ban khong co mon an nao o so (4) !"); return 1; }
 			else if (cookid == 5 && Cooking[playerid][pCWeight5] < 1) { SendClientMessage(playerid, COLOR_GREY, "   Ban khong co mon an nao o so (5) !"); return 1; }
 			new giveplayerid, giveplayer[50];
-			if (sscanf(params, "siu", x_nr, cookid, giveplayerid))
+			if (sscanf(params, "s[256]iu", x_nr, cookid, giveplayerid))
 				return SendClientMessage(playerid, COLOR_WHITE, "Su dung: /sell cooked [cooknumber] [playerid/PartOfName]");
 	
 			if (IsPlayerConnected(giveplayerid))
@@ -27104,7 +27104,7 @@ CMD:steal(playerid, params[])
 				return 1;
 			}
 			new x_nr[256], giveplayerid, giveplayer[50], string[256];
-			if (sscanf(params, "su", x_nr, giveplayerid))
+			if (sscanf(params, "s[256]u", x_nr, giveplayerid))
 			{
 				SendClientMessage(playerid, COLOR_WHITE, "|______________ An cap vat pham cua nan nhan _______________|");
 				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /steal [itemname] [playerid/Ten]");
@@ -27319,7 +27319,7 @@ CMD:sellgun(playerid, params[])
 		}
 		new x_weapon[256], weapon[MAX_PLAYERS], ammo[MAX_PLAYERS], price[MAX_PLAYERS];
 		new giveplayerid, giveplayer[50], string[256];
-		if (sscanf(params, "us", giveplayerid, x_weapon))
+		if (sscanf(params, "us[256]", giveplayerid, x_weapon))
 		{
 			SendClientMessage(playerid, COLOR_GRAD1, "Su dung: /sellgun [playerid/Ten] [weaponname]");
 			SendClientMessage(playerid, COLOR_GREY, "Weapons: knife(100) bat(100) flowers(25) sdpistol(100) eagle(150)");
@@ -27389,7 +27389,7 @@ CMD:get(playerid, params[])
 	if (IsPlayerConnected(playerid))
 	{
 		new x_job[256], string[256];
-		if (sscanf(params, "s", x_job))
+		if (sscanf(params, "s[256]", x_job))
 		{
 			SendClientMessage(playerid, COLOR_WHITE, "|__________________ Get __________________|");
 			SendClientMessage(playerid, COLOR_WHITE, "Su dung: /get [name]");
@@ -27742,7 +27742,7 @@ CMD:agent(playerid, params[])
 		if (PlayerInfo[playerid][pMember] == 2 || PlayerInfo[playerid][pLeader] == 2)
 		{
 			new x_nr[256];
-			if (sscanf(params, "s", x_nr))
+			if (sscanf(params, "s[256]", x_nr))
 				return SendClientMessage(playerid, COLOR_WHITE, "Su dung: /agent list then /agent [skin id]");
 		
 			if (PlayerToPoint(20, playerid, 246.5625, 120.3976, 1003.2629))
@@ -27854,7 +27854,7 @@ CMD:undercover(playerid, params[])
 				return 1;
 			}
 			new x_nr[256], string[256];
-			if (sscanf(params, "s", x_nr))
+			if (sscanf(params, "s[256]", x_nr))
 				return SendClientMessage(playerid, COLOR_WHITE, "Su dung: /undercover list then /undercover [skin id]");
 			
 			if (PlayerToPoint(3, playerid, 255.3, 77.4, 1003.6) || PlayerToPoint(3, playerid, -1616.1294, 681.1594, 7.1875) || PlayerInfo[playerid][pLocal] != 255)
@@ -28321,7 +28321,7 @@ CMD:cancel(playerid, params[])
 	if (IsPlayerConnected(playerid))
 	{
 		new x_job[256], string[256];
-		if(sscanf(params, "s", x_job))
+		if(sscanf(params, "s[256]", x_job))
 		{
 			SendClientMessage(playerid, COLOR_WHITE, "|__________________ Cancel __________________|");
 			SendClientMessage(playerid, COLOR_WHITE, "Su dung: /cancel [name]");
@@ -28428,7 +28428,7 @@ CMD:accept(playerid, params[])
 	if (IsPlayerConnected(playerid))
 	{
 		new x_job[256], string[256], giveplayer[50];
-		if(sscanf(params, "s", x_job))
+		if(sscanf(params, "s[256]", x_job))
 		{
 			SendClientMessage(playerid, COLOR_WHITE, "|__________________ Accept __________________|");
 			SendClientMessage(playerid, COLOR_WHITE, "Su dung: accept [name]");
@@ -29130,7 +29130,7 @@ CMD:accept(playerid, params[])
 		else if (strcmp(x_job, "lawyer", true) == 0)
 		{
 			new giveplayerid;
-			if (sscanf(params, "su", x_job, giveplayerid))
+			if (sscanf(params, "s[256]u", x_job, giveplayerid))
 				return SendClientMessage(playerid, COLOR_GRAD2, "Su dung : /accept lawyer [playerid/PartOfName]");
 
 			if (gTeam[playerid] == 2)
@@ -29872,7 +29872,7 @@ CMD:family(playerid, params[])
 		}
 		
 		new string[256], result[128];
-		if (sscanf(params, "s", result))
+		if (sscanf(params, "s[128]", result))
 			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/f)action [faction chat]");
 
 		if (PlayerInfo[playerid][pLeader] > 0 || PlayerInfo[playerid][pMember] > 0 || PlayerInfo[playerid][pFMember] < 255)
@@ -30826,7 +30826,7 @@ CMD:news(playerid, params[])
 			else
 			{
 				new result[128], string[256];
-				if (sscanf(params, "s", result))
+				if (sscanf(params, "s[128]", result))
 					return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /news [newstext]");
 
 				new rtext[64];
@@ -31104,7 +31104,7 @@ CMD:usedrugs(playerid, params[])
 			return 1;
 		}
 		new x_nr[256], string[256];
-		if (sscanf(params, "s", x_nr))
+		if (sscanf(params, "s[256]", x_nr))
 		{
 			SendClientMessage(playerid, COLOR_WHITE, "Su dung: /usedrugs [name]");
 			SendClientMessage(playerid, COLOR_WHITE, "Available names: weed, heroin");
@@ -31610,7 +31610,7 @@ CMD:ticket(playerid, params[])
 			return 1;
 		}
 		new giveplayerid, giveplayer[50], string[256], moneys, result[128];
-		if (sscanf(params, "uis", giveplayerid, moneys, result))
+		if (sscanf(params, "uis[128]", giveplayerid, moneys, result))
 			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /ticket [playerid/PartOfName] [price] [reason]");
 
 		if (moneys < 1 || moneys > 99999) { SendClientMessage(playerid, COLOR_GREY, "   Ticket Money can't be below 1 or higher then 99999 !"); return 1; }
