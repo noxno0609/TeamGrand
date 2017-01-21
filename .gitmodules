@@ -1,0 +1,3 @@
+[submodule "Servicer"]
+	path = Servicer
+	url = https://github.com/noxno0609/TeamGrand-Servicer.git
