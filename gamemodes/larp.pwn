@@ -1549,7 +1549,7 @@ enum pInfo
 	pFMember,
 	pRank,
 	pChar,
-	pContractTime,
+	//pContractTime,
 	pDetSkill,
 	pSexSkill,
 	pBoxSkill,
@@ -1888,13 +1888,13 @@ public SaveAccounts()
 		if (IsPlayerConnected(i))
 		{
 			SavePlayer(i);
-			if (PlayerInfo[i][pJob] > 0)
+			/*if (PlayerInfo[i][pJob] > 0)
 			{
 				if (PlayerInfo[i][pContractTime] < 25)
 				{
 					PlayerInfo[i][pContractTime] ++;
 				}
-			}
+			}*/
 		}
 	}
 }
@@ -1988,8 +1988,7 @@ public SavePlayer(playerid)
 				Member=%d,\
 				FMember=%d,\
 				Rank=%d,\
-				`Char`=%d,\
-				ContractTime=%d,",
+				`Char`=%d,",
 				sql,
 				PlayerInfo[playerid][pWantedDeaths],
 				PlayerInfo[playerid][pPhoneBook],
@@ -2007,8 +2006,8 @@ public SavePlayer(playerid)
 				PlayerInfo[playerid][pMember],
 				PlayerInfo[playerid][pFMember],
 				PlayerInfo[playerid][pRank],
-				PlayerInfo[playerid][pChar],
-				PlayerInfo[playerid][pContractTime]);
+				PlayerInfo[playerid][pChar]);
+				/*PlayerInfo[playerid][pContractTime]*/
 
 			format(sql, sizeof(sql), "%s \
 				DetSkill=%d,\
@@ -5684,7 +5683,7 @@ public SetPlayerUnjail()
 			    {
 					new cut = deathcost; //PlayerInfo[playerid][pLevel]*deathcost;
 					//SafeGivePlayerMoney(i, -cut);
-					format(string, sizeof(string), "Doctor: Your Medical Bill comes to $%d, Have a nice day.", cut);
+					format(string, sizeof(string), "Bac si: Hoa don dieu tri cua ban la $%d, Chuc mot ngay tot lanh.", cut);
 					SendClientMessage(i, TEAM_CYAN_COLOR, string);
 					TogglePlayerControllable(i, 1);
 			        MedicBill[i] = 0;
@@ -5726,18 +5725,18 @@ public SetPlayerUnjail()
                 if(TutTime[i] == 3)
 			    {
 			        ClearChatbox(i, 10);
-			        SendClientMessage(i, COLOR_WHITE, "So you are new here? We'll show you some places and give you some tips.");
-			        SendClientMessage(i, COLOR_WHITE, "If you don't know how to RP, then leave this server.");
+			        SendClientMessage(i, COLOR_WHITE, "Vay ban la nguoi moi ? Chung toi se chi cho ban mot vai noi va cho ban mot vai huong dan, goi y.");
+			        SendClientMessage(i, COLOR_WHITE, "Neu ban khong biet cach choi Roleplay, moi ban ra khoi sever.");
 			        SendClientMessage(i, COLOR_WHITE, " ");
 			        SetPlayerCameraPos(i, 2247.0215,-1655.0173,17.2856);
 					SetPlayerCameraLookAt(i, 2244.6536,-1663.9304,15.4766);
 					SetPlayerInterior(i, 0);
 					SetPlayerVirtualWorld(i, 99);
 					SetPlayerPos(i, 2256.3555,-1646.6377,15.4959);
-			        SendClientMessage(i, COLOR_YELLOW, ":: CLOTHES SHOP ::");
+			        SendClientMessage(i, COLOR_YELLOW, ":: CUA HANG QUAN AO ::");
 			        SendClientMessage(i, COLOR_WHITE, " ");
-			        SendClientMessage(i, COLOR_YELLOW2, "First of all you'll need some clothes, you can buy them at any clothes shop.");
-			        SendClientMessage(i, COLOR_YELLOW2, "When you're in the shop type /clothes and then type next untill you find the clothes that you like.");
+			        SendClientMessage(i, COLOR_YELLOW2, "Truoc het, ban can phai co quan ao. Ban co the mua quan ao tai cac cua hang quan ao.");
+			        SendClientMessage(i, COLOR_YELLOW2, "Khi ban o trong cua hang quan ao, go /clothes va go ( next ) de tim kiem trang phuc ma ban thich.");
 			    }
 			    else if(TutTime[i] == 16)
 			    {
@@ -5746,11 +5745,11 @@ public SetPlayerUnjail()
 			        SetPlayerCameraPos(i, 2070.8093,-1914.6747,18.5469);
 					SetPlayerCameraLookAt(i, 2055.2405,-1906.4608,13.5469);
 					SetPlayerInterior(i, 0);
-			        SendClientMessage(i, COLOR_YELLOW, ":: DRIVING SCHOOL ::");
+			        SendClientMessage(i, COLOR_YELLOW, ":: TRUONG DAO TAO LAI XE ::");
 			        SendClientMessage(i, COLOR_WHITE, " ");
-			        SendClientMessage(i, COLOR_YELLOW2, "You still have no driving license? Shame on you!");
-			        SendClientMessage(i, COLOR_YELLOW2, "You need to pass a driving test first to get a license.");
-			        SendClientMessage(i, COLOR_YELLOW2, "You can see the list of licensers by just typing /licensers.");
+			        SendClientMessage(i, COLOR_YELLOW2, "Ban van chua co bang lai xe? That xau ho cho ban !");
+			        SendClientMessage(i, COLOR_YELLOW2, "Ban can phai vuot qua bai kiem tra lai xe de lay bang lai.");
+			        SendClientMessage(i, COLOR_YELLOW2, "Ban co the xem danh sach cac bang cap bang cach go /licensers.");
 			    }
 			    else if(TutTime[i] == 32)
 			    {
@@ -5759,11 +5758,11 @@ public SetPlayerUnjail()
 			        SetPlayerCameraPos(i, 1535.9584,-1676.1428,18.3828);
 					SetPlayerCameraLookAt(i, 1553.7861,-1676.4270,16.1953);
 					SetPlayerInterior(i, 0);
-			        SendClientMessage(i, COLOR_YELLOW, ":: LOS ANGELES POLICE DEPARTMENT ::");
+			        SendClientMessage(i, COLOR_YELLOW, ":: SO CANH SAT LOS ANGELES ::");
 			        SendClientMessage(i, COLOR_WHITE, " ");
-			        SendClientMessage(i, COLOR_YELLOW2, "The Los Angeles Police Department and FBI are in the city for your protection.");
-			        SendClientMessage(i, COLOR_YELLOW2, "People who commit crimes will dealt with swiftly and with force if necessary.");
-			        SendClientMessage(i, COLOR_YELLOW2, "To call a police officer, call the emergency hotline using /call 911.");
+			        SendClientMessage(i, COLOR_YELLOW2, "So cach sat Los Angeles va FBI luon o trong thanh pho de dam bao an toan cho ban.");
+			        SendClientMessage(i, COLOR_YELLOW2, "Nhung nguoi pham toi se bi xu ly nhanh chong va manh tay neu can thiet.");
+			        SendClientMessage(i, COLOR_YELLOW2, "De goi canh sat, goi vao duong day nong ( go /call 911 ).");
 			    }
 			    else if(TutTime[i] == 54)
 			    {
@@ -5772,11 +5771,11 @@ public SetPlayerUnjail()
 			        SetPlayerCameraPos(i, 1204.3781,-1313.3323,16.3984);
 					SetPlayerCameraLookAt(i, 1174.7167,-1323.4485,14.5938);
 					SetPlayerInterior(i, 0);
-			        SendClientMessage(i, COLOR_YELLOW, ":: ALL SAINTS GENERAL HOSPITAL ::");
+			        SendClientMessage(i, COLOR_YELLOW, ":: BENH VIEN TRUNG UONG THANH PHO ::");
 			        SendClientMessage(i, COLOR_WHITE, " ");
-			        SendClientMessage(i, COLOR_YELLOW2, "Feeling sick? You need to see the doctor of Los Angeles.");
-			        SendClientMessage(i, COLOR_YELLOW2, "To call a paramedic, call the emergency hotline using /call 911");
-			        SendClientMessage(i, COLOR_YELLOW2, "You'll spawn here after death");
+			        SendClientMessage(i, COLOR_YELLOW2, "Cam thay khong khoe? Ban can den gap bac si cua Los Angeles.");
+			        SendClientMessage(i, COLOR_YELLOW2, "De goi cho nhan vien y te, goi vao duong day nong ( go /call 911 ).");
+			        SendClientMessage(i, COLOR_YELLOW2, "Ban se duoc hoi sinh o day sau khi chet");
 			    }
 			    else if(TutTime[i] == 76)
 			    {
@@ -5787,8 +5786,8 @@ public SetPlayerUnjail()
 					SetPlayerInterior(i, 0);
 			        SendClientMessage(i, COLOR_YELLOW, ":: ABC STUDIO ::");
 			        SendClientMessage(i, COLOR_WHITE, " ");
-			        SendClientMessage(i, COLOR_YELLOW2, "Got some fresh news to announce? Go to the ABC Studio reporters and ask them to do it.");
-			        SendClientMessage(i, COLOR_YELLOW2, "You can also post your advertisment at local newspaper.");
+			        SendClientMessage(i, COLOR_YELLOW2, "Muon thong bao mot so tin tuc moi? Hay den gap phong vien cua ABC Studio va yeu cau ho lam viec do.");
+			        SendClientMessage(i, COLOR_YELLOW2, "Ban cung co the dang tai quang cao cua ban len cac to bao dia phuong.");
 			    }
 			    else if(TutTime[i] == 98)
 			    {
@@ -5797,11 +5796,11 @@ public SetPlayerUnjail()
 			        SetPlayerCameraPos(i, 1458.3872,-1042.2423,24.8281);
 					SetPlayerCameraLookAt(i, 1458.5930,-1019.9205,24.5264);
 					SetPlayerInterior(i, 0);
-			        SendClientMessage(i, COLOR_YELLOW, ":: BANK OF THE STATE ::");
+			        SendClientMessage(i, COLOR_YELLOW, ":: NGAN HANG QUOC GIA ::");
 			        SendClientMessage(i, COLOR_WHITE, " ");
-			        SendClientMessage(i, COLOR_YELLOW2, "You won't keep all your money in your pocket, someone will try to steal it.");
-			        SendClientMessage(i, COLOR_YELLOW2, "You can /deposit, or /withdraw your money at the bank.");
-			        SendClientMessage(i, COLOR_YELLOW2, "You'll get you payday at your bank account too.");
+			        SendClientMessage(i, COLOR_YELLOW2, "Ban khong the giu het tien trong nguoi, ai do se co gang an cap no.");
+			        SendClientMessage(i, COLOR_YELLOW2, "Ban co the go /deposit, hoac /withdraw tien cua ban tai ngan hang.");
+			        SendClientMessage(i, COLOR_YELLOW2, "Tien tro cap cua ban ( Payday ) se duoc chuyen vao tai khoan ngan hang cua ban.");
 			    }
 			    else if(TutTime[i] == 110)
 			    {
@@ -5810,18 +5809,18 @@ public SetPlayerUnjail()
 			        SetPlayerPos(i, 330.6825,163.6688,1014.1875);
 			        SetCameraBehindPlayer(i);
 			        SetPlayerVirtualWorld(i, 0);
-			        SendClientMessage(i, COLOR_YELLOW, ":: END OF TUTORIAL ::");
+			        SendClientMessage(i, COLOR_YELLOW, ":: KET THUC PHAN HUONG DAN ::");
 			        SendClientMessage(i, COLOR_WHITE, " ");
-			        SendClientMessage(i, COLOR_YELLOW2, "There are a lot of places in Los Angeles, but you need to discover them on your own.");
-			        SendClientMessage(i, COLOR_YELLOW2, "Don't forget Role-Play rules, because non-rping causes warns and bans!");
-			        SendClientMessage(i, COLOR_YELLOW2, "Greetings from: Los Angeles Roleplay admin team.");
+			        SendClientMessage(i, COLOR_YELLOW2, "Con rat nhieu noi khac tai Los Angeles, nhung ban can phai tu minh kham pha.");
+			        SendClientMessage(i, COLOR_YELLOW2, "Dung co quen luat Role-Play nhe, boi vi pham luat (NON-RPing) co the bi canh cao va banned!");
+			        SendClientMessage(i, COLOR_YELLOW2, "Loi chao than ai va quyet thang tu: Team admin Les Angeles Roleplay.");
 			    }
 			    else if(TutTime[i] == 119)
 			    {
 			        ClearChatbox(i, 10);
-			        SendClientMessage(i, COLOR_YELLOW2, "Welcome to the Los Angeles.");
-			        SendClientMessage(i, COLOR_GRAD1, "Hint: To call a taxi or bus use /call 444 or /call 222");
-			        SendClientMessage(i, COLOR_GRAD1, "Hint: To change your outfit you have to go to clothes shop");
+			        SendClientMessage(i, COLOR_YELLOW2, "Chao mung ban den voi Los Angeles.");
+			        SendClientMessage(i, COLOR_GRAD1, "Meo: De goi taxi hoac bus go /call 444 hoac /call 222");
+			        SendClientMessage(i, COLOR_GRAD1, "Meo: De thay doi trang phuc cua ban, ban phai den cua hang quan ao");
 					SendClientMessage(i, COLOR_GRAD1, " ");
 			        TutTime[i] = 0; PlayerInfo[i][pTut] = 1;
 					gOoc[i] = 0; gNews[i] = 0; gFam[i] = 0;
@@ -6253,7 +6252,7 @@ public SetPlayerUnjail()
 			    {
 			        new sendername[MAX_PLAYER_NAME];
 			        GetPlayerName(i, sendername, sizeof(sendername));
-			        if(PlayerInfo[i][pSex] == 1) { format(string, sizeof(string), "* %s flicks from his cigarette.", sendername); }
+			        if(PlayerInfo[i][pSex] == 1) { format(string, sizeof(string), "* %s vut dieu thuoc.", sendername); }
 					else { format(string, sizeof(string), "* %s flicks from her cigarette.", sendername); }
 			        ProxDetector(30.0, i, string, COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE);
 			        new Float:PlayerHealth;
@@ -6264,7 +6263,7 @@ public SetPlayerUnjail()
 			    {
 			        new sendername[MAX_PLAYER_NAME];
 			        GetPlayerName(i, sendername, sizeof(sendername));
-			        if(PlayerInfo[i][pSex] == 1) { format(string, sizeof(string), "* %s flicks from his cigarette.", sendername); }
+			        if(PlayerInfo[i][pSex] == 1) { format(string, sizeof(string), "* %s vut dieu thuoc.", sendername); }
 					else { format(string, sizeof(string), "* %s flicks from her cigarette.", sendername); }
 			        ProxDetector(30.0, i, string, COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE);
 			        new Float:PlayerHealth;
@@ -6275,7 +6274,7 @@ public SetPlayerUnjail()
 			    {
 			        new sendername[MAX_PLAYER_NAME];
 			        GetPlayerName(i, sendername, sizeof(sendername));
-			        if(PlayerInfo[i][pSex] == 1) { format(string, sizeof(string), "* %s flicks from his cigarette.", sendername); }
+			        if(PlayerInfo[i][pSex] == 1) { format(string, sizeof(string), "* %s vut dieu thuoc.", sendername); }
 					else { format(string, sizeof(string), "* %s flicks from her cigarette.", sendername); }
 			        ProxDetector(30.0, i, string, COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE);
 			        new Float:PlayerHealth;
