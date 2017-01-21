@@ -20200,7 +20200,7 @@ CMD:getcar(playerid, params[])
 	if (IsPlayerConnected(playerid))
 	{
 		new plo;
-		if (sscanf(params, "u", plo))
+		if (sscanf(params, "i", plo))
 		{
 			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /getcar [carid]");
 			return 1;
