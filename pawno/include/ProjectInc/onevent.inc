@@ -19141,9 +19141,9 @@ CMD:makeleader(playerid, params[])
 					}
 
 					PlayerInfo[para1][pLeader] = level;
-					format(string, sizeof(string), "   Ban da duoc thang chuc thanh Leader cho Faction duoc ban yeu cau boi Admin %s", GN(playerid));
+					format(string, sizeof(string), "   Ban da duoc thang chuc thanh Leader cho Faction, boi Admin %s", GN(playerid));
 					SendClientMessage(para1, COLOR_WHITE, string);
-					format(string, sizeof(string), "   Ban da dua cho %s quyen hang quan ly faction so %d.", GN(para1), level);
+					format(string, sizeof(string), "   Ban da nang %s len thanh leader faction so %d.", GN(para1), level);
 					SendClientMessage(playerid, COLOR_WHITE, string);
 					if (level == 0) { PlayerInfo[para1][pChar] = 0; PlayerInfo[para1][pRank] = 0; gTeam[para1] = 3; PlayerInfo[para1][pTeam] = 0; return 1; }
 					else if (level == 1) { PlayerInfo[para1][pChar] = 288; } //Police Force
