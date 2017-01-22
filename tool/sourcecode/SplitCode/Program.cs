@@ -18,7 +18,7 @@ namespace SplitCode
 
         public static void SplitProject()
         {
-            const string filename = "../servicer/larpmerge.pwn";
+            const string filename = "larpmerge.pwn";
 
             try
             {
