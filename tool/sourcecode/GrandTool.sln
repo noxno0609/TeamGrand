@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26020.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MergeCode", "MergeCode\MergeCode.csproj", "{A9C6F71C-0F32-476D-877D-7AB9F41EB7A3}"
 EndProject
@@ -10,6 +10,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolMaskCMD", "ToolMaskCMD\ToolMaskCMD.csproj", "{A0525FC9-32E3-4F5C-8CA6-BCA8C9325E9D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ToolSub", "ToolSub\ToolSub.csproj", "{8AEDADD8-9A1C-4ACD-B0DA-963F9B194006}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SplitCode", "SplitCode\SplitCode.csproj", "{C6F973EE-B55B-41A1-A8EB-5CA0F04E8E7B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{8AEDADD8-9A1C-4ACD-B0DA-963F9B194006}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8AEDADD8-9A1C-4ACD-B0DA-963F9B194006}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8AEDADD8-9A1C-4ACD-B0DA-963F9B194006}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6F973EE-B55B-41A1-A8EB-5CA0F04E8E7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6F973EE-B55B-41A1-A8EB-5CA0F04E8E7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6F973EE-B55B-41A1-A8EB-5CA0F04E8E7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6F973EE-B55B-41A1-A8EB-5CA0F04E8E7B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
