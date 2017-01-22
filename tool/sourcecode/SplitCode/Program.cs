@@ -30,26 +30,10 @@ namespace SplitCode
                 for (var i = 0; i < arrayIndex.Count; i++)
                 {
                     var fileName = content.ElementAt(arrayIndex[i]).Replace("//", "").Replace(" TM", "");
-
-                    using (TextWriter tw = new StreamWriter(fileName, true))
-                    {
-                        if (arrayIndex[i] == arrayIndex.Last())
-                        {
-                            var fileContent = content.GetRange(arrayIndex[i] + 1, content.Count - arrayIndex[i] - 1);
-                            foreach (string text in fileContent)
-                            {
-                                tw.WriteLine(text);
-                            }
-                        }
-                        else
-                        {
-                            var fileContent = content.GetRange(arrayIndex[i] + 1, arrayIndex[i + 1] - arrayIndex[i] - 1);
-                            foreach (string text in fileContent)
-                            {
-                                tw.WriteLine(text);
-                            }
-                        }
-                    }
+                    File.WriteAllLines(fileName,
+                       arrayIndex[i] == arrayIndex.Last()
+                           ? content.GetRange(arrayIndex[i] + 1, content.Count - arrayIndex[i] - 1)
+                           : content.GetRange(arrayIndex[i] + 1, arrayIndex[i + 1] - arrayIndex[i] - 1));
                 }
             }
             catch (Exception ex)
