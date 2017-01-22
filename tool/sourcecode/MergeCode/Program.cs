@@ -25,12 +25,11 @@ namespace MergeCode
          addToMerge(mergecontents, new FileInfo(pathsen), pathsen);
 
          pathsen = "../pawno/include/ProjectInc";
-         FileInfo[] projectinc = new DirectoryInfo("pathsen").GetFiles();
+         FileInfo[] projectinc = new DirectoryInfo(pathsen).GetFiles();
          foreach(FileInfo file in projectinc)
          {
             addToMerge(mergecontents, file, pathsen);
          }
-
 
          if(File.Exists("../servicer/larpmerge.pwn"))
             File.Delete("../servicer/larpmerge.pwn");
