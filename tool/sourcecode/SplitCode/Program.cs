@@ -30,8 +30,6 @@ namespace SplitCode
                for(var i = 0; i < arrayIndex.Count; i++)
                {
                    var fileName = content.ElementAt(arrayIndex[i]).Replace("//", "").Replace(" TM", "");
-                   if (File.Exists(fileName))
-                       File.Delete(fileName);
                    File.WriteAllLines(fileName,
                        arrayIndex[i] == arrayIndex.Last()
                            ? content.GetRange(arrayIndex[i] + 1, content.Count - arrayIndex[i] - 1)
