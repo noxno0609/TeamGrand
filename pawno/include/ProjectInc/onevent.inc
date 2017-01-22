@@ -18970,7 +18970,7 @@ CMD:uninvite(playerid, params[])
 					if (PlayerInfo[para1][pMember] > 0)
 					{
 						printf("AdmCMD: %s da moi %s ra.", GN(playerid), GN(para1));
-						format(string, sizeof(string), "* Ban da bi kick ra khoi Family / Luc luong canh sat, boi Leader %s.", GN(playerid));
+						format(string, sizeof(string), "* Ban da bi kick ra khoi Family/To chuc, boi Leader %s.", GN(playerid));
 						SendClientMessage(para1, COLOR_WHITE, string);
 						SendClientMessage(para1, COLOR_WHITE, "* Bay gio ban la mot cong dan binh thuong.");
 						gTeam[para1] = 3;
@@ -18979,11 +18979,12 @@ CMD:uninvite(playerid, params[])
 						PlayerInfo[para1][pRank] = 0;
 						PlayerInfo[para1][pChar] = 0;
 						new rand = random(sizeof(CIV));
-						SetSpawnInfo(para1, gTeam[para1], CIV[rand], 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0);
+						//SetSpawnInfo(para1, gTeam[para1], CIV[rand], 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0);
 						PlayerInfo[para1][pModel] = CIV[rand];
+						SetPlayerSkin(playerid, PlayerInfo[para1][pModel]);
 						MedicBill[para1] = 0;
-						SpawnPlayer(para1);
-						format(string, sizeof(string), "   Ban da kick %s ra khoi Family / Luc luong canh sat.", GN(para1));
+						//SpawnPlayer(para1);
+						format(string, sizeof(string), "   Ban da kick %s ra khoi Family/To chuc.", GN(para1));
 						SendClientMessage(playerid, COLOR_WHITE, string);
 					}
 				}
@@ -19012,7 +19013,6 @@ CMD:makeadmin(playerid, params[])
 			{
 				if (para1 != INVALID_PLAYER_ID)
 				{
-
 					PlayerInfo[para1][pAdmin] = level;
 					printf("AdmCMD: %s da thang cap cho %s thanh level %d admin.", GN(playerid), GN(para1), level);
 					format(string, sizeof(string), "   Ban da duoc thang cap den level %d admin boi %s", level, GN(playerid));
