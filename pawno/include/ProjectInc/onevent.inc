@@ -6199,6 +6199,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 }
 
 //CMD
+CMD:baocao(playerid, params[]) { return cmd_report(playerid, params); }
 CMD:report(playerid, params[])
 {
 	new string[128];
@@ -6231,6 +6232,7 @@ CMD:report(playerid, params[])
 	}
 	return 1;
 }
+CMD:hoiadmin(playerid, params[]) { return cmd_askq(playerid, params); }
 CMD:askq(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -6571,6 +6573,7 @@ CMD:givedrugs(playerid, params[])
 	}
 	return 1;
 }
+CMD:huongdan(playerid, params[]) { return cmd_guide(playerid, params); }
 CMD:guide(playerid, params[])
 {
 	TogglePlayerControllable(playerid, 0);
@@ -7198,6 +7201,7 @@ CMD:smuggledrugs(playerid, params[])
 	}
 	return 1;
 }
+CMD:doimatkhau(playerid, params[]) { return cmd_changepass(playerid, params); }
 CMD:changepass(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -10617,6 +10621,7 @@ CMD:update(playerid, params[])
 	}
 	return 1;
 }
+CMD:o(playerid, params[]) { return cmd_ooc(playerid, params); }
 CMD:ooc(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -10822,6 +10827,7 @@ CMD:backupclear(playerid, params[])
 }
 //--------------------------------=[Roadblock]=-----------------------------------
 // by Luk0r
+CMD:chanduong(playerid, params[]) { return cmd_roadblock(playerid, params); }
 CMD:roadblock(playerid, params[])
 {
 	if (PlayerInfo[playerid][pMember] != 1 && PlayerInfo[playerid][pLeader] != 1) return SendClientMessage(playerid, COLOR_GREY, "Ban khong phai la canh sat!");
@@ -10856,6 +10862,7 @@ CMD:roadblock(playerid, params[])
 	SetTimer("ResetRoadblockTimer", 60000, false);
 	return 1;
 }
+CMD:huychanduong(playerid, params[]) { return cmd_roadunblock(playerid, params); }
 CMD:roadunblock(playerid, params[])
 {
 	if (PlayerInfo[playerid][pMember] != 1 && PlayerInfo[playerid][pLeader] != 1)
@@ -10907,6 +10914,7 @@ CMD:roadunblockall(playerid, params[])
 	}
 	return 1;
 }
+CMD:tratien(playerid, params[]) { return cmd_pay(playerid, params); }
 CMD:pay(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -10986,6 +10994,7 @@ CMD:pay(playerid, params[])
 	}
 	return 1;
 }
+CMD:tuthie(playerid, params[]) { return cmd_charity(playerid, params); }
 CMD:charity(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -11274,6 +11283,7 @@ return 1;
 }
 return 1;
 }*/
+CMD:thongtin(playerid, params[]) { return cmd_stats(playerid, params); }
 CMD:stats(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -11492,6 +11502,7 @@ CMD:number(playerid, params[])
 	}
 	return 1;
 }
+CMD:muacapdo(playerid, params[]) { return cmd_levelup(playerid, params); }
 CMD:levelup(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -11831,6 +11842,7 @@ return 1;
 }
 return 1;
 }*/
+CMD:resetnangcap(playerid, params[]) { return cmd_resetupgrades(playerid, params); }
 CMD:resetupgrades(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -11865,6 +11877,7 @@ CMD:resetupgrades(playerid, params[])
 	}
 	return 1;
 }
+CMD:muasung(playerid, params[]) { return cmd_buygun(playerid, params); }
 CMD:buygun(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -12054,6 +12067,7 @@ CMD:buygun(playerid, params[])
 	}
 	return 1;
 }
+CMD:nangcap(playerid, params[]) { return cmd_upgrade(playerid, params); }
 CMD:upgrade(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -12188,6 +12202,7 @@ CMD:upgrade(playerid, params[])
 	}
 	return 1;
 }
+CMD:dangnhap(playerid, params[]) { return cmd_login(playerid, params); }
 CMD:login(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -12327,6 +12342,7 @@ SendClientMessage(playerid, COLOR_GRAD1, "you dont have a speedometer");
 }
 return 1;
 }*/
+CMD:xemxang(playerid, params[]) { return cmd_fuel(playerid, params); }
 CMD:fuel(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -12396,6 +12412,7 @@ CMD:advertise(playerid, params[])
 	}
 	return 1;
 }
+CMD:gov(playerid, params[]) { return cmd_government(playerid, params); }
 CMD:government(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -12729,6 +12746,7 @@ CMD:close(playerid, params[])
 	}
 	return 1;
 }
+CMD:l(playerid, params[]) { return cmd_low(playerid, params); }
 CMD:low(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -12756,6 +12774,7 @@ CMD:low(playerid, params[])
 	}
 	return 1;
 }
+CMD:s(playerid, params[]) { return cmd_shout(playerid, params); }
 CMD:shout(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -12834,6 +12853,7 @@ CMD:megaphone(playerid, params[])
 	}
 	return 1;
 }
+CMD:r(playerid, params[]) { return cmd_radio(playerid, params); }
 CMD:radio(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -13189,6 +13209,7 @@ CMD:duty(playerid, params[])
 	}
 	return 1;
 }
+CMD:dept(playerid, params[]) { return cmd_departments(playerid, params); }
 CMD:departments(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -13841,6 +13862,7 @@ CMD:cw(playerid, params[])
 	}
 	return 1;
 }
+CMD:ruttien(playerid, params[]) { return cmd_withdraw(playerid, params); }
 CMD:withdraw(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -13875,6 +13897,7 @@ CMD:withdraw(playerid, params[])
 	}
 	return 1;
 }
+CMD:guitien(playerid, params[]) { return cmd_bank(playerid, params); }
 CMD:bank(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -13912,6 +13935,7 @@ CMD:bank(playerid, params[])
 	}
 	return 1;
 }
+CMD:kiemtrataikhoan(playerid, params[]) { return cmd_balance(playerid, params); }
 CMD:balance(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -13950,6 +13974,7 @@ CMD:dice(playerid, params[])
 	}
 	return 1;
 }
+CMD:tungdongxu(playerid, params[]) { return cmd_coin(playerid, params); }
 CMD:coin(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -13965,6 +13990,7 @@ CMD:coin(playerid, params[])
 	}
 	return 1;
 }
+CMD:chuyenkhoan(playerid, params[]) { return cmd_transfer(playerid, params); }
 CMD:transfer(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -14379,6 +14405,7 @@ CMD:equip(playerid, params[])
 	}
 	return 1;
 }
+CMD:mua(playerid, params[]) { return cmd_buy(playerid, params); }
 CMD:buy(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -15319,6 +15346,7 @@ CMD:switchkey(playerid, params[])
 	}
 	return 1;
 }
+CMD:huythuexe(playerid, params[]) { return cmd_unrentcar(playerid, params); }
 CMD:unrentcar(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -15338,6 +15366,7 @@ CMD:unrentcar(playerid, params[])
 	}
 	return 1;
 }
+CMD:huythuemoto(playerid, params[]) { return cmd_unrentbike(playerid, params); }
 CMD:unrentbike(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -15760,6 +15789,9 @@ CMD:evictall(playerid, params[])
 						{
 							SendClientMessage(i, COLOR_WHITE, "Ban bi duoi ra khoi nha cua ban.");
 							PlayerInfo[i][pPhousekey] = 255;
+							new houseid = PlayerInfo[playerid][pPhousekey];
+							SetPlayerPos(i, HouseInfo[houseid][hEntrancex], HouseInfo[houseid][hEntrancey], HouseInfo[houseid][hEntrancez]);
+							SetPlayerInterior(i, 0);
 						}
 					}
 				}
@@ -15801,6 +15833,9 @@ CMD:evict(playerid, params[])
 						SendClientMessage(target, COLOR_WHITE, "You have been evicted");
 						SendClientMessage(playerid, COLOR_WHITE, "Player has been evicted");
 						PlayerInfo[target][pPhousekey] = 255;
+						new houseid = PlayerInfo[playerid][pPhousekey];
+						SetPlayerPos(target, HouseInfo[houseid][hEntrancex], HouseInfo[houseid][hEntrancey], HouseInfo[houseid][hEntrancez]);
+						SetPlayerInterior(target, 0);
 						return 1;
 					}
 					else
@@ -18195,6 +18230,7 @@ CMD:tv(playerid, params[])
 	}
 	return 1;
 	}*/
+CMD:a(playerid, params[]) { return cmd_admin(playerid, params); }
 CMD:admin(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -21149,6 +21185,7 @@ CMD:masked(playerid, params[])
 	}
 	return 1;
 }
+CMD:trogiup(playerid, params[]) { return cmd_help(playerid, params); }
 CMD:help(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -21765,6 +21802,7 @@ CMD:stopani(playerid, params[])
 	}
 	return 1;
 }
+CMD:kinang(playerid, params[]) { return cmd_skill(playerid, params); }
 CMD:skill(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -23857,6 +23895,7 @@ CMD:spawnchange(playerid, params[])
 	}
 	return 1;
 }
+CMD:muaquanao(playerid, params[]) { return cmd_clothes(playerid, params); }
 CMD:clothes(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -24214,6 +24253,7 @@ CMD:take(playerid, params[])
 	}
 	return 1;
 }
+CMD:uong(playerid, params[]) { return cmd_drink(playerid, params); }
 CMD:drink(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -26724,6 +26764,7 @@ CMD:throwbackall(playerid, params[])
 	}
 	return 1;
 }
+CMD:xemgiayphep(playerid, params[]) { return cmd_licenses(playerid, params); }
 CMD:licenses(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -26786,6 +26827,7 @@ if (strlen(string) > 1) SendClientMessage(playerid, 0xF5DEB3AA, string);
 }
 return 1;
 }*/
+CMD:duagiayphep(playerid, params[]) { return cmd_showlicenses(playerid, params); }
 CMD:showlicenses(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -27620,6 +27662,7 @@ CMD:takejob(playerid, params[])
 	}//not connected
 	return 1;
 }
+CMD:doxang(playerid, params[]) { return cmd_fill(playerid, params); }
 CMD:fill(playerid, params[])
 {
 	new idcar;
@@ -27847,6 +27890,7 @@ CMD:agent(playerid, params[])
 	}
 	return 1;
 }
+CMD:nguytrang(playerid, params[]) { return cmd_undercover(playerid, params); }
 CMD:undercover(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -28321,6 +28365,7 @@ CMD:free(playerid, params[])
 	}//not connected
 	return 1;
 }
+CMD:huybo(playerid, params[]) { return cmd_cancel(playerid, params); }
 CMD:cancel(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -28428,6 +28473,7 @@ CMD:cancel(playerid, params[])
 	}//not connected
 	return 1;
 }
+CMD:chapnhan(playerid, params[]) { return cmd_accept(playerid, params); }
 CMD:accept(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -29866,6 +29912,7 @@ CMD:callcar(playerid, params[])
 	}
 	return 1;
 }
+CMD:f(playerid, params[]) { return cmd_family(playerid, params); }
 CMD:family(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -31094,6 +31141,7 @@ SendClientMessage(playerid, COLOR_GREY, "   You dont have any Drug Grams left !"
 }//not connected
 return 1;
 }*/
+CMD:sudungthuoc(playerid, params[]) { return cmd_usedrugs(playerid, params); }
 CMD:usedrugs(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -31233,6 +31281,7 @@ CMD:healme(playerid, params[])
 	}
 	return 1;
 }
+CMD:moiraxe(playerid, params[]) { return cmd_eject(playerid, params); }
 CMD:eject(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -31758,6 +31807,7 @@ CMD:arrest(playerid, params[])
 	}//not connected
 	return 1;
 }
+CMD:hopdong(playerid, params[]) { return cmd_contract(playerid, params); }
 CMD:contract(playerid, params[])
  {
 	if (IsPlayerConnected(playerid))
