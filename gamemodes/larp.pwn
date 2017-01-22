@@ -4650,10 +4650,15 @@ public SetPlayerSpawn(playerid)
 	    else
 	    {
 			SetPlayerToTeamColor(playerid);
-			SetPlayerPos(playerid,1612.3240,-2330.1670,13.5469);
-			SetPlayerFacingAngle(playerid, 0);
-			SetPlayerInterior(playerid,0);
-			PlayerInfo[playerid][pInt] = 0;
+
+			SetPlayerVirtualWorld(playerid, PlayerInfo[playerid][pVirWorld]);
+			SetPlayerInterior(playerid, PlayerInfo[playerid][pInt]);
+			SetPlayerPos(playerid, PlayerInfo[playerid][pPos_x], PlayerInfo[playerid][pPos_y], PlayerInfo[playerid][pPos_z] + 1);
+
+			//SetPlayerPos(playerid, 1612.3240, -2330.1670, 13.5469);
+			//SetPlayerFacingAngle(playerid, 0);
+			//SetPlayerInterior(playerid,0);
+			//PlayerInfo[playerid][pInt] = 0;
 			return 1;
 		}
 	}

@@ -1,0 +1,3 @@
+#define MAXCUSTOMVEH 50
+new aVeh[MAXCUSTOMVEH];
+new Text3D:aVehLabel[MAXCUSTOMVEH];
