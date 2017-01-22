@@ -1118,6 +1118,7 @@ public OnPlayerCommandText(playerid, cmdtext[])
 }
 public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 {
+	if (IsAdminVehicle(vehicleid) >= 0) return 1;
 	if (gTeam[playerid] >= 1 || gTeam[playerid] >= 3 || gTeam[playerid] >= 4)
 	{
 		if (IsACopCar(vehicleid) && !ispassenger)
@@ -1656,7 +1657,7 @@ public OnPlayerSpawn(playerid)
 			SpawnPlayer(playerid);
 		}
 	}
-	if (gTeam[playerid] == 10)
+	/*if (gTeam[playerid] == 10)
 	{
 		if (PlayerInfo[playerid][pMember] != 8)
 		{
@@ -1669,7 +1670,7 @@ public OnPlayerSpawn(playerid)
 			PlayerInfo[playerid][pModel] = CIV[rand];
 			SpawnPlayer(playerid);
 		}
-	}
+	}*/
 	if (gTeam[playerid] == 2 && PlayerInfo[playerid][pMember] > 3)
 	{
 		MedicBill[playerid] = 0;
@@ -3575,6 +3576,10 @@ public OnPlayerExitVehicle(playerid, vehicleid)
 }
 public OnPlayerStateChange(playerid, newstate, oldstate)
 {
+	if (newstate == PLAYER_STATE_DRIVER && IsAdminVehicle(GetPlayerVehicleID(playerid)) != -1)
+	{
+		return 1;
+	}
 	new string[256];
 	new pveh = GetVehicleModel(GetPlayerVehicleID(playerid));
 	new vehicle = GetPlayerVehicleID(playerid);
@@ -6011,7 +6016,7 @@ public OnPlayerText(playerid, text[])
 		if (Mobile[playerid] == 3900)
 		{
 			SendFamilyMessage(9, COLOR_GREEN, "Chung toi co mot tin nhan moi:");
-			format(string, sizeof(string), "[ID:%d] %s Noi: %s", playerid, GN(playerid), text);
+			format(string, sizeof(string), "[ID:%d] %s noi: %s", playerid, GN(playerid), text);
 			SendFamilyMessage(9, COLOR_GREEN, string);
 			SendClientMessage(playerid, COLOR_GREEN, "ABC Studio: Cam on ban da cung cap thong tin !");
 			SendClientMessage(playerid, COLOR_GRAD2, "   Ho da cup may...");
@@ -6111,12 +6116,12 @@ public OnPlayerText(playerid, text[])
 		{
 			if (PlayerInfo[playerid][pMaskuse] == 1)
 			{
-				format(string, sizeof(string), "Stranger Noi: %s", text);
+				format(string, sizeof(string), "Stranger noi: %s", text);
 				ProxDetector(20.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 			}
 			else
 			{
-				format(string, sizeof(string), "%s Noi: %s", GN(playerid), text);
+				format(string, sizeof(string), "%s noi: %s", GN(playerid), text);
 				ProxDetector(20.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 			}
 		}
@@ -6128,12 +6133,12 @@ public OnPlayerText(playerid, text[])
 			{
 				if (PlayerInfo[playerid][pMaskuse] == 1)
 				{
-					format(string, sizeof(string), "Stranger Noi: %s", text);
+					format(string, sizeof(string), "Stranger noi: %s", text);
 					ProxDetector(20.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 				}
 				else
 				{
-					format(string, sizeof(string), "%s Noi: %s", GN(playerid), text);
+					format(string, sizeof(string), "%s noi: %s", GN(playerid), text);
 					ProxDetector(20.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 				}
 			}
@@ -6143,12 +6148,12 @@ public OnPlayerText(playerid, text[])
 				{
 					if (PlayerInfo[playerid][pMaskuse] == 1)
 					{
-						format(string, sizeof(string), "(Cua so dong) Stranger Noi: %s", text);
+						format(string, sizeof(string), "(Cua so dong) Stranger noi: %s", text);
 						ProxDetector(10.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 					}
 					else
 					{
-						format(string, sizeof(string), "(Cua so dong) %s Noi: %s", GN(playerid), text);
+						format(string, sizeof(string), "(Cua so dong) %s noi: %s", GN(playerid), text);
 						ProxDetector(10.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 					}
 				}
@@ -6156,12 +6161,12 @@ public OnPlayerText(playerid, text[])
 				{
 					if (PlayerInfo[playerid][pMaskuse] == 1)
 					{
-						format(string, sizeof(string), "(Cua so mo) Stranger Noi: %s", text);
+						format(string, sizeof(string), "(Cua so mo) Stranger noi: %s", text);
 						ProxDetector(20.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 					}
 					else
 					{
-						format(string, sizeof(string), "(Cua so mo) %s Noi: %s", GN(playerid), text);
+						format(string, sizeof(string), "(Cua so mo) %s noi: %s", GN(playerid), text);
 						ProxDetector(20.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 					}
 				}
@@ -7913,12 +7918,12 @@ if(PlayerToPoint(20, i, x, y, z))
 {
 if(PlayerInfo[i][pMember] == 6 || PlayerInfo[i][pLeader] == 6)
 {
-format(string, sizeof(string), "%s Says: [Italian] %s", GN(playerid), result);
+format(string, sizeof(string), "%s noi: [Italian] %s", GN(playerid), result);
 SendClientMessage(i, COLOR_FADE3, string);
 }
 else
 {
-format(string, sizeof(string), "%s Says: [Unknown language]", GN(playerid));
+format(string, sizeof(string), "%s noi: [Unknown language]", GN(playerid));
 SendClientMessage(i, COLOR_FADE3, string);
 }
 }
@@ -7957,12 +7962,12 @@ CMD:spa(playerid, params[])
 					{
 						if (PlayerInfo[i][pMember] == 5 || PlayerInfo[i][pLeader] == 5)
 						{
-							format(string, sizeof(string), "%s Says: [Spanish] %s", GN(playerid), result);
+							format(string, sizeof(string), "%s noi: [Spanish] %s", GN(playerid), result);
 							SendClientMessage(i, COLOR_FADE3, string);
 						}
 						else
 						{
-							format(string, sizeof(string), "%s Says: [Unknown language]", GN(playerid));
+							format(string, sizeof(string), "%s noi: [Unknown language]", GN(playerid));
 							SendClientMessage(i, COLOR_FADE3, string);
 						}
 					}
@@ -8001,12 +8006,12 @@ CMD:jap(playerid, params[])
 					{
 						if (PlayerInfo[i][pMember] == 14 || PlayerInfo[i][pLeader] == 14)
 						{
-							format(string, sizeof(string), "%s Says: [Japaneese] %s", GN(playerid), result);
+							format(string, sizeof(string), "%s noi: [Japaneese] %s", GN(playerid), result);
 							SendClientMessage(i, COLOR_FADE3, string);
 						}
 						else
 						{
-							format(string, sizeof(string), "%s Says: [Unknown language]", GN(playerid));
+							format(string, sizeof(string), "%s noi: [Unknown language]", GN(playerid));
 							SendClientMessage(i, COLOR_FADE3, string);
 						}
 					}
@@ -12012,7 +12017,7 @@ CMD:buygun(playerid, params[])
 			}
 			else
 			{
-				SendClientMessage(playerid, COLOR_GRAD6, "ShopKeeper says: I have never heard of that weapon.");
+				SendClientMessage(playerid, COLOR_GRAD6, "ShopKeeper noi: I have never heard of that weapon.");
 				return 1;
 			}
 			if ((guncharge + ammocharge) > GetPlayerMoney(playerid))
@@ -12611,12 +12616,12 @@ CMD:local(playerid, params[])
 		{
 			if (PlayerInfo[playerid][pMaskuse] == 1)
 			{
-				format(string, sizeof(string), "Stranger Says: %s", result);
+				format(string, sizeof(string), "Stranger noi: %s", result);
 				ProxDetector(20.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 			}
 			else
 			{
-				format(string, sizeof(string), "%s Says: %s", GN(playerid), result);
+				format(string, sizeof(string), "%s noi: %s", GN(playerid), result);
 				ProxDetector(20.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 			}
 		}
@@ -12627,12 +12632,12 @@ CMD:local(playerid, params[])
 			{
 				if (PlayerInfo[playerid][pMaskuse] == 1)
 				{
-					format(string, sizeof(string), "Stranger Says: %s", result);
+					format(string, sizeof(string), "Stranger noi: %s", result);
 					ProxDetector(20.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 				}
 				else
 				{
-					format(string, sizeof(string), "%s Says: %s", GN(playerid), result);
+					format(string, sizeof(string), "%s noi: %s", GN(playerid), result);
 					ProxDetector(20.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 				}
 			}
@@ -12642,12 +12647,12 @@ CMD:local(playerid, params[])
 				{
 					if (PlayerInfo[playerid][pMaskuse] == 1)
 					{
-						format(string, sizeof(string), "(Windows Shut) Stranger Says: %s", result);
+						format(string, sizeof(string), "(Windows Shut) Stranger noi: %s", result);
 						ProxDetector(10.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 					}
 					else
 					{
-						format(string, sizeof(string), "(Windows Shut) %s Says: %s", GN(playerid), result);
+						format(string, sizeof(string), "(Windows Shut) %s noi: %s", GN(playerid), result);
 						ProxDetector(10.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 					}
 				}
@@ -12655,12 +12660,12 @@ CMD:local(playerid, params[])
 				{
 					if (PlayerInfo[playerid][pMaskuse] == 1)
 					{
-						format(string, sizeof(string), "(Windows Open) Stranger Says: %s", result);
+						format(string, sizeof(string), "(Windows Open) Stranger noi: %s", result);
 						ProxDetector(20.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 					}
 					else
 					{
-						format(string, sizeof(string), "(Windows Open) %s Says: %s", GN(playerid), result);
+						format(string, sizeof(string), "(Windows Open) %s noi: %s", GN(playerid), result);
 						ProxDetector(20.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 					}
 				}
@@ -12686,11 +12691,11 @@ CMD:b(playerid, params[])
 
 		if (PlayerInfo[playerid][pMaskuse] == 1)
 		{
-			format(string, sizeof(string), "(( Stranger Says:  %s ))", result);
+			format(string, sizeof(string), "(( Stranger noi:  %s ))", result);
 		}
 		else
 		{
-			format(string, sizeof(string), "(( [%i] %s Says: %s ))", playerid, GN(playerid), result);
+			format(string, sizeof(string), "(( [%i] %s noi: %s ))", playerid, GN(playerid), result);
 		}
 		ProxDetector(20.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 		printf("%s", string);
@@ -12713,11 +12718,11 @@ CMD:close(playerid, params[])
 
 		if (PlayerInfo[playerid][pMaskuse] == 1)
 		{
-			format(string, sizeof(string), "Stranger Says: %s", result);
+			format(string, sizeof(string), "Stranger noi: %s", result);
 		}
 		else
 		{
-			format(string, sizeof(string), "%s Says: %s", GN(playerid), result);
+			format(string, sizeof(string), "%s noi: %s", GN(playerid), result);
 		}
 		ProxDetector(3.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 		printf("%s", string);
@@ -12740,11 +12745,11 @@ CMD:low(playerid, params[])
 
 		if (PlayerInfo[playerid][pMaskuse] == 1)
 		{
-			format(string, sizeof(string), "Stranger Says: [LOW] %s", result);
+			format(string, sizeof(string), "Stranger noi: [LOW] %s", result);
 		}
 		else
 		{
-			format(string, sizeof(string), "%s Says: [LOW] %s", GN(playerid), result);
+			format(string, sizeof(string), "%s noi: [LOW] %s", GN(playerid), result);
 		}
 		ProxDetector(3.0, playerid, string, COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
 		printf("%s", string);
@@ -13822,12 +13827,12 @@ CMD:cw(playerid, params[])
 				{
 					if (GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
 					{
-						format(string, sizeof(string), "Driver %s Says: %s", GN(playerid), result);
+						format(string, sizeof(string), "Driver %s noi: %s", GN(playerid), result);
 						SendClientMessage(i, 0xD7DFF3AA, string);
 					}
 					else
 					{
-						format(string, sizeof(string), "Passenger %s Says: %s", GN(playerid), result);
+						format(string, sizeof(string), "Passenger %s noi: %s", GN(playerid), result);
 						SendClientMessage(i, 0xD7DFF3AA, string);
 					}
 				}
@@ -15021,7 +15026,7 @@ ProxDetector(15.0,playerid,string,COLOR_WHITE,COLOR_WHITE,COLOR_WHITE,COLOR_WHIT
 Wait(5000);
 SendClientMessage(playerid,COLOR_WHITE,"On-Star: This is On-Star how can I help you?");
 Wait(2000);
-format(string,sizeof(string),"%s says: [Cell] I'd like to locate a stolen vehicle",GN(playerid)");
+format(string,sizeof(string),"%s noi: [Cell] I'd like to locate a stolen vehicle",GN(playerid)");
 ProxDetector(15.0,playerid,string,COLOR_WHITE,COLOR_WHITE,COLOR_WHITE,COLOR_WHITE,COLOR_WHITE);
 Wait(2000);
 SendClientMessage(playerid,COLOR_WHIE,"On-Star: Okay sir, can I have your name and identification number please");
@@ -18981,7 +18986,7 @@ CMD:uninvite(playerid, params[])
 						new rand = random(sizeof(CIV));
 						//SetSpawnInfo(para1, gTeam[para1], CIV[rand], 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0);
 						PlayerInfo[para1][pModel] = CIV[rand];
-						SetPlayerSkin(playerid, PlayerInfo[para1][pModel]);
+						SetPlayerSkin(para1, PlayerInfo[para1][pModel]);
 						MedicBill[para1] = 0;
 						//SpawnPlayer(para1);
 						format(string, sizeof(string), "   Ban da kick %s ra khoi Family/To chuc.", GN(para1));
