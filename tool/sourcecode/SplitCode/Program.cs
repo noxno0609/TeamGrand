@@ -27,14 +27,30 @@ namespace SplitCode
                     Enumerable.Range(0, content.Count)
                         .Where(x => content[x].StartsWith("//") && content[x].EndsWith("TM"))
                         .ToList();
-               for(var i = 0; i < arrayIndex.Count; i++)
-               {
-                   var fileName = content.ElementAt(arrayIndex[i]).Replace("//", "").Replace(" TM", "");
-                   File.WriteAllLines(fileName,
-                       arrayIndex[i] == arrayIndex.Last()
-                           ? content.GetRange(arrayIndex[i] + 1, content.Count - arrayIndex[i] - 1)
-                           : content.GetRange(arrayIndex[i] + 1, arrayIndex[i + 1] - arrayIndex[i] - 1));
-               }
+                for (var i = 0; i < arrayIndex.Count; i++)
+                {
+                    var fileName = content.ElementAt(arrayIndex[i]).Replace("//", "").Replace(" TM", "");
+
+                    using (TextWriter tw = new StreamWriter(fileName, true))
+                    {
+                        if (arrayIndex[i] == arrayIndex.Last())
+                        {
+                            var fileContent = content.GetRange(arrayIndex[i] + 1, content.Count - arrayIndex[i] - 1);
+                            foreach (string text in fileContent)
+                            {
+                                tw.WriteLine(text);
+                            }
+                        }
+                        else
+                        {
+                            var fileContent = content.GetRange(arrayIndex[i] + 1, arrayIndex[i + 1] - arrayIndex[i] - 1);
+                            foreach (string text in fileContent)
+                            {
+                                tw.WriteLine(text);
+                            }
+                        }
+                    }
+                }
             }
             catch (Exception ex)
             {
