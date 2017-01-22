@@ -28,7 +28,7 @@ namespace MergeCode
          FileInfo[] projectinc = new DirectoryInfo(pathsen).GetFiles();
          foreach(FileInfo file in projectinc)
          {
-            addToMerge(mergecontents, file, pathsen);
+            addToMerge(mergecontents, file, pathsen + "/" + file.Name);
          }
 
          if(File.Exists("../servicer/larpmerge.pwn"))
