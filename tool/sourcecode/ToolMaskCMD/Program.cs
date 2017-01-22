@@ -20,6 +20,7 @@ namespace ToolMaskCMD
             Hashtable maskInfo = new Hashtable();
             maskInfo.Add("count", 0);
             maskInfo.Add("mask", maskcmd[1]);
+            maskInfo.Add("deny", false);
             cmdMap.Add(maskcmd[0], maskInfo);
          }
 
@@ -34,12 +35,12 @@ namespace ToolMaskCMD
             count++;
             foreach(DictionaryEntry entry in cmdMap)
             {
+               Hashtable maskInfo = (Hashtable)entry.Value;
                string cmdsource = "CMD:" + Convert.ToString(entry.Key) + "(";
-               if(filecontent.ToLower().Contains(cmdsource.ToLower()))
+               string cmdmask = "CMD:" + Convert.ToString(maskInfo["mask"]) + "(";
+               if(filecontent.ToLower().Contains(cmdsource.ToLower()) && Convert.ToBoolean(maskInfo["deny"]) == false)
                {
-                  Hashtable maskInfo = (Hashtable)entry.Value;
-                  string cmdmask = "CMD:" + Convert.ToString(maskInfo["mask"]);
-                  string contentcmd = cmdmask + "(playerid, params[]) { return cmd_" + Convert.ToString(entry.Key) + "(playerid, params); }";
+                  string contentcmd = cmdmask + "playerid, params[]) { return cmd_" + Convert.ToString(entry.Key) + "(playerid, params); }";
                   result.Add(contentcmd);
 
                   int countmask = Convert.ToInt32(maskInfo["count"]);
@@ -48,6 +49,12 @@ namespace ToolMaskCMD
                   maskInfo["count"] = countmask;
 
                   Console.WriteLine("Add mask line " + count);
+               }
+               else if(filecontent.ToLower().Contains(cmdmask.ToLower()))
+               {
+                  bool denybool = Convert.ToBoolean(maskInfo["deny"]);
+                  denybool = true;
+                  maskInfo["deny"] = denybool;
                }
             }
             result.Add(filecontent);
@@ -62,6 +69,10 @@ namespace ToolMaskCMD
             if(Convert.ToInt32(maskInfo["count"]) == 0)
             {
                contentlogs.Add(Convert.ToString(entry.Key));              
+            }
+            else if(Convert.ToBoolean(maskInfo["deny"]) == true)
+            {
+               contentlogs.Add(Convert.ToString(entry.Key) + " - CMD has already existed!");
             }
          }
          using (TextWriter tw = new StreamWriter("logmask.txt", true))
