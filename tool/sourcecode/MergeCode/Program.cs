@@ -20,13 +20,15 @@ namespace MergeCode
       public static void mergeProject()
       {
          List<string> mergecontents = new List<string>();
-         
-         addToMerge(mergecontents, new FileInfo("../gamemodes/larp.pwn"));
 
-         FileInfo[] projectinc = new DirectoryInfo("../pawno/include/ProjectInc").GetFiles();
+         string pathsen = "../gamemodes/larp.pwn";
+         addToMerge(mergecontents, new FileInfo(pathsen), pathsen);
+
+         pathsen = "../pawno/include/ProjectInc";
+         FileInfo[] projectinc = new DirectoryInfo("pathsen").GetFiles();
          foreach(FileInfo file in projectinc)
          {
-            addToMerge(mergecontents, file);
+            addToMerge(mergecontents, file, pathsen);
          }
 
 
@@ -44,9 +46,9 @@ namespace MergeCode
          System.Threading.Thread.Sleep(2500);
       }
 
-      public static void addToMerge(List<string> mergecontents, FileInfo file)
+      public static void addToMerge(List<string> mergecontents, FileInfo file, string pathsen)
       {
-         mergecontents.Add("//" + file.Name + " TM");
+         mergecontents.Add("//" + pathsen + " TM");
          
          List<string> contents = File.ReadAllLines(file.FullName).ToList();
          foreach (string content in contents)
