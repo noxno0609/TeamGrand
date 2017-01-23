@@ -15789,6 +15789,9 @@ CMD:evictall(playerid, params[])
 						{
 							SendClientMessage(i, COLOR_WHITE, "Ban bi duoi ra khoi nha cua ban.");
 							PlayerInfo[i][pPhousekey] = 255;
+							new houseid = PlayerInfo[playerid][pPhousekey];
+							SetPlayerPos(i, HouseInfo[houseid][hEntrancex], HouseInfo[houseid][hEntrancey], HouseInfo[houseid][hEntrancez]);
+							SetPlayerInterior(i, 0);
 						}
 					}
 				}
@@ -15830,6 +15833,9 @@ CMD:evict(playerid, params[])
 						SendClientMessage(target, COLOR_WHITE, "You have been evicted");
 						SendClientMessage(playerid, COLOR_WHITE, "Player has been evicted");
 						PlayerInfo[target][pPhousekey] = 255;
+						new houseid = PlayerInfo[playerid][pPhousekey];
+						SetPlayerPos(target, HouseInfo[houseid][hEntrancex], HouseInfo[houseid][hEntrancey], HouseInfo[houseid][hEntrancez]);
+						SetPlayerInterior(target, 0);
 						return 1;
 					}
 					else
