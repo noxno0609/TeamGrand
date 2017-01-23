@@ -20071,6 +20071,8 @@ CMD:gotoid(playerid, params[])
 					{
 						SetPlayerPos(playerid, plocx, plocy + 2, plocz);
 					}
+					PlayerInfo[playerid][pVirWorld] = GetPlayerVirtualWorld(plo);
+					SetPlayerVirtualWorld(playerid, PlayerInfo[playerid][pVirWorld]);
 					SendClientMessage(playerid, COLOR_GRAD1, "   Da duoc dich chuyen");
 				}
 				else
