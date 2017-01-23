@@ -4181,8 +4181,6 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 }
 public OnPlayerRequestClass(playerid, classid)
 {
-	TogglePlayerSpectating(playerid, true);
-
 	SetPlayerCameraPos(playerid, 1890.1014, -1194.7969, 25.8091);
 	SetPlayerCameraLookAt(playerid, 1933.4393, -1196.2479, 18.8163);
 
@@ -4192,6 +4190,7 @@ public OnPlayerRequestClass(playerid, classid)
 
 	if (RegistrationStep[playerid] == 0 && gPlayerLogged[playerid] != 1)
 	{
+		TogglePlayerSpectating(playerid, true);
 		ClearChatbox(playerid, 10);
 		format(string, sizeof(string), "Welcome to Los Angeles Roleplay, running %s", SCRIPT_VERSION);
 		SendClientMessage(playerid, COLOR_YELLOW, string);
@@ -10434,7 +10433,7 @@ CMD:tuningclose(playerid, params[])
 	else return SendClientMessage(playerid, COLOR_GREY, "Ban khong co remote de mo.");
 	return 1;
 }
-CMD:docoropen(playerid, params[])
+CMD:dooropen(playerid, params[])
 {
 	new string[256];
 	if (PlayerInfo[playerid][pLeader] == 1 || PlayerInfo[playerid][pLeader] == 2 || PlayerInfo[playerid][pLeader] == 3 || PlayerInfo[playerid][pMember] == 1 || PlayerInfo[playerid][pMember] == 2 || PlayerInfo[playerid][pMember] == 3)
@@ -20562,7 +20561,6 @@ CMD:slap(playerid, params[])
 			{
 				if (playa != INVALID_PLAYER_ID)
 				{
-
 					GetPlayerHealth(playa, shealth);
 					SetPlayerHealth(playa, shealth - 5);
 					GetPlayerPos(playa, slx, sly, slz);

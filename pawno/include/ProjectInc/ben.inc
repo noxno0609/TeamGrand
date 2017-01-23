@@ -68,7 +68,7 @@ CMD:veh(playerid, params[])
 				 return 1;
 			 }
 		 }
-		 format(string, sizeof(string), "[Admin] %s da tao mot Admin Vehicle ID %d.", GLN(playerid), id);
+		 format(string, sizeof(string), "AdmCMD: %s da tao mot Admin Vehicle ID %d.", GLN(playerid), id);
 		 SendAdminMessage(COLOR_LIGHTRED, string);
 		 return 1;
 }
@@ -96,7 +96,7 @@ CMD:xoaveh(playerid, params[])
 				 if (avid != -1 && !IsAnyAdminInVehicle(i))
 					 DeleteAdminVeh(avid);
 			 }
-			 SendAdminMessage(COLOR_LIGHTRED, "[Admin] Da xoa tat ca Admin Vehicle!");
+			 SendAdminMessage(COLOR_LIGHTRED, "AdmCMD: Da xoa tat ca Admin Vehicle!");
 			 return 1;
 		 }
 		new vid = strval(vidid);
@@ -106,7 +106,7 @@ CMD:xoaveh(playerid, params[])
 			if (avid != -1)
 			{
 				DeleteAdminVeh(avid);
-				SCM(playerid, COLOR_LIGHTRED, "[Admin] Da xoa chiec Admin Vehicle nay thanh cong!");
+				SCM(playerid, COLOR_LIGHTRED, "AdmCMD: Da xoa chiec Admin Vehicle nay thanh cong!");
 				return 1;
 			}
 			else SCM(playerid, COLOR_GREY, "Day khong phai Admin Vehicle.");
