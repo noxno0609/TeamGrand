@@ -159,6 +159,8 @@ CMD:goto(playerid, params[])
 		{
 			SetPlayerPos(playerid, plocx, plocy + 2, plocz);
 		}
+		PlayerInfo[playerid][pVirWorld] = GetPlayerVirtualWorld(plo);
+		SetPlayerVirtualWorld(playerid, PlayerInfo[playerid][pVirWorld]);
 	}
 	else {
 		return SendClientMessage(playerid, COLOR_GRAD1, "   Sai [Dia diem] hoac [Playerid] !");
