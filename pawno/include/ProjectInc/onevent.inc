@@ -6311,10 +6311,10 @@ CMD:engine(playerid, params[])
 
 				new playerveh = GetPlayerVehicleID(playerid);
 				PutPlayerInVehicle(playerid, playerveh, 0);
-				format(string, sizeof(string), "* %s spins a key and tries to start vehicle engine.", GN(playerid));
+				format(string, sizeof(string), "* %s van chi khoa khoi dong dong co.", GN(playerid));
 				ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 				SetTimerEx("StartingTheVehicle", 3500, 0, "i", playerid);
-				GameTextForPlayer(playerid, "~w~Starting vehicle engine...", 3500, 3);
+				GameTextForPlayer(playerid, "~w~Dong co dang khoi dong...", 3500, 3);
 				gEngine[playerid] = 1;
 				return 1;
 			}
@@ -6365,7 +6365,7 @@ CMD:engine(playerid, params[])
 				engineOn[GetPlayerVehicleID(playerid)] = false;
 				//RemovePlayerFromVehicle(playerid);
 				TogglePlayerControllable(playerid, 0);
-				format(string, sizeof(string), "* %s spins the vehicle key and turns off the engine.", GN(playerid));
+				format(string, sizeof(string), "* %s xoay chia khoa va tat may xe.", GN(playerid));
 				ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 				gEngine[playerid] = 0;
 				/*					new keycar = PlayerInfo[playerid][pPcarkey][0];
@@ -18375,11 +18375,12 @@ CMD:prison(playerid, params[])
 		{
 			if (giveplayerid != INVALID_PLAYER_ID)
 			{
-				format(string, sizeof(string), "* Ban da dich chuyen %s den Fort DeMorgan.", GN(giveplayerid));
+				format(string, sizeof(string), "* Ban da tong giam %s den Fort DeMorgan.", GN(giveplayerid));
 				SendClientMessage(playerid, COLOR_LIGHTRED, string);
-				format(string, sizeof(string), "* Ban da duoc dich chuyen den Fort DeMorgan boi Admin %s.", GN(playerid));
+				format(string, sizeof(string), "* Ban bi tong giam vao Fort DeMorgan boi Admin %s.", GN(playerid));
 				SendClientMessage(giveplayerid, COLOR_LIGHTRED, string);
 				GameTextForPlayer(giveplayerid, "~w~Welcome to ~n~~r~Fort DeMorgan", 5000, 3);
+				SafeResetPlayerWeapons(giveplayerid);
 				WantedPoints[giveplayerid] = 0;
 				WantedLevel[giveplayerid] = 0;
 				PlayerInfo[giveplayerid][pJailed] = 2;
@@ -23505,7 +23506,7 @@ CMD:deliver(playerid, params[])
 	if (IsPlayerConnected(playerid))
 	{
 		new giveplayerid, string[255];
-		if (PlayerInfo[playerid][pJob] == 15 || gTeam[playerid] == 2 || PlayerInfo[playerid][pLeader] == 6 || PlayerInfo[playerid][pLeader] == 10)
+		if (gTeam[playerid] == 2 || PlayerInfo[playerid][pLeader] == 6 || PlayerInfo[playerid][pLeader] == 10)
 		{
 			if (gTeam[playerid] == 2 || IsACop(playerid))
 			{
@@ -23523,15 +23524,15 @@ CMD:deliver(playerid, params[])
 				{
 					if (giveplayerid != INVALID_PLAYER_ID)
 					{
-						if (giveplayerid == playerid) { SendClientMessage(playerid, COLOR_GREY, "   Khong the nem ban than vao trong Fort DeMorgan !"); return 1; }
-						if (WantedLevel[giveplayerid] < 1) { SendClientMessage(playerid, COLOR_GREY, "   Nguoi choi can it nhat mot muc do truy na de vao Fort DeMorgan !"); return 1; }
+						if (giveplayerid == playerid) { SendClientMessage(playerid, COLOR_GREY, "   Khong the tong giam ban than vao Fort DeMorgan !"); return 1; }
+						if (WantedLevel[giveplayerid] < 1) { SendClientMessage(playerid, COLOR_GREY, "   Chi co the tong giam nguoi co Wanted vao Fort DeMorgan !"); return 1; }
 						if (gTeam[giveplayerid] == 2 || PlayerInfo[giveplayerid][pLeader] == 6 || PlayerInfo[giveplayerid][pLeader] == 10) { return 1; }
 						if (ProxDetectorS(8.0, playerid, giveplayerid))
 						{
 
-							format(string, sizeof(string), "* Ban mang %s vao Fort DeMorgan.", GN(giveplayerid));
+							format(string, sizeof(string), "* Ban tong giam %s vao Fort DeMorgan.", GN(giveplayerid));
 							SendClientMessage(playerid, COLOR_WHITE, string);
-							format(string, sizeof(string), "* %s mang ban vao Fort DeMorgan.", GN(playerid));
+							format(string, sizeof(string), "* %s tong giam ban vao Fort DeMorgan.", GN(playerid));
 							SendClientMessage(giveplayerid, COLOR_WHITE, string);
 							GameTextForPlayer(giveplayerid, "~w~Welcome to ~n~~r~Fort DeMorgan", 5000, 3);
 							WantedPoints[giveplayerid] = 0;
