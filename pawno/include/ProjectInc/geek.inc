@@ -175,7 +175,7 @@ CMD:sendto(playerid, params[])
 	new nguoichoi, location[32];
 	if (sscanf(params, "us[32]", nguoichoi, location))
 	{
-		SendClientMessage(playerid, COLOR_WHITE, "Sun dung: /sendto [ID] [Dia diem]");
+		SendClientMessage(playerid, COLOR_WHITE, "Su dung: /sendto [ID] [Dia diem]");
 		SendClientMessage(playerid, COLOR_GREY, "Dia diem: LS | LV | SF");
 		SendClientMessage(playerid, COLOR_GREY, "Dia diem: Truck | Congnhan | Dongo | Nongdan");
 		SendClientMessage(playerid, COLOR_GREY, "Dia diem: Tosser | Nhamay | Binco | 247");
