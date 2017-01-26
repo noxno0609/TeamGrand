@@ -342,7 +342,7 @@ public OnScriptInit()
 			return 1;
 		#endif
 	}
-	P:F("YSI_FILTERSCRIPT == 0");
+	{P:F("YSI_FILTERSCRIPT == 0"); }
 	while (s != 10000000) ++s;
 	#emit CONST.pri 0
 	#emit SCTRL     6

@@ -316,3 +316,119 @@ CMD:gotopos(playerid, params[])
 	SendClientMessage(playerid, COLOR_GRAD1, "Dich chuyen.");
 	return 1;
 }
+
+CMD:nonewb(playerid, params[])
+{
+	if (PlayerInfo[playerid][pAdmin] < 1) return SendClientMessage(playerid, COLOR_GRAD1, "Khong co quyen han su dung cau lenh nay.");
+	if (NewbieChannelActive == 0) { NewbieChannelActive = 1; SendClientMessageToAll(COLOR_NEWBIE, "Kenh chat Newbie da duoc mo khoa."); }
+	else if (NewbieChannelActive == 1) { NewbieChannelActive = 0; SendClientMessageToAll(COLOR_NEWBIE, "Kenh chat Newbie da duoc khoa."); }
+	return 1;
+}
+
+CMD:newb(playerid, params[])
+{
+	new str[255], mess[255];
+	if (sscanf(params, "s[255]", mess)) return SendClientMessage(playerid, COLOR_GREY, "Su dung: /newb [Noi Dung]");
+	if (NewbieChannelActive == 0) return SendClientMessage(playerid, COLOR_GRAD1, "Kenh newbie da bi khoa.");
+	if (PlayerInfo[playerid][pAdmin] > 0) format(str, sizeof(str), "[Admin] %s(%d): %s", GN(playerid), playerid, mess);
+	else if (PlayerInfo[playerid][pHelper] > 0) format(str, sizeof(str), "%s %s(%d): %s", HP(playerid), GN(playerid), playerid, mess);
+	else
+	{
+		if (GetPVarInt(playerid, "InNewbieChannel") == 1) return SendClientMessage(playerid, COLOR_GRAD1, "Thoi gian giua hai cau hoi la 15s.");
+		format(str, sizeof(str), "%s: %s", GN(playerid), mess);
+		SetPVarInt(playerid, "InNewbieChannel", 1);
+		defer NewbieChannel[15000](playerid);
+	}
+	SendClientMessageToAll(COLOR_NEWBIE, str);
+	return 1;
+}
+CMD:yeucautrogiup(playerid, params[])
+{
+	if (CountAdvisor == 0) return SendClientMessage(playerid, COLOR_GRAD1, "Hien gio khong co Advisor nao.");
+	if (PlayerInfo[playerid][pLevel] >5) return SendClientMessage(playerid, COLOR_GRAD1, "Cap cua ban da qua cao.");
+	if (GetPVarInt(playerid, "CanTroGiup") == 1) return SendClientMessage(playerid, COLOR_GRAD1, "Hay cho mot luc sau hay tiep tuc gui yeu cau.");
+	new str[128];
+	format(str, sizeof(str), "%s(%i) yeu cau su tro giup tu Advisor. (/chapnhangiupdo %i)", GN(playerid), playerid, playerid);
+	CBroadCast(COLOR_LIGHTGREEN, str, 2);
+	format(str, sizeof(str), "%s(%i) da gui yeu cau tro giup. Dang doi Advisor duyet...", GN(playerid), playerid);
+	ABroadCast(COLOR_LIGHTGREEN, str, 1);
+	SetPVarInt(playerid, "CanTroGiup", 1);
+	defer RequestAdvisor[30000](playerid);
+	return 1;
+}
+CMD:chapnhangiupdo(playerid, params[])
+{
+	if (PlayerInfo[playerid][pHelper] < 2) return SendClientMessage(playerid, COLOR_GRAD1, "Ban khong phai advisor.");
+	/*if (CDuty[playerid] != 1) return SendClientMessage(playerid, COLOR_GRAD1, "Ban phai onduty Advisor truoc.");*/
+	new pgd;
+	if (sscanf(params, "u", pgd)) return SendClientMessage(playerid, COLOR_GRAD1, "/chapnhangiupdo [Ten/ID Nguoi Choi]");
+	if (pgd == INVALID_PLAYER_ID) return SendClientMessage(playerid, COLOR_GRAD1, "Nguoi choi khong ton tai.");
+	if (GetPVarInt(pgd, "CanTroGiup") != 1) return SendClientMessage(playerid, COLOR_GRAD1, "Nguoi nay khong can tro giup.");
+	new str[128];
+	format(str, sizeof(str), "Ban da chap nhan giup do cho %s , khi da hoan thanh cong viec su dong /dagiup de tro lai vi tri cu.", GN(pgd));
+	SendClientMessage(playerid, COLOR_GRAD1, str);
+	format(str, sizeof(str), "%s %s da chap nhan yeu cau giup do cua ban.", HP(playerid), GN(playerid));
+	SendClientMessage(pgd, COLOR_LIGHTGREEN, str);
+	format(str, sizeof(str), "%s %s da chap nhan yeu cau tro giup cua %s.", HP(playerid), GN(playerid), GN(pgd));
+	ABroadCast(COLOR_LIGHTGREEN, str, 1);
+	CBroadCast(COLOR_LIGHTGREEN, str, 2);
+	new Float: x, Float: y, Float: z, Float: r, i, vw;
+	vw = GetPlayerVirtualWorld(playerid);
+	i = GetPlayerInterior(playerid);
+	GetPlayerPos(playerid, x, y, z);
+	GetPlayerFacingAngle(playerid, r);
+	SetPVarFloat(playerid, "AdvisorLastx", x);
+	SetPVarFloat(playerid, "AdvisorLasty", y);
+	SetPVarFloat(playerid, "AdvisorLastz", z);
+	SetPVarFloat(playerid, "AdvisorLastr", r);
+	SetPVarInt(playerid, "AdvisorLastInt", i);
+	SetPVarInt(playerid, "AdvisorLastVW", vw);
+
+	GetPlayerPos(pgd, x, y, z);
+	vw = GetPlayerVirtualWorld(pgd);
+	i = GetPlayerInterior(pgd);
+	SetPlayerPos(playerid, x, y + 2, z);
+	SetPlayerVirtualWorld(playerid, vw);
+	SetPlayerInterior(playerid, i);
+
+	DanhHieu[playerid] = CreateDynamic3DTextLabel("Nguoi Tro Giup", COLOR_LIGHTGREEN, x, y, z + 6.0, 15.0, playerid);
+	SetPVarInt(playerid, "DangHelp", 1);
+	DeletePVar(pgd, "CanGiupDo");
+	return 1;
+}
+
+CMD:dagiup(playerid, params[])
+{
+	if (GetPVarInt(playerid, "DangHelp") != 1) return SendClientMessage(playerid, COLOR_GRAD1, "Ban hien khong giup do ai.");
+	new string[128];
+	format(string, sizeof(string), "%s da hoan thanh yeu cau tro giup.", GN(playerid));
+	CBroadCast(COLOR_LIGHTGREEN, string, 2);
+	ABroadCast(COLOR_LIGHTGREEN, string, 1);
+	DestroyDynamic3DTextLabel(DanhHieu[playerid]);
+	SetPlayerPos(playerid, GetPVarFloat(playerid, "AdvisorLastx"), GetPVarFloat(playerid, "AdvisorLasty"), GetPVarFloat(playerid, "AdvisorLastz"));
+	SetPlayerVirtualWorld(playerid, GetPVarInt(playerid, "AdvisorLastVW"));
+	SetPlayerInterior(playerid, GetPVarInt(playerid, "AdvisorLastInt"));
+	DeletePVar(playerid, "DangHelp");
+	return 1;
+}
+
+stock HP(playerid)
+{
+	new name[32];
+	switch (PlayerInfo[playerid][pHelper])
+	{
+	case 1: format(name, sizeof(name), "[Helper]");
+	case 2: format(name, sizeof(name), "[CA]");
+	default: format(name, sizeof(name), "Khong");
+	}
+	return name;
+}
+
+timer NewbieChannel[1000](playerid)
+{
+	SetPVarInt(playerid, "InNewbieChannel", 0);
+}
+timer RequestAdvisor[1000](playerid)
+{
+	SetPVarInt(playerid, "CanTroGiup", 0);
+}
