@@ -6842,7 +6842,7 @@ public ShowStats(playerid,targetid)
         else if(PlayerInfo[targetid][pJob] == 20) { jtext = "Drugs Smuggler"; }
         else if(PlayerInfo[targetid][pJob] == 21) { jtext = "Street sweeper"; }
         //else if(PlayerInfo[targetid][pJob] == 22) { jtext = "Materials smuggler"; }
-        else if(PlayerInfo[targetid][pJob] == 23) { jtext = "Gun maker"; }
+        //else if(PlayerInfo[targetid][pJob] == 23) { jtext = "Gun maker"; }
         else { jtext = "None"; }
 		new drank[20];
 		if(PlayerInfo[targetid][pDonateRank] == 1) { drank = "Bronze donater"; }

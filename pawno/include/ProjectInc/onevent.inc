@@ -2575,48 +2575,42 @@ public OnPlayerEnterCheckpoint(playerid)
 	}
 	if (IsPuttingMaterials[playerid] == 1)
 	{
-		if (PlayerInfo[playerid][pJob] == 23)
+		//if (PlayerInfo[playerid][pJob] == 23)
+		if (PlayerInfo[playerid][pMats] < CreatingGunPrice[playerid])
 		{
-			if (PlayerInfo[playerid][pMats] < CreatingGunPrice[playerid])
-			{
-				SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu ");
-				return 1;
-			}
-			DisablePlayerCheckpoint(playerid);
-			PlayerPlaySound(playerid, 1056, 0.0, 0.0, 0.0);
-			GameTextForPlayer(playerid, "~w~Vat lieu duoc giao thanh cong", 5000, 1);
-			PlayerInfo[playerid][pMats] -= CreatingGunPrice[playerid];
-			CreatingGunPrice[playerid] = 0;
-			IsPuttingMaterials[playerid] = 0;
-			new randomize = random(3) + 1;
-			if (randomize == 1) ProxDetector(40.0, playerid, "Factory speaker: Take da gat outside homie !", COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
-			else if (randomize == 2) ProxDetector(40.0, playerid, "Factory speaker: Chea' ya blasta is outside !", COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
-			else ProxDetector(40.0, playerid, "Factory speaker: Damn nice ass gun i made. It's waiting for ya outside !", COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
-			IsTakingGun[playerid] = 1;
-			SetPlayerCheckpoint(playerid, 2163.3430, -2271.9934, 13.3293, 1.0);
+			SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu ");
 			return 1;
 		}
+		DisablePlayerCheckpoint(playerid);
+		PlayerPlaySound(playerid, 1056, 0.0, 0.0, 0.0);
+		GameTextForPlayer(playerid, "~w~Vat lieu duoc giao thanh cong", 5000, 1);
+		PlayerInfo[playerid][pMats] -= CreatingGunPrice[playerid];
+		CreatingGunPrice[playerid] = 0;
+		IsPuttingMaterials[playerid] = 0;
+		new randomize = random(3) + 1;
+		if (randomize == 1) ProxDetector(40.0, playerid, "Factory speaker: Take da gat outside homie !", COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
+		else if (randomize == 2) ProxDetector(40.0, playerid, "Factory speaker: Chea' ya blasta is outside !", COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
+		else ProxDetector(40.0, playerid, "Factory speaker: Damn nice ass gun i made. It's waiting for ya outside !", COLOR_FADE1, COLOR_FADE2, COLOR_FADE3, COLOR_FADE4, COLOR_FADE5);
+		IsTakingGun[playerid] = 1;
+		SetPlayerCheckpoint(playerid, 2163.3430, -2271.9934, 13.3293, 1.0);
 		return 1;
 	}
 	if (IsTakingGun[playerid] == 1)
 	{
-		if (PlayerInfo[playerid][pJob] == 23)
+		//if (PlayerInfo[playerid][pJob] == 23)
+		if (CreatingGun[playerid] == 0 || CreatingGunAmmo[playerid] == 0)
 		{
-			if (CreatingGun[playerid] == 0 || CreatingGunAmmo[playerid] == 0)
-			{
-				return 1;
-			}
-			DisablePlayerCheckpoint(playerid);
-			new gunname[128];
-			GetWeaponName(CreatingGun[playerid], gunname, sizeof(gunname));
-			format(string, sizeof(string), "   Ban da nhan duoc %s.", gunname);
-			SendClientMessage(playerid, COLOR_GREY, string);
-			SafeGivePlayerWeapon(playerid, CreatingGun[playerid], CreatingGunAmmo[playerid]);
-			CreatingGun[playerid] = 0;
-			CreatingGunAmmo[playerid] = 0;
-			IsTakingGun[playerid] = 0;
 			return 1;
 		}
+		DisablePlayerCheckpoint(playerid);
+		new gunname[128];
+		GetWeaponName(CreatingGun[playerid], gunname, sizeof(gunname));
+		format(string, sizeof(string), "   Ban da nhan duoc %s.", gunname);
+		SendClientMessage(playerid, COLOR_GREY, string);
+		SafeGivePlayerWeapon(playerid, CreatingGun[playerid], CreatingGunAmmo[playerid]);
+		CreatingGun[playerid] = 0;
+		CreatingGunAmmo[playerid] = 0;
+		IsTakingGun[playerid] = 0;
 		return 1;
 	}
 	if (DrugFarmerVar[playerid] == 1)
@@ -7193,10 +7187,11 @@ CMD:stopdrugharvest(playerid, params[])
 	}
 	return 1;
 }
+CMD:layvatlieu(playerid, params[]) { return cmd_smuggledrugs(playerid, params); }
 CMD:smuggledrugs(playerid, params[])
 {
-		 new idcar;
-		 idcar = GetPlayerVehicleID(playerid);
+	new idcar;
+	idcar = GetPlayerVehicleID(playerid);
 	if (IsPlayerConnected(playerid))
 	{
 		if (PlayerInfo[playerid][pJob] != 20)
@@ -8263,8 +8258,6 @@ CMD:pddown(playerid, params[])
 	}
 	return 1;
 }
-
-//NICK
 CMD:xemnote(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -10259,6 +10252,7 @@ CMD:smugglemats(playerid, params[])
 	}
 	return 1;
 }
+CMD:chesung(playerid, params[]) { return cmd_creategun(playerid, params); }
 CMD:creategun(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -10268,11 +10262,11 @@ CMD:creategun(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREY, "   Ban can phai dang nhap truoc. !");
 			return 1;
 		}
-		if (PlayerInfo[playerid][pJob] != 23)
+		/*if (PlayerInfo[playerid][pJob] != 23)
 		{
 			SendClientMessage(playerid, COLOR_GREY, "   Ban khong phai nguoi che tao sung. ");
 			return 1;
-		}
+		}*/
 		new x_weapon[256];
 		if (sscanf(params, "s[256]", x_weapon))
 		{
@@ -10302,6 +10296,7 @@ CMD:creategun(playerid, params[])
 	}
 	return 1;
 }
+CMD:muavatlieu(playerid, params[]) { return cmd_layvatlieu(playerid, params); }
 CMD:buymats(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -21195,7 +21190,7 @@ CMD:help(playerid, params[])
 			SendClientMessage(playerid, COLOR_YELLOW2, ":: JOB :: /guard");
 		}
 		else if (PlayerInfo[playerid][pJob] == 9) {
-			SendClientMessage(playerid, COLOR_YELLOW2, ":: JOB :: /sellgun");
+			SendClientMessage(playerid, COLOR_YELLOW2, ":: JOB :: /layvatlieu /muavatlieu /banvatlieu /chesung /bansung");
 		}
 		else if (PlayerInfo[playerid][pJob] == 10) {
 			SendClientMessage(playerid, COLOR_YELLOW2, ":: JOB :: /sellcar");
@@ -21233,9 +21228,9 @@ CMD:help(playerid, params[])
 		/*else if (PlayerInfo[playerid][pJob] == 22) {
 			SendClientMessage(playerid, COLOR_YELLOW2, ":: JOB :: /smugglemats");
 		}*/
-		else if (PlayerInfo[playerid][pJob] == 23) {
+		/*else if (PlayerInfo[playerid][pJob] == 23) {
 			SendClientMessage(playerid, COLOR_YELLOW2, ":: JOB :: /smugglemats /creategun /buymats");
-		}
+		}*/
 		else if (PlayerInfo[playerid][pMember] == 8 || PlayerInfo[playerid][pLeader] == 8) {
 			SendClientMessage(playerid, COLOR_YELLOW2, ":: HITMAN :: /portable");
 		}
@@ -27272,6 +27267,7 @@ return 1;
 }
 return 1;
 }*/
+CMD:banvatlieu(playerid, params[]) { return cmd_sellmats(playerid, params); }
 CMD:sellmats(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -27310,6 +27306,7 @@ CMD:sellmats(playerid, params[])
 	}
 	return 1;
 }
+CMD:bansung(playerid, params[]) { return cmd_sellgun(playerid, params); }
 CMD:sellgun(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
