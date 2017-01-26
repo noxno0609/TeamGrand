@@ -35,8 +35,6 @@ CMD:goto(playerid, params[])
 		SetPlayerInterior(playerid, 0);
 		SetPlayerVirtualWorld(playerid, 0);
 		SetPlayerPos(playerid, -2015.261108, 154.379516, 27.687500);
-		SendClientMessage(playerid, COLOR_GRAD1, "   Da duoc dich chuyen !");
-		return 1;
 	}
 	//else if (!strcmp(params, "dd", true))
 	//{
@@ -123,10 +121,10 @@ CMD:goto(playerid, params[])
 	else if (IsNumeric(params))
 	{
 		new plo = strval(params);
-		if (!IsPlayerConnected(plo) && plo == INVALID_PLAYER_ID)
+		if (plo == INVALID_PLAYER_ID)
 		{
 			format(str, sizeof(str), "   %d , nguoi choi khong hop le.", plo);
-			SendClientMessage(playerid, COLOR_GRAD1, str);
+			return SendClientMessage(playerid, COLOR_GRAD1, str);
 		}
 		new Float:plocx, Float: plocy, Float: plocz;
 		if (Spectate[playerid] != 255)
@@ -409,6 +407,15 @@ CMD:dagiup(playerid, params[])
 	SetPlayerVirtualWorld(playerid, GetPVarInt(playerid, "AdvisorLastVW"));
 	SetPlayerInterior(playerid, GetPVarInt(playerid, "AdvisorLastInt"));
 	DeletePVar(playerid, "DangHelp");
+	return 1;
+}
+CMD:c(playerid, params[])
+{
+	if (PlayerInfo[playerid][pHelper] < 2 || PlayerInfo[playerid][pAdmin] < 1) return SendClientMessage(playerid, COLOR_GRAD1, "Ban khong the dung lenh nay");
+	new mess[255];
+	if (sscanf(params, "s[255]", mess)) return SendClientMessage(playerid, COLOR_GRAD1, "/c [Noi Dung]");
+	CBroadCast(COLOR_LIGHT_BLUE, mess, 2);
+	ABroadCast(COLOR_LIGHT_BLUE, mess, 1);
 	return 1;
 }
 
