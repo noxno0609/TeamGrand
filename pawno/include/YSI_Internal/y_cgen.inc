@@ -87,8 +87,6 @@ static stock CGen_SetupCodeSpace()
 	YSI_g_sCodeSpace += 12;
 }
 
-forward OnCodeInit();
-
 public OnCodeInit()
 {
 	CGen_SetupCodeSpace();

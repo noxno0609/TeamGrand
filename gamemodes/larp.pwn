@@ -36,7 +36,7 @@
 new MySQL:conn;
 
 //DEFINE
-#include <ProjectInc/declare>
+#include <ProjectInc\declare>
 
 #define DIALOG_REG 1
 #define DIALOG_LOGIN 2
@@ -47,7 +47,7 @@ new MySQL:conn;
 #define MAX_BIZ 7 //
 #define MAX_SBIZ 13 //
 //==============================
-#define strcpy(%1,%2,%3) strmid(%1,%2,0,%3,strlen(%2)+1)
+//#define strcpy(%1,%2,%3) strmid(%1,%2,0,%3,strlen(%2)+1)
 #define dcmd(%1,%2,%3) if ((strcmp((%3)[1], #%1, true, (%2)) == 0) && ((((%3)[(%2) + 1] == 0) && (dcmd_%1(playerid, "")))||(((%3)[(%2) + 1] == 32) && (dcmd_%1(playerid, (%3)[(%2) + 2]))))) return 1
 #pragma semicolon 0
 #define MAX_TRUNK_SLOTS		(5) // Is actually 4.
@@ -421,8 +421,8 @@ new license_pu3;
 new license_pu4;
 new license_pu5;*/
 new Security = 0;
-new gPlayerUsingLoopingAnim[MAX_PLAYERS];
-new Text:txtAnimHelper;
+//new gPlayerUsingLoopingAnim[MAX_PLAYERS];
+//new Text:txtAnimHelper;
 new CreatedCars[100];
 //new CreatedCar = 0;
 new Tax = 0;
@@ -1866,7 +1866,7 @@ main()
 	print("\n");
 }
 
-#include <ProjectInc/onevent>
+#include <ProjectInc\onevent>
 
 //CONNECTMYSQL
 forward ConnectMySQL();
@@ -3233,12 +3233,12 @@ public DollahScoreUpdate()
 	return 1;
 }
 
-LoopingAnim(playerid,animlib[],animname[], Float:Speed, looping, lockx, locky, lockz, lp)
-{
-    gPlayerUsingLoopingAnim[playerid] = 1;
-    ApplyAnimation(playerid, animlib, animname, Speed, looping, lockx, locky, lockz, lp);
-    TextDrawShowForPlayer(playerid,txtAnimHelper);
-}
+//LoopingAnim(playerid,animlib[],animname[], Float:Speed, looping, lockx, locky, lockz, lp)
+//{
+//    gPlayerUsingLoopingAnim[playerid] = 1;
+//    ApplyAnimation(playerid, animlib, animname, Speed, looping, lockx, locky, lockz, lp);
+//    TextDrawShowForPlayer(playerid,txtAnimHelper);
+//}
 
 public Encrypt(string[])
 {
@@ -10054,5 +10054,7 @@ public SendAdminMessage(color, string[])
 	}
 }
 
-#include <ProjectInc/ben>
-#include <ProjectInc/geek>
+#include <ProjectInc\ben>
+#include <ProjectInc\geek>
+
+#include <ProjectInc\ontimer>

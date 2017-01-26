@@ -1,3 +1,57 @@
+forward TazerKeyStateChange(playerid, newkeys, oldkeys);
+public TazerKeyStateChange(playerid, newkeys, oldkeys)
+{
+	if (newkeys & KEY_FIRE && Tazering[playerid] == 1)
+	{
+		ApplyAnimation(playerid, "KNIFE", "knife_3", 4.1, 0, 1, 1, 0, 0, 1);
+		for (new i = 0; i<MAX_PLAYERS; i++)
+		{
+			if (PlayerInfo[i][pMember] == 1 || PlayerInfo[i][pLeader] == 1) continue;
+			if (IsPlayerNearPlayer(playerid, i, 2) && i != playerid && Tazered[i] == 0)
+			{
+				Tazered[i] = 15;
+				TogglePlayerControllable(i, 0);
+				ApplyAnimation(i, "KNIFE", "knife_hit_3", 4.1, 0, 1, 1, 1, 0, 1);
+				SetTimerEx("TazeredCollapse", 1000, 0, "i", i);
+			}
+		}
+	}
+	if (newkeys & KEY_HANDBRAKE && !IsPlayerInAnyVehicle(playerid) && GetPlayerWeapon(playerid) == 0)
+	{
+		if (WearTazer[playerid] == 1)
+		{
+			if (Tazering[playerid] == 0)
+			{
+				Tazering[playerid] = 1;
+				SetPlayerAttachedObject(playerid, 5, 18642, 6, 0.06, 0.01, 0.08, 180.0, 0.0, 0.0);
+			}
+			else if (Tazering[playerid] == 1)
+			{
+				Tazering[playerid] = 0;
+				SetPlayerAttachedObject(playerid, 5, 18642, 1, -0.197000, -0.071000, -0.109999, 2.399994, 80.400001, 18.399993, 1.000000, 1.000000, 1.000000, 0, 0);
+			}
+		}
+	}
+}
+
+forward TazeredCollapse(playerid);
+public TazeredCollapse(playerid)
+{
+	ApplyAnimation(playerid, "CRACK", "crckdeth2", 4.0, 1, 0, 0, 1, 0, 1);
+	return 1;
+}
+
+stock IsPlayerNearPlayer(playerid, targetid, Float:radius)
+{
+	new Float:x, Float:y, Float:z;
+	GetPlayerPos(targetid, x, y, z);
+	if (IsPlayerInRangeOfPoint(playerid, radius, x, y, z))
+	{
+		return 1;
+	}
+	return 0;
+}
+
 forward OnPIDUpdate(playerid);
 public OnPIDUpdate(playerid)
 {
@@ -121,5 +175,4 @@ stock DeleteAdminVeh(avid)
 	new vid = aVeh[avid];
 	DestroyVehicle(vid);
 	aVeh[avid] = 0;
-	aVehLabel[avid] = -1;
 }
