@@ -597,7 +597,7 @@ public OnGameModeInit()
 	AddStaticPickup(1239, 23, 1524.5724, -1677.8043, 6.2188); // PD Tunnel
 	AddStaticPickup(1239, 23, 1557.7257, -1675.2711, 28.3955); // PD roof
 	AddStaticPickup(1239, 23, 248.4994, -33.1366, 1.5781); // Materials pickup
-	AddStaticPickup(1239, 23, 2230.3579, -2286.2107, 14.3751); // Materials bank
+	AddStaticPickup(1239, 23, 2660.3398, -1590.6552, 13.8936); // Materials bank
 	pickups = pickups + 71;
 	printf("Loading %d pickups... Loaded successfuly !", pickups);
 	new randa = random(sizeof(RandCars));
@@ -675,6 +675,7 @@ public OnPlayerConnect(playerid)
 	gActivePlayers[playerid]++;
 	numplayers++;
 //	new string[128]; // credits to Virtual1ty taken from GTA: RolePlay topic
+	Tazered[playerid] = 0;
 	Tazering[playerid] = 0;
 	WearTazer[playerid] = 0;
 
@@ -3334,25 +3335,10 @@ public OnPlayerSelectedMenuRow(playerid, row)
 		}
 		case 2:
 		{
-					SendClientMessage(playerid, COLOR_GREEN, "Noi cap bang lai duoc danh dau do tren ban do.");
-					SendClientMessage(playerid, COLOR_WHITE, "TIP: Su dung /licensers Khi o trong noi cap bang lai");
-					SetPlayerCheckpoint(playerid, 2048.352, -1900.153, 13.5538, 5.0);
-					TogglePlayerControllable(playerid, 1);
+					HideMenuForPlayer(Guide, playerid);
+					ShowMenuForPlayer(Place, playerid);
 		}
 		case 3:
-		{
-					SendClientMessage(playerid, COLOR_GREEN, "Diem thue xe duoc danh dau do tren ban do.");
-					SetPlayerCheckpoint(playerid, 1696.5543, -1053.4685, 23.9063, 5.0);
-					TogglePlayerControllable(playerid, 1);
-		}
-		case 4:
-		{
-					SendClientMessage(playerid, COLOR_GREEN, "Cua hang quan ao duoc danh dau do tren ban do.");
-					SendClientMessage(playerid, COLOR_WHITE, "TIP: Su dung /clothes khi ban o trong cua hang.");
-					SetPlayerCheckpoint(playerid, 2244.3423, -1665.5542, 15.4766, 5.0);
-					TogglePlayerControllable(playerid, 1);
-		}
-		case 5:
 		{
 					HideMenuForPlayer(Guide, playerid);
 					TogglePlayerControllable(playerid, 1);
@@ -3401,7 +3387,7 @@ public OnPlayerSelectedMenuRow(playerid, row)
 		}
 		case 6:
 		{
-					SendClientMessage(playerid, COLOR_LIGHTRED, "Nghe Nguoi Van Chuyen duoc danh dau do tren ban do.");
+					SendClientMessage(playerid, COLOR_LIGHTRED, "Nghe nguoi van chuyen duoc danh dau do tren ban do.");
 					SetPlayerCheckpoint(playerid, 2439.7710, -2120.9285, 13.5469, 5.0);
 					TogglePlayerControllable(playerid, 1);
 		}
@@ -3435,19 +3421,19 @@ public OnPlayerSelectedMenuRow(playerid, row)
 		}
 		case 1:
 		{
-					SendClientMessage(playerid, COLOR_LIGHTRED, "Nghe trong can sa duoc danh dau tren ban do.");
-					SetPlayerCheckpoint(playerid, 2072.5486, -1582.8029, 13.4741, 5.0);
+					SendClientMessage(playerid, COLOR_LIGHTRED, "Nghe quet duong duoc danh dau do tren ban do.");
+					SetPlayerCheckpoint(playerid, 1611.5129, -1893.6997, 13.5469, 5.0);
 					TogglePlayerControllable(playerid, 1);
 		}
 		case 2:
 		{
-					SendClientMessage(playerid, COLOR_LIGHTRED, "Nghe buon lau vat lieu duoc danh dau do tren ban do.");
-					SetPlayerCheckpoint(playerid, 213.8549, -230.5761, 1.7786, 5.0);
+					SendClientMessage(playerid, COLOR_LIGHTRED, "Nghe tho che vu khi da duoc danh dau tren ban do.");
+					SetPlayerCheckpoint(playerid, 1365.0469, -1284.1049, 13.5469, 5.0);
 					TogglePlayerControllable(playerid, 1);
 		}
 		case 3:
 		{
-					SendClientMessage(playerid, COLOR_LIGHTRED, "Nghe quet duong duoc danh dau do tren ban do.");
+					SendClientMessage(playerid, COLOR_LIGHTRED, "Nghe buon thuoc duoc danh dau do tren ban do.");
 					SetPlayerCheckpoint(playerid, 1611.5129, -1893.6997, 13.5469, 5.0);
 					TogglePlayerControllable(playerid, 1);
 		}
@@ -3459,7 +3445,74 @@ public OnPlayerSelectedMenuRow(playerid, row)
 		case 5:
 		{
 					HideMenuForPlayer(JobLocations2, playerid);
+					//ShowMenuForPlayer(Guide, playerid);
+					TogglePlayerControllable(playerid, 1);
+		}
+		}
+	}
+	if (Current == Place)
+	{
+		switch (row)
+		{
+		case 0:
+		{
+					SendClientMessage(playerid, COLOR_GREEN, "Noi cap bang lai duoc danh dau do tren ban do.");
+					SendClientMessage(playerid, COLOR_WHITE, "TIP: Su dung /licensers Khi o trong noi cap bang lai");
+					SetPlayerCheckpoint(playerid, 2048.352, -1900.153, 13.5538, 5.0);
+					TogglePlayerControllable(playerid, 1);
+		}
+		case 1:
+		{
+					SendClientMessage(playerid, COLOR_GREEN, "Diem thue xe duoc danh dau do tren ban do.");
+					SetPlayerCheckpoint(playerid, 1696.5543, -1053.4685, 23.9063, 5.0);
+					TogglePlayerControllable(playerid, 1);
+		}
+		case 2:
+		{
+					SendClientMessage(playerid, COLOR_GREEN, "Cua hang quan ao duoc danh dau do tren ban do.");
+					SendClientMessage(playerid, COLOR_WHITE, "TIP: Su dung /clothes khi ban o trong cua hang.");
+					SetPlayerCheckpoint(playerid, 2244.3423, -1665.5542, 15.4766, 5.0);
+					TogglePlayerControllable(playerid, 1);
+		}
+		case 3:
+		{
+					SendClientMessage(playerid, COLOR_GREEN, "Noi lay vat lieu da duoc danh dau tren ban do.");
+					SetPlayerCheckpoint(playerid, 2660.3398, -1590.6552, 13.8936, 5.0);
+					TogglePlayerControllable(playerid, 1);
+		}
+		case 4:
+		{
+					SendClientMessage(playerid, COLOR_GREEN, "Noi lay hat giong da duoc danh dau tren ban do.");
+					//SetPlayerCheckpoint(playerid, 1696.5543, -1053.4685, 23.9063, 5.0);
+					TogglePlayerControllable(playerid, 1);
+		}
+		case 5:
+		{
+					SendClientMessage(playerid, COLOR_GREEN, "Noi che tao vu khi da duoc danh dau tren ban do.");
+					SetPlayerCheckpoint(playerid, 1365.0469, -1284.1049, 13.5469, 5.0);
+					TogglePlayerControllable(playerid, 1);
+		}
+		case 6:
+		{
+					SendClientMessage(playerid, COLOR_GREEN, "Tru so LSPD da duoc danh dau tren ban do.");
+					SetPlayerCheckpoint(playerid, 1552.5354, -1675.3979, 16.1953, 5.0);
+					TogglePlayerControllable(playerid, 1);
+		}
+		case 7:
+		{
+					SendClientMessage(playerid, COLOR_GREEN, "City hall da duoc danh dau tren ban do.");
+					SetPlayerCheckpoint(playerid, 1480.8595, -1769.2534, 18.7958, 5.0);
+					TogglePlayerControllable(playerid, 1);
+		}
+		case 8:
+		{
+					HideMenuForPlayer(Place, playerid);
 					ShowMenuForPlayer(Guide, playerid);
+		}
+		case 9:
+		{
+					HideMenuForPlayer(Place, playerid);
+					TogglePlayerControllable(playerid, 1);
 		}
 		}
 	}
@@ -4617,6 +4670,7 @@ public OnPlayerLogin(playerid, password[])
 			PlayerInfo[playerid][pPcarkey][1] = 999;
 			PlayerInfo[playerid][pPcarkey][2] = 999;
 			PlayerInfo[playerid][pPbiskey] = 255;
+			PlayerInfo[playerid][pFMember] = 255;
 			PlayerInfo[playerid][pAccount] = 0;
 			PlayerInfo[playerid][pReg] = 1;
 			SafeGivePlayerMoney(playerid, 300);
@@ -4639,10 +4693,10 @@ public OnPlayerLogin(playerid, password[])
 		format(string2, sizeof(string2), "Welcome to Los Angeles Roleplay, %s.", GN(playerid));
 		SendClientMessage(playerid, COLOR_WHITE, string2);
 		SendClientMessage(playerid, COLOR_GREEN, "=============================================");
-		SendClientMessage(playerid, COLOR_WHITE, "Server Owned by Hoodstar");
+		/*SendClientMessage(playerid, COLOR_WHITE, "Server Owned by Hoodstar");
 		SendClientMessage(playerid, COLOR_WHITE, "Server Scripted by Hoodstar");
 		SendClientMessage(playerid, COLOR_WHITE, "Official Ventrilo Server IP:");
-		SendClientMessage(playerid, COLOR_WHITE, "Forums:");
+		SendClientMessage(playerid, COLOR_WHITE, "Forums:");*/
 		format(string2, sizeof(string2), "Current script version: %s.", SCRIPT_VERSION);
 		SendClientMessage(playerid, COLOR_WHITE, string2);
 		if (PlayerInfo[playerid][pDonateRank] > 0)
@@ -5109,7 +5163,7 @@ public OnPlayerText(playerid, text[])
 				new maleskin;
 				maleskin = random(sizeof(CivMalePeds));
 				SetPlayerSkin(playerid, maleskin);
-				PlayerInfo[playerid][pChar] = maleskin;
+				PlayerInfo[playerid][pModel] = maleskin;
 				RegistrationStep[playerid] = 2;
 				return 0;
 			}
@@ -5121,8 +5175,7 @@ public OnPlayerText(playerid, text[])
 				new femaleskin;
 				femaleskin = random(sizeof(CivFemalePeds));
 				SetPlayerSkin(playerid, femaleskin);
-				SetPlayerSkin(playerid, femaleskin);
-				PlayerInfo[playerid][pChar] = femaleskin;
+				PlayerInfo[playerid][pModel] = femaleskin;
 				RegistrationStep[playerid] = 2;
 				return 0;
 			}
@@ -7214,7 +7267,6 @@ CMD:stopdrugharvest(playerid, params[])
 	}
 	return 1;
 }
-CMD:layvatlieu(playerid, params[]) { return cmd_smuggledrugs(playerid, params); }
 CMD:smuggledrugs(playerid, params[])
 {
 	new idcar;
@@ -10237,6 +10289,7 @@ CMD:smokeanim(playerid, params[])
 	}
 	return 1;
 }
+CMD:layvatlieu(playerid, params[]) { return cmd_smugglemats(playerid, params); }
 CMD:smugglemats(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -10247,7 +10300,7 @@ CMD:smugglemats(playerid, params[])
 			return 1;
 		}
 		//if (PlayerInfo[playerid][pJob] == 22)
-		if (PlayerToPoint(3.0, playerid, 248.4994, -33.1366, 1.5781))
+		if (PlayerToPoint(3.0, playerid, 2660.3398, -1590.6552, 13.8936))
 		{
 			if (GetPlayerMoney(playerid) < 199)
 			{
@@ -10792,7 +10845,6 @@ CMD:swat(playerid, params[])
 			{
 				if (PlayerToPoint(3, playerid, 210.5792, 144.4530, 1003.0234) || PlayerToPoint(3, playerid, 211.1120, 151.6898, 1003.0234) || PlayerInfo[playerid][pLocal] != 255)
 				{
-
 					SafeResetPlayerWeapons(playerid);
 					togswat[playerid] = 1;
 					SetPlayerSkin(playerid, 285);
@@ -19084,6 +19136,7 @@ CMD:uninvite(playerid, params[])
 						SetPlayerSkin(para1, PlayerInfo[para1][pModel]);
 						MedicBill[para1] = 0;
 						//SpawnPlayer(para1);
+						SafeResetPlayerWeapons(para1);
 						format(string, sizeof(string), "   Ban da kick %s ra khoi Family/To chuc.", GN(para1));
 						SendClientMessage(playerid, COLOR_WHITE, string);
 					}
@@ -19273,7 +19326,6 @@ CMD:makeleader(playerid, params[])
 						SendClientMessage(playerid, COLOR_GREY, "   Nguoi choi dang trong to chuc khac / Family !");
 						return 1;
 					}
-
 					PlayerInfo[para1][pLeader] = level;
 					format(string, sizeof(string), "   Ban da duoc thang chuc thanh Leader cho Faction, boi Admin %s", GN(playerid));
 					SendClientMessage(para1, COLOR_WHITE, string);
@@ -20134,34 +20186,16 @@ CMD:gotoid(playerid, params[])
 					{
 						Spectate[playerid] = 256;
 					}
+					new vir = GetPlayerVirtualWorld(plo);
+					new intid = GetPlayerInterior(plo);
+					PlayerInfo[playerid][pInt] = PlayerInfo[plo][pInt];
+					PlayerInfo[playerid][pLocal] = PlayerInfo[plo][pLocal];
 					GetPlayerPos(plo, plocx, plocy, plocz);
-					if (PlayerInfo[plo][pInt] > 0)
-					{
-						SetPlayerInterior(playerid, PlayerInfo[plo][pInt]);
-						PlayerInfo[playerid][pInt] = PlayerInfo[plo][pInt];
-						PlayerInfo[playerid][pLocal] = PlayerInfo[plo][pLocal];
-					}
-					if (PlayerInfo[playerid][pInt] == 0)
-					{
-						SetPlayerInterior(playerid, 0);
-					}
-					if (plocz > 530.0 && PlayerInfo[plo][pInt] == 0) //the highest land point in sa = 526.8
-					{
-						SetPlayerInterior(playerid, 1);
-						PlayerInfo[playerid][pInt] = 1;
-					}
-					if (GetPlayerState(playerid) == 2)
-					{
-						new tmpcar = GetPlayerVehicleID(playerid);
-						SetVehiclePos(tmpcar, plocx, plocy + 4, plocz);
-						TelePos[playerid][0] = 0.0; TelePos[playerid][1] = 0.0;
-					}
-					else
-					{
-						SetPlayerPos(playerid, plocx, plocy + 2, plocz);
-					}
-					PlayerInfo[playerid][pVirWorld] = GetPlayerVirtualWorld(plo);
-					SetPlayerVirtualWorld(playerid, PlayerInfo[playerid][pVirWorld]);
+
+					SetPlayerPos(playerid, plocx, plocy, plocz + 0.5);
+					SetPlayerInterior(playerid, intid);
+					SetPlayerVirtualWorld(playerid, vir);
+
 					SendClientMessage(playerid, COLOR_GRAD1, "   Da duoc dich chuyen");
 				}
 				else
@@ -20200,33 +20234,16 @@ CMD:gethere(playerid, params[])
 				}
 				if (PlayerInfo[playerid][pAdmin] >= 3)
 				{
+					new vir = GetPlayerVirtualWorld(playerid);
+					new intid = GetPlayerInterior(playerid);
+					PlayerInfo[plo][pInt] = PlayerInfo[playerid][pInt];
+					PlayerInfo[plo][pLocal] = PlayerInfo[playerid][pLocal];
 					GetPlayerPos(playerid, plocx, plocy, plocz);
-					if (PlayerInfo[playerid][pInt] > 0)
-					{
-						SetPlayerInterior(plo, PlayerInfo[playerid][pInt]);
-						PlayerInfo[plo][pInt] = PlayerInfo[playerid][pInt];
-						PlayerInfo[plo][pLocal] = PlayerInfo[playerid][pLocal];
-					}
-					if (PlayerInfo[playerid][pInt] == 0)
-					{
-						SetPlayerInterior(plo, 0);
-					}
-					if (plocz > 930.0 && PlayerInfo[playerid][pInt] == 0) //the highest land point in sa = 526.8
-					{
-						SetPlayerInterior(plo, 1);
-						PlayerInfo[plo][pInt] = 1;
-					}
-					if (GetPlayerState(plo) == 2)
-					{
-						TelePos[plo][0] = 0.0;
-						TelePos[plo][1] = 0.0;
-						new tmpcar = GetPlayerVehicleID(plo);
-						SetVehiclePos(tmpcar, plocx, plocy + 4, plocz);
-					}
-					else
-					{
-						SetPlayerPos(plo, plocx, plocy + 2, plocz);
-					}
+
+					SetPlayerPos(plo, plocx, plocy, plocz + 0.5);
+					SetPlayerInterior(plo, intid);
+					SetPlayerVirtualWorld(plo, vir);
+
 					SendClientMessage(plo, COLOR_GRAD1, "   Da duoc dich chuyen");
 				}
 				else

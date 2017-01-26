@@ -1,7 +1,7 @@
 forward TazerKeyStateChange(playerid, newkeys, oldkeys);
 public TazerKeyStateChange(playerid, newkeys, oldkeys)
 {
-	if (newkeys & KEY_FIRE && Tazering[playerid] == 1)
+	if (newkeys & KEY_FIRE && Tazering[playerid] == 1 && !IsPlayerInAnyVehicle(playerid))
 	{
 		ApplyAnimation(playerid, "KNIFE", "knife_3", 4.1, 0, 1, 1, 0, 0, 1);
 		for (new i = 0; i<MAX_PLAYERS; i++)

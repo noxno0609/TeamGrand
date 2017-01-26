@@ -152,7 +152,7 @@ new MySQL:conn;
 //FORWARD
 forward RefreshMenuHeader(playerid,Menu:menu,text[]);
 new Menu:burgermenu, Menu:chickenmenu, Menu:pizzamenu, Menu:donutshop;
-new Menu:Guide, Menu:JobLocations, Menu:JobLocations2;
+new Menu:Guide, Menu:JobLocations, Menu:JobLocations2, Menu:Place;
 
 forward CheckForWalkingTeleport(playerid);
 forward ResetRoadblockTimer();
@@ -4656,10 +4656,21 @@ public SetPlayerSpawn(playerid)
 	    {
 			SetPlayerToTeamColor(playerid);
 
-			SetPlayerVirtualWorld(playerid, PlayerInfo[playerid][pVirWorld]);
-			SetPlayerInterior(playerid, PlayerInfo[playerid][pInt]);
-			SetPlayerPos(playerid, PlayerInfo[playerid][pPos_x], PlayerInfo[playerid][pPos_y], PlayerInfo[playerid][pPos_z] + 1);
-
+			if (GetPVarInt(playerid, "FirstSpawn") == 1)
+			{
+				SetPlayerPos(playerid, 1612.3240, -2330.1670, 13.5469);
+				SetPlayerFacingAngle(playerid, 0);
+				SetPlayerInterior(playerid,0);
+				PlayerInfo[playerid][pInt] = 0;
+				SetPlayerFacingAngle(playerid, 0);
+			}
+			else
+			{
+				SetPlayerVirtualWorld(playerid, PlayerInfo[playerid][pVirWorld]);
+				SetPlayerInterior(playerid, PlayerInfo[playerid][pInt]);
+				SetPlayerPos(playerid, PlayerInfo[playerid][pPos_x], PlayerInfo[playerid][pPos_y], PlayerInfo[playerid][pPos_z] + 1);
+				SetPlayerFacingAngle(playerid, 0);
+			}
 			//SetPlayerPos(playerid, 1612.3240, -2330.1670, 13.5469);
 			//SetPlayerFacingAngle(playerid, 0);
 			//SetPlayerInterior(playerid,0);
@@ -5704,6 +5715,7 @@ public SetPlayerUnjail()
 			        ClearAnimations(i);
 			        SetPlayerSpawn(i);
 					SetCameraBehindPlayer(i);
+					SafeResetPlayerWeapons(i);
 			    }
 			}
 			if(WantLawyer[i] >= 1)
@@ -5837,6 +5849,7 @@ public SetPlayerUnjail()
 					TogglePlayerControllable(i, 1);
 					MedicBill[i] = 0;
 					AfterTutorial[i] = 1;
+					SetPVarInt(i, "FirstSpawn", 1);
 					SetTimerEx("UnsetAfterTutorial", 2500, false, "i", i);
 					SetTimerEx("UnsetFirstSpawn", 5000, false, "i", i);
 					SetPlayerSpawn(i);
@@ -9334,34 +9347,43 @@ public ClearChatbox(playerid, lines)
 
 public CreateGuideMenus()
 {
-	Guide = CreateMenu("Guide", 1, 50.0, 180.0, 200.0, 200.0);
-	AddMenuItem(Guide, 0, "Rules");
-	AddMenuItem(Guide, 0, "Job locations");
-	AddMenuItem(Guide, 0, "License center");
-	AddMenuItem(Guide, 0, "Car rental");
-	AddMenuItem(Guide, 0, "Clothes shop");
-	AddMenuItem(Guide, 0, "- Exit -");
+	Guide = CreateMenu("Huong dan", 1, 50.0, 180.0, 200.0, 200.0);
+	AddMenuItem(Guide, 0, "Luat RP");
+	AddMenuItem(Guide, 0, "Tim viec lam");
+	AddMenuItem(Guide, 0, "Dia diem")
+	AddMenuItem(Guide, 0, "- Thoat -");
 
-	JobLocations = CreateMenu("JobLocations", 1, 50.0, 180.0, 200.0, 200.0);
-	AddMenuItem(JobLocations, 0, "Lawyer");
-	AddMenuItem(JobLocations, 0, "Whore");
-	AddMenuItem(JobLocations, 0, "Car mechanic");
-	AddMenuItem(JobLocations, 0, "Bodyguard");
-	AddMenuItem(JobLocations, 0, "Boxer");
-	AddMenuItem(JobLocations, 0, "Bus driver");
+	Place = CreateMenu("Dia diem", 1, 50.0, 180.0, 200.0, 200.0);
+	AddMenuItem(Place, 0, "Trung tam giay phep");
+	AddMenuItem(Place, 0, "Noi thue xe");
+	AddMenuItem(Place, 0, "Cua hang quan ao");
+	AddMenuItem(Place, 0, "Lay vat lieu");
+	AddMenuItem(Place, 0, "Lay hat giong");
+	AddMenuItem(Place, 0, "Che sung");
+	AddMenuItem(Place, 0, "Tru so LSPD");
+	AddMenuItem(Place, 0, "City hall");
+	AddMenuItem(Place, 0, "<- Sau");
+	AddMenuItem(Place, 0, "- Thoat -");
+
+	JobLocations = CreateMenu("Tim viec lam", 1, 50.0, 180.0, 200.0, 200.0);
+	AddMenuItem(JobLocations, 0, "Luat su");
+	AddMenuItem(JobLocations, 0, "Gai diem");
+	AddMenuItem(JobLocations, 0, "Tho sua xe");
+	AddMenuItem(JobLocations, 0, "Ve si");
+	AddMenuItem(JobLocations, 0, "Vo si");
+	AddMenuItem(JobLocations, 0, "Lai xe bus");
 	AddMenuItem(JobLocations, 0, "Trucker");
-	AddMenuItem(JobLocations, 0, "Pizza boy");
-	AddMenuItem(JobLocations, 0, "Next page ->");
-	AddMenuItem(JobLocations, 0, "- Exit -");
+	AddMenuItem(JobLocations, 0, "Giao pizza");
+	AddMenuItem(JobLocations, 0, "Toi ->");
+	AddMenuItem(JobLocations, 0, "- Thoat -");
 
-	JobLocations2 = CreateMenu("JobLocations", 1, 50.0, 180.0, 200.0, 200.0);
-	AddMenuItem(JobLocations2, 0, "Farmer");
-	AddMenuItem(JobLocations2, 0, "Drugs Dealer");
-	//AddMenuItem(JobLocations2, 0, "Materials smuggler");
-	AddMenuItem(JobLocations2, 0, "Street sweeper");
-	AddMenuItem(JobLocations2, 0, "<- Prev page");
-	AddMenuItem(JobLocations2, 0, "- Exit -");
-
+	JobLocations2 = CreateMenu("Tim viec lam", 1, 50.0, 180.0, 200.0, 200.0);
+	AddMenuItem(JobLocations2, 0, "Nong dan");
+	AddMenuItem(JobLocations2, 0, "Don rac");
+	AddMenuItem(JobLocations2, 0, "Tho vu khi");
+	AddMenuItem(JobLocations2, 0, "Nguoi buon thuoc");
+	AddMenuItem(JobLocations2, 0, "<- Lui");
+	AddMenuItem(JobLocations2, 0, "- Thoat -");
 }
 
 public Startup(playerid, vehicleid)
