@@ -910,6 +910,19 @@ public OnPlayerDisconnect(playerid, reason)
 			}
 		}
 	}
+	if (GetPVarInt(playerid, "DangHelp") == 1)
+	{
+		DestroyDynamic3DTextLabel(DanhHieu[playerid]);
+		SetPlayerPos(playerid, GetPVarFloat(playerid, "AdvisorLastx"), GetPVarFloat(playerid, "AdvisorLasty"), GetPVarFloat(playerid, "AdvisorLastz"));
+		SetPlayerVirtualWorld(playerid, GetPVarInt(playerid, "AdvisorLastVW"));
+		SetPlayerInterior(playerid, GetPVarInt(playerid, "AdvisorLastInt"));
+		PlayerInfo[playerid][pPos_x] = GetPVarFloat(playerid, "AdvisorLastx");
+		PlayerInfo[playerid][pPos_y] = GetPVarFloat(playerid, "AdvisorLasty");
+		PlayerInfo[playerid][pPos_z] = GetPVarFloat(playerid, "AdvisorLastz");
+		PlayerInfo[playerid][pVirWorld] = GetPVarInt(playerid, "AdvisorLastVW");
+		PlayerInfo[playerid][pInt] = GetPVarInt(playerid, "AdvisorLastInt");
+		DeletePVar(playerid, "DangHelp");
+	}
 	SavePlayer(playerid);
 	for (new i = 0; i < MAX_PLAYERS; i++)
 	{
@@ -1061,6 +1074,14 @@ public OnPlayerDisconnect(playerid, reason)
 	}
 	BusrouteEast[playerid][0] = 0;
 	BusrouteWest[playerid][0] = 0;
+	if (IsValidDynamic3DTextLabel(DanhHieu[playerid]))
+	{
+		DestroyDynamic3DTextLabel(DanhHieu[playerid]);
+	}
+	if (PlayerInfo[playerid][pHelper] > 0)
+	{
+		CountAdvisor--;
+	}
 }
 dcmd_specplayer(playerid, params[])
 {
@@ -4350,6 +4371,8 @@ public OnPlayerLogin(playerid, password[])
 			PlayerInfo[playerid][pLevel] = temp; 
 				cache_get_value_name_int(0, "AdminLevel", temp);
 			PlayerInfo[playerid][pAdmin] = temp; 
+				cache_get_value_name_int(0, "HelperLevel", temp);
+			PlayerInfo[playerid][pHelper] = temp;
 				cache_get_value_name_int(0, "DonateRank", temp);
 			PlayerInfo[playerid][pDonateRank] = temp; 
 				cache_get_value_name_int(0, "UpgradePoints", temp);
@@ -4620,6 +4643,10 @@ public OnPlayerLogin(playerid, password[])
 		{
 			format(string2, sizeof(string2), "SERVER: Ban dang nhap voi tu cach la Admin Level %d Admin.", PlayerInfo[playerid][pAdmin]);
 			SendClientMessage(playerid, COLOR_WHITE, string2);
+		}
+		if (PlayerInfo[playerid][pHelper] > 0)
+		{
+			CountAdvisor++;
 		}
 		SendClientMessage(playerid, COLOR_GREEN, "=============================================");
 		SendClientMessage(playerid, COLOR_WHITE, " ");
@@ -19056,6 +19083,7 @@ CMD:makeadmin(playerid, params[])
 				if (para1 != INVALID_PLAYER_ID)
 				{
 					PlayerInfo[para1][pAdmin] = level;
+					PlayerInfo[para1][pHelper] = 0;
 					printf("AdmCMD: %s da thang cap cho %s thanh level %d admin.", GN(playerid), GN(para1), level);
 					format(string, sizeof(string), "   Ban da duoc thang cap den level %d admin boi %s", level, GN(playerid));
 					SendClientMessage(para1, COLOR_WHITE, string);
@@ -19067,6 +19095,34 @@ CMD:makeadmin(playerid, params[])
 		else
 		{
 			SendClientMessage(playerid, COLOR_GRAD1, "   Ban khong the su dung lenh nay!");
+		}
+	}
+	return 1;
+}
+CMD:makehelper(playerid, params[])
+{
+	if (PlayerInfo[playerid][pAdmin] < 2) return SendClientMessage(playerid, COLOR_GRAD1, "   Ban khong the su dung lenh nay!");
+	new pma, rank;
+	if (sscanf(params, "ui", pma, rank))
+	{
+		SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /makehelper [Ten/ID Nguoi Choi] [Loai Advisor]");
+		SendClientMessage(playerid, COLOR_GRAD2, "[Loai Advisor]: 1.Tro Giup || 2.Co Van ");
+		return 1;
+	}
+	if (PlayerInfo[pma][pAdmin] >= 1) return 1;
+	if (rank <0 || rank>2) return SendClientMessage(playerid, COLOR_GRAD1, "Loai Advisor khong hop le.");
+	if (IsPlayerConnected(pma))
+	{
+		if (pma != INVALID_PLAYER_ID)
+		{
+			new string[255];
+			PlayerInfo[pma][pAdmin] = 0;
+			PlayerInfo[pma][pHelper] = rank;
+			printf("AdmCMD: %s da thang cap cho %s thanh %s (%d).", GN(playerid), HP(pma), GN(pma), rank);
+			format(string, sizeof(string), "   Ban da duoc thang cap thanh %s (%d) boi %s", HP(pma), rank, GN(playerid));
+			SendClientMessage(pma, COLOR_WHITE, string);
+			format(string, sizeof(string), "   Ban da thang cap cho %s thanh %s (%d).", GN(pma), HP(pma), rank);
+			SendClientMessage(playerid, COLOR_WHITE, string);
 		}
 	}
 	return 1;

@@ -31,7 +31,7 @@
 #include <streamer>
 #include <zcmd>
 #include <sscanf2>
-
+#include <YSI\y_timers>
 //MYSQLDEFINE
 new MySQL:conn;
 
@@ -80,7 +80,7 @@ new MySQL:conn;
 #define YELLOW 0xFFFF00FF
 #define ORANGE 0xF97804FF
 #define GRAY 0xCECECEFF
-#define LIGHTBLUE 0x00C2ECFF
+#define LIGHTBLUE 0x00C2ECFF 
 #define cop_color 0xC2A2DAFF
 #define COLOR_BLACK 0x000000FF
 #define COLOR_NICERED 0xFF0000FF
@@ -97,6 +97,7 @@ new MySQL:conn;
 #define COLOR_LIGHTRED 0xFF6347AA
 #define COLOR_LIGHTBLUE 0x33CCFFAA
 #define COLOR_LIGHTGREEN 0x9ACD32AA
+#define COLOR_CYAN 0x00FFFFFF
 #define COLOR_YELLOW 0xDABB3EAA
 #define COLOR_YELLOW2 0xF5DEB3AA
 #define COLOR_WHITE 0xFFFFFFAA
@@ -147,7 +148,7 @@ new MySQL:conn;
 #define COLOR_BLUE 0x2641FEAA
 #define COLOR_DARKNICERED 0x9D000096
 #define COLOR_LIGHT_BLUE 0x9FB1EEAA
-
+#define COLOR_NEWBIE 0x7DAEFFFF
 //FORWARD
 forward RefreshMenuHeader(playerid,Menu:menu,text[]);
 new Menu:burgermenu, Menu:chickenmenu, Menu:pizzamenu, Menu:donutshop;
@@ -214,6 +215,7 @@ forward CrimInRange(Float:radi, playerid,copid);
 forward SendEnemyMessage(color, string[]);
 forward SendTeamBeepMessage(team, color, string[]);
 forward ABroadCast(color,const string[],level);
+forward CBroadCast(color, const string[], level);
 forward DateProp(playerid);
 forward GetClosestPlayer(p1);
 forward IsPlayerInTurf(playerid, turfid);
@@ -1516,6 +1518,7 @@ enum pInfo
 	pKey[128],
 	pLevel,
 	pAdmin,
+	pHelper,
 	pDonateRank,
 	gPupgrade,
 	pConnectTime,
@@ -1936,6 +1939,7 @@ public SavePlayer(playerid)
 			format(sql, sizeof(sql), "UPDATE user SET \
 				Level=%d,\
 				AdminLevel=%d,\
+				HelperLevel=%d,\
 				DonateRank=%d,\
 				UpgradePoints=%d,\
 				ConnectedTime=%d,\
@@ -1954,6 +1958,7 @@ public SavePlayer(playerid)
 				Arrested=%d,", 
 				PlayerInfo[playerid][pLevel],
 				PlayerInfo[playerid][pAdmin],
+				PlayerInfo[playerid][pHelper],
 				PlayerInfo[playerid][pDonateRank],
 				PlayerInfo[playerid][gPupgrade],
 				PlayerInfo[playerid][pConnectTime],
@@ -7523,6 +7528,23 @@ public ABroadCast(color,const string[],level)
 	}
 	return 1;
 }
+
+public CBroadCast(color, const string[], level)
+{
+	for (new i = 0; i < MAX_PLAYERS; i++)
+	{
+		if (IsPlayerConnected(i))
+		{
+			if (PlayerInfo[i][pHelper] >= level)
+			{
+				SendClientMessage(i, color, string);
+				printf("%s", string);
+			}
+		}
+	}
+	return 1;
+}
+
 
 public OOCOff(color,const string[])
 {

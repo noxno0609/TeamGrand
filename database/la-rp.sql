@@ -265,6 +265,7 @@ CREATE TABLE `user` (
   `Password` varchar(255) NOT NULL,
   `Level` int(11) DEFAULT '1',
   `AdminLevel` int(11) DEFAULT '0',
+  `HelperLevel` int(11) DEFAULT '0',
   `DonateRank` int(11) DEFAULT '0',
   `UpgradePoints` int(11) DEFAULT '0',
   `ConnectedTime` int(11) DEFAULT '0',
