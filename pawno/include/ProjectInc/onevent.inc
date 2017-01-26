@@ -20182,6 +20182,7 @@ CMD:gethere(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
+		if (PlayerInfo[playerid][pAdmin] < 1) return SendClientMessage(playerid, COLOR_GRAD1, "   Ban khong the su dung lenh nay!");
 		new plo, string[255];
 		if (sscanf(params, "u", plo))
 		{
@@ -20195,7 +20196,7 @@ CMD:gethere(playerid, params[])
 			{
 				if (PlayerInfo[plo][pAdmin] > 1337)
 				{
-					SendClientMessage(playerid, COLOR_GRAD1, "Yeu cau Admin den vi tri cua ban.");
+					SendClientMessage(playerid, COLOR_GRAD1, "Khong the tele Admin 1337.");
 					return 1;
 				}
 				if (PlayerInfo[playerid][pAdmin] >= 3)
@@ -20228,10 +20229,6 @@ CMD:gethere(playerid, params[])
 						SetPlayerPos(plo, plocx, plocy + 2, plocz);
 					}
 					SendClientMessage(plo, COLOR_GRAD1, "   Da duoc dich chuyen");
-				}
-				else
-				{
-					SendClientMessage(playerid, COLOR_GRAD1, "   Ban khong the su dung lenh nay!");
 				}
 			}
 		}
@@ -23642,45 +23639,44 @@ CMD:deliver(playerid, params[])
 					SendClientMessage(playerid, COLOR_GREY, "   Nguoi choi dang Offline !");
 					return 1;
 				}
-
 			}
-			else if (PlayerInfo[playerid][pJob] == 15)
+		}
+		else if (PlayerInfo[playerid][pJob] == 15)
+		{
+			if (BringingPaper[playerid] != 1)
 			{
-				if (BringingPaper[playerid] != 1)
+				SendClientMessage(playerid, COLOR_GREY, "   Ban chua nhan bao tai News Reporters Building trong ngay hom nay !");
+				return 1;
+			}
+			if (sscanf(params, "u", giveplayerid))
+			{
+				SendClientMessage(playerid, COLOR_GRAD1, "Su dung: /deliver [playerid/Ten]");
+				return 1;
+			}
+			if (IsPlayerConnected(giveplayerid))
+			{
+				if (giveplayerid != INVALID_PLAYER_ID)
 				{
-					SendClientMessage(playerid, COLOR_GREY, "   Ban chua nhan bao tai News Reporters Building trong ngay hom nay !");
-					return 1;
-				}
-				if (sscanf(params, "u", giveplayerid))
-				{
-					SendClientMessage(playerid, COLOR_GRAD1, "Su dung: /deliver [playerid/Ten]");
-					return 1;
-				}
-				if (IsPlayerConnected(giveplayerid))
-				{
-					if (giveplayerid != INVALID_PLAYER_ID)
+					if (ProxDetectorS(8.0, playerid, giveplayerid))
 					{
-						if (ProxDetectorS(8.0, playerid, giveplayerid))
-						{
 
-							format(string, sizeof(string), "* Ban de nghi mot trong nhung to bao cua minh den %s.", GN(giveplayerid));
-							SendClientMessage(playerid, COLOR_WHITE, string);
-							format(string, sizeof(string), "* Nguoi giao bao %s muon dua cho ban to bao cua ngay hom nay (go /accept paper, de chap nhan).", GN(playerid));
-							SendClientMessage(giveplayerid, COLOR_WHITE, string);
-							PaperOffer[giveplayerid] = playerid;
-						}
-					}
-					else
-					{
-						SendClientMessage(playerid, COLOR_GREY, "   Nguoi choi khong o gan ban !");
-						return 1;
+						format(string, sizeof(string), "* Ban de nghi mot trong nhung to bao cua minh den %s.", GN(giveplayerid));
+						SendClientMessage(playerid, COLOR_WHITE, string);
+						format(string, sizeof(string), "* Nguoi giao bao %s muon dua cho ban to bao cua ngay hom nay (go /accept paper, de chap nhan).", GN(playerid));
+						SendClientMessage(giveplayerid, COLOR_WHITE, string);
+						PaperOffer[giveplayerid] = playerid;
 					}
 				}
 				else
 				{
-					SendClientMessage(playerid, COLOR_GREY, "   Nguoi choi dang Offline !");
+					SendClientMessage(playerid, COLOR_GREY, "   Nguoi choi khong o gan ban !");
 					return 1;
 				}
+			}
+			else
+			{
+				SendClientMessage(playerid, COLOR_GREY, "   Nguoi choi dang Offline !");
+				return 1;
 			}
 		}
 		else
