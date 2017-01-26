@@ -6841,7 +6841,7 @@ public ShowStats(playerid,targetid)
         else if(PlayerInfo[targetid][pJob] == 19) { jtext = "Illegal Farmer"; }
         else if(PlayerInfo[targetid][pJob] == 20) { jtext = "Drugs Smuggler"; }
         else if(PlayerInfo[targetid][pJob] == 21) { jtext = "Street sweeper"; }
-        else if(PlayerInfo[targetid][pJob] == 22) { jtext = "Materials smuggler"; }
+        //else if(PlayerInfo[targetid][pJob] == 22) { jtext = "Materials smuggler"; }
         else if(PlayerInfo[targetid][pJob] == 23) { jtext = "Gun maker"; }
         else { jtext = "None"; }
 		new drank[20];
@@ -8056,11 +8056,11 @@ public CustomPickups()
 			    if(PlayerInfo[i][pJob] > 0 || PlayerInfo[i][pMember] > 0) {}
 			    else { GameTextForPlayer(i, "~g~Welcome,~n~~y~you can become a ~r~Paper Boy~y~ here ~n~~w~Type /takejob if you wish to become one", 5000, 3); }
 			}*/
-			else if (GetPlayerState(i) == 1 && PlayerToPoint(2.0, i,213.8549,-230.5761,1.7786))
+			/*else if (GetPlayerState(i) == 1 && PlayerToPoint(2.0, i,213.8549,-230.5761,1.7786))
 			{
 			    if(PlayerInfo[i][pJob] > 0 || PlayerInfo[i][pMember] > 0) {}
 			    else { GameTextForPlayer(i, "~g~Welcome,~n~~y~you can become a ~r~Materials smuggler~n~~w~Type /takejob if you wish to become one", 5000, 3); }
-			}
+			}*/
 			/*else if (GetPlayerState(i) == 1 && PlayerToPoint(2.0, i,2146.3523,-2267.7498,14.2344))
 			{
 			    GameTextForPlayer(i, "~y~You can get ~r~Materials~y~ from your packages here ~n~~w~Type /materials deliver", 5000, 3);
@@ -8156,31 +8156,34 @@ public CustomPickups()
 			}
 			else if (GetPlayerState(i) == 1 && PlayerToPoint(1.5, i, 248.4994,-33.1366,1.5781))
 			{
-			    if(PlayerInfo[i][pJob] == 22)
+				GameTextForPlayer(i, "~w~Materials factory~n~You can ~r~/smugglemats ~w~here", 5000, 3);
+			    /*if(PlayerInfo[i][pJob] == 22)
 			    {
 			        GameTextForPlayer(i, "~w~Materials factory~n~You can ~r~/smugglemats ~w~here", 5000, 3);
-			    }
-			    else
+			    }*/
+			   /* else
 			    {
 			        GameTextForPlayer(i, "~r~Staff only !", 5000, 3);
-			    }
+			    }*/
 			}
 			else if (GetPlayerState(i) == 1 && PlayerToPoint(1.0, i, 2230.3579,-2286.2107,14.3751))
 			{
-			    if(PlayerInfo[i][pJob] == 22)
+			    /*if(PlayerInfo[i][pJob] == 22)
 			    {
 			        format(string, sizeof(string), "~w~Materials Bank~n~Materials ammount: ~r~%d", matssys[MatsAmmount]);
 			        GameTextForPlayer(i, string, 5000, 3);
-			    }
-			    else if(PlayerInfo[i][pJob] == 23)
+			    }*/
+			    /*if(PlayerInfo[i][pJob] == 23)
 			    {
 			        format(string, sizeof(string), "~w~Materials Bank~n~Materials ammount: ~r~%d ~n~~w~You can ~g~/buymats ~w~here", matssys[MatsAmmount]);
 			        GameTextForPlayer(i, string, 5000, 3);
-			    }
-			    else
+			    }*/
+			    /*else
 			    {
 			        GameTextForPlayer(i, "~r~Staff only !", 5000, 3);
-			    }
+			    }*/
+				format(string, sizeof(string), "~w~Materials Bank~n~Materials ammount: ~r~%d ~n~~w~You can ~g~/buymats ~w~here", matssys[MatsAmmount]);
+				GameTextForPlayer(i, string, 5000, 3);
 			}
 			else if(PlayerToPoint(2.0, i,1073.0619,-344.5148,73.9922))
 			{
@@ -9332,7 +9335,7 @@ public CreateGuideMenus()
 	JobLocations2 = CreateMenu("JobLocations", 1, 50.0, 180.0, 200.0, 200.0);
 	AddMenuItem(JobLocations2, 0, "Farmer");
 	AddMenuItem(JobLocations2, 0, "Drugs Dealer");
-	AddMenuItem(JobLocations2, 0, "Materials smuggler");
+	//AddMenuItem(JobLocations2, 0, "Materials smuggler");
 	AddMenuItem(JobLocations2, 0, "Street sweeper");
 	AddMenuItem(JobLocations2, 0, "<- Prev page");
 	AddMenuItem(JobLocations2, 0, "- Exit -");

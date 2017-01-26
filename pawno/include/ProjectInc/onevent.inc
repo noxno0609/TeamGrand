@@ -547,7 +547,7 @@ public OnGameModeInit()
 	AddStaticPickup(1239, 23, 2022.1492, -1108.7837, 26.2031); // Drugs Smuggler pickup
 	AddStaticPickup(1239, 23, 2072.5486, -1582.8029, 13.4741); // Drugs Dealer reg
 	AddStaticPickup(1239, 23, 1611.5129, -1893.6997, 13.5469); // Street sweeper reg
-	AddStaticPickup(1239, 23, 213.8549, -230.5761, 1.7786); // Materials smuggler reg
+	//AddStaticPickup(1239, 23, 213.8549, -230.5761, 1.7786); // Materials smuggler reg
 	// Entrances and exits start
 	AddStaticPickup(1247, 23, 1554.9537, -1675.6584, 16.1953);//PD Building
 	AddStaticPickup(1239, 23, 1836.4064, -1682.4403, 13.3493);//Alhabra
@@ -2552,7 +2552,7 @@ public OnPlayerEnterCheckpoint(playerid)
 	}
 	if (MatsHolding[playerid] == 25)
 	{
-		if (PlayerInfo[playerid][pJob] == 22)
+		/*if (PlayerInfo[playerid][pJob] == 22)
 		{
 			DisablePlayerCheckpoint(playerid);
 			PlayerPlaySound(playerid, 1056, 0.0, 0.0, 0.0);
@@ -2562,7 +2562,15 @@ public OnPlayerEnterCheckpoint(playerid)
 			matssys[MatsAmmount] += 25;
 			GameTextForPlayer(playerid, "~w~Vat lieu da duoc them vao", 5000, 1);
 			SaveMatsSystem();
-		}
+		}*/
+		DisablePlayerCheckpoint(playerid);
+		PlayerPlaySound(playerid, 1056, 0.0, 0.0, 0.0);
+		SafeGivePlayerMoney(playerid, 300);
+		SendClientMessage(playerid, COLOR_WHITE, "Ban da ban 25 vat lieu .");
+		MatsHolding[playerid] = 0;
+		matssys[MatsAmmount] += 25;
+		GameTextForPlayer(playerid, "~w~Vat lieu da duoc them vao", 5000, 1);
+		SaveMatsSystem();
 		return 1;
 	}
 	if (IsPuttingMaterials[playerid] == 1)
@@ -6230,7 +6238,6 @@ public OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid, bodypart)
 	}
 }
 
-//CMD
 CMD:baocao(playerid, params[]) { return cmd_report(playerid, params); }
 CMD:report(playerid, params[])
 {
@@ -10219,38 +10226,36 @@ CMD:smugglemats(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREY, "   Ban can phai dang nhap truoc. !");
 			return 1;
 		}
-		if (PlayerInfo[playerid][pJob] == 22)
+		//if (PlayerInfo[playerid][pJob] == 22)
+		if (PlayerToPoint(3.0, playerid, 248.4994, -33.1366, 1.5781))
 		{
-			if (PlayerToPoint(3.0, playerid, 248.4994, -33.1366, 1.5781))
+			if (GetPlayerMoney(playerid) < 199)
 			{
-				if (GetPlayerMoney(playerid) < 199)
-				{
-					SendClientMessage(playerid, COLOR_GREY, "   Ban khong du tien (Ban can 200 dolla)");
-					return 1;
-				}
-				if (MatsHolding[playerid] != 0)
-				{
-					SendClientMessage(playerid, COLOR_GREY, "   Ban dang buon lau vat lieu.");
-					return 1;
-				}
-				SafeGivePlayerMoney(playerid, -200);
-				MatsHolding[playerid] = 25;
-				SendClientMessage(playerid, COLOR_WHITE, "Ban da lay vat lieu bay gio ban phai di giao den cho kho vat lieu (checkpoint)");
-				GameTextForPlayer(playerid, "~w~Nap vat lieu", 5000, 1);
-				SetPlayerCheckpoint(playerid, 2230.3579, -2286.2107, 14.3751, 1.0);
+				SendClientMessage(playerid, COLOR_GREY, "   Ban khong du tien (Ban can 200 dolla)");
 				return 1;
 			}
-			else
+			if (MatsHolding[playerid] != 0)
 			{
-				SendClientMessage(playerid, COLOR_GREY, "  Ban khong o noi giao vat lieu! ")
-					return 1;
+				SendClientMessage(playerid, COLOR_GREY, "   Ban dang buon lau vat lieu.");
+				return 1;
 			}
+			SafeGivePlayerMoney(playerid, -200);
+			MatsHolding[playerid] = 25;
+			SendClientMessage(playerid, COLOR_WHITE, "Ban da lay vat lieu bay gio ban phai di giao den cho kho vat lieu (checkpoint)");
+			GameTextForPlayer(playerid, "~w~Nap vat lieu", 5000, 1);
+			SetPlayerCheckpoint(playerid, 2230.3579, -2286.2107, 14.3751, 1.0);
+			return 1;
 		}
 		else
 		{
-			SendClientMessage(playerid, COLOR_GREY, "   Ban khong phai la nguoi buon lau vat lieu !");
-			return 1;
+			SendClientMessage(playerid, COLOR_GREY, "  Ban khong o noi giao vat lieu! ")
+				return 1;
 		}
+		//else
+		//{
+		//	SendClientMessage(playerid, COLOR_GREY, "   Ban khong phai la nguoi buon lau vat lieu !");
+		//	return 1;
+		//}
 	}
 	return 1;
 }
@@ -10306,11 +10311,11 @@ CMD:buymats(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREY, "   Ban can phai dang nhap truoc. !");
 			return 1;
 		}
-		if (PlayerInfo[playerid][pJob] != 23)
+		/*if (PlayerInfo[playerid][pJob] != 23)
 		{
 			SendClientMessage(playerid, COLOR_GREY, "   Ban khong phai nguoi che tao sung. ");
 			return 1;
-		}
+		}*/
 		if (!PlayerToPoint(2.0, playerid, 2230.3579, -2286.2107, 14.3751))
 		{
 			SendClientMessage(playerid, COLOR_GREY, "   Ban khong o noi giao vat lieu!");
@@ -15121,8 +15126,6 @@ GameTextForPlayer(playerid, "~w~You do not have a car to locate", 5000, 1);
 }
 return 1;
 }*/
-
-//GEEK
 CMD:buyhouse(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -19052,6 +19055,7 @@ CMD:uninvite(playerid, params[])
 						PlayerInfo[para1][pMember] = 0;
 						PlayerInfo[para1][pRank] = 0;
 						PlayerInfo[para1][pChar] = 0;
+						OnDuty[para1] = 0;
 						new rand = random(sizeof(CIV));
 						//SetSpawnInfo(para1, gTeam[para1], CIV[rand], 0.0, 0.0, 0.0, 0, 0, 0, 0, 0, 0, 0);
 						PlayerInfo[para1][pModel] = CIV[rand];
@@ -21226,11 +21230,11 @@ CMD:help(playerid, params[])
 		else if (PlayerInfo[playerid][pJob] == 21) {
 			SendClientMessage(playerid, COLOR_YELLOW2, ":: JOB :: /batdauquet /dungquet");
 		}
-		else if (PlayerInfo[playerid][pJob] == 22) {
+		/*else if (PlayerInfo[playerid][pJob] == 22) {
 			SendClientMessage(playerid, COLOR_YELLOW2, ":: JOB :: /smugglemats");
-		}
+		}*/
 		else if (PlayerInfo[playerid][pJob] == 23) {
-			SendClientMessage(playerid, COLOR_YELLOW2, ":: JOB :: /creategun /buymats");
+			SendClientMessage(playerid, COLOR_YELLOW2, ":: JOB :: /smugglemats /creategun /buymats");
 		}
 		else if (PlayerInfo[playerid][pMember] == 8 || PlayerInfo[playerid][pLeader] == 8) {
 			SendClientMessage(playerid, COLOR_YELLOW2, ":: HITMAN :: /portable");
@@ -23691,8 +23695,6 @@ CMD:bring(playerid, params[])
 	}
 	return 1;
 }
-
-//BENX
 CMD:papers(playerid, params[])
 {
 	new string[256];
@@ -27274,11 +27276,11 @@ CMD:sellmats(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
-		if (PlayerInfo[playerid][pJob] != 22)
+		/*if (PlayerInfo[playerid][pJob] != 22)
 		{
 			SendClientMessage(playerid, COLOR_GREY, "  Ban khong phai la nguoi buon vat lieu ! ");
 			return 1;
-		}
+		}*/
 		new giveplayerid, ammount, string[256], giveplayer[50];
 		if (sscanf(params, "ui", giveplayerid, ammount))
 			return SendClientMessage(playerid, COLOR_WHITE, "Su dung: /sellmats [playerid/Ten] [So luong]");
@@ -27530,13 +27532,13 @@ CMD:takejob(playerid, params[])
 				SendClientMessage(playerid, COLOR_WHITE, "* Neu ban chac chan muon lam viec nay, go /accept job.");
 				GettingJob[playerid] = 8;
 			}
-			else if (GetPlayerState(playerid) == 1 && PlayerToPoint(3.0, playerid, 213.8549, -230.5761, 1.7786))
-			{/*
-				SendClientMessage(playerid, COLOR_WHITE, "* Ban muon tro thanh mot ke buon vat lieu, dam nhan 5 gio hop dong.");
-				SendClientMessage(playerid, COLOR_WHITE, "* Ban phai thuc hien hop dong nay dau tien, neu ban muon nghi viec sau.");*/
-				SendClientMessage(playerid, COLOR_WHITE, "* Neu ban chac chan muon lam viec nay, go /accept job.");
-				GettingJob[playerid] = 22;
-			}
+			//else if (GetPlayerState(playerid) == 1 && PlayerToPoint(3.0, playerid, 213.8549, -230.5761, 1.7786))
+			//{/*
+			//	SendClientMessage(playerid, COLOR_WHITE, "* Ban muon tro thanh mot ke buon vat lieu, dam nhan 5 gio hop dong.");
+			//	SendClientMessage(playerid, COLOR_WHITE, "* Ban phai thuc hien hop dong nay dau tien, neu ban muon nghi viec sau.");*/
+			//	SendClientMessage(playerid, COLOR_WHITE, "* Neu ban chac chan muon lam viec nay, go /accept job.");
+			//	GettingJob[playerid] = 22;
+			//}
 			/*else if (GetPlayerState(playerid) == 1 && PlayerToPoint(3.0, playerid,594.2437,-1249.4027,18.2232))
 			{
 			SendClientMessage(playerid, COLOR_WHITE, "* You are about to become a Car Dealer, and get a 5 hour Contract.");
