@@ -14,6 +14,7 @@
     <None Include="..\gamemodes\larp.pwn" />
     <None Include="..\pawno\include\ProjectInc\ben.inc" />
     <None Include="..\pawno\include\ProjectInc\declare.inc" />
+    <None Include="..\pawno\include\ProjectInc\geek.inc" />
     <None Include="..\pawno\include\ProjectInc\onevent.inc" />
     <None Include="..\scriptfiles\mysql.ini" />
     <None Include="..\server.cfg" />
@@ -45,7 +46,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <NMakeBuildCommandLine>"D:\SA-MP\TeamGrand\pawno\pawncc.exe" "D:\SA-MP\TeamGrand\gamemodes\$(TargetName).pwn"</NMakeBuildCommandLine>
+    <NMakeBuildCommandLine>"D:\SA-MP\TeamGrand\pawno\pawncc.exe" "D:\SA-MP\TeamGrand\gamemodes\$(TargetName).pwn" -;+ -(+</NMakeBuildCommandLine>
     <NMakeOutput>$(TargetName).amx</NMakeOutput>
     <NMakeCleanCommandLine>"D:\SA-MP\TeamGrand\pawno\pawncc.exe" "D:\SA-MP\TeamGrand\gamemodes\$(TargetName).pwn"</NMakeCleanCommandLine>
     <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
