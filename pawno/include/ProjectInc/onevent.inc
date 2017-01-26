@@ -675,6 +675,9 @@ public OnPlayerConnect(playerid)
 	gActivePlayers[playerid]++;
 	numplayers++;
 //	new string[128]; // credits to Virtual1ty taken from GTA: RolePlay topic
+	Tazering[playerid] = 0;
+	WearTazer[playerid] = 0;
+
 	SelectChar[playerid] = 0; HidePM[playerid] = 0; PhoneOnline[playerid] = 0;
 	SelectCharID[playerid] = 0; SelectCharPlace[playerid] = 0; ChosenSkin[playerid] = 0;
 	GettingJob[playerid] = 0; GuardOffer[playerid] = 999; GuardPrice[playerid] = 0;
@@ -4202,8 +4205,6 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 }
 public OnPlayerRequestClass(playerid, classid)
 {
-	TogglePlayerSpectating(playerid, true);
-
 	SetPlayerCameraPos(playerid, 1890.1014, -1194.7969, 25.8091);
 	SetPlayerCameraLookAt(playerid, 1933.4393, -1196.2479, 18.8163);
 
@@ -4213,6 +4214,7 @@ public OnPlayerRequestClass(playerid, classid)
 
 	if (RegistrationStep[playerid] == 0 && gPlayerLogged[playerid] != 1)
 	{
+		TogglePlayerSpectating(playerid, true);
 		ClearChatbox(playerid, 10);
 		format(string, sizeof(string), "Welcome to Los Angeles Roleplay, running %s", SCRIPT_VERSION);
 		SendClientMessage(playerid, COLOR_YELLOW, string);
@@ -4362,9 +4364,12 @@ public OnPlayerLogin(playerid, password[])
 	cache_get_row_count(rowcount);
 	if (rowcount > 0)
 	{
-		cache_get_value_name(0, "Password", PlayerInfo[playerid][pKey], 128);
+		new temppass[128];
+		cache_get_value_name(0, "Password", temppass);
+		format(PlayerInfo[playerid][pKey], 128, temppass);
 		if (!strcmp(password, PlayerInfo[playerid][pKey], false))
 		{
+			new tempstr[128];
 			new temp;
 			new Float:tempf;
 				cache_get_value_name_int(0, "Level", temp);
@@ -4533,7 +4538,8 @@ public OnPlayerLogin(playerid, password[])
 			PlayerInfo[playerid][pFuel] = temp; 
 				cache_get_value_name_int(0, "Married", temp);
 			PlayerInfo[playerid][pMarried] = temp; 
-				cache_get_value_name(0, "MarriedTo", PlayerInfo[playerid][pMarriedTo]);
+				cache_get_value_name(0, "MarriedTo", tempstr);
+				format(PlayerInfo[playerid][pMarriedTo], 128, tempstr);
 				cache_get_value_name_int(0, "FishTool", temp);
 			PlayerInfo[playerid][pFishTool] = temp; 
 				cache_get_value_name_int(0, "InvWeapon", temp);
@@ -4566,7 +4572,9 @@ public OnPlayerLogin(playerid, password[])
 					PlayerInfo[playerid][pAmmo][i] = temp;
 				}
 				format(str, sizeof(str), "Note%d", i + 1);
-				cache_get_value_name(0, str, PlayerInfo[playerid][pNote][i]);
+				cache_get_value_name(0, str, tempstr);
+				format(PlayerInfo[playerid][pNote][i], 256, tempstr);
+
 				format(str, sizeof(str), "Note%ds", i + 1);
 				cache_get_value_name_int(0, str, temp);
 				PlayerInfo[playerid][pNotes][i] = temp;
@@ -4750,6 +4758,7 @@ public OnPlayerExitFood(playerid)
 }
 public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 {
+	TazerKeyStateChange(playerid, newkeys, oldkeys);
 	new string[256];
 	new pveh = GetVehicleModel(GetPlayerVehicleID(playerid));
 	new newcar = GetPlayerVehicleID(playerid);
@@ -6218,11 +6227,34 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	{
 		if (response)
 		{
+			if (isnull(inputtext))
+			{
+				ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, "DANG NHAP", "\n--------------LA-Roleplay--------------\nChao mung ban den voi server!\n\nXin vui long nhap mat khau: ", "Dang Nhap", "Thoat");
+				return 1;
+			}
 			OnPlayerLogin(playerid, inputtext);
+			return 1;
 		}
 		else Kick(playerid);
 	}
 	return 0;
+}
+public OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid, bodypart)
+{
+	if (weaponid == 0)
+	{
+		new knockpercantage = random(20);
+		if (knockpercantage == 1 && KnockedDown[damagedid] != 1)
+		{
+			new str[128];
+			TogglePlayerControllable(damagedid, 0);
+			ApplyAnimation(damagedid, "CRACK", "crckdeth2", 4.0, 1, 0, 0, 0, 0);
+			SetTimerEx("ClearKnock", 20000, false, "i", damagedid);
+			KnockedDown[damagedid] = 1;
+			format(str, sizeof(str), "* %s tung mot cu dam vao mat %s, khien han ta bat tinh tai cho.", GN(playerid), GN(damagedid));
+			ProxDetector(30.0, playerid, str, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+		}
+	}
 }
 
 //CMD
@@ -7332,98 +7364,98 @@ CMD:lockhq(playerid, params[])
 	}
 	return 1;
 }
-CMD:knockout(playerid, params[])
-{
-	if (IsPlayerConnected(playerid))
-	{
-		if (gPlayerLogged[playerid] == 0)
-		{
-			SendClientMessage(playerid, COLOR_GREY, "Ban can phai dang nhap truoc.");
-			return 1;
-		}
-		if (PlayerInfo[playerid][pLevel] < 3)
-		{
-			SendClientMessage(playerid, COLOR_GREY, "Ban can lv3 de su dung lenh nay.");
-			return 1;
-		}
-		if (KnockedDown[playerid] == 1)
-		{
-			SendClientMessage(playerid, COLOR_GREY, "Ban khong the xoay khi ban dang nga xuong .");
-			return 1;
-		}
-		if (PlayerInfo[playerid][pSex] == 2)
-		{
-			SendClientMessage(playerid, COLOR_GREY, "Ban qua yeu de ha guc mot nguoi nao do");
-			return 1;
-		}
-		if (PlayerBoxing[playerid] != 0)
-		{
-			SendClientMessage(playerid, COLOR_GREY, "Khong su dung lenh khi dang danh boxing");
-			return 1;
-		}
-		new giveplayerid, string[256];
-		if (sscanf(params, "u", giveplayerid))
-			return SendClientMessage(playerid, COLOR_WHITE, "Su dung lenh: /knockout [Playerid/PartOfName]");
-
-		if (IsPlayerConnected(giveplayerid))
-		{
-			if (giveplayerid != INVALID_PLAYER_ID)
-			{
-				if (ProxDetectorS(1.0, playerid, giveplayerid))
-				{
-					if (KnockedDown[giveplayerid] != 1)
-					{
-						if (giveplayerid == playerid)
-						{
-							SendClientMessage(playerid, COLOR_GREY, "   Ban khong the lam vay voi chinh minh.");
-							return 1;
-						}
-						if (PlayerInfo[giveplayerid][pSex] == 2)
-						{
-							SendClientMessage(playerid, COLOR_GREY, "Ban co chac chan ha guc mot nguoi phu nu?");
-							return 1;
-						}
-						if (IsPlayerInAnyVehicle(giveplayerid))
-						{
-							return 1;
-						}
-						new giveplayername[MAX_PLAYER_NAME];
-						GetPlayerName(giveplayerid, giveplayername, sizeof(giveplayername));
-						new rands = random(2) + 1;
-						format(string, sizeof(string), "* %s danh manh vao %s va co gang knock out anh ay.", GN(playerid), giveplayername);
-						ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
-						ApplyAnimation(playerid, "FIGHT_D", "FightD_3", 4.0, 0, 1, 1, 0, 0);
-						if (rands == 1)
-						{
-							TogglePlayerControllable(giveplayerid, 0);
-							ApplyAnimation(giveplayerid, "CRACK", "crckdeth2", 4.0, 1, 0, 0, 0, 0);
-							SetTimerEx("ClearKnock", 20000, false, "i", giveplayerid);
-							KnockedDown[giveplayerid] = 1;
-							format(string, sizeof(string), "* %s Ha guc muc tieu thanh cong.", GN(playerid));
-							ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
-						}
-						else
-						{
-							format(string, sizeof(string), "* %s Da truot va khong ha guc duoc muc tieu.", GN(playerid));
-							ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
-						}
-						return 1;
-					}
-					else
-					{
-						SendClientMessage(playerid, COLOR_GREY, "Nguoi choi da bi ha guc.");
-					}
-				}
-				else
-				{
-					SendClientMessage(playerid, COLOR_GREY, "Nguoi choi khong gan ban.");
-				}
-			}
-		}
-
-	}
-	return 1;
-}
+//CMD:knockout(playerid, params[])
+//{
+//	if (IsPlayerConnected(playerid))
+//	{
+//		if (gPlayerLogged[playerid] == 0)
+//		{
+//			SendClientMessage(playerid, COLOR_GREY, "Ban can phai dang nhap truoc.");
+//			return 1;
+//		}
+//		if (PlayerInfo[playerid][pLevel] < 3)
+//		{
+//			SendClientMessage(playerid, COLOR_GREY, "Ban can lv3 de su dung lenh nay.");
+//			return 1;
+//		}
+//		if (KnockedDown[playerid] == 1)
+//		{
+//			SendClientMessage(playerid, COLOR_GREY, "Ban khong the xoay khi ban dang nga xuong .");
+//			return 1;
+//		}
+//		if (PlayerInfo[playerid][pSex] == 2)
+//		{
+//			SendClientMessage(playerid, COLOR_GREY, "Ban qua yeu de ha guc mot nguoi nao do");
+//			return 1;
+//		}
+//		if (PlayerBoxing[playerid] != 0)
+//		{
+//			SendClientMessage(playerid, COLOR_GREY, "Khong su dung lenh khi dang danh boxing");
+//			return 1;
+//		}
+//		new giveplayerid, string[256];
+//		if (sscanf(params, "u", giveplayerid))
+//			return SendClientMessage(playerid, COLOR_WHITE, "Su dung lenh: /knockout [Playerid/PartOfName]");
+//
+//		if (IsPlayerConnected(giveplayerid))
+//		{
+//			if (giveplayerid != INVALID_PLAYER_ID)
+//			{
+//				if (ProxDetectorS(1.0, playerid, giveplayerid))
+//				{
+//					if (KnockedDown[giveplayerid] != 1)
+//					{
+//						if (giveplayerid == playerid)
+//						{
+//							SendClientMessage(playerid, COLOR_GREY, "   Ban khong the lam vay voi chinh minh.");
+//							return 1;
+//						}
+//						if (PlayerInfo[giveplayerid][pSex] == 2)
+//						{
+//							SendClientMessage(playerid, COLOR_GREY, "Ban co chac chan ha guc mot nguoi phu nu?");
+//							return 1;
+//						}
+//						if (IsPlayerInAnyVehicle(giveplayerid))
+//						{
+//							return 1;
+//						}
+//						new giveplayername[MAX_PLAYER_NAME];
+//						GetPlayerName(giveplayerid, giveplayername, sizeof(giveplayername));
+//						new rands = random(2) + 1;
+//						format(string, sizeof(string), "* %s danh manh vao %s va co gang knock out anh ay.", GN(playerid), giveplayername);
+//						ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+//						ApplyAnimation(playerid, "FIGHT_D", "FightD_3", 4.0, 0, 1, 1, 0, 0);
+//						if (rands == 1)
+//						{
+//							TogglePlayerControllable(giveplayerid, 0);
+//							ApplyAnimation(giveplayerid, "CRACK", "crckdeth2", 4.0, 1, 0, 0, 0, 0);
+//							SetTimerEx("ClearKnock", 20000, false, "i", giveplayerid);
+//							KnockedDown[giveplayerid] = 1;
+//							format(string, sizeof(string), "* %s Ha guc muc tieu thanh cong.", GN(playerid));
+//							ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+//						}
+//						else
+//						{
+//							format(string, sizeof(string), "* %s Da truot va khong ha guc duoc muc tieu.", GN(playerid));
+//							ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+//						}
+//						return 1;
+//					}
+//					else
+//					{
+//						SendClientMessage(playerid, COLOR_GREY, "Nguoi choi da bi ha guc.");
+//					}
+//				}
+//				else
+//				{
+//					SendClientMessage(playerid, COLOR_GREY, "Nguoi choi khong gan ban.");
+//				}
+//			}
+//		}
+//
+//	}
+//	return 1;
+//}
 /*if(strcmp(cmd, "/carcolor", true) == 0) // by Ellis
 {
 if(IsPlayerConnected(playerid))
@@ -10461,7 +10493,7 @@ CMD:tuningclose(playerid, params[])
 	else return SendClientMessage(playerid, COLOR_GREY, "Ban khong co remote de mo.");
 	return 1;
 }
-CMD:docoropen(playerid, params[])
+CMD:dooropen(playerid, params[])
 {
 	new string[256];
 	if (PlayerInfo[playerid][pLeader] == 1 || PlayerInfo[playerid][pLeader] == 2 || PlayerInfo[playerid][pLeader] == 3 || PlayerInfo[playerid][pMember] == 1 || PlayerInfo[playerid][pMember] == 2 || PlayerInfo[playerid][pMember] == 3)
@@ -20621,7 +20653,6 @@ CMD:slap(playerid, params[])
 			{
 				if (playa != INVALID_PLAYER_ID)
 				{
-
 					GetPlayerHealth(playa, shealth);
 					SetPlayerHealth(playa, shealth - 5);
 					GetPlayerPos(playa, slx, sly, slz);
@@ -27692,75 +27723,75 @@ CMD:fillcar(playerid, params[])
 	}
 	return 1;
 }
-CMD:tazer(playerid, params[])
-{
-	if (IsPlayerConnected(playerid))
-	{
-		if (gTeam[playerid] == 2 || IsACop(playerid))
-		{
-			if (IsPlayerInAnyVehicle(playerid))
-			{
-				SendClientMessage(playerid, COLOR_GREY, "   Khong the dung khi dang o trong xe!");
-				return 1;
-			}
-			new suspect = GetClosestPlayer(playerid);
-			new giveplayer[50], string[256];
-			if (IsPlayerConnected(suspect))
-			{
-				if (PlayerCuffed[suspect] > 0)
-				{
-					SendClientMessage(playerid, COLOR_GREY, "   Nguoi choi da bi cong!");
-					return 1;
-				}
-				if (GetDistanceBetweenPlayers(playerid, suspect) < 5)
-				{
-					if (gTeam[suspect] == 2)
-					{
-						SendClientMessage(playerid, COLOR_GREY, "   Khong the Tazer Canh sat / FBI!");
-						return 1;
-					}
-					if (IsPlayerInAnyVehicle(suspect))
-					{
-						SendClientMessage(playerid, COLOR_GREY, "   Viec nghi ngo thuc hien tren xe, loi han ra truoc!");
-						return 1;
-					}
-					GetPlayerName(suspect, giveplayer, sizeof(giveplayer));
-					
-					new randt = random(4) + 1;
-					if (randt == 1)
-					{
-						format(string, sizeof(string), "* %s ban voi sung tazer cua anh ay %s, truot.", GN(playerid), giveplayer);
-						ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
-					}
-					else
-					{
-						format(string, sizeof(string), "* Ban da bi tazed boi %s trong 20 giay.", GN(playerid));
-						SendClientMessage(suspect, COLOR_WHITE, string);
-						format(string, sizeof(string), "* Ban da Tazed %s trong 20 giay.", giveplayer);
-						SendClientMessage(playerid, COLOR_WHITE, string);
-						format(string, sizeof(string), "* %s ban voi sung tazer cua anh ay %s va tazed han.", GN(playerid), giveplayer);
-						ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
-						GameTextForPlayer(suspect, "~r~Tazed", 2500, 3);
-						TogglePlayerControllable(suspect, 0);
-						LoopingAnim(suspect, "CRACK", "crckdeth2", 4.0, 1, 0, 0, 0, 0);
-						PlayerCuffed[suspect] = 1;
-						PlayerCuffedTime[suspect] = 20;
-					}
-				}
-				else
-				{
-					SendClientMessage(playerid, COLOR_GREY, "   Khong ai o gan ban!");
-					return 1;
-				}
-			}
-		}
-		else
-		{
-			SendClientMessage(playerid, COLOR_GREY, "   Ban khong phai la Canh sat / FBI!");
-		}
-	}//not connected
-	return 1;
-}
+//CMD:tazer(playerid, params[])
+//{
+//	if (IsPlayerConnected(playerid))
+//	{
+//		if (gTeam[playerid] == 2 || IsACop(playerid))
+//		{
+//			if (IsPlayerInAnyVehicle(playerid))
+//			{
+//				SendClientMessage(playerid, COLOR_GREY, "   Khong the dung khi dang o trong xe!");
+//				return 1;
+//			}
+//			new suspect = GetClosestPlayer(playerid);
+//			new giveplayer[50], string[256];
+//			if (IsPlayerConnected(suspect))
+//			{
+//				if (PlayerCuffed[suspect] > 0)
+//				{
+//					SendClientMessage(playerid, COLOR_GREY, "   Nguoi choi da bi cong!");
+//					return 1;
+//				}
+//				if (GetDistanceBetweenPlayers(playerid, suspect) < 5)
+//				{
+//					if (gTeam[suspect] == 2)
+//					{
+//						SendClientMessage(playerid, COLOR_GREY, "   Khong the Tazer Canh sat / FBI!");
+//						return 1;
+//					}
+//					if (IsPlayerInAnyVehicle(suspect))
+//					{
+//						SendClientMessage(playerid, COLOR_GREY, "   Viec nghi ngo thuc hien tren xe, loi han ra truoc!");
+//						return 1;
+//					}
+//					GetPlayerName(suspect, giveplayer, sizeof(giveplayer));
+//					
+//					new randt = random(4) + 1;
+//					if (randt == 1)
+//					{
+//						format(string, sizeof(string), "* %s ban voi sung tazer cua anh ay %s, truot.", GN(playerid), giveplayer);
+//						ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+//					}
+//					else
+//					{
+//						format(string, sizeof(string), "* Ban da bi tazed boi %s trong 20 giay.", GN(playerid));
+//						SendClientMessage(suspect, COLOR_WHITE, string);
+//						format(string, sizeof(string), "* Ban da Tazed %s trong 20 giay.", giveplayer);
+//						SendClientMessage(playerid, COLOR_WHITE, string);
+//						format(string, sizeof(string), "* %s ban voi sung tazer cua anh ay %s va tazed han.", GN(playerid), giveplayer);
+//						ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+//						GameTextForPlayer(suspect, "~r~Tazed", 2500, 3);
+//						TogglePlayerControllable(suspect, 0);
+//						LoopingAnim(suspect, "CRACK", "crckdeth2", 4.0, 1, 0, 0, 0, 0);
+//						PlayerCuffed[suspect] = 1;
+//						PlayerCuffedTime[suspect] = 20;
+//					}
+//				}
+//				else
+//				{
+//					SendClientMessage(playerid, COLOR_GREY, "   Khong ai o gan ban!");
+//					return 1;
+//				}
+//			}
+//		}
+//		else
+//		{
+//			SendClientMessage(playerid, COLOR_GREY, "   Ban khong phai la Canh sat / FBI!");
+//		}
+//	}//not connected
+//	return 1;
+//}
 CMD:agent(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))

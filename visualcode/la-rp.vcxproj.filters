@@ -19,6 +19,10 @@
     <None Include="..\scriptfiles\mysql.ini">
       <Filter>Server</Filter>
     </None>
+    <None Include="..\pawno\include\ProjectInc\geek.inc">
+      <Filter>Code\Private</Filter>
+    </None>
+    <None Include="..\pawno\include\ProjectInc\ontimer.inc" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Code">
