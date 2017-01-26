@@ -96,44 +96,6 @@ static stock CGen_SetupCodeSpace()
 	YSI_g_sCodeSpace += 12;
 }
 
-<<<<<<< HEAD
-=======
-public OnCodeInit()
-{
-	CGen_SetupCodeSpace();
-	#if defined CGen_OnCodeInit
-		CGen_OnCodeInit();
-	#endif
-	// Check that the code at this point is valid.  An OpCode is at most two
-	// bytes (except "OP_SWITCH", but there are none of them in this area of
-	// code because there are no "switch"es).  If the code here fails to
-	// decompile, it is probably out of alignment - add a single "NOP" to bring
-	// it back in to alignment.
-	new
-		ctx[DisasmContext];
-	DisasmInit(ctx, YSI_g_sCodeSpace - AMX_HEADER_COD);
-	for (new i = 0; i != 10; ++i)
-	{
-		if (DisasmNextInsn(ctx) == OP_NONE)
-		{
-			AMX_Write(YSI_g_sCodeSpace, _:RelocateOpcode(OP_NOP));
-			return 1;
-		}
-	}
-	return 1;
-}
-
-#if defined CGen_OnCodeInit
-	forward CGen_OnCodeInit();
-#endif
-#if defined _ALS_OnCodeInit
-	#undef OnCodeInit
-#else
-	#define _ALS_OnCodeInit
-#endif
-#define OnCodeInit CGen_OnCodeInit
-
->>>>>>> d9f3f08541d3e705559b618ac2df294daa5d665a
 stock CGen_UseCodeSpace(ctx[AsmContext])
 {
 	CGen_SetupCodeSpace();
