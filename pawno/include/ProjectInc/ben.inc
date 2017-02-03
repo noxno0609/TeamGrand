@@ -176,3 +176,37 @@ stock DeleteAdminVeh(avid)
 	DestroyVehicle(vid);
 	aVeh[avid] = 0;
 }
+
+stock ClearOffer(playerid)
+{
+	SetPVarInt(playerid, "OfferBy", 0);
+	SetPVarInt(playerid, "OfferP", 0);
+	SetPVarInt(playerid, "OfferA", 0);
+	SetPVarInt(playerid, "OfferG", 0);
+	SetPVarInt(playerid, "OfferM", 0);
+	SetPVarInt(playerid, "OfferType", 0);
+}
+
+stock IsPlayerInBike(playerid)
+{
+	new vmd = GetVehicleModel(GetPlayerVehicleID(playerid));
+	if (IsPlayerInAnyVehicle(playerid)
+		&& (vmd == 448 || vmd == 461 || vmd == 462 || vmd == 463 || vmd == 468
+			|| vmd == 471 || vmd == 481 || vmd == 509 || vmd == 510 || vmd == 521
+			|| vmd == 522 || vmd == 523 || vmd == 581 || vmd == 586))
+	{
+		return 1;
+	}
+	return 0;
+}
+
+forward Float:GetVehicleSpeed(vehicleid, UseMPH);
+stock Float:GetVehicleSpeed(vehicleid, UseMPH)
+{
+    new Float:speed_x,Float:speed_y,Float:speed_z,Float:temp_speed;
+    GetVehicleVelocity(vehicleid,speed_x,speed_y,speed_z);
+    if(UseMPH == 0) temp_speed = floatsqroot(((speed_x*speed_x)+(speed_y*speed_y))+(speed_z*speed_z))*136.666667;
+	else temp_speed = floatsqroot(((speed_x*speed_x)+(speed_y*speed_y))+(speed_z*speed_z))*85.4166672;
+    floatround(temp_speed,floatround_round);
+	return temp_speed;
+}

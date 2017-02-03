@@ -679,6 +679,15 @@ public OnPlayerConnect(playerid)
 	Tazering[playerid] = 0;
 	WearTazer[playerid] = 0;
 
+	HitTimes[playerid] = 0;
+
+	SetPVarInt(playerid, "OfferBy", -1);
+	SetPVarInt(playerid, "OfferG", 0);
+	SetPVarInt(playerid, "OfferA", 0);
+	SetPVarInt(playerid, "OfferM", 0);
+	SetPVarInt(playerid, "OfferP", 0);
+	SetPVarInt(playerid, "OfferType", 0);
+
 	SelectChar[playerid] = 0; HidePM[playerid] = 0; PhoneOnline[playerid] = 0;
 	SelectCharID[playerid] = 0; SelectCharPlace[playerid] = 0; ChosenSkin[playerid] = 0;
 	GettingJob[playerid] = 0; GuardOffer[playerid] = 999; GuardPrice[playerid] = 0;
@@ -5693,7 +5702,7 @@ public OnPlayerText(playerid, text[])
 			}
 			if (hitfound == 0)
 			{
-				SendClientMessage(playerid, COLOR_GREY, "   There is no Hit Founded yet, use Contracts in the Portable first !");
+				SendClientMessage(playerid, COLOR_GREY, "   Khong co Hit, su dung Contract trong Portable !");
 				return 0;
 			}
 			tmp = strtok(text, idx);
@@ -6294,6 +6303,13 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 	}
 	return 0;
 }
+public OnPlayerTakeDamage(playerid, issuerid, Float:amount, weaponid, bodypart)
+{
+	if (IsPlayerInBike(playerid))
+	{
+		HitTimes[playerid]++;
+	}
+}
 public OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid, bodypart)
 {
 	if (weaponid == 0)
@@ -6320,7 +6336,7 @@ CMD:report(playerid, params[])
 	{
 		if (JustReported[playerid] == 1)
 		{
-			SendClientMessage(playerid, COLOR_GREY, "   Wait 2 minutes after sending a next report ! ");
+			SendClientMessage(playerid, COLOR_GREY, "   Doi 2 phut cho lan bao cao tiep theo ! ");
 			return 1;
 		}
 		new giveplayerid, resultz[128];
@@ -6786,6 +6802,7 @@ CMD:respawnrentbikes(playerid, params[])
 	}
 	return 1;
 }
+CMD:dualenxe(playerid, params[]) { return cmd_drag(playerid, params); }
 CMD:drag(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -10043,6 +10060,7 @@ CMD:tracelastcall(playerid, params[])
 	}
 	return 1;
 }
+CMD:ar(playerid, params[]) { return cmd_acceptreport(playerid, params); }
 CMD:acceptreport(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -10067,9 +10085,9 @@ CMD:acceptreport(playerid, params[])
 						PlayerNeedsHelp[giveplayerid] = 0;
 						
 						GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
-						format(string, sizeof(string), "AdmWarning: %s has just accepted the report of [ID:%d]%s.", GN(playerid), giveplayerid, giveplayer);
+						format(string, sizeof(string), "AdmWarning: %s da chap nhan bao cao cua [ID:%d]%s.", GN(playerid), giveplayerid, giveplayer);
 						ABroadCast(COLOR_YELLOW, string, 1);
-						format(string, sizeof(string), "** LARP Administrator [ID:%d]%s has accepted your report and now ready to assist you! Please be patience.", playerid, GN(playerid));
+						format(string, sizeof(string), "** LARP Administrator [ID:%d]%s da chap nhan bao cao cua ban va se den ho tro ban! Xin vui long cho giay lat.", playerid, GN(playerid));
 						SendClientMessage(giveplayerid, 0x4D903DAA, string);
 					}
 					else
@@ -10088,6 +10106,7 @@ CMD:acceptreport(playerid, params[])
 	}
 	return 1;
 }
+CMD:tr(playerid, params[]) { return cmd_trashreport(playerid, params); }
 CMD:trashreport(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -10112,9 +10131,9 @@ CMD:trashreport(playerid, params[])
 						PlayerNeedsHelp[giveplayerid] = 0;
 						
 						GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
-						format(string, sizeof(string), "AdmWarning: %s has just trashed the report of [ID:%d]%s.", GN(playerid), giveplayerid, giveplayer);
+						format(string, sizeof(string), "AdmWarning: %s da tu choi bao cao cua [ID:%d]%s.", GN(playerid), giveplayerid, giveplayer);
 						ABroadCast(COLOR_YELLOW, string, 1);
-						format(string, sizeof(string), "** LARP Administrator [ID:%d]%s has denied your report and will hopefully PM the reason !", playerid, GN(playerid));
+						format(string, sizeof(string), "** LARP Administrator [ID:%d]%s da tu choi bao cao cua ban va se co gang noi cho ban ly do !", playerid, GN(playerid));
 						SendClientMessage(giveplayerid, 0xB35959AA, string);
 					}
 					else
@@ -12913,6 +12932,7 @@ CMD:shout(playerid, params[])
 	}
 	return 1;
 }
+CMD:m(playerid, params[]) { return cmd_megaphone(playerid, params); }
 CMD:megaphone(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -13224,7 +13244,7 @@ CMD:duty(playerid, params[])
 				{
 					if (PlayerInfo[playerid][pMember] == 1 || PlayerInfo[playerid][pLeader] == 1)
 					{
-						format(string, sizeof(string), "* Officer %s took a Badge and a Gun from his locker.", GN(playerid));
+						format(string, sizeof(string), "* Si quan %s da lay ra huy hieu va sung tu tu do.", GN(playerid));
 					}
 					else if (PlayerInfo[playerid][pMember] == 1 || PlayerInfo[playerid][pLeader] == 1)
 					{
@@ -13240,7 +13260,7 @@ CMD:duty(playerid, params[])
 				{
 					if (PlayerInfo[playerid][pMember] == 1 || PlayerInfo[playerid][pLeader] == 1)
 					{
-						format(string, sizeof(string), "* Officer %s places his Badge and Gun in his locker.", GN(playerid));
+						format(string, sizeof(string), "* Si quan %s da cat huy hieu va sung vao tu do.", GN(playerid));
 					}
 					else if (PlayerInfo[playerid][pMember] == 2 || PlayerInfo[playerid][pLeader] == 2)
 					{
@@ -13255,7 +13275,7 @@ CMD:duty(playerid, params[])
 			}
 			else
 			{
-				SendClientMessage(playerid, COLOR_GRAD2, "   You are not in a locker room !");
+				SendClientMessage(playerid, COLOR_GRAD2, "   Ban khong o locker room !");
 				return 1;
 			}
 		}
@@ -13273,7 +13293,7 @@ CMD:duty(playerid, params[])
 				JobDuty[playerid] = 1;
 				Medics += 1;
 				
-				format(string, sizeof(string), "[Advert] Paramedic %s is On Duty, /call 911.", GN(playerid));
+				format(string, sizeof(string), "[Quang cao] Cap cuu %s dang lam viec, /call 911.", GN(playerid));
 				OOCNews(COLOR_ALLDEPT, string);
 			}
 		}
@@ -14022,7 +14042,7 @@ CMD:bank(playerid, params[])
 		if (sscanf(params, "i", cashdeposit))
 		{
 			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /bank [amount]");
-			format(string, sizeof(string), "  You Have $%d in your account.", PlayerInfo[playerid][pAccount]);
+			format(string, sizeof(string), "  Ban co $%d trong tai khoan.", PlayerInfo[playerid][pAccount]);
 			SendClientMessage(playerid, COLOR_GRAD3, string);
 			return 1;
 		}
@@ -14131,12 +14151,12 @@ CMD:transfer(playerid, params[])
 				{
 					PlayerInfo[playerid][pAccount] -= moneys;
 					PlayerInfo[giveplayerid][pAccount] += moneys;
-					format(string, sizeof(string), "   You have transferd $%d to %s's account", moneys, giveplayer, giveplayerid);
+					format(string, sizeof(string), "   Ban da chuyen khoang $%d cho tai khoan cua %s", moneys, giveplayer, giveplayerid);
 					PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
 					SendClientMessage(playerid, COLOR_GRAD1, string);
-					format(string, sizeof(string), "   You have recieved $%d to into your account from %s", moneys, GN(playerid), playerid);
+					format(string, sizeof(string), "   Ban da nhan duoc $%d vao tai khoan cua ban tu %s", moneys, GN(playerid), playerid);
 					SendClientMessage(giveplayerid, COLOR_GRAD1, string);
-					format(string, sizeof(string), "%s transferd $%d to %s", GN(playerid), moneys, giveplayer);
+					format(string, sizeof(string), "%s chuyen khoan $%d cho %s", GN(playerid), moneys, giveplayer);
 					if (moneys >= 500000)
 					{
 						ABroadCast(COLOR_YELLOW, string, 1);
@@ -15200,6 +15220,7 @@ GameTextForPlayer(playerid, "~w~You do not have a car to locate", 5000, 1);
 }
 return 1;
 }*/
+CMD:muanha(playerid, params[]) { return cmd_buyhouse(playerid, params); }
 CMD:buyhouse(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -15269,7 +15290,7 @@ CMD:rentroom(playerid, params[])
 			{
 				if (PlayerInfo[playerid][pPhousekey] != 255 && strcmp(playername, HouseInfo[PlayerInfo[playerid][pPhousekey]][hOwner], true) == 0)
 				{
-					SendClientMessage(playerid, COLOR_WHITE, "   You already own a house, type /sellhouse if you want to rent this one.");
+					SendClientMessage(playerid, COLOR_WHITE, "   Ban da so huu mot can nha, go /sellhouse neu ban muon thue can nha nay.");
 					return 1;
 				}
 				if (GetPlayerMoney(playerid) > HouseInfo[h][hRent])
@@ -15685,6 +15706,7 @@ CMD:asellhouse(playerid, params[])
 	}
 	return 1;
 }
+CMD:bannha(playerid, params[]) { return cmd_sellhouse(playerid, params); }
 CMD:sellhouse(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -15743,6 +15765,7 @@ CMD:sellhouse(playerid, params[])
 	}
 	return 1;
 }
+CMD:nangcapnha(playerid, params[]) { return cmd_houseupgrade(playerid, params); }
 CMD:houseupgrade(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -16297,6 +16320,7 @@ CMD:call(playerid, params[])
 	}
 	return 1;
 }
+CMD:sms(playerid, params[]) { return cmd_txt(playerid, params); }
 CMD:txt(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -16398,6 +16422,7 @@ CMD:houseworld(playerid, params[])
 	}
 	return 1;
 }
+CMD:p(playerid, params[]) { return cmd_pickup(playerid, params); }
 CMD:pickup(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -16428,6 +16453,7 @@ CMD:pickup(playerid, params[])
 	}
 	return 1;
 }
+CMD:h(playerid, params[]) { return cmd_hangup(playerid, params); }
 CMD:hangup(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -16468,6 +16494,7 @@ CMD:fixr(playerid, params[])
 	}
 	return 1;
 }
+CMD:thoigian(playerid, params[]) { return cmd_time(playerid, params); }
 CMD:time(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -20349,6 +20376,7 @@ CMD:givegun(playerid, params[])
 	}
 	return 1;
 }
+CMD:mau(playerid, params[]) { return cmd_sethp(playerid, params); }
 CMD:sethp(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -20379,6 +20407,7 @@ CMD:sethp(playerid, params[])
 	}
 	return 1;
 }
+CMD:giap(playerid, params[]) { return cmd_setarmor(playerid, params); }
 CMD:setarmor(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -21457,6 +21486,7 @@ CMD:fishhelp(playerid, params[])
 	}
 	return 1;
 	}*/
+CMD:ah(playerid, params[]) { return cmd_ahelp(playerid, params); }
 CMD:ahelp(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -27375,6 +27405,7 @@ CMD:sellmats(playerid, params[])
 	}
 	return 1;
 }
+CMD:banvukhi(playerid, params[]) { return cmd_sellgun(playerid, params); }
 CMD:bansung(playerid, params[]) { return cmd_sellgun(playerid, params); }
 CMD:sellgun(playerid, params[])
 {
@@ -27386,14 +27417,15 @@ CMD:sellgun(playerid, params[])
 			return 1;
 		}
 		new x_weapon[256], weapon[MAX_PLAYERS], ammo[MAX_PLAYERS], price[MAX_PLAYERS];
-		new giveplayerid, giveplayer[50], string[256];
-		if (sscanf(params, "us[256]", giveplayerid, x_weapon))
+		new giveplayerid, giveplayer[50], string[256], gia;
+		if (sscanf(params, "us[256]i", giveplayerid, x_weapon, gia))
 		{
-			SendClientMessage(playerid, COLOR_GRAD1, "Su dung: /sellgun [playerid/Ten] [weaponname]");
+			SendClientMessage(playerid, COLOR_GRAD1, "Su dung: /sellgun [playerid/Ten] [ten vu khi] [gia]");
 			SendClientMessage(playerid, COLOR_GREY, "Weapons: knife(100) bat(100) flowers(25) sdpistol(100) eagle(150)");
 			SendClientMessage(playerid, COLOR_GREY, "Weapons: mp5(200) shotgun(200) ak47(600) m4(600) rifle (600)");
 			return 1;
 		}
+		if (gia < 0 || gia > 1000000) return SCM(playerid, COLOR_GREY, "Gia tien khong the nho hon 0 hoac hon 1.000.000$");
 		if (IsPlayerConnected(giveplayerid))
 		{
 			if (giveplayerid == INVALID_PLAYER_ID) return 1;
@@ -27411,11 +27443,11 @@ CMD:sellgun(playerid, params[])
 			else { SendClientMessage(playerid, COLOR_GREY, "   Ten sung khong hop le!"); return 1; }
 			if (ProxDetectorS(5.0, playerid, giveplayerid))
 			{
-				/*if(giveplayerid == playerid)
+				if(giveplayerid == playerid)
 				{
-				SendClientMessage(playerid, COLOR_GRAD1, "   You can not sell Guns to yourself!");
-				return 1;
-				}*/
+					SendClientMessage(playerid, COLOR_GRAD1, "   Ban khong the tu ban sung cho chinh minh!");
+					return 1;
+				}
 				if (PlayerInfo[playerid][pMiserPerk] > 0)
 				{
 					new skill = 2 * PlayerInfo[playerid][pMiserPerk];
@@ -27423,9 +27455,22 @@ CMD:sellgun(playerid, params[])
 					price[playerid] -= (mats)*(skill);
 				}
 				//ConsumingMoney[playerid] = 1;
-				GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
+				//GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
 				
-				format(string, sizeof(string), "   Ban da dua cho %s, mot %s voi %d dan, cho %d Materials.", giveplayer, x_weapon, ammo[playerid], price[playerid]);
+				//SetPVarInt(playerid, "OfferTo", giveplayerid);
+
+				SetPVarInt(giveplayerid, "OfferBy", playerid);
+				SetPVarInt(giveplayerid, "OfferG", weapon[playerid]);
+				SetPVarInt(giveplayerid, "OfferA", ammo[playerid]);
+				SetPVarInt(giveplayerid, "OfferM", price[playerid]);
+				SetPVarInt(giveplayerid, "OfferP", gia);
+				SetPVarInt(giveplayerid, "OfferType", OFFERWEAPON);
+
+				format(string, sizeof(string), "%s de nghi ban cho ban vu khi %s voi %d dan, gia tien %d$. (/accept vukhi)", GN(playerid), x_weapon, ammo[playerid], gia);
+				SCM(giveplayerid, COLOR_GRAD1, string);
+				format(string, sizeof(string), "Ban de nghi ban cho %s vu khi %s voi %d dan, gia tien %d$", GN(giveplayerid), x_weapon, ammo[playerid], gia);
+				SCM(giveplayerid, COLOR_GRAD1, string);
+				/*format(string, sizeof(string), "   Ban da dua cho %s, mot %s voi %d dan, cho %d Materials.", giveplayer, x_weapon, ammo[playerid], price[playerid]);
 				PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
 				SendClientMessage(playerid, COLOR_GRAD1, string);
 				format(string, sizeof(string), "   Ban da nhan duoc mot %s voi %d dan tu %s.", x_weapon, ammo[playerid], GN(playerid));
@@ -27436,7 +27481,7 @@ CMD:sellgun(playerid, params[])
 				format(string, sizeof(string), "* %s hands a %s to %s.", GN(playerid), gunname, giveplayer);
 				ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 				SafeGivePlayerWeapon(giveplayerid, weapon[playerid], ammo[playerid]);
-				PlayerInfo[playerid][pMats] -= price[playerid];
+				PlayerInfo[playerid][pMats] -= price[playerid];*/
 			}
 			else
 			{
@@ -28051,6 +28096,7 @@ CMD:undercover(playerid, params[])
 	}
 	return 1;
 }
+CMD:congtay(playerid, params[]) { return cmd_cuff(playerid, params); }
 CMD:cuff(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -28505,9 +28551,42 @@ CMD:accept(playerid, params[])
 			SendClientMessage(playerid, COLOR_WHITE, "|__________________ Accept __________________|");
 			SendClientMessage(playerid, COLOR_WHITE, "Su dung: accept [name]");
 			SendClientMessage(playerid, COLOR_GREY, "Available names: Sex, Drugs, Repair, Lawyer, Bodyguard, Job, Live, Refill, OwnableCar");
-			SendClientMessage(playerid, COLOR_GREY, "Available names: Taxi, Bus, Boxing, Medic, Mechanic, Paper, Ticket, Pizza");
+			SendClientMessage(playerid, COLOR_GREY, "Available names: Taxi, Bus, Boxing, Medic, Mechanic, Paper, Ticket, Pizza, Vukhi");
 			SendClientMessage(playerid, COLOR_WHITE, "|____________________________________________|");
 			return 1;
+		}
+		if (strcmp(x_job, "vukhi", true) == 0 && GetPVarInt(playerid, "OfferType") == OFFERWEAPON)
+		{
+			new offerplayer = GetPVarInt(playerid, "OfferBy");
+			new price = GetPVarInt(playerid, "OfferP");
+			new ammo = GetPVarInt(playerid, "OfferA");
+			new gun = GetPVarInt(playerid, "OfferG");
+			new mats = GetPVarInt(playerid, "OfferM");
+			new gunname[24];
+
+			ClearOffer(playerid);
+			ClearOffer(offerplayer);
+
+			if (GetPlayerMoney(playerid) < price)
+			{
+				SCM(playerid, COLOR_GREY, "Ban khong du tien.");
+				SCM(offerplayer, COLOR_GREY, "Nguoi choi kia khong du tien.");
+				return 1;
+			}
+			GetWeaponName(gun, gunname, sizeof(gunname));
+			format(string, sizeof(string), "   Ban da dua cho %s, mot %s voi %d dan, mat %d vat lieu, nhan %d$.", GN(playerid), gunname, ammo, mats, price);
+			PlayerPlaySound(offerplayer, 1052, 0.0, 0.0, 0.0);
+			SendClientMessage(offerplayer, COLOR_GRAD1, string);
+			format(string, sizeof(string), "   Ban dua cho %s %d$, nhan duoc mot %s voi %d dan.", GN(offerplayer), price, gunname, ammo);
+			SendClientMessage(playerid, COLOR_GRAD1, string);
+			PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
+
+			format(string, sizeof(string), "* %s dua %s cho %s.", GN(offerplayer), gunname, GN(playerid));
+			ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+			SafeGivePlayerWeapon(playerid, gun, ammo);
+			PlayerInfo[offerplayer][pMats] -= mats;
+			SafeGivePlayerMoney(playerid, -price);
+			SafeGivePlayerMoney(offerplayer, price);
 		}
 		/*if(strcmp(x_job,"car",true) == 0)
 		{
@@ -28781,7 +28860,7 @@ CMD:accept(playerid, params[])
 							
 							format(string, sizeof(string), "* Ban da nhan bao tu nguoi dua bao %s (go /read paper, de doc bao).", giveplayer);
 							SendClientMessage(playerid, COLOR_WHITE, string);
-							format(string, sizeof(string), "* %s has accepted your Newspaper.", GN(playerid));
+							format(string, sizeof(string), "* %s da nhan lay bao cua ban.", GN(playerid));
 							SendClientMessage(PaperOffer[playerid], COLOR_WHITE, string);
 							format(string, sizeof(string), "%s", Paper[PaperOffer[playerid]][pTitle]);
 							strmid(Paper[playerid][pTitle], string, 0, strlen(string), 255);
@@ -31670,6 +31749,7 @@ CMD:clear(playerid, params[])
 	}//not connected
 	return 1;
 }
+CMD:vephat(playerid, params[]) { return cmd_ticket(playerid, params); }
 CMD:ticket(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -31720,6 +31800,7 @@ CMD:ticket(playerid, params[])
 	}
 	return 1;
 }
+CMD:batgiam(playerid, params[]) { return cmd_arrest(playerid, params); }
 CMD:arrest(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -31849,13 +31930,13 @@ CMD:contract(playerid, params[])
 					return SendClientMessage(playerid, COLOR_GREY, "   Cannot place Contracts on your own Agency!");
 
 				else if (PlayerInfo[giveplayerid][pMember] == 8 || PlayerInfo[giveplayerid][pLeader] == 8)
-					return SendClientMessage(playerid, COLOR_GREY, "   Can't contract a Hitman !");
+					return SendClientMessage(playerid, COLOR_GREY, "   Khong the thuc hien hop dong !");
 
 				if (gTeam[giveplayerid] == 2 && moneys != 100000)
 					return SendClientMessage(playerid, COLOR_GREY, "   Only $100000 can be placed as a Contract on Cops !");
 
 				if (giveplayerid == playerid) 
-					return SendClientMessage(playerid, COLOR_GREY, "You cannot Contract yourself!");
+					return SendClientMessage(playerid, COLOR_GREY, "Ban khong the hop dong ban than!");
 
 				new playermoney;
 				playermoney = GetPlayerMoney(playerid);
