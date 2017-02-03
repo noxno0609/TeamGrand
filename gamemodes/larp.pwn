@@ -3033,7 +3033,7 @@ public SearchingHit(playerid)
 	}
 	if(searchhit == 0)
 	{
-	    SendClientMessage(playerid, COLOR_GREY, "   No Contracts available !");
+	    SendClientMessage(playerid, COLOR_GREY, "   Khong co hop dong nao !");
 	}
 	return 0;
 }
@@ -8114,12 +8114,12 @@ public CustomPickups()
    			{// Pizza Pickup
         		if (PlayerInfo[i][pJob] != 17)
     			{
-    			    SendClientMessage(i, COLOR_GREY, "You are not a pizza stack worker");
+    			    SendClientMessage(i, COLOR_GREY, "Ban khong phai la nhan vien cua Pizza stack");
      				return 1;
     			}
     			if (sPizza[i] != 1)
     			{
-     				SendClientMessage(i, COLOR_WHITE, "You have picked a cooked pizza, wait for orders");
+     				SendClientMessage(i, COLOR_WHITE, "Ban da lay banh pizza, cho don dat hang");
        				sPizza[i] = 1;
       			}
    			}

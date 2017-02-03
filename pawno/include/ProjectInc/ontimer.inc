@@ -21,6 +21,29 @@ task ServerBeat[1000]()
 			TogglePlayerControllable(playerid, 1);
 			ClearAnimations(playerid);
 		}
+
+		if (HitTimes[playerid] > 0)
+			HitTimes[playerid]--;
+
+		if (HitTimes[playerid] >= 3)
+		{
+			new Float:Pos[3], Float:speed = GetVehicleSpeed(GetPlayerVehicleID(playerid), 0);
+			GetPlayerPos(playerid, Pos[0], Pos[1], Pos[2]);
+			SetPlayerPos(playerid, Pos[0], Pos[1], Pos[2] + 0.1);
+			if (speed <= 10) ApplyAnimation(playerid, "PED", "BIKE_fall_off", 4.1, 0, 1, 1, 0, 1500, 1);
+			else ApplyAnimation(playerid, "PED", "BIKE_fallR", 4.1, 0, 1, 1, 0, 1500, 1);
+			for (new i = 0; i<MAX_PLAYERS; i++)
+			{
+				if (IsPlayerInVehicle(i, GetPlayerVehicleID(playerid)))
+				{
+					GetPlayerPos(i, Pos[0], Pos[1], Pos[2]);
+					SetPlayerPos(i, Pos[0], Pos[1], Pos[2] + 0.1);
+					if (speed <= 10) ApplyAnimation(i, "PED", "BIKE_fall_off", 4.1, 0, 1, 1, 0, 1500, 1);
+					else ApplyAnimation(i, "PED", "BIKE_fallR", 4.1, 0, 1, 1, 0, 1500, 1);
+				}
+			}
+			HitTimes[playerid] = 0;
+		}
 	}
 	//printf("Called every second, but not at the same time as RepeatingFunction2.");
 }

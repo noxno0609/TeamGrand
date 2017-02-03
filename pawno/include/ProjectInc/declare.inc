@@ -2,6 +2,8 @@
 #include <foreach>
 //#include <jit>
 
+#define OFFERWEAPON 1
+
 #define MAXCUSTOMVEH 50
 new aVeh[MAXCUSTOMVEH];
 new Text3D:aVehLabel[MAXCUSTOMVEH];
@@ -14,3 +16,6 @@ new WearTazer[MAX_PLAYERS];
 new NewbieChannelActive = 0;
 new CountAdvisor = 0;
 new Text3D:DanhHieu[MAX_PLAYERS];
+
+//Bike Fall System
+new HitTimes[MAX_PLAYERS];
