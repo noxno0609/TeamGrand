@@ -411,7 +411,7 @@ CMD:dagiup(playerid, params[])
 }
 CMD:c(playerid, params[])
 {
-	if (PlayerInfo[playerid][pHelper] < 2 || PlayerInfo[playerid][pAdmin] < 1) return SendClientMessage(playerid, COLOR_GRAD1, "Ban khong the dung lenh nay");
+	if (PlayerInfo[playerid][pHelper] < 2 && PlayerInfo[playerid][pAdmin] < 1) return SendClientMessage(playerid, COLOR_GRAD1, "Ban khong the dung lenh nay");
 	new mess[255];
 	if (sscanf(params, "s[255]", mess)) return SendClientMessage(playerid, COLOR_GRAD1, "/c [Noi Dung]");
 	CBroadCast(COLOR_LIGHT_BLUE, mess, 2);
