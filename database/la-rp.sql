@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50716
 File Encoding         : 65001
 
-Date: 2017-01-17 13:46:58
+Date: 2017-02-04 13:47:40
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -20,7 +20,8 @@ SET FOREIGN_KEY_CHECKS=0;
 DROP TABLE IF EXISTS `biz`;
 CREATE TABLE `biz` (
   `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `Owner` int(11) NOT NULL,
+  `Owned` int(11) NOT NULL DEFAULT '0',
+  `Owner` varchar(255) NOT NULL,
   `Message` varchar(255) NOT NULL,
   `Extortion` varchar(255) NOT NULL,
   `EntranceX` float NOT NULL,
@@ -39,11 +40,17 @@ CREATE TABLE `biz` (
   `MaxProducts` int(11) NOT NULL,
   `PriceProd` int(11) NOT NULL,
   PRIMARY KEY (`ID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 -- ----------------------------
 -- Records of biz
 -- ----------------------------
+INSERT INTO `biz` VALUES ('1', '0', 'The State', '~w~Gun Shop 1', 'No-one', '1791.21', '-1164.63', '23.8281', '2170.28', '1618.82', '999.977', '5', '5000000', '0', '0', '1', '1', '100', '500', '100');
+INSERT INTO `biz` VALUES ('2', '0', 'The State', '~w~Gun Shop 2', 'No-one', '-2288.07', '-79.3344', '35.3203', '459.679', '-88.6443', '999.555', '5', '5000000', '0', '0', '1', '4', '100', '500', '100');
+INSERT INTO `biz` VALUES ('3', '0', 'The State', '~w~Restaurant', 'No-one', '1498.36', '-1583.03', '13.5469', '-794.936', '490.632', '1376.2', '5', '5000000', '50', '325000', '1', '1', '148', '500', '100');
+INSERT INTO `biz` VALUES ('4', '0', 'The State', '~w~Police Armoury', 'No-one', '1568.63', '-1690.54', '5.8906', '246.376', '109.246', '1003.22', '5', '5000000', '0', '0', '1', '10', '500', '500', '100');
+INSERT INTO `biz` VALUES ('5', '0', 'The State', '~w~City Bank', 'No-one', '1462.4', '-1012.39', '26.8438', '2305.69', '-16.0881', '26.7496', '5', '5000000', '0', '0', '0', '0', '99995', '100000', '1');
+INSERT INTO `biz` VALUES ('6', '0', 'The State', '~w~The Welcome Pump bar', 'No-one', '681.531', '-473.627', '16.5363', '-227.028', '1401.23', '27.7656', '5', '250000', '0', '0', '0', '18', '499', '500', '100');
 
 -- ----------------------------
 -- Table structure for `boxer`
@@ -220,6 +227,48 @@ CREATE TABLE `house` (
 -- ----------------------------
 
 -- ----------------------------
+-- Table structure for `sbiz`
+-- ----------------------------
+DROP TABLE IF EXISTS `sbiz`;
+CREATE TABLE `sbiz` (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `Owned` int(11) NOT NULL DEFAULT '0',
+  `Owner` varchar(255) NOT NULL,
+  `Message` varchar(255) NOT NULL,
+  `Extortion` varchar(255) NOT NULL,
+  `EntranceX` float NOT NULL,
+  `EntranceY` float NOT NULL,
+  `EntranceZ` float NOT NULL,
+  `LevelNeeded` int(11) NOT NULL,
+  `BuyPrice` int(11) NOT NULL,
+  `EntranceCost` int(11) NOT NULL,
+  `Till` int(11) NOT NULL,
+  `Locked` int(11) NOT NULL,
+  `Interior` int(11) NOT NULL,
+  `Products` int(11) NOT NULL,
+  `MaxProducts` int(11) NOT NULL,
+  `PriceProd` int(11) NOT NULL,
+  PRIMARY KEY (`ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8;
+
+-- ----------------------------
+-- Records of sbiz
+-- ----------------------------
+INSERT INTO `sbiz` VALUES ('1', '0', 'The State', '~w~Bikes renting', 'No-one', '562.405', '-1290', '17.2482', '5', '500000', '5', '95', '0', '0', '47', '100', '99999');
+INSERT INTO `sbiz` VALUES ('2', '0', 'The State', '~w~Wang Cars', 'No-one', '1206.09', '-1750.66', '13.5938', '5', '700000', '30', '150', '1', '0', '47', '100', '100');
+INSERT INTO `sbiz` VALUES ('3', '0', 'The State', '~w~Phone Company', 'No-one', '1327.85', '-1558.01', '13.5469', '5', '500000', '0', '0', '1', '0', '100', '100', '100');
+INSERT INTO `sbiz` VALUES ('4', '0', 'The State', '~w~Gas Company', 'No-one', '-33.7243', '-1127.63', '1.0781', '5', '500000', '1', '8546', '1', '0', '100', '100', '100');
+INSERT INTO `sbiz` VALUES ('5', '0', 'The State', '~w~Electricity Company', 'No-one', '-2521.01', '-623.331', '132.769', '5', '700000', '0', '128628', '1', '0', '100', '100', '100');
+INSERT INTO `sbiz` VALUES ('6', '0', 'The State', '~w~Pay & Spray', 'No-one', '1636.69', '-1521.82', '13.5987', '5', '750000', '1', '1', '1', '0', '91', '100', '100');
+INSERT INTO `sbiz` VALUES ('7', '0', 'The State', '~w~House Upgrade', 'No-one', '2350', '-1411.8', '23.9923', '5', '2000000', '0', '2301500', '1', '0', '55', '100', '100');
+INSERT INTO `sbiz` VALUES ('8', '0', 'The State', '~w~CNN Studio', 'No-one', '844.656', '-1045.56', '25.4301', '5', '2000000', '0', '25385', '1', '0', '100', '100', '100');
+INSERT INTO `sbiz` VALUES ('9', '1', 'No-one', 'Un Named', 'No-one', '2510.6', '-1468.2', '24.0239', '5', '700000', '0', '250', '1', '0', '97', '100', '100');
+INSERT INTO `sbiz` VALUES ('10', '0', 'The State', '~w~General Store', 'No-one', '1205.97', '-1459.67', '13.386', '5', '500000', '0', '369350', '1', '0', '100', '100', '100');
+INSERT INTO `sbiz` VALUES ('11', '0', 'The State', '~w~Paintball Arena', 'No-one', '1310.13', '-1367.81', '13.5408', '5', '750000', '0', '0', '0', '0', '98', '100', '100');
+INSERT INTO `sbiz` VALUES ('12', '0', 'The State', '~w~Kart Track', 'No-one', '2281.91', '-2364.28', '13.5938', '5', '750000', '0', '0', '1', '0', '94', '100', '100');
+INSERT INTO `sbiz` VALUES ('13', '0', 'The State', '~w~Kart Track', 'No-one', '2281.91', '-2364.28', '13.5938', '5', '750000', '0', '0', '1', '0', '100', '100', '100');
+
+-- ----------------------------
 -- Table structure for `stuff`
 -- ----------------------------
 DROP TABLE IF EXISTS `stuff`;
@@ -381,4 +430,3 @@ CREATE TABLE `user` (
 -- ----------------------------
 -- Records of user
 -- ----------------------------
-INSERT INTO `user` VALUES ('1', '123123', 'dasdasd123', '1', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', null, '0', null, '0', null, '0', null, '0', null, '0', null, '0', '0', '0', '0', '0', '0', '0');
