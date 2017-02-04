@@ -210,3 +210,35 @@ stock Float:GetVehicleSpeed(vehicleid, UseMPH)
     floatround(temp_speed,floatround_round);
 	return temp_speed;
 }
+
+stock ClearApGiai(playerid)
+{
+	if (Escorting[playerid] == 1)
+	{
+		Escorting[playerid] = 0;
+		SCM(EscortedPlayer[playerid], COLOR_YELLOW, "Nguoi ap giai ban vua thoat khoi server.");
+		Escorted[EscortedPlayer[playerid]] = 0;
+		EscortedPlayer[playerid] = -1;
+	}
+	if (Escorted[playerid] == 1)
+	{
+		Escorted[playerid] = 0;
+		for (new i = 0; i<MAX_PLAYERS; i++)
+		{
+			if (EscortedPlayer[i] == playerid)
+			{
+				SCM(i, COLOR_YELLOW, "Nguoi ban ap giai vua thoat khoi server.");
+				Escorting[i] = 0;
+				EscortedPlayer[i] = -1;
+			}
+		}
+	}
+	return 1;
+}
+
+stock GetIp(playerid)
+{
+	new ip[16];
+	GetPlayerIp(playerid, ip, sizeof(ip));
+	return ip;
+}

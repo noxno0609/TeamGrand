@@ -19,3 +19,8 @@ new Text3D:DanhHieu[MAX_PLAYERS];
 
 //Bike Fall System
 new HitTimes[MAX_PLAYERS];
+
+//Ap Giai - Escort
+new Escorted[MAX_PLAYERS];
+new EscortedPlayer[MAX_PLAYERS];
+new Escorting[MAX_PLAYERS];

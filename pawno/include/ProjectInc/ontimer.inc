@@ -44,6 +44,21 @@ task ServerBeat[1000]()
 			}
 			HitTimes[playerid] = 0;
 		}
+		if (Escorting[playerid] == 1)
+		{
+			new Float:Pos[3];
+			GetPlayerPos(playerid, Pos[0], Pos[1], Pos[2]);
+			if (!IsPlayerInRangeOfPoint(EscortedPlayer[playerid], 4, Pos[0], Pos[1], Pos[2])) 
+				SetPlayerPos(EscortedPlayer[playerid], Pos[0] + 0.5, Pos[1] + 0.5, Pos[2]);
+
+			new vir = GetPlayerVirtualWorld(playerid);
+			new intid = GetPlayerInterior(playerid);
+			PlayerInfo[EscortedPlayer[playerid]][pInt] = PlayerInfo[playerid][pInt];
+			PlayerInfo[EscortedPlayer[playerid]][pLocal] = PlayerInfo[playerid][pLocal];
+
+			SetPlayerInterior(EscortedPlayer[playerid], intid);
+			SetPlayerVirtualWorld(EscortedPlayer[playerid], vir);
+		}
 	}
 	//printf("Called every second, but not at the same time as RepeatingFunction2.");
 }

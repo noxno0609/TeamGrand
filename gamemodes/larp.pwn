@@ -1639,12 +1639,6 @@ enum hInfo
 	Float:hExitx,
 	Float:hExity,
 	Float:hExitz,
-	hHealthx,
-	hHealthy,
-	hHealthz,
-	hArmourx,
-	hArmoury,
-	hArmourz,
 	hOwner[MAX_PLAYER_NAME],
 	hDiscription[MAX_PLAYER_NAME],
 	hValue,
@@ -1689,25 +1683,27 @@ new CarInfo[SCRIPT_OWNCARS][cInfo];
 
 enum bInfo
 {
+	bID,
 	bOwned,
 	bOwner[64],
 	bMessage[128],
 	bExtortion[MAX_PLAYER_NAME],
-Float:bEntranceX,
+	Float:bEntranceX,
 	Float:bEntranceY,
-		  Float:bEntranceZ,
-				 Float:bExitX,
-						Float:bExitY,
-							  Float:bExitZ,
-										 bLevelNeeded,
-										 bBuyPrice,
-										 bEntranceCost,
-										 bTill,
-										 bLocked,
-										 bInterior,
-										 bProducts,
-										 bMaxProducts,
-										 bPriceProd,
+	Float:bEntranceZ,
+	Float:bExitX,
+	Float:bExitY,
+	Float:bExitZ,
+	bLevelNeeded,
+	bBuyPrice,
+	bEntranceCost,
+	bTill,
+	bLocked,
+	bInterior,
+	bProducts,
+	bMaxProducts,
+	bPriceProd,
+	bType
 };
 new BizzInfo[MAX_BIZ][bInfo];
 
@@ -1717,18 +1713,19 @@ enum sbInfo
 	sbOwner[64],
 	sbMessage[128],
 	sbExtortion[MAX_PLAYER_NAME],
-Float:sbEntranceX,
+	Float:sbEntranceX,
 	Float:sbEntranceY,
-		  Float:sbEntranceZ,
-					 sbLevelNeeded,
-					 sbBuyPrice,
-					 sbEntranceCost,
-					 sbTill,
-					 sbLocked,
-					 sbInterior,
-					 sbProducts,
-					 sbMaxProducts,
-					 sbPriceProd,
+	Float:sbEntranceZ,
+	sbLevelNeeded,
+	sbBuyPrice,
+	sbEntranceCost,
+	sbTill,
+	sbLocked,
+	sbInterior,
+	sbProducts,
+	sbMaxProducts,
+	sbPriceProd,
+	sbType
 };
 new SBizzInfo[MAX_SBIZ][sbInfo];
 
@@ -2766,7 +2763,51 @@ public LoadCar()
 }
 public LoadProperty()
 {
-	new arrCoords[30][64];
+	new sql[200];
+	new tmp;
+	new Float:tmpf;
+	new tmpstr[128];
+
+	for (new i = 0; i < SCRIPT_MAXHOUSES; i++)
+	{
+		format(sql, sizeof(sql), "SELECT * FROM house WHERE ID = %d", i);
+		mysql_query(conn, sql);
+
+		new rc;
+		cache_get_row_count(rc);
+		if (rc == 0) continue;
+
+		new idx;
+		cache_get_value_name_int(0, "ID", idx);
+		cache_get_value_name_float(0, "Entrancex", tmpf); HouseInfo[idx][hEntrancex] = tmpf;
+		cache_get_value_name_float(0, "Entrancey", tmpf); HouseInfo[idx][hEntrancey] = tmpf;
+		cache_get_value_name_float(0, "Entrancez", tmpf); HouseInfo[idx][hEntrancez] = tmpf;
+		cache_get_value_name_float(0, "Exitx", tmpf); HouseInfo[idx][hExitx] = tmpf;
+		cache_get_value_name_float(0, "Exity", tmpf); HouseInfo[idx][hExity] = tmpf;
+		cache_get_value_name_float(0, "Exitz", tmpf); HouseInfo[idx][hExitz] = tmpf;
+		cache_get_value_name(0, "Owner", tmpstr); format(HouseInfo[idx][hOwner], 128, tmpstr);
+		cache_get_value_name(0, "Discription", tmpstr); format(HouseInfo[idx][hDiscription], 128, tmpstr);
+		cache_get_value_name_int(0, "Value", tmp); HouseInfo[idx][hValue] = tmp;
+		cache_get_value_name_int(0, "Hel", tmp); HouseInfo[idx][hHel] = tmp;
+		cache_get_value_name_int(0, "Arm", tmp); HouseInfo[idx][hArm] = tmp;
+		cache_get_value_name_int(0, "Int", tmp); HouseInfo[idx][hInt] = tmp;
+		cache_get_value_name_int(0, "Lock", tmp); HouseInfo[idx][hLock] = tmp;
+		cache_get_value_name_int(0, "Owned", tmp); HouseInfo[idx][hOwned] = tmp;
+		cache_get_value_name_int(0, "Rooms", tmp); HouseInfo[idx][hRooms] = tmp;
+		cache_get_value_name_int(0, "Rent", tmp); HouseInfo[idx][hRent] = tmp;
+		cache_get_value_name_int(0, "Rentabil", tmp); HouseInfo[idx][hRentabil] = tmp;
+		cache_get_value_name_int(0, "Takings", tmp); HouseInfo[idx][hTakings] = tmp;
+		cache_get_value_name_int(0, "Vec", tmp); HouseInfo[idx][hVec] = tmp;
+		if (HouseInfo[idx][hVec] == 457) HouseInfo[idx][hVec] = 411;
+		cache_get_value_name_int(0, "Vcol1", tmp); HouseInfo[idx][hVcol1] = tmp;
+		cache_get_value_name_int(0, "Vcol2", tmp); HouseInfo[idx][hVcol2] = tmp;
+		cache_get_value_name_int(0, "Date", tmp); HouseInfo[idx][hDate] = tmp;
+		cache_get_value_name_int(0, "Level", tmp); HouseInfo[idx][hLevel] = tmp;
+		cache_get_value_name_int(0, "World", tmp); HouseInfo[idx][hWorld] = tmp;
+		printf("HouseInfo:%d Owner:%s hTakings %d hVec %d", idx, HouseInfo[idx][hOwner], HouseInfo[idx][hTakings], HouseInfo[idx][hVec]);
+	}
+	
+	/*new arrCoords[30][64];
 	new strFromFile2[256];
 	new File: file = fopen("property.cfg", io_read);
 	if (file)
@@ -2813,15 +2854,97 @@ public LoadProperty()
 			HouseInfo[idx][hWorld] = strval(arrCoords[29]);
 
 			printf("HouseInfo:%d Owner:%s hTakings %d hVec %d", idx, HouseInfo[idx][hOwner], HouseInfo[idx][hTakings], HouseInfo[idx][hVec]);
+			//idx++;
+
+			new sql[2000];
+			format(sql, sizeof(sql), "INSERT INTO house \
+				(Entrancex, Entrancey, Entrancez, Exitx, Exity, Exitz, Owner, \
+				Discription, Value, Hel, Arm, `Int`, `Lock`, Owned, Rooms, `Rent`, \
+				Rentabil, Takings, `Vec`, Vcol1, Vcol2, Date, Level, World) \
+				VALUES (%f, %f, %f, %f, %f, %f, '%s', '%s', %d, %d, \
+				%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)",
+				HouseInfo[idx][hEntrancex],
+				HouseInfo[idx][hEntrancey],
+				HouseInfo[idx][hEntrancez],
+				HouseInfo[idx][hExitx],
+				HouseInfo[idx][hExity],
+				HouseInfo[idx][hExitz],
+				HouseInfo[idx][hOwner],
+				HouseInfo[idx][hDiscription],
+				HouseInfo[idx][hValue],
+				HouseInfo[idx][hHel],
+				HouseInfo[idx][hArm],
+				HouseInfo[idx][hInt],
+				HouseInfo[idx][hLock],
+				HouseInfo[idx][hOwned],
+				HouseInfo[idx][hRooms],
+				HouseInfo[idx][hRent],
+				HouseInfo[idx][hRentabil],
+				HouseInfo[idx][hTakings],
+				HouseInfo[idx][hVec],
+				HouseInfo[idx][hVcol1],
+				HouseInfo[idx][hVcol2],
+				HouseInfo[idx][hDate],
+				HouseInfo[idx][hLevel],
+				HouseInfo[idx][hWorld]);
+			mysql_query(conn, sql);
 			idx++;
 		}
 		fclose(file);
-	}
+	}*/
 	return 1;
 }
 public LoadBizz()
 {
-	new arrCoords[19][64];
+	new sql[3000];
+	new tmp;
+	new Float:tmpf;
+	new tmpstr[128];
+
+	for (new i = 0; i < MAX_BIZ; i++)
+	{
+		format(sql, sizeof(sql), "SELECT * FROM biz WHERE ID = %d", i);
+		mysql_query(conn, sql);
+
+		new rc;
+		cache_get_row_count(rc);
+		if (rc == 0)
+			continue;
+
+		new idx;
+		cache_get_value_name_int(0, "ID", idx);
+		cache_get_value_name_int(0, "Owned", tmp); BizzInfo[idx][bOwned] = tmp;
+		cache_get_value_name(0, "Owner", tmpstr); format(BizzInfo[idx][bOwner], 128, tmpstr);
+		cache_get_value_name(0, "Message", tmpstr); format(BizzInfo[idx][bMessage], 128, tmpstr);
+		cache_get_value_name(0, "Extortion", tmpstr); format(BizzInfo[idx][bExtortion], 128, tmpstr);
+		cache_get_value_name_float(0, "EntranceX", tmpf); BizzInfo[idx][bEntranceX] = tmpf;
+		cache_get_value_name_float(0, "EntranceY", tmpf); BizzInfo[idx][bEntranceY] = tmpf;
+		cache_get_value_name_float(0, "EntranceZ", tmpf); BizzInfo[idx][bEntranceZ] = tmpf;
+		cache_get_value_name_float(0, "ExitX", tmpf); BizzInfo[idx][bExitX] = tmpf;
+		cache_get_value_name_float(0, "ExitY", tmpf); BizzInfo[idx][bExitY] = tmpf;
+		cache_get_value_name_float(0, "ExitZ", tmpf); BizzInfo[idx][bExitZ] = tmpf;
+		cache_get_value_name_int(0, "LevelNeeded", tmp); BizzInfo[idx][bLevelNeeded] = tmp;
+		cache_get_value_name_int(0, "BuyPrice", tmp); BizzInfo[idx][bBuyPrice] = tmp;
+		cache_get_value_name_int(0, "EntranceCost", tmp); BizzInfo[idx][bEntranceCost] = tmp;
+		cache_get_value_name_int(0, "Till", tmp); BizzInfo[idx][bTill] = tmp;
+		cache_get_value_name_int(0, "Locked", tmp); BizzInfo[idx][bLocked] = tmp;
+		cache_get_value_name_int(0, "Interior", tmp); BizzInfo[idx][bInterior] = tmp;
+		cache_get_value_name_int(0, "Products", tmp); BizzInfo[idx][bProducts] = tmp;
+		cache_get_value_name_int(0, "MaxProducts", tmp); BizzInfo[idx][bMaxProducts] = tmp;
+		cache_get_value_name_int(0, "PriceProd", tmp); BizzInfo[idx][bPriceProd] = tmp;
+		cache_get_value_name_int(0, "Type", tmp); BizzInfo[idx][bType] = tmp;
+		printf("BizzInfo:%d Owner:%s Message:%s Entfee:%d Till:%d Products:%d/%d Interior:%d.\n",
+			idx,
+			BizzInfo[idx][bOwner],
+			BizzInfo[idx][bMessage],
+			BizzInfo[idx][bEntranceCost],
+			BizzInfo[idx][bTill],
+			BizzInfo[idx][bProducts],
+			BizzInfo[idx][bMaxProducts],
+			BizzInfo[idx][bInterior]);
+	}
+
+	/*new arrCoords[19][64];
 	new strFromFile2[256];
 	new File: file = fopen("bizz.cfg", io_read);
 	if (file)
@@ -2862,12 +2985,57 @@ public LoadBizz()
 			idx++;
 		}
 		fclose(file);
-	}
+	}*/
 	return 1;
 }
 public LoadSBizz()
 {
-	new arrCoords[16][64];
+	new sql[3000];
+	new tmp;
+	new Float:tmpf;
+	new tmpstr[128];
+
+	for (new i = 0; i < MAX_SBIZ; i++)
+	{
+		format(sql, sizeof(sql), "SELECT * FROM sbiz WHERE ID = %d", i);
+		mysql_query(conn, sql);
+
+		new rc;
+		cache_get_row_count(rc);
+		if (rc == 0)
+			continue;
+
+		new idx;
+		cache_get_value_name_int(0, "ID", idx);
+		cache_get_value_name_int(0, "Owned", tmp); SBizzInfo[idx][sbOwned] = tmp;
+		cache_get_value_name(0, "Owner", tmpstr); format(SBizzInfo[idx][sbOwner], 128, tmpstr);
+		cache_get_value_name(0, "Message", tmpstr); format(SBizzInfo[idx][sbMessage], 128, tmpstr);
+		cache_get_value_name(0, "Extortion", tmpstr); format(SBizzInfo[idx][sbExtortion], 128, tmpstr);
+		cache_get_value_name_float(0, "EntranceX", tmpf); SBizzInfo[idx][sbEntranceX] = tmpf;
+		cache_get_value_name_float(0, "EntranceY", tmpf); SBizzInfo[idx][sbEntranceY] = tmpf;
+		cache_get_value_name_float(0, "EntranceZ", tmpf); SBizzInfo[idx][sbEntranceZ] = tmpf;
+		cache_get_value_name_int(0, "LevelNeeded", tmp); SBizzInfo[idx][sbLevelNeeded] = tmp;
+		cache_get_value_name_int(0, "BuyPrice", tmp); SBizzInfo[idx][sbBuyPrice] = tmp;
+		cache_get_value_name_int(0, "EntranceCost", tmp); SBizzInfo[idx][sbEntranceCost] = tmp;
+		cache_get_value_name_int(0, "Till", tmp); SBizzInfo[idx][sbTill] = tmp;
+		cache_get_value_name_int(0, "Locked", tmp); SBizzInfo[idx][sbLocked] = tmp;
+		cache_get_value_name_int(0, "Interior", tmp); SBizzInfo[idx][sbInterior] = tmp;
+		cache_get_value_name_int(0, "Products", tmp); SBizzInfo[idx][sbProducts] = tmp;
+		cache_get_value_name_int(0, "MaxProducts", tmp); SBizzInfo[idx][sbMaxProducts] = tmp;
+		cache_get_value_name_int(0, "PriceProd", tmp); SBizzInfo[idx][sbPriceProd] = tmp;
+		cache_get_value_name_int(0, "Type", tmp); SBizzInfo[idx][sbType] = tmp;
+		printf("SBizzInfo:%d Owner:%s Message:%s Entfee:%d Till:%d Products:%d/%d Interior:%d.\n",
+			idx,
+			SBizzInfo[idx][sbOwner],
+			SBizzInfo[idx][sbMessage],
+			SBizzInfo[idx][sbEntranceCost],
+			SBizzInfo[idx][sbTill],
+			SBizzInfo[idx][sbProducts],
+			SBizzInfo[idx][sbMaxProducts],
+			SBizzInfo[idx][sbInterior]);
+	}
+
+	/*new arrCoords[16][64];
 	new strFromFile2[256];
 	new File: file = fopen("sbizz.cfg", io_read);
 	if (file)
@@ -2905,7 +3073,7 @@ public LoadSBizz()
 			idx++;
 		}
 		fclose(file);
-	}
+	}*/
 	return 1;
 }
 public LoadDrugSystem()
@@ -4416,9 +4584,9 @@ public SetPlayerSpawn(playerid)
 		new house = PlayerInfo[playerid][pPhousekey];
 		if(PlayerPaintballing[playerid] != 0)
 		{
-		    SafeResetPlayerWeapons(playerid);
-      		SafeGivePlayerWeapon(playerid, 29, 999);
-		    rand = random(sizeof(PaintballSpawns));
+		   SafeResetPlayerWeapons(playerid);
+      	SafeGivePlayerWeapon(playerid, 29, 999);
+		   rand = random(sizeof(PaintballSpawns));
 			SetPlayerPos(playerid, PaintballSpawns[rand][0], PaintballSpawns[rand][1], PaintballSpawns[rand][2]);
 		    return 1;
 		}
@@ -4493,7 +4661,7 @@ public SetPlayerSpawn(playerid)
 		    {
 		        SetPlayerVirtualWorld(playerid,PlayerInfo[playerid][pVirWorld]);
 		        SetPlayerInterior(playerid,PlayerInfo[playerid][pInt]);
-		    	SetPlayerPos(playerid, PlayerInfo[playerid][pPos_x], PlayerInfo[playerid][pPos_y], PlayerInfo[playerid][pPos_z] + 1);
+		    	  SetPlayerPos(playerid, PlayerInfo[playerid][pPos_x], PlayerInfo[playerid][pPos_y], PlayerInfo[playerid][pPos_z] + 1);
 		    	//SendClientMessage(playerid, COLOR_WHITE, "Crashed, returning where you been.");
 		    	//GameTextForPlayer(playerid, "~p~Crashed~n~~w~returning where you been", 5000, 1);
 		    	return 1;
@@ -4503,13 +4671,20 @@ public SetPlayerSpawn(playerid)
 		{
 		    if(SpawnChange[playerid]) //If 1, then you get to your house, else spawn somewhere else
 		    {
+				
+				//SetPlayerInterior(playerid,HouseInfo[house][hInt]);
+				//SetPlayerVirtualWorld(playerid,HouseInfo[house][hWorld]);
+				//SetPlayerPos(playerid, HouseInfo[house][hExitx], HouseInfo[house][hExity], HouseInfo[house][hExitz]);
+				//PlayerInfo[playerid][pLocal] = house;
+				//PlayerInfo2[HouseEntered][playerid] = house;
+				//PlayerInfo[playerid][pInt] = HouseInfo[house][hInt];
+
 				SetPlayerToTeamColor(playerid);
-				SetPlayerInterior(playerid,HouseInfo[house][hInt]);
-				SetPlayerVirtualWorld(playerid,HouseInfo[house][hWorld]);
-				SetPlayerPos(playerid, HouseInfo[house][hExitx], HouseInfo[house][hExity],HouseInfo[house][hExitz]); // Warp the player
-				PlayerInfo[playerid][pLocal] = house;
-				PlayerInfo2[HouseEntered][playerid] = house;
-				PlayerInfo[playerid][pInt] = HouseInfo[house][hInt];
+				SetPlayerPos(playerid, HouseInfo[house][hEntrancex], HouseInfo[house][hEntrancey], HouseInfo[house][hEntrancez]); // Warp the player
+				SetPlayerVirtualWorld(playerid, 0);
+				PlayerInfo[playerid][pVirWorld] = 0;
+				SetPlayerInterior(playerid, 0);
+				PlayerInfo[playerid][pInt] = 0;
 				return 1;
 			}
 		}
@@ -7149,12 +7324,6 @@ public Checkprop()
 			{
 				HouseInfo[h][hHel] = 0;
 				HouseInfo[h][hArm] = 0;
-				HouseInfo[h][hHealthx] = 0;
-				HouseInfo[h][hHealthy] = 0;
-				HouseInfo[h][hHealthz] = 0;
-				HouseInfo[h][hArmourx] = 0;
-				HouseInfo[h][hArmoury] = 0;
-				HouseInfo[h][hArmourz] = 0;
 				HouseInfo[h][hLock] = 1;
 				HouseInfo[h][hOwned] = 0;
 				HouseInfo[h][hVec] = 418;
@@ -7368,57 +7537,204 @@ stock ini_GetValue( line[] )
 
 public OnPropUpdate()
 {
-	new idx;
 	new File: file2;
-	while (idx < sizeof(HouseInfo))
-	{
-		new coordsstring[256];
-		format(coordsstring, sizeof(coordsstring), "%f,%f,%f,%f,%f,%f,%d,%d,%d,%d,%d,%d,%s,%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
-		HouseInfo[idx][hEntrancex],
-		HouseInfo[idx][hEntrancey],
-		HouseInfo[idx][hEntrancez],
-		HouseInfo[idx][hExitx],
-		HouseInfo[idx][hExity],
-		HouseInfo[idx][hExitz],
-		HouseInfo[idx][hHealthx],
-		HouseInfo[idx][hHealthy],
-		HouseInfo[idx][hHealthz],
-		HouseInfo[idx][hArmourx],
-		HouseInfo[idx][hArmoury],
-		HouseInfo[idx][hArmourz],
-		HouseInfo[idx][hOwner],
-		HouseInfo[idx][hDiscription],
-		HouseInfo[idx][hValue],
-		HouseInfo[idx][hHel],
-		HouseInfo[idx][hArm],
-		HouseInfo[idx][hInt],
-		HouseInfo[idx][hLock],
-		HouseInfo[idx][hOwned],
-		HouseInfo[idx][hRooms],
-		HouseInfo[idx][hRent],
-		HouseInfo[idx][hRentabil],
-		HouseInfo[idx][hTakings],
-		HouseInfo[idx][hVec],
-		HouseInfo[idx][hVcol1],
-		HouseInfo[idx][hVcol2],
-		HouseInfo[idx][hDate],
-		HouseInfo[idx][hLevel],
-		HouseInfo[idx][hWorld]);
 
-		HouseInfo[idx][hWorld] = idx;
-		if(idx == 0)
-		{
-			file2 = fopen("property.cfg", io_write);
-		}
-		else
-		{
-			file2 = fopen("property.cfg", io_append);
-		}
-		fwrite(file2, coordsstring);
-		idx++;
-		fclose(file2);
+	new sql[2000];
+	for (new i = 0; i < SCRIPT_MAXHOUSES; i++)
+	{
+		format(sql, sizeof(sql), "UPDATE house SET \
+					Entrancex = %f, \
+					Entrancey = %f, \
+					Entrancez = %f, \
+					Exitx = %f, \
+					Exity = %f, \
+					Exitz = %f, \
+					Owner = '%s', \
+					`Discription` = '%s', \
+					Value = %d, \
+					Hel = %d, \
+					Arm = %d, \
+					`Int` = %d, \
+					`Lock` = %d, \
+					Owned = %d, \
+					Rooms = %d, \
+					`Rent` = %d, \
+					Rentabil = %d, \
+					Takings = %d, \
+					`Vec` = %d, \
+					Vcol1 = %d, \
+					Vcol2 = %d, \
+					`Date` = %d, \
+					Level = %d, \
+					`World` = %d \
+					WHERE ID = %d",
+					HouseInfo[i][hEntrancex],
+					HouseInfo[i][hEntrancey],
+					HouseInfo[i][hEntrancez],
+					HouseInfo[i][hExitx],
+					HouseInfo[i][hExity],
+					HouseInfo[i][hExitz],
+					HouseInfo[i][hOwner],
+					HouseInfo[i][hDiscription],
+					HouseInfo[i][hValue],
+					HouseInfo[i][hHel],
+					HouseInfo[i][hArm],
+					HouseInfo[i][hInt],
+					HouseInfo[i][hLock],
+					HouseInfo[i][hOwned],
+					HouseInfo[i][hRooms],
+					HouseInfo[i][hRent],
+					HouseInfo[i][hRentabil],
+					HouseInfo[i][hTakings],
+					HouseInfo[i][hVec],
+					HouseInfo[i][hVcol1],
+					HouseInfo[i][hVcol2],
+					HouseInfo[i][hDate],
+					HouseInfo[i][hLevel],
+					HouseInfo[i][hWorld],
+					i);
+		mysql_query(conn, sql);
 	}
-	idx = 0;
+										 										
+	//while (idx < sizeof(HouseInfo))
+	//{
+	//	new coordsstring[256];
+	//	format(coordsstring, sizeof(coordsstring), "%f,%f,%f,%f,%f,%f,%d,%d,%d,%d,%d,%d,%s,%s,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",
+	//	HouseInfo[idx][hEntrancex],
+	//	HouseInfo[idx][hEntrancey],
+	//	HouseInfo[idx][hEntrancez],
+	//	HouseInfo[idx][hExitx],
+	//	HouseInfo[idx][hExity],
+	//	HouseInfo[idx][hExitz],
+	//	HouseInfo[idx][hHealthx],
+	//	HouseInfo[idx][hHealthy],
+	//	HouseInfo[idx][hHealthz],
+	//	HouseInfo[idx][hArmourx],
+	//	HouseInfo[idx][hArmoury],
+	//	HouseInfo[idx][hArmourz],
+	//	HouseInfo[idx][hOwner],
+	//	HouseInfo[idx][hDiscription],
+	//	HouseInfo[idx][hValue],
+	//	HouseInfo[idx][hHel],
+	//	HouseInfo[idx][hArm],
+	//	HouseInfo[idx][hInt],
+	//	HouseInfo[idx][hLock],
+	//	HouseInfo[idx][hOwned],
+	//	HouseInfo[idx][hRooms],
+	//	HouseInfo[idx][hRent],
+	//	HouseInfo[idx][hRentabil],
+	//	HouseInfo[idx][hTakings],
+	//	HouseInfo[idx][hVec],
+	//	HouseInfo[idx][hVcol1],
+	//	HouseInfo[idx][hVcol2],
+	//	HouseInfo[idx][hDate],
+	//	HouseInfo[idx][hLevel],
+	//	HouseInfo[idx][hWorld]);
+
+	//	HouseInfo[idx][hWorld] = idx;
+	//	if(idx == 0)
+	//	{
+	//		file2 = fopen("property.cfg", io_write);
+	//	}
+	//	else
+	//	{
+	//		file2 = fopen("property.cfg", io_append);
+	//	}
+	//	fwrite(file2, coordsstring);
+	//	idx++;
+	//	fclose(file2);
+	//}
+
+	for (new i = 0; i < MAX_BIZ; i++)
+	{
+		format(sql, sizeof(sql), "UPDATE biz SET \
+				Owned = %d, \
+				Owner = '%s', \
+				Message = '%s', \
+				Extortion = '%s', \
+				EntranceX = %f, \
+				EntranceY = %f, \
+				EntranceZ = %f, \
+				ExitX = %f, \
+				ExitY = %f, \
+				ExitZ = %f, \
+				LevelNeeded = %d, \
+				BuyPrice = %d, \
+				EntranceCost = %d, \
+				Till = %d, \
+				Locked = %d, \
+				Interior = %d, \
+				Products = %d, \
+				MaxProducts = %d, \
+				PriceProd = %d, \
+				Type = %d \
+				WHERE ID = %d",
+				BizzInfo[i][bOwned],
+				BizzInfo[i][bOwner],
+				BizzInfo[i][bMessage],
+				BizzInfo[i][bExtortion],
+				BizzInfo[i][bEntranceX],
+				BizzInfo[i][bEntranceY],
+				BizzInfo[i][bEntranceZ],
+				BizzInfo[i][bExitX],
+				BizzInfo[i][bExitY],
+				BizzInfo[i][bExitZ],
+				BizzInfo[i][bLevelNeeded],
+				BizzInfo[i][bBuyPrice],
+				BizzInfo[i][bEntranceCost],
+				BizzInfo[i][bTill],
+				BizzInfo[i][bLocked],
+				BizzInfo[i][bInterior],
+				BizzInfo[i][bProducts],
+				BizzInfo[i][bMaxProducts],
+				BizzInfo[i][bPriceProd],
+				BizzInfo[i][bType],
+				i);
+				mysql_query(conn, sql);
+	}
+
+	for (new i = 0; i < MAX_SBIZ; i++)
+	{
+		format(sql, sizeof(sql), "UPDATE sbiz SET \
+				Owned = %d, \
+				Owner = '%s', \
+				Message = '%s', \
+				Extortion = '%s', \
+				EntranceX = %f, \
+				EntranceY = %f, \
+				EntranceZ = %f, \
+				LevelNeeded = %d, \
+				BuyPrice = %d, \
+				EntranceCost = %d, \
+				Till = %d, \
+				Locked = %d, \
+				Interior = %d, \
+				Products = %d, \
+				MaxProducts = %d, \
+				PriceProd = %d, \
+				Type = %d \
+				WHERE ID = %d",
+				SBizzInfo[i][sbOwned],
+				SBizzInfo[i][sbOwner],
+				SBizzInfo[i][sbMessage],
+				SBizzInfo[i][sbExtortion],
+				SBizzInfo[i][sbEntranceX],
+				SBizzInfo[i][sbEntranceY],
+				SBizzInfo[i][sbEntranceZ],
+				SBizzInfo[i][sbLevelNeeded],
+				SBizzInfo[i][sbBuyPrice],
+				SBizzInfo[i][sbEntranceCost],
+				SBizzInfo[i][sbTill],
+				SBizzInfo[i][sbLocked],
+				SBizzInfo[i][sbInterior],
+				SBizzInfo[i][sbProducts],
+				SBizzInfo[i][sbMaxProducts],
+				SBizzInfo[i][sbPriceProd],
+				SBizzInfo[i][sbType],
+				i);
+		mysql_query(conn, sql);
+	}
+	/*idx = 0;
 	while (idx < sizeof(BizzInfo))
 	{
 		new coordsstring[256];
@@ -7453,8 +7769,9 @@ public OnPropUpdate()
 		fwrite(file2, coordsstring);
 		idx++;
 		fclose(file2);
-	}
-	idx = 0;
+	}*/
+
+	/*idx = 0;
 	while (idx < sizeof(SBizzInfo))
 	{
 		new coordsstring[256];
@@ -7486,8 +7803,8 @@ public OnPropUpdate()
 		fwrite(file2, coordsstring);
 		idx++;
 		fclose(file2);
-	}
-	idx = 184;
+	}*/
+	new idx = 184;
  	while (idx < sizeof(CarInfo))
 	{
 		new coordsstring[256];
@@ -9362,6 +9679,7 @@ public CreateGuideMenus()
 	AddMenuItem(Place, 0, "Che sung");
 	AddMenuItem(Place, 0, "Tru so LSPD");
 	AddMenuItem(Place, 0, "City hall");
+	AddMenuItem(Place, 0, "Cho den (black market)");
 	AddMenuItem(Place, 0, "<- Sau");
 	AddMenuItem(Place, 0, "- Thoat -");
 
@@ -9922,7 +10240,8 @@ public backtoclothes(playerid)
 	if(IsPlayerConnected(playerid))
 	{
  		SetPlayerPos(playerid, ChangePos[playerid][0],ChangePos[playerid][1],ChangePos[playerid][2]);
-   		SetPlayerInterior(playerid,ChangePos2[playerid][0]);
+   	SetPlayerInterior(playerid, ChangePos2[playerid][0]);
+		TogglePlayerControllable(playerid, 1);
 	}
 	return 1;
 }

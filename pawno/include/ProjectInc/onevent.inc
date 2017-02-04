@@ -681,6 +681,10 @@ public OnPlayerConnect(playerid)
 
 	HitTimes[playerid] = 0;
 
+	Escorted[playerid] = 0;
+	EscortedPlayer[playerid] = -1;
+	Escorting[playerid] = 0;
+
 	SetPVarInt(playerid, "OfferBy", -1);
 	SetPVarInt(playerid, "OfferG", 0);
 	SetPVarInt(playerid, "OfferA", 0);
@@ -1663,7 +1667,7 @@ public OnPlayerSpawn(playerid)
 	}
 	if (gPlayerLogged[playerid] == 0)
 	{
-		SendClientMessage(playerid, COLOR_LIGHTRED, "** Vui long dang nhap truoc (Kicked) **");
+		SendClientMessage(playerid, COLOR_LIGHTRED, "** Vui long dang nhap truoc (kicked) **");
 		KickPlayer[playerid] = 1;
 	}
 	if (gTeam[playerid] == 11 && PlayerInfo[playerid][pLeader] < 1)
@@ -3326,7 +3330,7 @@ public OnPlayerSelectedMenuRow(playerid, row)
 		{
 		case 0:
 		{
-					SendClientMessage(playerid, COLOR_GREEN, "______________Game rules_______________");
+					SendClientMessage(playerid, COLOR_GREEN, "______________Luat Roleplay_______________");
 					SendClientMessage(playerid, COLOR_GRAD5, "* Luon luon RP");
 					SendClientMessage(playerid, COLOR_GRAD5, "* Nghiem cam DM");
 					SendClientMessage(playerid, COLOR_GRAD5, "* Tu do ngon luan");
@@ -3515,10 +3519,16 @@ public OnPlayerSelectedMenuRow(playerid, row)
 		}
 		case 8:
 		{
+					SendClientMessage(playerid, COLOR_GREEN, "Cho Den (Black Market) da duoc danh dau tren ban do.");
+					SetPlayerCheckpoint(playerid, 1488.6949, -1721.7136, 8.2067, 5.0);
+					TogglePlayerControllable(playerid, 1);
+		}
+		case 9:
+		{
 					HideMenuForPlayer(Place, playerid);
 					ShowMenuForPlayer(Guide, playerid);
 		}
-		case 9:
+		case 10:
 		{
 					HideMenuForPlayer(Place, playerid);
 					TogglePlayerControllable(playerid, 1);
@@ -4409,6 +4419,9 @@ public OnPlayerRegister(playerid, password[])
 			playername3, PlayerInfo[playerid][pKey], PlayerInfo[playerid][pPos_x], PlayerInfo[playerid][pPos_y], PlayerInfo[playerid][pPos_z]);
 		mysql_query(conn, sql);
 		SendClientMessage(playerid, COLOR_YELLOW, "Dang ky thanh cong, ban co the dang nhap ngay bay gio!.");
+		new str[128];
+		format(str, sizeof(str), "[Tai Khoan Moi] Ten: %s (%d) | IP: %s", GN(playerid), playerid, GetIP(playerid));
+		SendAdminMessage(TEAM_ORANGE, str);
 		ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, "Dang Nhap", "\n--------------LA-Roleplay--------------\nChao mung ban den voi server!\n\nVui long nhap password de dang nhap: ", "Dang Nhap", "Thoat");
 	}
 	return 1;
@@ -4436,192 +4449,100 @@ public OnPlayerLogin(playerid, password[])
 			new tempstr[128];
 			new temp;
 			new Float:tempf;
-				cache_get_value_name_int(0, "Level", temp);
-			PlayerInfo[playerid][pLevel] = temp; 
-				cache_get_value_name_int(0, "AdminLevel", temp);
-			PlayerInfo[playerid][pAdmin] = temp; 
-				cache_get_value_name_int(0, "HelperLevel", temp);
-			PlayerInfo[playerid][pHelper] = temp;
-				cache_get_value_name_int(0, "DonateRank", temp);
-			PlayerInfo[playerid][pDonateRank] = temp; 
-				cache_get_value_name_int(0, "UpgradePoints", temp);
-			PlayerInfo[playerid][gPupgrade] = temp; 
-				cache_get_value_name_int(0, "ConnectedTime", temp);
-			PlayerInfo[playerid][pConnectTime] = temp;
-				cache_get_value_name_int(0, "Registered", temp);
-			PlayerInfo[playerid][pReg] = temp; 
-				cache_get_value_name_int(0, "Sex", temp);
-			PlayerInfo[playerid][pSex] = temp; 
-				cache_get_value_name_int(0, "Age", temp);
-			PlayerInfo[playerid][pAge] = temp; 
-				cache_get_value_name_int(0, "Origin", temp);
-			PlayerInfo[playerid][pOrigin] = temp; 
-				cache_get_value_name_int(0, "CK", temp);
-			PlayerInfo[playerid][pCK] = temp; 
-				cache_get_value_name_int(0, "Muted", temp);
-			PlayerInfo[playerid][pMuted] = temp; 
-				cache_get_value_name_int(0, "Respect", temp);
-			PlayerInfo[playerid][pExp] = temp; 
-				cache_get_value_name_int(0, "Money", temp);
-			PlayerInfo[playerid][pCash] = temp; 
-				cache_get_value_name_int(0, "Bank", temp);
-			PlayerInfo[playerid][pAccount] = temp; 
-				cache_get_value_name_int(0, "Crimes", temp);
-			PlayerInfo[playerid][pCrimes] = temp; 
-				cache_get_value_name_int(0, "Kills", temp);
-			PlayerInfo[playerid][pKills] = temp; 
-				cache_get_value_name_int(0, "Deaths", temp);
-			PlayerInfo[playerid][pDeaths] = temp; 
-				cache_get_value_name_int(0, "Arrested", temp);
-			PlayerInfo[playerid][pArrested] = temp; 
-				cache_get_value_name_int(0, "WantedDeaths", temp);
-			PlayerInfo[playerid][pWantedDeaths] = temp; 
-				cache_get_value_name_int(0, "Phonebook", temp);
-			PlayerInfo[playerid][pPhoneBook] = temp; 
-				cache_get_value_name_int(0, "LottoNr", temp);
-			PlayerInfo[playerid][pLottoNr] = temp; 
-				cache_get_value_name_int(0, "Fishes", temp);
-			PlayerInfo[playerid][pFishes] = temp; 
-				cache_get_value_name_int(0, "BiggestFish", temp);
-			PlayerInfo[playerid][pBiggestFish] = temp; 
-				cache_get_value_name_int(0, "Job", temp);
-			PlayerInfo[playerid][pJob] = temp; 
-				cache_get_value_name_int(0, "Paycheck", temp);
-			PlayerInfo[playerid][pPayCheck] = temp; 
-				cache_get_value_name_int(0, "HeadValue", temp);
-			PlayerInfo[playerid][pHeadValue] = temp; 
-				cache_get_value_name_int(0, "Jailed", temp);
-			PlayerInfo[playerid][pJailed] = temp; 
-				cache_get_value_name_int(0, "JailTime", temp);
-			PlayerInfo[playerid][pJailTime] = temp; 
-				cache_get_value_name_int(0, "Materials", temp);
-			PlayerInfo[playerid][pMats] = temp; 
-				cache_get_value_name_int(0, "Drugs", temp);
-			PlayerInfo[playerid][pDrugs] = temp; 
-				cache_get_value_name_int(0, "Leader", temp);
-			PlayerInfo[playerid][pLeader] = temp; 
-				cache_get_value_name_int(0, "Member", temp);
-			PlayerInfo[playerid][pMember] = temp; 
-				cache_get_value_name_int(0, "FMember", temp);
-			PlayerInfo[playerid][pFMember] = temp; 
-				cache_get_value_name_int(0, "Rank", temp);
-			PlayerInfo[playerid][pRank] = temp; 
-				cache_get_value_name_int(0, "Char", temp);
-			PlayerInfo[playerid][pChar] = temp; 
+			cache_get_value_name_int(0, "Level", temp); PlayerInfo[playerid][pLevel] = temp; 
+			cache_get_value_name_int(0, "AdminLevel", temp); PlayerInfo[playerid][pAdmin] = temp; 
+			cache_get_value_name_int(0, "HelperLevel", temp); PlayerInfo[playerid][pHelper] = temp;
+			cache_get_value_name_int(0, "DonateRank", temp); PlayerInfo[playerid][pDonateRank] = temp; 
+			cache_get_value_name_int(0, "UpgradePoints", temp); PlayerInfo[playerid][gPupgrade] = temp; 
+			cache_get_value_name_int(0, "ConnectedTime", temp); PlayerInfo[playerid][pConnectTime] = temp;
+			cache_get_value_name_int(0, "Registered", temp); PlayerInfo[playerid][pReg] = temp; 
+			cache_get_value_name_int(0, "Sex", temp); PlayerInfo[playerid][pSex] = temp; 
+			cache_get_value_name_int(0, "Age", temp); PlayerInfo[playerid][pAge] = temp; 
+			cache_get_value_name_int(0, "Origin", temp); PlayerInfo[playerid][pOrigin] = temp; 
+			cache_get_value_name_int(0, "CK", temp); PlayerInfo[playerid][pCK] = temp; 
+			cache_get_value_name_int(0, "Muted", temp); PlayerInfo[playerid][pMuted] = temp; 
+			cache_get_value_name_int(0, "Respect", temp); PlayerInfo[playerid][pExp] = temp; 
+			cache_get_value_name_int(0, "Money", temp);	PlayerInfo[playerid][pCash] = temp; 
+			cache_get_value_name_int(0, "Bank", temp); PlayerInfo[playerid][pAccount] = temp; 
+			cache_get_value_name_int(0, "Crimes", temp); PlayerInfo[playerid][pCrimes] = temp; 
+			cache_get_value_name_int(0, "Kills", temp); PlayerInfo[playerid][pKills] = temp; 
+			cache_get_value_name_int(0, "Deaths", temp); PlayerInfo[playerid][pDeaths] = temp; 
+			cache_get_value_name_int(0, "Arrested", temp); PlayerInfo[playerid][pArrested] = temp; 
+			cache_get_value_name_int(0, "WantedDeaths", temp); PlayerInfo[playerid][pWantedDeaths] = temp; 
+			cache_get_value_name_int(0, "Phonebook", temp); PlayerInfo[playerid][pPhoneBook] = temp; 
+			cache_get_value_name_int(0, "LottoNr", temp); PlayerInfo[playerid][pLottoNr] = temp; 
+			cache_get_value_name_int(0, "Fishes", temp); PlayerInfo[playerid][pFishes] = temp; 
+			cache_get_value_name_int(0, "BiggestFish", temp); PlayerInfo[playerid][pBiggestFish] = temp; 
+			cache_get_value_name_int(0, "Job", temp); PlayerInfo[playerid][pJob] = temp; 
+			cache_get_value_name_int(0, "Paycheck", temp); PlayerInfo[playerid][pPayCheck] = temp; 
+			cache_get_value_name_int(0, "HeadValue", temp); PlayerInfo[playerid][pHeadValue] = temp; 
+			cache_get_value_name_int(0, "Jailed", temp); PlayerInfo[playerid][pJailed] = temp; 
+			cache_get_value_name_int(0, "JailTime", temp); PlayerInfo[playerid][pJailTime] = temp; 
+			cache_get_value_name_int(0, "Materials", temp); PlayerInfo[playerid][pMats] = temp; 
+			cache_get_value_name_int(0, "Drugs", temp); PlayerInfo[playerid][pDrugs] = temp; 
+			cache_get_value_name_int(0, "Leader", temp); PlayerInfo[playerid][pLeader] = temp; 
+			cache_get_value_name_int(0, "Member", temp); PlayerInfo[playerid][pMember] = temp; 
+			cache_get_value_name_int(0, "FMember", temp); PlayerInfo[playerid][pFMember] = temp; 
+			cache_get_value_name_int(0, "Rank", temp); PlayerInfo[playerid][pRank] = temp; 
+			cache_get_value_name_int(0, "Char", temp); PlayerInfo[playerid][pChar] = temp; 
 				/*cache_get_value_name_int(0, "ContractTime", temp);
 			PlayerInfo[playerid][pContractTime] = temp; */
-				cache_get_value_name_int(0, "DetSkill", temp);
-			PlayerInfo[playerid][pDetSkill] = temp; 
-				cache_get_value_name_int(0, "SexSkill", temp);
-			PlayerInfo[playerid][pSexSkill] = temp; 
-				cache_get_value_name_int(0, "BoxSkill", temp);
-			PlayerInfo[playerid][pBoxSkill] = temp; 
-				cache_get_value_name_int(0, "LawSkill", temp);
-			PlayerInfo[playerid][pLawSkill] = temp; 
-				cache_get_value_name_int(0, "MechSkill", temp);
-			PlayerInfo[playerid][pMechSkill] = temp; 
-				cache_get_value_name_int(0, "JackSkill", temp);
-			PlayerInfo[playerid][pJackSkill] = temp; 
-				cache_get_value_name_int(0, "CarSkill", temp);
-			PlayerInfo[playerid][pCarSkill] = temp; 
-				cache_get_value_name_int(0, "NewsSkill", temp);
-			PlayerInfo[playerid][pNewsSkill] = temp; 
-				cache_get_value_name_int(0, "DrugsSkill", temp);
-			PlayerInfo[playerid][pDrugsSkill] = temp; 
-				cache_get_value_name_int(0, "CookSkill", temp);
-			PlayerInfo[playerid][pCookSkill] = temp; 
-				cache_get_value_name_int(0, "FishSkill", temp);
-			PlayerInfo[playerid][pFishSkill] = temp; 
-				cache_get_value_name_float(0, "pSHealth", tempf);
-			PlayerInfo[playerid][pSHealth] = tempf; 
-				cache_get_value_name_float(0, "pHealth", tempf);
-			PlayerInfo[playerid][pHealth] = tempf; 
-				cache_get_value_name_int(0, "Int", temp);
-			PlayerInfo[playerid][pInt] = temp; 
-				cache_get_value_name_int(0, "Local", temp);
-			PlayerInfo[playerid][pLocal] = temp; 
-				cache_get_value_name_int(0, "Team", temp);
-			PlayerInfo[playerid][pTeam] = temp; 
-				cache_get_value_name_int(0, "Model", temp);
-			PlayerInfo[playerid][pModel] = temp; 
-				cache_get_value_name_int(0, "PhoneNr", temp);
-			PlayerInfo[playerid][pPnumber] = temp; 
-				cache_get_value_name_int(0, "House", temp);
-			PlayerInfo[playerid][pPhousekey] = temp; 
-				cache_get_value_name_int(0, "Biz", temp);
-			PlayerInfo[playerid][pPbiskey] = temp; 
-				cache_get_value_name_float(0, "Pos_x", tempf);
-			PlayerInfo[playerid][pPos_x] = tempf;
-				cache_get_value_name_float(0, "Pos_y", tempf);
-			PlayerInfo[playerid][pPos_y] = tempf;
-				cache_get_value_name_float(0, "Pos_z", tempf);
-			PlayerInfo[playerid][pPos_z] = tempf;
-				cache_get_value_name_int(0, "CarLic", temp);
-			PlayerInfo[playerid][pCarLic] = temp; 
-				cache_get_value_name_int(0, "FlyLic", temp);
-			PlayerInfo[playerid][pFlyLic] = temp; 
-				cache_get_value_name_int(0, "BoatLic", temp);
-			PlayerInfo[playerid][pBoatLic] = temp; 
-				cache_get_value_name_int(0, "FishLic", temp);
-			PlayerInfo[playerid][pFishLic] = temp; 
-				cache_get_value_name_int(0, "GunLic", temp);
-			PlayerInfo[playerid][pGunLic] = temp; 
-				cache_get_value_name_int(0, "CarTime", temp);
-			PlayerInfo[playerid][pCarTime] = temp; 
-				cache_get_value_name_int(0, "PayDay", temp);
-			PlayerInfo[playerid][pPayDay] = temp; 
-				cache_get_value_name_int(0, "PayDayHad", temp);
-			PlayerInfo[playerid][pPayDayHad] = temp; 
-				cache_get_value_name_int(0, "Watch", temp);
-			PlayerInfo[playerid][pWatch] = temp; 
-				cache_get_value_name_int(0, "Crashed", temp);
-			PlayerInfo[playerid][pCrashed] = temp; 
-				cache_get_value_name_int(0, "Wins", temp);
-			PlayerInfo[playerid][pWins] = temp; 
-				cache_get_value_name_int(0, "Loses", temp);
-			PlayerInfo[playerid][pLoses] = temp; 
-				cache_get_value_name_int(0, "AlcoholPerk", temp);
-			PlayerInfo[playerid][pAlcoholPerk] = temp; 
-				cache_get_value_name_int(0, "DrugPerk", temp);
-			PlayerInfo[playerid][pDrugPerk] = temp; 
-				cache_get_value_name_int(0, "MiserPerk", temp);
-			PlayerInfo[playerid][pMiserPerk] = temp; 
-				cache_get_value_name_int(0, "PainPerk", temp);
-			PlayerInfo[playerid][pPainPerk] = temp; 
-				cache_get_value_name_int(0, "TraderPerk", temp);
-			PlayerInfo[playerid][pTraderPerk] = temp; 
-				cache_get_value_name_int(0, "Tutorial", temp);
-			PlayerInfo[playerid][pTut] = temp; 
-				cache_get_value_name_int(0, "Mission", temp);
-			PlayerInfo[playerid][pMissionNr] = temp; 
-				cache_get_value_name_int(0, "Warnings", temp);
-			PlayerInfo[playerid][pWarns] = temp; 
-				cache_get_value_name_int(0, "VirWorld", temp);
-			PlayerInfo[playerid][pVirWorld] = temp; 
-				cache_get_value_name_int(0, "Fuel", temp);
-			PlayerInfo[playerid][pFuel] = temp; 
-				cache_get_value_name_int(0, "Married", temp);
-			PlayerInfo[playerid][pMarried] = temp; 
-				cache_get_value_name(0, "MarriedTo", tempstr);
-				format(PlayerInfo[playerid][pMarriedTo], 128, tempstr);
-				cache_get_value_name_int(0, "FishTool", temp);
-			PlayerInfo[playerid][pFishTool] = temp; 
-				cache_get_value_name_int(0, "InvWeapon", temp);
-			PlayerInfo[playerid][pInvWeapon] = temp; 
-				cache_get_value_name_int(0, "InvAmmo", temp);
-			PlayerInfo[playerid][pInvAmmo] = temp; 
-				cache_get_value_name_int(0, "Lighter", temp);
-			PlayerInfo[playerid][pLighter] = temp; 
-				cache_get_value_name_int(0, "Cigarettes", temp);
-			PlayerInfo[playerid][pCigarettes] = temp; 
-				cache_get_value_name_int(0, "Locked", temp);
-			PlayerInfo[playerid][pLocked] = temp; 
-				cache_get_value_name_int(0, "Car", temp);
-			PlayerInfo[playerid][pPcarkey][0] = temp; 
-				cache_get_value_name_int(0, "Car2", temp);
-			PlayerInfo[playerid][pPcarkey][1] = temp; 
-				cache_get_value_name_int(0, "Car3", temp);
-			PlayerInfo[playerid][pPcarkey][2] = temp; 
+			cache_get_value_name_int(0, "DetSkill", temp); PlayerInfo[playerid][pDetSkill] = temp; 
+			cache_get_value_name_int(0, "SexSkill", temp); PlayerInfo[playerid][pSexSkill] = temp; 
+			cache_get_value_name_int(0, "BoxSkill", temp); PlayerInfo[playerid][pBoxSkill] = temp; 
+			cache_get_value_name_int(0, "LawSkill", temp); PlayerInfo[playerid][pLawSkill] = temp; 
+			cache_get_value_name_int(0, "MechSkill", temp); PlayerInfo[playerid][pMechSkill] = temp; 
+			cache_get_value_name_int(0, "JackSkill", temp); PlayerInfo[playerid][pJackSkill] = temp; 
+			cache_get_value_name_int(0, "CarSkill", temp); PlayerInfo[playerid][pCarSkill] = temp; 
+			cache_get_value_name_int(0, "NewsSkill", temp); PlayerInfo[playerid][pNewsSkill] = temp; 
+			cache_get_value_name_int(0, "DrugsSkill", temp); PlayerInfo[playerid][pDrugsSkill] = temp; 
+			cache_get_value_name_int(0, "CookSkill", temp); PlayerInfo[playerid][pCookSkill] = temp; 
+			cache_get_value_name_int(0, "FishSkill", temp); PlayerInfo[playerid][pFishSkill] = temp; 
+			cache_get_value_name_float(0, "pSHealth", tempf); PlayerInfo[playerid][pSHealth] = tempf; 
+			cache_get_value_name_float(0, "pHealth", tempf); PlayerInfo[playerid][pHealth] = tempf; 
+			cache_get_value_name_int(0, "Int", temp); PlayerInfo[playerid][pInt] = temp; 
+			cache_get_value_name_int(0, "Local", temp); PlayerInfo[playerid][pLocal] = temp; 
+			cache_get_value_name_int(0, "Team", temp); PlayerInfo[playerid][pTeam] = temp; 
+         cache_get_value_name_int(0, "Model", temp); PlayerInfo[playerid][pModel] = temp; 
+         cache_get_value_name_int(0, "PhoneNr", temp); PlayerInfo[playerid][pPnumber] = temp; 
+         cache_get_value_name_int(0, "House", temp); PlayerInfo[playerid][pPhousekey] = temp; 
+         cache_get_value_name_int(0, "Biz", temp); PlayerInfo[playerid][pPbiskey] = temp; 
+         cache_get_value_name_float(0, "Pos_x", tempf); PlayerInfo[playerid][pPos_x] = tempf;
+         cache_get_value_name_float(0, "Pos_y", tempf); PlayerInfo[playerid][pPos_y] = tempf;
+         cache_get_value_name_float(0, "Pos_z", tempf); PlayerInfo[playerid][pPos_z] = tempf;
+         cache_get_value_name_int(0, "CarLic", temp); PlayerInfo[playerid][pCarLic] = temp; 
+         cache_get_value_name_int(0, "FlyLic", temp); PlayerInfo[playerid][pFlyLic] = temp; 
+         cache_get_value_name_int(0, "BoatLic", temp); PlayerInfo[playerid][pBoatLic] = temp; 
+         cache_get_value_name_int(0, "FishLic", temp); PlayerInfo[playerid][pFishLic] = temp; 
+         cache_get_value_name_int(0, "GunLic", temp); PlayerInfo[playerid][pGunLic] = temp; 
+         cache_get_value_name_int(0, "CarTime", temp); PlayerInfo[playerid][pCarTime] = temp; 
+         cache_get_value_name_int(0, "PayDay", temp); PlayerInfo[playerid][pPayDay] = temp; 
+         cache_get_value_name_int(0, "PayDayHad", temp); PlayerInfo[playerid][pPayDayHad] = temp; 
+         cache_get_value_name_int(0, "Watch", temp); PlayerInfo[playerid][pWatch] = temp; 
+         cache_get_value_name_int(0, "Crashed", temp); PlayerInfo[playerid][pCrashed] = temp; 
+         cache_get_value_name_int(0, "Wins", temp); PlayerInfo[playerid][pWins] = temp; 
+         cache_get_value_name_int(0, "Loses", temp); PlayerInfo[playerid][pLoses] = temp; 
+         cache_get_value_name_int(0, "AlcoholPerk", temp); PlayerInfo[playerid][pAlcoholPerk] = temp; 
+         cache_get_value_name_int(0, "DrugPerk", temp); PlayerInfo[playerid][pDrugPerk] = temp; 
+         cache_get_value_name_int(0, "MiserPerk", temp); PlayerInfo[playerid][pMiserPerk] = temp; 
+         cache_get_value_name_int(0, "PainPerk", temp); PlayerInfo[playerid][pPainPerk] = temp; 
+         cache_get_value_name_int(0, "TraderPerk", temp); PlayerInfo[playerid][pTraderPerk] = temp; 
+         cache_get_value_name_int(0, "Tutorial", temp); PlayerInfo[playerid][pTut] = temp; 
+         cache_get_value_name_int(0, "Mission", temp); PlayerInfo[playerid][pMissionNr] = temp; 
+         cache_get_value_name_int(0, "Warnings", temp); PlayerInfo[playerid][pWarns] = temp; 
+         cache_get_value_name_int(0, "VirWorld", temp); PlayerInfo[playerid][pVirWorld] = temp; 
+         cache_get_value_name_int(0, "Fuel", temp); PlayerInfo[playerid][pFuel] = temp; 
+         cache_get_value_name_int(0, "Married", temp); PlayerInfo[playerid][pMarried] = temp; 
+         cache_get_value_name(0, "MarriedTo", tempstr); format(PlayerInfo[playerid][pMarriedTo], 128, tempstr);
+         cache_get_value_name_int(0, "FishTool", temp); PlayerInfo[playerid][pFishTool] = temp; 
+         cache_get_value_name_int(0, "InvWeapon", temp); PlayerInfo[playerid][pInvWeapon] = temp; 
+         cache_get_value_name_int(0, "InvAmmo", temp); PlayerInfo[playerid][pInvAmmo] = temp; 
+         cache_get_value_name_int(0, "Lighter", temp); PlayerInfo[playerid][pLighter] = temp; 
+         cache_get_value_name_int(0, "Cigarettes", temp); PlayerInfo[playerid][pCigarettes] = temp; 
+         cache_get_value_name_int(0, "Locked", temp); PlayerInfo[playerid][pLocked] = temp; 
+         cache_get_value_name_int(0, "Car", temp); PlayerInfo[playerid][pPcarkey][0] = temp; 
+         cache_get_value_name_int(0, "Car2", temp); PlayerInfo[playerid][pPcarkey][1] = temp; 
+         cache_get_value_name_int(0, "Car3", temp); PlayerInfo[playerid][pPcarkey][2] = temp; 
 
 			for (new i = 0; i < 5; i++)
 			{
@@ -4629,19 +4550,15 @@ public OnPlayerLogin(playerid, password[])
 				if (i < 4)
 				{
 					format(str, sizeof(str), "Gun%d", i + 1);
-					cache_get_value_name_int(0, str, temp);
-					PlayerInfo[playerid][pGun][i] = temp;
+					cache_get_value_name_int(0, str, temp); PlayerInfo[playerid][pGun][i] = temp;
 					format(str, sizeof(str), "Ammo%d", i + 1);
-					cache_get_value_name_int(0, str, temp);
-					PlayerInfo[playerid][pAmmo][i] = temp;
+					cache_get_value_name_int(0, str, temp); PlayerInfo[playerid][pAmmo][i] = temp;
 				}
 				format(str, sizeof(str), "Note%d", i + 1);
-				cache_get_value_name(0, str, tempstr);
-				format(PlayerInfo[playerid][pNote][i], 256, tempstr);
+				cache_get_value_name(0, str, tempstr); format(PlayerInfo[playerid][pNote][i], 256, tempstr);
 
 				format(str, sizeof(str), "Note%ds", i + 1);
-				cache_get_value_name_int(0, str, temp);
-				PlayerInfo[playerid][pNotes][i] = temp;
+				cache_get_value_name_int(0, str, temp); PlayerInfo[playerid][pNotes][i] = temp;
 			}//end while
 			new LoadLevel = PlayerInfo[playerid][pLevel]; // Brian_Furious aka Anthony_Prince
 			SetPlayerScore(playerid, LoadLevel); // Fixable Instant Show Level
@@ -4723,7 +4640,7 @@ public OnPlayerLogin(playerid, password[])
 		}
 		SendClientMessage(playerid, COLOR_GREEN, "=============================================");
 		SendClientMessage(playerid, COLOR_WHITE, " ");
-		printf("%s has logged in.", playername2);
+		printf("%s da dang nhap.", playername2);
 
 		// Reset the FirstSpawn variable
 		SetTimerEx("UnsetFirstSpawn", 5000, false, "i", playerid);
@@ -5149,6 +5066,7 @@ public OnPlayerText(playerid, text[])
 			SelectCharID[playerid] = 0;
 			SelectChar[playerid] = 0;
 			SetPlayerVirtualWorld(playerid, 0);
+			
 			SetTimerEx("backtoclothes", 500, false, "i", playerid);
 			return 0;
 		}
@@ -5173,6 +5091,7 @@ public OnPlayerText(playerid, text[])
 				maleskin = random(sizeof(CivMalePeds));
 				SetPlayerSkin(playerid, maleskin);
 				PlayerInfo[playerid][pModel] = maleskin;
+				PlayerInfo[playerid][pChar] = maleskin;
 				RegistrationStep[playerid] = 2;
 				return 0;
 			}
@@ -5185,6 +5104,7 @@ public OnPlayerText(playerid, text[])
 				femaleskin = random(sizeof(CivFemalePeds));
 				SetPlayerSkin(playerid, femaleskin);
 				PlayerInfo[playerid][pModel] = femaleskin;
+				PlayerInfo[playerid][pChar] = femaleskin;
 				RegistrationStep[playerid] = 2;
 				return 0;
 			}
@@ -6823,25 +6743,20 @@ CMD:drag(playerid, params[])
 			{
 				if (giveplayerid != INVALID_PLAYER_ID)
 				{
-					new Float:x, Float:y, Float:z;
+					if (PlayerCuffed[giveplayerid] == 0) return SCM(playerid, COLOR_GREY, "Nguoi choi nay khong bi cong tay.");
+					new Float:x, Float:y, Float:z; 
 					GetPlayerPos(giveplayerid, x, y, z);
 					if (PlayerToPoint(5, playerid, x, y, z))
 					{
 						PutPlayerInVehicle(giveplayerid, newcar, 1);
-						format(string, sizeof(string), "* %s drags %s to his/her car/moped.", GN(playerid), GN(giveplayerid));
+						format(string, sizeof(string), "* %s keo %s len xe.", GN(playerid), GN(giveplayerid));
 						ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 					}
-					else
-					{
-						SendClientMessage(playerid, COLOR_GREY, "Nguoi choi do khong gan ban.");
-					}
+					else SendClientMessage(playerid, COLOR_GREY, "Nguoi choi do khong gan ban.");
 				}
 			}
 		}
-		else
-		{
-			SendClientMessage(playerid, COLOR_GRAD1, "Ban khong dang o trong xe canh sat!");
-		}
+		else SendClientMessage(playerid, COLOR_GRAD1, "Ban khong dang o trong xe canh sat!");
 	}
 	return 1;
 }
@@ -15235,13 +15150,13 @@ CMD:buyhouse(playerid, params[])
 			{
 				if (PlayerInfo[playerid][pLevel] < HouseInfo[h][hLevel])
 				{
-					format(string, sizeof(string), "   You must be Level %d to purchase this !", HouseInfo[h][hLevel]);
+					format(string, sizeof(string), "   Ban can dat level %d de co the mua !", HouseInfo[h][hLevel]);
 					SendClientMessage(playerid, COLOR_GRAD5, string);
 					return 1;
 				}
 				if (PlayerInfo[playerid][pPhousekey] != 255 && strcmp(playername, HouseInfo[PlayerInfo[playerid][pPhousekey]][hOwner], true) == 0)
 				{
-					SendClientMessage(playerid, COLOR_WHITE, "   You already own a house, type /sellhouse if you want to buy this one !");
+					SendClientMessage(playerid, COLOR_WHITE, "   Ban da so huu mot can nha, co the /bannha de mua nha moi !");
 					return 1;
 				}
 				if (GetPlayerMoney(playerid) > HouseInfo[h][hValue])
@@ -15256,11 +15171,11 @@ CMD:buyhouse(playerid, params[])
 					SetPlayerInterior(playerid, HouseInfo[h][hInt]);
 					SetPlayerVirtualWorld(playerid, HouseInfo[h][hWorld]);
 					SetPlayerPos(playerid, HouseInfo[h][hExitx], HouseInfo[h][hExity], HouseInfo[h][hExitz]);
-					GameTextForPlayer(playerid, "~w~Welcome Home~n~You can exit at any time by moving to this door and typing /exit", 5000, 3);
+					GameTextForPlayer(playerid, "~w~Welcome Home~n~Ban co the ra ngoai bang cach lai gan cua va dung lenh /exit", 5000, 3);
 					PlayerInfo[playerid][pInt] = HouseInfo[h][hInt];
 					PlayerInfo[playerid][pLocal] = h;
-					SendClientMessage(playerid, COLOR_WHITE, "Congratulations, on your new Purchase !");
-					SendClientMessage(playerid, COLOR_WHITE, "Type /help to review the new property help section !");
+					SendClientMessage(playerid, COLOR_WHITE, "Chuc mung, ban da so huu can nha thanh cong !");
+					SendClientMessage(playerid, COLOR_WHITE, "Go /help de xem tro giup ve nha !");
 					DateProp(playerid);
 					OnPropUpdate();
 					SavePlayer(playerid);
@@ -15268,7 +15183,7 @@ CMD:buyhouse(playerid, params[])
 				}
 				else
 				{
-					SendClientMessage(playerid, COLOR_WHITE, "   You don't have the cash for that !");
+					SendClientMessage(playerid, COLOR_WHITE, "   Ban khong du tien !");
 					return 1;
 				}
 			}
@@ -15290,7 +15205,7 @@ CMD:rentroom(playerid, params[])
 			{
 				if (PlayerInfo[playerid][pPhousekey] != 255 && strcmp(playername, HouseInfo[PlayerInfo[playerid][pPhousekey]][hOwner], true) == 0)
 				{
-					SendClientMessage(playerid, COLOR_WHITE, "   Ban da so huu mot can nha, go /sellhouse neu ban muon thue can nha nay.");
+					SendClientMessage(playerid, COLOR_WHITE, "   Ban da so huu mot can nha, go /bannha neu ban muon thue can nha nay.");
 					return 1;
 				}
 				if (GetPlayerMoney(playerid) > HouseInfo[h][hRent])
@@ -15303,17 +15218,17 @@ CMD:rentroom(playerid, params[])
 					SetPlayerInterior(playerid, HouseInfo[h][hInt]);
 					SetPlayerVirtualWorld(playerid, HouseInfo[h][hWorld]);
 					SetPlayerPos(playerid, HouseInfo[h][hExitx], HouseInfo[h][hExity], HouseInfo[h][hExitz]);
-					GameTextForPlayer(playerid, "~w~Welcome Home~n~You can exit at any time by moving to this door and typing /exit", 5000, 3);
+					GameTextForPlayer(playerid, "~w~Welcome Home~n~Ban co the ra ngoai bang cach lai gan cua va dung lenh /exit", 5000, 3);
 					PlayerInfo[playerid][pInt] = HouseInfo[h][hInt];
 					PlayerInfo[playerid][pLocal] = h;
-					SendClientMessage(playerid, COLOR_WHITE, "Congratulations, You can enter and exit here anytime.");
-					SendClientMessage(playerid, COLOR_WHITE, "Type /help to review the new property help section.");
+					SendClientMessage(playerid, COLOR_WHITE, "Chuc mung, ban da thue nha thanh cong, tu gio ban co the ra vao nha tu do.");
+					SendClientMessage(playerid, COLOR_WHITE, "Go /help de xem tro giup ve nha !");
 					SavePlayer(playerid);
 					return 1;
 				}
 				else
 				{
-					SendClientMessage(playerid, COLOR_WHITE, "You don't have the cash for that");
+					SendClientMessage(playerid, COLOR_WHITE, "   Ban khong du tien !");
 					return 1;
 				}
 			}
@@ -15681,12 +15596,6 @@ CMD:asellhouse(playerid, params[])
 		{
 			HouseInfo[house][hHel] = 0;
 			HouseInfo[house][hArm] = 0;
-			HouseInfo[house][hHealthx] = 0;
-			HouseInfo[house][hHealthy] = 0;
-			HouseInfo[house][hHealthz] = 0;
-			HouseInfo[house][hArmourx] = 0;
-			HouseInfo[house][hArmoury] = 0;
-			HouseInfo[house][hArmourz] = 0;
 			HouseInfo[house][hLock] = 1;
 			HouseInfo[house][hOwned] = 0;
 			HouseInfo[house][hVec] = 418;
@@ -15728,12 +15637,6 @@ CMD:sellhouse(playerid, params[])
 			new house = PlayerInfo[playerid][pPhousekey];
 			HouseInfo[house][hHel] = 0;
 			HouseInfo[house][hArm] = 0;
-			HouseInfo[house][hHealthx] = 0;
-			HouseInfo[house][hHealthy] = 0;
-			HouseInfo[house][hHealthz] = 0;
-			HouseInfo[house][hArmourx] = 0;
-			HouseInfo[house][hArmoury] = 0;
-			HouseInfo[house][hArmourz] = 0;
 			HouseInfo[house][hLock] = 1;
 			HouseInfo[house][hOwned] = 0;
 			HouseInfo[house][hVec] = 418;
@@ -15744,7 +15647,7 @@ CMD:sellhouse(playerid, params[])
 			//ConsumingMoney[playerid] = 1;
 			SafeGivePlayerMoney(playerid, HouseInfo[house][hValue]);
 			PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
-			format(string, sizeof(string), "~w~Congratulations~n~ Ban da ban tai san cua minh cho ~n~~g~$%d", HouseInfo[house][hValue]);
+			format(string, sizeof(string), "~w~Chuc mung~n~ Ban da ban tai san cua minh cho ~n~~g~$%d", HouseInfo[house][hValue]);
 			GameTextForPlayer(playerid, string, 10000, 3);
 			PlayerInfo[playerid][pPhousekey] = 255;
 			if (PlayerInfo[playerid][pLocal] == house)
@@ -15777,7 +15680,7 @@ CMD:houseupgrade(playerid, params[])
 			if (sscanf(params, "i", item))
 			{
 				SendClientMessage(playerid, COLOR_WHITE, "Su dung: /houseupgrade [item number]");
-				SendClientMessage(playerid, COLOR_GRAD1, "|_______ Home Supplys _______|");
+				SendClientMessage(playerid, COLOR_GRAD1, "|_______ Nang Cap Nha _______|");
 				SendClientMessage(playerid, COLOR_GRAD2, "| 1: Health Upgrade $50,000.");
 				SendClientMessage(playerid, COLOR_GRAD3, "| 2: Armour Upgrade $100,000.");
 				return 1;
@@ -15793,7 +15696,7 @@ CMD:houseupgrade(playerid, params[])
 				}
 				if (PlayerInfo[playerid][pLevel] < 5)
 				{
-					SendClientMessage(playerid, COLOR_GRAD5, "Ban phai lv5 de lam duoc dieu nay");
+					SendClientMessage(playerid, COLOR_GRAD5, "Ban phai level 5 de lam duoc dieu nay");
 					return 1;
 				}
 				if (GetPlayerMoney(playerid) < 50000)
@@ -15818,7 +15721,7 @@ CMD:houseupgrade(playerid, params[])
 				}
 				if (PlayerInfo[playerid][pLevel] < 7)
 				{
-					SendClientMessage(playerid, COLOR_GRAD5, "Ban phai lv 7 de lam duoc dieu nay");
+					SendClientMessage(playerid, COLOR_GRAD5, "Ban phai level 7 de lam duoc dieu nay");
 					return 1;
 				}
 				if (GetPlayerMoney(playerid) < 100000)
@@ -17071,7 +16974,7 @@ CMD:enter(playerid, params[])
 			if (PlayerToPoint(3, playerid, BizzInfo[i][bEntranceX], BizzInfo[i][bEntranceY], BizzInfo[i][bEntranceZ]))
 			{
 				//printf("Found House :%d",i);
-				if (!IsACop(playerid) && i == 3)
+				if (!IsACop(playerid) && BizzInfo[i][bType] == 1)
 				{
 					SendClientMessage(playerid, COLOR_GREY, "   Chi co canh sat moi co quyen !");
 					return 1;
@@ -17396,6 +17299,7 @@ CMD:home(playerid, params[])
 	}
 	return 1;
 	}*/
+CMD:buybiz(playerid, params[]) { return cmd_muabiz(playerid, params); }
 CMD:muabiz(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -17481,6 +17385,7 @@ CMD:muabiz(playerid, params[])
 	}
 	return 1;
 }
+CMD:sellbiz(playerid, params[]) { return cmd_banbiz(playerid, params); }
 CMD:banbiz(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -17890,6 +17795,7 @@ CMD:bizbank(playerid, params[])
 	}
 	return 1;
 }
+CMD:hoimau(playerid, params[]) { return cmd_heal(playerid, params); }
 CMD:heal(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -18315,7 +18221,7 @@ CMD:tv(playerid, params[])
 		}
 		if (PlayerInfo[playerid][pAdmin] > 1 || PlayerToPoint(12.0, playerid, HouseInfo[hkey][hExitx], HouseInfo[hkey][hExity], HouseInfo[hkey][hExitz]))
 		{
-			if (HouseInfo[hkey][hHealthx] != 1)
+			if (HouseInfo[hkey][hHel] != 1)
 			{
 				GameTextForPlayer(playerid, "~r~Viec nang cap nay khong duoc thuc hien", 5000, 1);
 				return 1;
@@ -21382,8 +21288,8 @@ CMD:househelp(playerid, params[])
 	{
 		SendClientMessage(playerid, COLOR_GREEN, "_______________________________________");
 		SendClientMessage(playerid, COLOR_WHITE, "*** HOUSE HELP *** type a command for more help");
-		SendClientMessage(playerid, COLOR_GRAD3, "*** HOUSE *** /enter /exit /open /home /heal /houseupgrade (/hu) /setrentable /tv (off/player)");
-		SendClientMessage(playerid, COLOR_GRAD3, "*** HOUSE *** /evictall /setrent /evict /housewithdraw");
+		SendClientMessage(playerid, COLOR_GRAD3, "*** HOUSE *** /enter /exit /open /home /hoimau /nangcapnha /setrentable /tv (off/player)");
+		SendClientMessage(playerid, COLOR_GRAD3, "*** HOUSE *** /evictall /setrent /evict /housewithdraw /bannha /muanha");
 		SendClientMessage(playerid, COLOR_GRAD4, "*** OTHER *** /cellphonehelp /help /notehelp /vehiclehelp /renthelp /businesshelp /leaderhelp /fishhelp /cookhelp /irchelp");
 	}
 	return 1;
@@ -21417,7 +21323,7 @@ CMD:businesshelp(playerid, params[])
 		SendClientMessage(playerid, COLOR_GREEN, "_______________________________________");
 		SendClientMessage(playerid, COLOR_WHITE, "*** BUSINESS HELP *** type a command for more help");
 		SendClientMessage(playerid, COLOR_GRAD3, "*** BUSINESS *** /bizinfo /bizfee /bizname /prodprice /extortion");
-		SendClientMessage(playerid, COLOR_GRAD4, "*** BUSINESS *** /enter /exit /open /sellbiz /bizbank /bizwithdraw");
+		SendClientMessage(playerid, COLOR_GRAD4, "*** BUSINESS *** /enter /exit /open /banbiz /muabiz /bizbank /bizwithdraw");
 		SendClientMessage(playerid, COLOR_GRAD4, "*** OTHER *** /cellphonehelp /househelp /notehelp /vehiclehelp /renthelp /help");
 	}
 	return 1;
@@ -27417,7 +27323,7 @@ CMD:sellgun(playerid, params[])
 			return 1;
 		}
 		new x_weapon[256], weapon[MAX_PLAYERS], ammo[MAX_PLAYERS], price[MAX_PLAYERS];
-		new giveplayerid, giveplayer[50], string[256], gia;
+		new giveplayerid, string[256], gia;
 		if (sscanf(params, "us[256]i", giveplayerid, x_weapon, gia))
 		{
 			SendClientMessage(playerid, COLOR_GRAD1, "Su dung: /sellgun [playerid/Ten] [ten vu khi] [gia]");
@@ -27434,12 +27340,12 @@ CMD:sellgun(playerid, params[])
 			else if (strcmp(x_weapon, "sdpistol", true) == 0) { if (PlayerInfo[playerid][pMats] > 99) { weapon[playerid] = 23; price[playerid] = 100; ammo[playerid] = 50; } else { SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu cho vu khi nay!"); return 1; } }
 			else if (strcmp(x_weapon, "flowers", true) == 0) { if (PlayerInfo[playerid][pMats] > 24) { weapon[playerid] = 14; price[playerid] = 25; ammo[playerid] = 1; } else { SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu cho vu khi nay!"); return 1; } }
 			else if (strcmp(x_weapon, "eagle", true) == 0) { if (PlayerInfo[playerid][pMats] > 199) { weapon[playerid] = 24; price[playerid] = 150; ammo[playerid] = 50; } else { SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu cho vu khi nay!"); return 1; } }
-			else if (strcmp(x_weapon, "mp5", true) == 0) { if (!PlayerToPoint(15.0, playerid, 1484.3933, -1731.2124, 6.7213)) { SendClientMessage(playerid, COLOR_GREY, "   You can sell this gun only at black market !"); return 1; } if (PlayerInfo[playerid][pMats] > 199) { weapon[playerid] = 29; price[playerid] = 200; ammo[playerid] = 200; } else { SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu cho vu khi nay!"); return 1; } }
-			else if (strcmp(x_weapon, "shotgun", true) == 0) { if (!PlayerToPoint(15.0, playerid, 1484.3933, -1731.2124, 6.7213)) { SendClientMessage(playerid, COLOR_GREY, "   You can sell this gun only at black market !"); return 1; } if (PlayerInfo[playerid][pMats] > 199) { weapon[playerid] = 25; price[playerid] = 200; ammo[playerid] = 50; } else { SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu cho vu khi nay!"); return 1; } }
+			else if (strcmp(x_weapon, "mp5", true) == 0) { if (!PlayerToPoint(15.0, playerid, 1484.3933, -1731.2124, 6.7213)) { SendClientMessage(playerid, COLOR_GREY, "   Ban chi co ban sung o khu vuc Cho Den (Black Market) !"); return 1; } if (PlayerInfo[playerid][pMats] > 199) { weapon[playerid] = 29; price[playerid] = 200; ammo[playerid] = 200; } else { SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu cho vu khi nay!"); return 1; } }
+			else if (strcmp(x_weapon, "shotgun", true) == 0) { if (!PlayerToPoint(15.0, playerid, 1484.3933, -1731.2124, 6.7213)) { SendClientMessage(playerid, COLOR_GREY, "   Ban chi co ban sung o khu vuc Cho Den (Black Market) !"); return 1; } if (PlayerInfo[playerid][pMats] > 199) { weapon[playerid] = 25; price[playerid] = 200; ammo[playerid] = 50; } else { SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu cho vu khi nay!"); return 1; } }
 			//else if(strcmp(x_weapon,"spas12",true) == 0) { if(PlayerInfo[playerid][pMats] > 599) { weapon[playerid] = 27; price[playerid] = 600; ammo[playerid] = 50; } else { SendClientMessage(playerid,COLOR_GREY,"   Not enough Materials for that Weapon!"); return 1; } }
-			else if (strcmp(x_weapon, "ak47", true) == 0) { if (!PlayerToPoint(15.0, playerid, 1484.3933, -1731.2124, 6.7213)) { SendClientMessage(playerid, COLOR_GREY, "   You can sell this gun only at black market !"); return 1; } if (PlayerInfo[playerid][pMats] > 599) { weapon[playerid] = 30; price[playerid] = 600; ammo[playerid] = 250; } else { SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu cho vu khi nay!"); return 1; } }
-			else if (strcmp(x_weapon, "m4", true) == 0) { if (!PlayerToPoint(15.0, playerid, 1484.3933, -1731.2124, 6.7213)) { SendClientMessage(playerid, COLOR_GREY, "   You can sell this gun only at black market !"); return 1; } if (PlayerInfo[playerid][pMats] > 599) { weapon[playerid] = 31; price[playerid] = 600; ammo[playerid] = 250; } else { SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu cho vu khi nay!"); return 1; } }
-			else if (strcmp(x_weapon, "rifle", true) == 0) { if (!PlayerToPoint(15.0, playerid, 1484.3933, -1731.2124, 6.7213)) { SendClientMessage(playerid, COLOR_GREY, "   You can sell this gun only at black market !"); return 1; } if (PlayerInfo[playerid][pMats] > 599) { weapon[playerid] = 33; price[playerid] = 600; ammo[playerid] = 50; } else { SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu cho vu khi nay!"); return 1; } }
+			else if (strcmp(x_weapon, "ak47", true) == 0) { if (!PlayerToPoint(15.0, playerid, 1484.3933, -1731.2124, 6.7213)) { SendClientMessage(playerid, COLOR_GREY, "   Ban chi co ban sung o khu vuc Cho Den (Black Market) !"); return 1; } if (PlayerInfo[playerid][pMats] > 599) { weapon[playerid] = 30; price[playerid] = 600; ammo[playerid] = 250; } else { SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu cho vu khi nay!"); return 1; } }
+			else if (strcmp(x_weapon, "m4", true) == 0) { if (!PlayerToPoint(15.0, playerid, 1484.3933, -1731.2124, 6.7213)) { SendClientMessage(playerid, COLOR_GREY, "   Ban chi co ban sung o khu vuc Cho Den (Black Market) !"); return 1; } if (PlayerInfo[playerid][pMats] > 599) { weapon[playerid] = 31; price[playerid] = 600; ammo[playerid] = 250; } else { SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu cho vu khi nay!"); return 1; } }
+			else if (strcmp(x_weapon, "rifle", true) == 0) { if (!PlayerToPoint(15.0, playerid, 1484.3933, -1731.2124, 6.7213)) { SendClientMessage(playerid, COLOR_GREY, "   Ban chi co ban sung o khu vuc Cho Den (Black Market) !"); return 1; } if (PlayerInfo[playerid][pMats] > 599) { weapon[playerid] = 33; price[playerid] = 600; ammo[playerid] = 50; } else { SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu cho vu khi nay!"); return 1; } }
 			else { SendClientMessage(playerid, COLOR_GREY, "   Ten sung khong hop le!"); return 1; }
 			if (ProxDetectorS(5.0, playerid, giveplayerid))
 			{
@@ -28096,6 +28002,42 @@ CMD:undercover(playerid, params[])
 	}
 	return 1;
 }
+CMD:apgiai(playerid, params[])
+{
+		if (gTeam[playerid] != 2 && !IsACop(playerid)) return SCM(playerid, COLOR_GREY, "Khong phai nhan vien canh sat.");
+		new nap;
+		if (sscanf(params, "u", nap)) return SCM(playerid, COLOR_GRAD2, "/apgiai [Ten/ID Nguoi Choi]");
+		if (!IsPlayerNearPlayer(playerid, nap, 4)) return SCM(playerid, COLOR_GREY, "Khong dung gan nguoi choi kia.");
+		if (IsPlayerInAnyVehicle(nap)) return SCM(playerid, COLOR_GREY, "Khong the ap giai nguoi tren xe.");
+		if (PlayerCuffed[nap] == 0) return SCM(playerid, COLOR_GREY, "Nguoi choi nay chua bi cong tay.");
+		if (Escorting[playerid] == 1) return SCM(playerid, COLOR_GREY, "Ban dang ap giap mot nguoi choi khac.");
+		if (Escorted[nap] == 1) return SCM(playerid, COLOR_GREY, "Nguoi choi nay dang bi ap giai.");
+		Escorted[nap] = 1;
+		EscortedPlayer[playerid] = nap;
+		Escorting[playerid] = 1;
+		new string[128];
+		format(string, sizeof(string), "# Ban dang ap giap %s.", GN(nap));
+		SCM(playerid, COLOR_LIGHTBLUE, string);
+		format(string, sizeof(string), "# Ban dang bi ap giap boi %s.", GN(playerid));
+		SCM(nap, COLOR_LIGHTBLUE, string);
+		return 1;
+}
+CMD:dungapgiai(playerid, params[])
+{
+		 if (gTeam[playerid] != 2 && !IsACop(playerid)) return SCM(playerid, COLOR_GREY, "Khong phai nhan vien canh sat.");
+		new nap = EscortedPlayer[playerid];
+		if (Escorted[playerid] == 1) return SCM(playerid, COLOR_GREY, "Ban dang bi ap giai.");
+		if (nap == -1 && Escorting[playerid] == 0) return SCM(playerid, COLOR_GREY, "Ban khong ai giai ai.");
+		Escorted[nap] = 0;
+		Escorting[playerid] = 0;
+		EscortedPlayer[playerid] = -1;
+		new str[128];
+		format(str, sizeof(str), "# Ban dung viec ap giai %s.", GN(nap));
+		SCM(playerid, COLOR_LIGHTBLUE, str);
+		format(str, sizeof(str), "# %s da dung viec ap giai ban.", GN(playerid));
+		SCM(nap, COLOR_LIGHTBLUE, str);
+		return 1;
+}
 CMD:congtay(playerid, params[]) { return cmd_cuff(playerid, params); }
 CMD:cuff(playerid, params[])
 {
@@ -28135,15 +28077,29 @@ CMD:cuff(playerid, params[])
 							SendClientMessage(playerid, COLOR_WHITE, string);
 							format(string, sizeof(string), "* %s da cong tay %s, vi vay han khong the di dau.", GN(playerid), giveplayer);
 							ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
-							GameTextForPlayer(giveplayerid, "~r~Cuffed", 2500, 3);
+							GameTextForPlayer(giveplayerid, "~r~Cong tay", 2500, 3);
 							TogglePlayerControllable(giveplayerid, 0);
-							PlayerCuffed[giveplayerid] = 2;
+							PlayerCuffed[giveplayerid] = 1;
 							PlayerCuffedTime[giveplayerid] = 99999999999999;
 						}
 						else
 						{
-							SendClientMessage(playerid, COLOR_GREY, "   Nguoi choi khong o trong xe cua ban, hoac ban khong cam lai !");
-							return 1;
+							if (GetPlayerSpecialAction(giveplayerid) == 10 || Tazered[giveplayerid] > 0)
+							{
+								SetPlayerSpecialAction(giveplayerid, 24);
+								TogglePlayerControllable(giveplayerid, 0);
+								Tazered[giveplayerid] = 0;
+								format(string, sizeof(string), "* Ban da bi cong tay boi %s.", GN(playerid));
+								SendClientMessage(giveplayerid, COLOR_WHITE, string);
+								format(string, sizeof(string), "* Ban da cong tay %s.", giveplayer);
+								SendClientMessage(playerid, COLOR_WHITE, string);
+								format(string, sizeof(string), "* %s da cong tay %s, vi vay han khong the di dau.", GN(playerid), giveplayer);
+								ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+								GameTextForPlayer(giveplayerid, "~r~Cong tay", 2500, 3);
+								TogglePlayerControllable(giveplayerid, 0);
+								PlayerCuffed[giveplayerid] = 1;
+								PlayerCuffedTime[giveplayerid] = 99999999999999;
+							}
 						}
 					}
 					else
@@ -28166,6 +28122,7 @@ CMD:cuff(playerid, params[])
 	}
 	return 1;
 }
+CMD:thaocong(playerid, params[]) { return cmd_uncuff(playerid, params); }
 CMD:uncuff(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -28186,12 +28143,11 @@ CMD:uncuff(playerid, params[])
 						if (PlayerCuffed[giveplayerid])
 						{
 							GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
-							
 							format(string, sizeof(string), "* Ban da duoc thao cong tay boi %s.", GN(playerid));
 							SendClientMessage(giveplayerid, COLOR_WHITE, string);
 							format(string, sizeof(string), "* Ban da thao cong tay cho %s.", giveplayer);
 							SendClientMessage(playerid, COLOR_WHITE, string);
-							GameTextForPlayer(giveplayerid, "~g~Uncuffed", 2500, 3);
+							GameTextForPlayer(giveplayerid, "~g~Thao cong", 2500, 3);
 							TogglePlayerControllable(giveplayerid, 1);
 							PlayerCuffed[giveplayerid] = 0;
 						}
