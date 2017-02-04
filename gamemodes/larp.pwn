@@ -7019,23 +7019,23 @@ public ShowStats(playerid,targetid)
         new jtext[20];
         if(PlayerInfo[targetid][pJob] == 1) { jtext = "Tham tu"; }
         else if(PlayerInfo[targetid][pJob] == 2) { jtext = "Luat su"; }
-        else if(PlayerInfo[targetid][pJob] == 3) { jtext = "Whore"; }
-        else if(PlayerInfo[targetid][pJob] == 4) { jtext = "Drugs Dealer"; }
-        else if(PlayerInfo[targetid][pJob] == 5) { jtext = "Car Jacker"; }
-        else if(PlayerInfo[targetid][pJob] == 6) { jtext = "News Reporter"; }
-        else if(PlayerInfo[targetid][pJob] == 7) { jtext = "Car Mechanic"; }
-        else if(PlayerInfo[targetid][pJob] == 8) { jtext = "Bodyguard"; }
-        else if(PlayerInfo[targetid][pJob] == 9) { jtext = "Arms Dealer"; }
-        else if(PlayerInfo[targetid][pJob] == 10) { jtext = "Car Dealer"; }
-		else if(PlayerInfo[targetid][pJob] == 12) { jtext = "Boxer"; }
-        else if(PlayerInfo[targetid][pJob] == 14) { jtext = "Bus Driver"; }
-        else if(PlayerInfo[targetid][pJob] == 15) { jtext = "Paper Boy"; }
-        else if(PlayerInfo[targetid][pJob] == 16) { jtext = "Trucker"; }
-        else if(PlayerInfo[targetid][pJob] == 17) { jtext = "Pizza Boy"; }
-        else if(PlayerInfo[targetid][pJob] == 18) { jtext = "Farmer"; }
-        else if(PlayerInfo[targetid][pJob] == 19) { jtext = "Illegal Farmer"; }
-        else if(PlayerInfo[targetid][pJob] == 20) { jtext = "Drugs Smuggler"; }
-        else if(PlayerInfo[targetid][pJob] == 21) { jtext = "Street sweeper"; }
+        else if(PlayerInfo[targetid][pJob] == 3) { jtext = "Mai dam"; }
+        //else if(PlayerInfo[targetid][pJob] == 4) { jtext = "Drugs Dealer"; }
+        else if(PlayerInfo[targetid][pJob] == 5) { jtext = "Cuop xe"; }
+        else if(PlayerInfo[targetid][pJob] == 6) { jtext = "Phong vien"; }
+        else if(PlayerInfo[targetid][pJob] == 7) { jtext = "Tho sua xe"; }
+        else if(PlayerInfo[targetid][pJob] == 8) { jtext = "Ve si"; }
+        else if(PlayerInfo[targetid][pJob] == 9) { jtext = "Tho vu khi"; }
+        else if(PlayerInfo[targetid][pJob] == 10) { jtext = "Buon xe"; }
+		else if(PlayerInfo[targetid][pJob] == 12) { jtext = "Vo si"; }
+        else if(PlayerInfo[targetid][pJob] == 14) { jtext = "Lai xe buyt"; }
+        else if(PlayerInfo[targetid][pJob] == 15) { jtext = "Giao bao"; }
+        else if(PlayerInfo[targetid][pJob] == 16) { jtext = "Nguoi giao hang"; }
+        else if(PlayerInfo[targetid][pJob] == 17) { jtext = "Giao pizza"; }
+        else if(PlayerInfo[targetid][pJob] == 18) { jtext = "Nong dan"; }
+        else if(PlayerInfo[targetid][pJob] == 19) { jtext = "Trong trot"; }
+        //else if(PlayerInfo[targetid][pJob] == 20) { jtext = "Drugs Smuggler"; }
+        //else if(PlayerInfo[targetid][pJob] == 21) { jtext = "Street sweeper"; }
         //else if(PlayerInfo[targetid][pJob] == 22) { jtext = "Materials smuggler"; }
         //else if(PlayerInfo[targetid][pJob] == 23) { jtext = "Gun maker"; }
         else { jtext = "None"; }
