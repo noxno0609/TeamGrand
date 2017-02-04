@@ -3399,7 +3399,7 @@ public OnPlayerSelectedMenuRow(playerid, row)
 		}
 		case 4:
 		{
-					SendClientMessage(playerid, COLOR_LIGHTRED, "Nghe boxing duoc danh dau do tren ban do.");
+					SendClientMessage(playerid, COLOR_LIGHTRED, "Nghe vo si duoc danh dau do tren ban do.");
 					SetPlayerCheckpoint(playerid, 2229.9011, -1721.2582, 13.5613, 5.0);
 					TogglePlayerControllable(playerid, 1);
 		}
@@ -27519,6 +27519,7 @@ CMD:get(playerid, params[])
 	}//not connected
 	return 1;
 }
+CMD:xinviec(playerid, params[]) { return cmd_takejob(playerid, params); }
 CMD:takejob(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
