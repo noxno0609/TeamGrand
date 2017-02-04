@@ -146,7 +146,7 @@ stock GetLevelSkill(playerid, skill)
 	new value = 0;
 	switch (skill)
 	{
-	case FARMER: value = PlayerInfo[playerid][pFarmerSkill];
+	case PLANT: value = PlayerInfo[playerid][pPlantSkill];
 	}
 	if (value>0 && value <100) return 1;
 	else if (value >= 100 && value <500) return 2;
@@ -161,9 +161,9 @@ stock TangSkill(playerid, skill, soluong)
 	new str[128];
 	switch (skill)
 	{
-		case FARMER:
+		case PLANT:
 		{
-			if (PlayerInfo[playerid][pFarmerSkill] > 0) PlayerInfo[playerid][pFarmerSkill] += soluong;
+			if (PlayerInfo[playerid][pPlantSkill] > 0) PlayerInfo[playerid][pPlantSkill] += soluong;
 			format(str, sizeof(str), "[Trong trot]: Tang %d diem ki nang.", soluong);
 		}
 		default: return 0;
@@ -540,7 +540,7 @@ CMD:chapnhangiupdo(playerid, params[])
 	format(str, sizeof(str), "%s %s da chap nhan yeu cau tro giup cua %s.", HP(playerid), GN(playerid), GN(pgd));
 	ABroadCast(COLOR_LIGHTGREEN, str, 1);
 	CBroadCast(COLOR_LIGHTGREEN, str, 2);
-	new Float: x, Float: y, Float: z, Float: r, i, vw;
+	new Float: x, Float:y, Float:z, Float:r, i, vw;
 	vw = GetPlayerVirtualWorld(playerid);
 	i = GetPlayerInterior(playerid);
 	GetPlayerPos(playerid, x, y, z);
@@ -588,10 +588,10 @@ CMD:c(playerid, params[])
 	ABroadCast(COLOR_LIGHT_BLUE, mess, 1);
 	return 1;
 }
-
+CMD:plant(playerid, params[]) { return cmd_gieohat(playerid, params); }
 CMD:gieohat(playerid, params[])
 {
-	if (PlayerInfo[playerid][pJob] != 19) return SendClientMessage(playerid, COLOR_GRAD1, "Ban khong phai nong dan.");
+	if (PlayerInfo[playerid][pJob] != 19) return SendClientMessage(playerid, COLOR_GRAD1, "Ban khong phai nguoi trong trot.");
 	if (IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_GRAD1, "Ban khong theo gieo hat giong khi dang o trong xe!");
 	if (!IsPlayerInRangeofFarmer(playerid)) return SendClientMessage(playerid, COLOR_GRAD1, "Ban khong dung trong khu vuc co the gieo hat");
 	if (IsPlayerNearSeed(playerid)) return SendClientMessage(playerid, COLOR_GRAD1, "Ban khong the trong gan cay khac!");
@@ -620,6 +620,47 @@ CMD:gieohat(playerid, params[])
 	return 1;
 }
 
+forward PlantKeyStateChange(playerid, newkeys, oldkeys);
+public PlantKeyStateChange(playerid, newkeys, oldkeys)
+{
+	if (PlayerInfo[playerid][pJob] == 19 && IsPlayerNearSeed(playerid) && newkeys == KEY_WALK)
+	{
+		if (IsPlayerInAnyVehicle(playerid)) return 1;
+		new i = GetPlayerNearSeed(playerid), str[100], RandomTime[3][1] = { { TIME_SEEDGROWTH / 3 }, { TIME_SEEDGROWTH * 2 / 3 }, { TIME_SEEDGROWTH } }, rand = random(sizeof(RandomTime));
+		if (SeedGrowth[i] < 4 && SeedTuoiNuoc[i] == 0)
+		{
+			SeedTuoiNuoc[i] = 1;
+			ApplyAnimation(playerid, "MISC", "CASE_PICKUP", 4.0, 1, 0, 0, 0, 5000, 1);
+			defer TuoiCay[RandomTime[rand][0]](i, RandomTime[rand][0]);
+			SendClientMessage(playerid, COLOR_WHITE, "Ban da tuoi nuoc cho cay lua!");
+			format(str, sizeof(str), "Nguoi gieo hat: %s\nCay da tuoi nuoc", SeedOwner[i]);
+			UpdateDynamic3DTextLabelText(SeedText[i], 0x008080FF, str);
+		}
+		else if (SeedGrowth[i] == 4 && SeedGatLua[i] == 0)
+		{
+			if (strcmp(SeedOwner[i], GLN(playerid), true) != 0 && SeedOwner[i][0] != EOS) return SendClientMessage(playerid, COLOR_GRAD1, "Day la cay thuoc so huu cua nguoi khac!");
+			ApplyAnimation(playerid, "BOMBER", "BOM_Plant_Crouch_Out", 4.0, 0, 0, 0, 0, 0, 1);
+			DestroyDynamicObject(SeedObject[i]);
+			SeedObject[i] = CreateDynamicObjectEx(2901, SeedPos[i][0] + 1.2, SeedPos[i][1], SeedPos[i][2] - 1, 4, 0.00000000, 0.00000000, 0.00000000);
+			SeedTime[i] = 0;
+			SeedGatLua[i] = 1;
+			SendClientMessage(playerid, COLOR_WHITE, "Ban da gat lua tu cay lua!");
+			format(str, sizeof(str), "Nguoi gieo hat: %s\nLua da gat, hay mang toi kho! ({00FF00} An ALT{008080})", SeedOwner[i]);
+			UpdateDynamic3DTextLabelText(SeedText[i], 0x008080FF, str);
+		}
+		else if (SeedGatLua[i] == 1)
+		{
+			if (strcmp(SeedOwner[i], GLN(playerid), true) != 0 && SeedOwner[i][0] != EOS) return SendClientMessage(playerid, COLOR_GRAD1, "Day la cay thuoc so huu cua nguoi khac!");
+			SetPlayerAttachedObject(playerid, 9, 2901, 1, 0.25, 0.470760, 0.000000, 0.000000, 90.217391, 0.000000, 0.8, 0.8, 0.8);
+			SetPlayerSpecialAction(playerid, 25);
+			ApplyAnimation(playerid, "CARRY", "crry_prtial", 4.0, 1, 1, 1, 1, 1);
+			SendClientMessage(playerid, COLOR_WHITE, "Ban da thu hoach lua, hay mang no toi kho!");
+			SetPlayerCheckpoint(playerid, -1102.0814, -1636.1648, 76.3672, 4);
+			DestroySeed(i);
+		}
+	}
+	return 1;
+}
 task Plant[1000]()
 {
 	/////////////////////////////////////////Growth///////////////////

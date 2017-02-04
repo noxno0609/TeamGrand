@@ -543,6 +543,7 @@ public OnGameModeInit()
 	AddStaticPickup(1240, 23, 263.1702, 76.4346, 1001.0391); // Jail health
 	AddStaticPickup(1239, 23, 359.6820, 207.0294, 1008.3828); // AD
 	AddStaticPickup(1239, 23, -382.6660, -1426.5121, 26.2410); // Farmer job pickup
+	AddStaticPickup(1239, 23, -1109.5745, -1637.6207, 76.3672); // Trong trot job pickup
 	AddStaticPickup(1239, 23, -38.8664, 56.3031, 3.1172); // Drugs for smugglers
 	AddStaticPickup(1239, 23, 2022.1492, -1108.7837, 26.2031); // Drugs Smuggler pickup
 	AddStaticPickup(1239, 23, 2072.5486, -1582.8029, 13.4741); // Drugs Dealer reg
@@ -789,6 +790,7 @@ public OnPlayerConnect(playerid)
 	PlayerInfo[playerid][pDrugsSkill] = 0;
 	PlayerInfo[playerid][pCookSkill] = 0;
 	PlayerInfo[playerid][pFishSkill] = 0;
+	PlayerInfo[playerid][pPlantSkill] = 0;
 	PlayerInfo[playerid][pSHealth] = 0.0;
 	PlayerInfo[playerid][pHealth] = 50.0;
 	PlayerInfo[playerid][pPos_x] = 1612.3240;
@@ -3079,6 +3081,15 @@ public OnPlayerEnterCheckpoint(playerid)
 					  SetPlayerFacingAngle(playerid, 280);
 		}
 		}
+		if (IsPlayerInRangeOfPoint(playerid, 4, -1102.0814, -1636.1648, 76.3672))
+		{
+			SafeGivePlayerMoney(playerid, 5000);
+			ApplyAnimation(playerid, "CARRY", "putdwn105", 4.0, 0, 1, 1, 1, 1);
+			SetPlayerSpecialAction(playerid, 0);
+			RemovePlayerAttachedObject(playerid, 9);
+			new lv = GetLevelSkill(playerid, PLANT);
+			if (lv != 0) TangSkill(playerid, PLANT, 1);
+		}
 		SetCameraBehindPlayer(playerid);
 		return 1;
 	}
@@ -3452,10 +3463,16 @@ public OnPlayerSelectedMenuRow(playerid, row)
 		}
 		case 4:
 		{
+					SendClientMessage(playerid, COLOR_LIGHTRED, "Nghe trong trot duoc danh dau do tren ban do.");
+					SetPlayerCheckpoint(playerid, -1109.5745, -1637.6207, 76.3672, 5.0);
+					TogglePlayerControllable(playerid, 1);
+		}
+		case 5:
+		{
 					HideMenuForPlayer(JobLocations2, playerid);
 					ShowMenuForPlayer(JobLocations, playerid);
 		}
-		case 5:
+		case 6:
 		{
 					HideMenuForPlayer(JobLocations2, playerid);
 					//ShowMenuForPlayer(Guide, playerid);
@@ -4420,8 +4437,8 @@ public OnPlayerRegister(playerid, password[])
 		mysql_query(conn, sql);
 		SendClientMessage(playerid, COLOR_YELLOW, "Dang ky thanh cong, ban co the dang nhap ngay bay gio!.");
 		new str[128];
-		format(str, sizeof(str), "[Tai Khoan Moi] Ten: %s (%d) | IP: %s", GN(playerid), playerid, GetIP(playerid));
-		SendAdminMessage(TEAM_ORANGE, str);
+		format(str, sizeof(str), "[Tai Khoan Moi] Ten: %s (%d) | IP: %s", GN(playerid), playerid, GetIp(playerid));
+		SendAdminMessage(COLOR_LIGHTRED, str);
 		ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, "Dang Nhap", "\n--------------LA-Roleplay--------------\nChao mung ban den voi server!\n\nVui long nhap password de dang nhap: ", "Dang Nhap", "Thoat");
 	}
 	return 1;
@@ -4498,6 +4515,7 @@ public OnPlayerLogin(playerid, password[])
 			cache_get_value_name_int(0, "DrugsSkill", temp); PlayerInfo[playerid][pDrugsSkill] = temp; 
 			cache_get_value_name_int(0, "CookSkill", temp); PlayerInfo[playerid][pCookSkill] = temp; 
 			cache_get_value_name_int(0, "FishSkill", temp); PlayerInfo[playerid][pFishSkill] = temp; 
+			cache_get_value_name_int(0, "PlantSkill", temp); PlayerInfo[playerid][pPlantSkill] = temp;
 			cache_get_value_name_float(0, "pSHealth", tempf); PlayerInfo[playerid][pSHealth] = tempf; 
 			cache_get_value_name_float(0, "pHealth", tempf); PlayerInfo[playerid][pHealth] = tempf; 
 			cache_get_value_name_int(0, "Int", temp); PlayerInfo[playerid][pInt] = temp; 
@@ -4741,6 +4759,7 @@ public OnPlayerExitFood(playerid)
 public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 {
 	TazerKeyStateChange(playerid, newkeys, oldkeys);
+	PlantKeyStateChange(playerid, newkeys, oldkeys);
 	new string[256];
 	new pveh = GetVehicleModel(GetPlayerVehicleID(playerid));
 	new newcar = GetPlayerVehicleID(playerid);
@@ -13807,6 +13826,7 @@ CMD:pme(playerid, params[])
 	}
 	return 1;
 }
+ CMD:w(playerid, params[]) { return cmd_whisper(playerid, params); }
 CMD:whisper(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -21222,7 +21242,7 @@ CMD:help(playerid, params[])
 			SendClientMessage(playerid, COLOR_YELLOW2, ":: JOB :: /startharvest /stopharvest");
 		}
 		else if (PlayerInfo[playerid][pJob] == 19) {
-			SendClientMessage(playerid, COLOR_YELLOW2, ":: JOB :: /startdrugharvest /stopdrugharvest");
+			SendClientMessage(playerid, COLOR_YELLOW2, ":: JOB :: /gieohat /thuhoach");
 		}
 		else if (PlayerInfo[playerid][pJob] == 20) {
 			SendClientMessage(playerid, COLOR_YELLOW2, ":: JOB :: /smuggledrugs /selldrugsto");
@@ -21771,7 +21791,7 @@ CMD:skill(playerid, params[])
 			SendClientMessage(playerid, COLOR_WHITE, "Su dung: /skill [number]");
 			SendClientMessage(playerid, COLOR_GREY, "| 1: Luat su         		6: Boxer");
 			SendClientMessage(playerid, COLOR_GREY, "| 2: Gai diem / Trai bao              	7: Cau ca");
-			SendClientMessage(playerid, COLOR_GREY, "| 3: Buon thuoc");
+			SendClientMessage(playerid, COLOR_GREY, "| 3: Buon thuoc              	8: Trong trot");
 			SendClientMessage(playerid, COLOR_GREY, "| 4: Phat thanh vien");
 			SendClientMessage(playerid, COLOR_GREY, "| 5: Tho sua xe");
 			SendClientMessage(playerid, COLOR_WHITE, "|________________________________________________|");
@@ -21839,6 +21859,16 @@ CMD:skill(playerid, params[])
 			else if (level >= 251 && level <= 500) { SendClientMessage(playerid, COLOR_YELLOW, "Level ki nang cau ca cua ban = 3."); format(string, sizeof(string), "You need to Fish %d more Fishes to Level up.", 500 - level); SendClientMessage(playerid, COLOR_YELLOW, string); }
 			else if (level >= 501 && level <= 999) { SendClientMessage(playerid, COLOR_YELLOW, "Level ki nang cau ca cua ban = 4."); format(string, sizeof(string), "You need to Fish %d more Fishes to Level up.", 1000 - level); SendClientMessage(playerid, COLOR_YELLOW, string); }
 			else if (level >= 1000) { SendClientMessage(playerid, COLOR_YELLOW, "Level ki nang cau ca cua ban = 5."); }
+		}
+		else if (strcmp(x_nr, "8", true) == 0)//Farmer
+		{
+			format(string, sizeof(string), "Level ki nang trong trot cua ban = %d.", GetLevelSkill(playerid, PLANT));
+			SendClientMessage(playerid, COLOR_YELLOW, string);
+			new level = PlayerInfo[playerid][pPlantSkill];
+			if (level >= 0 && level < 100) { format(string, sizeof(string), "Ban can trong them %d cay nua de len level.", 100 - level); SendClientMessage(playerid, COLOR_YELLOW, string); }
+			else if (level >= 100 && level < 500) { format(string, sizeof(string), "Ban can trong them %d cay nua de len level.", 500 - level); SendClientMessage(playerid, COLOR_YELLOW, string); }
+			else if (level >= 500 && level < 1000) { format(string, sizeof(string), "Ban can trong them %d cay nua de len level.", 1000 - level); SendClientMessage(playerid, COLOR_YELLOW, string); }
+			else if (level >= 1000 && level < 2000) { format(string, sizeof(string), "Ban can trong them %d cay nua de len level.", 2000 - level); SendClientMessage(playerid, COLOR_YELLOW, string); }
 		}
 		else
 		{
@@ -27621,6 +27651,13 @@ CMD:takejob(playerid, params[])
 				SendClientMessage(playerid, COLOR_WHITE, "* Ban phai thuc hien hop dong nay dau tien, neu ban muon nghi viec sau.");*/
 				SendClientMessage(playerid, COLOR_WHITE, "* Neu ban chac chan muon lam viec nay, go /accept job.");
 				GettingJob[playerid] = 21;
+			}
+			else if (GetPlayerState(playerid) == 1 && PlayerToPoint(3.0, playerid, -1109.5745, -1637.6207, 76.3672))
+			{
+				/*SendClientMessage(playerid, COLOR_WHITE, "* Ban muon tro thanh mot cong nhan don dep duong pho, dam nhan 5 gio hop dong.");
+				SendClientMessage(playerid, COLOR_WHITE, "* Ban phai thuc hien hop dong nay dau tien, neu ban muon nghi viec sau.");*/
+				SendClientMessage(playerid, COLOR_WHITE, "* Neu ban chac chan muon lam viec nay, go /accept job.");
+				GettingJob[playerid] = 19;
 			}
 			else
 			{

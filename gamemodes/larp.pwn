@@ -1563,7 +1563,7 @@ enum pInfo
 	pDrugsSkill,
 	pCookSkill,
 	pFishSkill,
-	pFarmerSkill,
+	pPlantSkill ,
 Float:pHealth,
 	Float:pSHealth,
 			  pInt,
@@ -2023,7 +2023,7 @@ public SavePlayer(playerid)
 				DrugsSkill=%d,\
 				CookSkill=%d,\
 				FishSkill=%d,\
-				FarmerSkill=%d,\
+				PlantSkill=%d,\
 				pSHealth=%f,\
 				pHealth=%f,\
 				`Int`=%d,\
@@ -2043,7 +2043,7 @@ public SavePlayer(playerid)
 				PlayerInfo[playerid][pDrugsSkill],
 				PlayerInfo[playerid][pCookSkill],
 				PlayerInfo[playerid][pFishSkill],
-				PlayerInfo[playerid][pFarmerSkill],
+				PlayerInfo[playerid][pPlantSkill],
 				PlayerInfo[playerid][pSHealth],
 				PlayerInfo[playerid][pHealth],
 				PlayerInfo[playerid][pInt],
@@ -8284,18 +8284,18 @@ public CustomPickups()
 						{
 							if(HouseInfo[h][hRentabil] == 0)
 							{
-								format(string, sizeof(string), "~w~This House is owned by~n~%s~n~Level : %d",HouseInfo[h][hOwner],HouseInfo[h][hLevel]);
+								format(string, sizeof(string), "~w~Chu so huu nha: ~n~%s~n~Level : %d",HouseInfo[h][hOwner],HouseInfo[h][hLevel]);
 							}
 							else
 							{
-								format(string, sizeof(string), "~w~This House is owned by~n~%s~n~Rent: $%d Level : %d~n~Type /rentroom to rent a room",HouseInfo[h][hOwner],HouseInfo[h][hRent],HouseInfo[h][hLevel]);
+								format(string, sizeof(string), "~w~Chu so huu nha: ~n~%s~n~Rent: $%d Level : %d~n~Go /rentroom de thue nha",HouseInfo[h][hOwner],HouseInfo[h][hRent],HouseInfo[h][hLevel]);
 							}
 							GameTextForPlayer(i, string, 5000, 3);
 							return 1;
 						}
 						else
 						{
-							format(string, sizeof(string), "~w~This House is for sale~n~Discription: %s ~n~Cost: ~g~$%d~n~~w~ Level : %d~n~to buy this house type /buyhouse",HouseInfo[h][hDiscription],HouseInfo[h][hValue],HouseInfo[h][hLevel]);
+							format(string, sizeof(string), "~w~Ngoi nha hien tai dang ban~n~Mo ta: %s ~n~Gia: ~g~$%d~n~~w~ Level : %d~n~de mua nha (/muanha)",HouseInfo[h][hDiscription],HouseInfo[h][hValue],HouseInfo[h][hLevel]);
 						}
 						GameTextForPlayer(i, string, 5000, 3);
 						return 1;

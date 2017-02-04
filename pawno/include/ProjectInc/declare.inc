@@ -26,7 +26,7 @@ new EscortedPlayer[MAX_PLAYERS];
 new Escorting[MAX_PLAYERS];
 
 /////////////////Skill Define//
-#define FARMER 1
+#define PLANT 1
 
 ////////////FARMER////////////
 #define MAXSEED 150
