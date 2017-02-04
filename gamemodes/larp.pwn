@@ -8368,12 +8368,12 @@ public CustomPickups()
 			else if (GetPlayerState(i) == 1 && PlayerToPoint(2.0, i,2077.52,-2013.56,13.54))
 			{
 			    if(PlayerInfo[i][pJob] > 0 || PlayerInfo[i][pMember] > 0) {}
-			    else { GameTextForPlayer(i, "~g~Xin chao,~n~~y~ban co the tro thanh~r~Car Mechanic~y~ here ~n~~w~Go /xinviec de xin viec.", 5000, 3); }
+			    else { GameTextForPlayer(i, "~g~Xin chao,~n~~y~ban co the tro thanh ~r~Car Mechanic~y~ here ~n~~w~Go /xinviec de xin viec.", 5000, 3); }
 			}
 			else if (GetPlayerState(i) == 1 && PlayerToPoint(2.0, i,2226.1716,-1718.1792,13.5165))
 			{
 			    if(PlayerInfo[i][pJob] > 0 || PlayerInfo[i][pMember] > 0) {}
-			    else { GameTextForPlayer(i, "~g~Xin chao,~n~~y~ban co the tro thanh~r~Bodyguard~y~ here ~n~~w~Go /xinviec de xin viec.", 5000, 3); }
+			    else { GameTextForPlayer(i, "~g~Xin chao,~n~~y~ban co the tro thanh ~r~Bodyguard~y~ here ~n~~w~Go /xinviec de xin viec.", 5000, 3); }
 			}
 			/*else if (GetPlayerState(i) == 1 && PlayerToPoint(2.0, i,594.2437,-1249.4027,18.2232))
 			{
@@ -8383,27 +8383,27 @@ public CustomPickups()
 			else if (GetPlayerState(i) == 1 && PlayerToPoint(2.0, i,766.0804,14.5133,1000.7004))
 			{
 			    if(PlayerInfo[i][pJob] > 0 || PlayerInfo[i][pMember] > 0) {}
-			    else { GameTextForPlayer(i, "~g~Xin chao,~n~~y~ban co the tro thanh~r~Boxer~y~ here ~n~~w~Go /xinviec de xin viec.", 5000, 3); }
+			    else { GameTextForPlayer(i, "~g~Xin chao,~n~~y~ban co the tro thanh ~r~Vo si~y~ here ~n~~w~Go /xinviec de xin viec.", 5000, 3); }
 			}
 			else if (GetPlayerState(i) == 1 && PlayerToPoint(2.0, i,1154.2208,-1770.8203,16.5992))
 			{
 			    if(PlayerInfo[i][pJob] > 0 || PlayerInfo[i][pMember] > 0) {}
-			    else { GameTextForPlayer(i, "~g~Xin chao,~n~~y~ban co the tro thanh~r~Bus Driver~y~ here ~n~~w~Go /xinviec de xin viec.", 5000, 3); }
+			    else { GameTextForPlayer(i, "~g~Xin chao,~n~~y~ban co the tro thanh ~r~Tai xe xe buyt~y~ here ~n~~w~Go /xinviec de xin viec.", 5000, 3); }
 			}
 			else if (GetPlayerState(i) == 1 && PlayerToPoint(2.0, i,2439.7710,-2120.9285,13.5469))
 			{
 			    if(PlayerInfo[i][pJob] > 0 || PlayerInfo[i][pMember] > 0) {}
-			    else { GameTextForPlayer(i, "~g~Xin chao,~n~~y~ban co the tro thanh~r~Trucker~y~ here ~n~~w~Go /xinviec de xin viec.", 5000, 3); }
+			    else { GameTextForPlayer(i, "~g~Xin chao,~n~~y~ban co the tro thanh ~r~Trucker~y~ here ~n~~w~Go /xinviec de xin viec.", 5000, 3); }
 			}
 			else if (GetPlayerState(i) == 1 && PlayerToPoint(2.0, i,2101.7620,-1812.5922,13.5547))
 			{
 			    if(PlayerInfo[i][pJob] > 0 || PlayerInfo[i][pMember] > 0) {}
-			    else { GameTextForPlayer(i, "~g~Xin chao,~n~~y~ban co the tro thanh~r~Pizza Boy~y~ here ~n~~w~Go /xinviec de xin viec.", 5000, 3); }
+			    else { GameTextForPlayer(i, "~g~Xin chao,~n~~y~ban co the tro thanh ~r~Nguoi giao Pizza~y~ here ~n~~w~Go /xinviec de xin viec.", 5000, 3); }
 			}
 			else if (GetPlayerState(i) == 1 && PlayerToPoint(2.0, i,-382.6660,-1426.5121,26.2410))
 			{
 			    if(PlayerInfo[i][pJob] > 0 || PlayerInfo[i][pMember] > 0) {}
-			    else { GameTextForPlayer(i, "~g~Xin chao,~n~~y~ban co the tro thanh~r~Farmer~y~ here ~n~~w~Go /xinviec de xin viec.", 5000, 3); }
+			    else { GameTextForPlayer(i, "~g~Xin chao,~n~~y~ban co the tro thanh ~r~Nong dan~y~ here ~n~~w~Go /xinviec de xin viec.", 5000, 3); }
 			}
 			/*else if (GetPlayerState(i) == 1 && PlayerToPoint(2.0, i,1784.58,-1297.52,13.37))
 			{
@@ -8422,17 +8422,17 @@ public CustomPickups()
 			else if (GetPlayerState(i) == 1 && PlayerToPoint(2.0, i,2072.5486,-1582.8029,13.4741))
 			{
 			    if(PlayerInfo[i][pJob] > 0 || PlayerInfo[i][pMember] > 0) {}
-			    else { GameTextForPlayer(i, "~g~Xin chao,~n~~y~ban co the tro thanh~r~Drugs Dealer~y~~n~~w~Go /xinviec de xin viec.", 5000, 3); }
+			    else { GameTextForPlayer(i, "~g~Xin chao,~n~~y~ban co the tro thanh ~r~Drugs Dealer~y~~n~~w~Go /xinviec de xin viec.", 5000, 3); }
 			}
 			else if (GetPlayerState(i) == 1 && PlayerToPoint(2.0, i, -1109.5745, -1637.6207, 76.3672))
 			{
 			    if(PlayerInfo[i][pJob] > 0 || PlayerInfo[i][pMember] > 0) {}
-			    else { GameTextForPlayer(i, "~g~Xin chao,~n~~y~ban co the tro thanh~r~Nguoi trong trot~n~~w~Go /xinviec de xin viec.", 5000, 3); }
+			    else { GameTextForPlayer(i, "~g~Xin chao,~n~~y~ban co the tro thanh ~r~Nguoi trong trot~n~~w~Go /xinviec de xin viec.", 5000, 3); }
 			}
 			else if (GetPlayerState(i) == 1 && PlayerToPoint(2.0, i, 1611.5129, -1893.6997, 13.5469))
 			{
 				if (PlayerInfo[i][pJob] > 0 || PlayerInfo[i][pMember] > 0) {}
-				else { GameTextForPlayer(i, "~g~Xin chao,~n~~y~ban co the tro thanh~r~Street Sweeper~n~~w~Go /xinviec de xin viec.", 5000, 3); }
+				else { GameTextForPlayer(i, "~g~Xin chao,~n~~y~ban co the tro thanh ~r~Nguoi don rac~n~~w~Go /xinviec de xin viec.", 5000, 3); }
 			}
 			else if (PlayerToPoint(2.0, i,379.1396,-114.2661,1001.4922))
    			{// Pizza Pickup
