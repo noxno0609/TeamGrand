@@ -4171,7 +4171,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 		}
 		if (IsADrugHarvest(newcar))
 		{
-			if (PlayerInfo[playerid][pJob] == 19)
+			/*if (PlayerInfo[playerid][pJob] == 19)
 			{
 				SendClientMessage(playerid, COLOR_LIGHTBLUE, "____________Huong dan Drug farmer____________");
 				SendClientMessage(playerid, COLOR_WHITE, "** Drug farmer ** /startdrugharvest, /stopdrugharvest or /exit");
@@ -4182,11 +4182,11 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 			{
 				SendClientMessage(playerid, COLOR_GREY, "   Ban khong co chia khoa phuong tien nay !");
 				RemovePlayerFromVehicle(playerid);
-			}
+			}*/
 		}
 		if (IsASmuggleCar(newcar))
 		{
-			if (PlayerInfo[playerid][pJob] == 20)
+			/*if (PlayerInfo[playerid][pJob] == 20)
 			{
 				if (PlayerInfo[playerid][pMember] == 16 || PlayerInfo[playerid][pLeader] == 16)
 				{
@@ -4199,10 +4199,10 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 				}
 			}
 			else
-			{
+			{*/
 				SendClientMessage(playerid, COLOR_GREY, "   Ban khong co chia khoa phuong tien nay  !");
 				RemovePlayerFromVehicle(playerid);
-			}
+			//}
 		}
 		if (oldcar != 301)
 		{
@@ -7157,138 +7157,138 @@ CMD:stopharvest(playerid, params[])
 	}
 	return 1;
 }
-CMD:startdrugharvest(playerid, params[])
-{
-	new idcar;
-	idcar = GetPlayerVehicleID(playerid);
-	if (IsPlayerConnected(playerid))
-	{
-		if (!IsADrugHarvest(idcar))
-		{
-			SendClientMessage(playerid, COLOR_GREY, "   You are not in a drug harvester.");
-			return 1;
-		}
-		if (DrugFarmerVar[playerid] == 1)
-		{
-			SendClientMessage(playerid, COLOR_GREY, "Your are already on your job.");
-			return 1;
-		}
-		if (DrugFarmerPickup[playerid][0] >= 37)
-		{
-			SendClientMessage(playerid, COLOR_WHITE, "This is enough for today (come back next payday).");
-			return 1;
-		}
-		if (PlayerInfo[playerid][pJob] == 19)
-		{
-			JustStarted[playerid] = 1;
-			TogglePlayerControllable(playerid, 1);
-			DrugFarmerVar[playerid] = 1;
-			OnPlayerEnterCheckpoint(playerid);
-			SendClientMessage(playerid, COLOR_YELLOW, "Farm owner: Your working hours is up, go to red marker.");
-		}
-	}
-	return 1;
-}
-CMD:stopdrugharvest(playerid, params[])
-{
-		 new idcar;
-		 idcar = GetPlayerVehicleID(playerid);
-	if (IsPlayerConnected(playerid))
-	{
-		if (DrugFarmerVar[playerid] == 0)
-		{
-			SendClientMessage(playerid, COLOR_GREY, "   You haven't started your work.");
-			return 1;
-		}
-		if (PlayerInfo[playerid][pJob] == 19)
-		{
-			if (IsADrugHarvest(idcar))
-			{
-				TogglePlayerControllable(playerid, 1);
-				RemovePlayerFromVehicle(playerid);
-			}
-			if (DrugFarmerPickup[playerid][0] >= 1 && DrugFarmerPickup[playerid][0] <= 37)
-			{
-				DrugFarmerPickup[playerid][0]--;
-			}
-			JustStarted[playerid] = 0;
-			DrugFarmerVar[playerid] = 0;
-			DisablePlayerCheckpoint(playerid);
-		}
-	}
-	return 1;
-}
-CMD:smuggledrugs(playerid, params[])
-{
-	new idcar;
-	idcar = GetPlayerVehicleID(playerid);
-	if (IsPlayerConnected(playerid))
-	{
-		if (PlayerInfo[playerid][pJob] != 20)
-		{
-			SendClientMessage(playerid, COLOR_GREY, "   You are not a drugs smuggler.");
-			return 1;
-		}
-		if (SmugglerWork[playerid] != 0)
-		{
-			SendClientMessage(playerid, COLOR_GREY, "   You are smuggling drugs already.");
-			return 1;
-		}
-		if (GetPlayerMoney(playerid) < 299)
-		{
-			SendClientMessage(playerid, COLOR_GREY, "   Bring atleast 300$ when you are smuggling drugs.");
-			return 1;
-		}
-		if (PayDaySecure[playerid] == 1)
-		{
-			SendClientMessage(playerid, COLOR_GREY, "   Are you sure that you want to smuggle drugs again, today?");
-			return 1;
-		}
-		if (!PlayerToPoint(5.0, playerid, -38.8664, 56.3031, 3.1172))
-		{
-			SendClientMessage(playerid, COLOR_GREY, "   You are not at a drugs farm.");
-			return 1;
-		}
-		if (IsASmuggleCar(idcar) && GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
-		{
-			TogglePlayerControllable(playerid, 0);
-			SmugglerWork[playerid] = 1;
-			PayDaySecure[playerid] = 1;
-			GameTextForPlayer(playerid, "~w~Loading car with drugs...", 5000, 1);
-			SetTimerEx("LoadingDrugsForSmugglers", 5000, false, "i", playerid);
-		}
-		else
-		{
-			SendClientMessage(playerid, COLOR_GREY, "   You are not in drugs smugglers' car.");
-			return 1;
-		}
-	}
-	return 1;
-}
-CMD:doimatkhau(playerid, params[]) { return cmd_changepass(playerid, params); }
-CMD:changepass(playerid, params[])
-{
-	if (IsPlayerConnected(playerid))
-	{
-		if (gPlayerLogged[playerid] == 0)
-		{
-			SendClientMessage(playerid, COLOR_GREY, "   Ban chua dang nhap.");
-			return 1;
-		}
-		else
-		{
-			SendClientMessage(playerid, COLOR_GREY, "   Thay doi nay se duoc cap nhat trong lan dang nhap tiep theo.");
-		}
-		new tmp[256];
-		if (sscanf(params, "s[256]", tmp))
-			return SendClientMessage(playerid, COLOR_GRAD1, "Su dung: /changepass [password]");
-
-		format(PlayerInfo[playerid][pKey], 128, tmp);
-		SavePlayer(playerid);
-		SendClientMessage(playerid, COLOR_YELLOW, "   Mat khau da duoc thay doi thanh cong!");
-	}
-	return 1;
-}
+//CMD:startdrugharvest(playerid, params[])
+//{
+//	new idcar;
+//	idcar = GetPlayerVehicleID(playerid);
+//	if (IsPlayerConnected(playerid))
+//	{
+//		if (!IsADrugHarvest(idcar))
+//		{
+//			SendClientMessage(playerid, COLOR_GREY, "   You are not in a drug harvester.");
+//			return 1;
+//		}
+//		if (DrugFarmerVar[playerid] == 1)
+//		{
+//			SendClientMessage(playerid, COLOR_GREY, "Your are already on your job.");
+//			return 1;
+//		}
+//		if (DrugFarmerPickup[playerid][0] >= 37)
+//		{
+//			SendClientMessage(playerid, COLOR_WHITE, "This is enough for today (come back next payday).");
+//			return 1;
+//		}
+//		if (PlayerInfo[playerid][pJob] == 19)
+//		{
+//			JustStarted[playerid] = 1;
+//			TogglePlayerControllable(playerid, 1);
+//			DrugFarmerVar[playerid] = 1;
+//			OnPlayerEnterCheckpoint(playerid);
+//			SendClientMessage(playerid, COLOR_YELLOW, "Farm owner: Your working hours is up, go to red marker.");
+//		}
+//	}
+//	return 1;
+//}
+//CMD:stopdrugharvest(playerid, params[])
+//{
+//		 new idcar;
+//		 idcar = GetPlayerVehicleID(playerid);
+//	if (IsPlayerConnected(playerid))
+//	{
+//		if (DrugFarmerVar[playerid] == 0)
+//		{
+//			SendClientMessage(playerid, COLOR_GREY, "   You haven't started your work.");
+//			return 1;
+//		}
+//		if (PlayerInfo[playerid][pJob] == 19)
+//		{
+//			if (IsADrugHarvest(idcar))
+//			{
+//				TogglePlayerControllable(playerid, 1);
+//				RemovePlayerFromVehicle(playerid);
+//			}
+//			if (DrugFarmerPickup[playerid][0] >= 1 && DrugFarmerPickup[playerid][0] <= 37)
+//			{
+//				DrugFarmerPickup[playerid][0]--;
+//			}
+//			JustStarted[playerid] = 0;
+//			DrugFarmerVar[playerid] = 0;
+//			DisablePlayerCheckpoint(playerid);
+//		}
+//	}
+//	return 1;
+//}
+//CMD:smuggledrugs(playerid, params[])
+//{
+//	new idcar;
+//	idcar = GetPlayerVehicleID(playerid);
+//	if (IsPlayerConnected(playerid))
+//	{
+//		if (PlayerInfo[playerid][pJob] != 20)
+//		{
+//			SendClientMessage(playerid, COLOR_GREY, "   You are not a drugs smuggler.");
+//			return 1;
+//		}
+//		if (SmugglerWork[playerid] != 0)
+//		{
+//			SendClientMessage(playerid, COLOR_GREY, "   You are smuggling drugs already.");
+//			return 1;
+//		}
+//		if (GetPlayerMoney(playerid) < 299)
+//		{
+//			SendClientMessage(playerid, COLOR_GREY, "   Bring atleast 300$ when you are smuggling drugs.");
+//			return 1;
+//		}
+//		if (PayDaySecure[playerid] == 1)
+//		{
+//			SendClientMessage(playerid, COLOR_GREY, "   Are you sure that you want to smuggle drugs again, today?");
+//			return 1;
+//		}
+//		if (!PlayerToPoint(5.0, playerid, -38.8664, 56.3031, 3.1172))
+//		{
+//			SendClientMessage(playerid, COLOR_GREY, "   You are not at a drugs farm.");
+//			return 1;
+//		}
+//		if (IsASmuggleCar(idcar) && GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
+//		{
+//			TogglePlayerControllable(playerid, 0);
+//			SmugglerWork[playerid] = 1;
+//			PayDaySecure[playerid] = 1;
+//			GameTextForPlayer(playerid, "~w~Loading car with drugs...", 5000, 1);
+//			SetTimerEx("LoadingDrugsForSmugglers", 5000, false, "i", playerid);
+//		}
+//		else
+//		{
+//			SendClientMessage(playerid, COLOR_GREY, "   You are not in drugs smugglers' car.");
+//			return 1;
+//		}
+//	}
+//	return 1;
+//}
+//CMD:doimatkhau(playerid, params[]) { return cmd_changepass(playerid, params); }
+//CMD:changepass(playerid, params[])
+//{
+//	if (IsPlayerConnected(playerid))
+//	{
+//		if (gPlayerLogged[playerid] == 0)
+//		{
+//			SendClientMessage(playerid, COLOR_GREY, "   Ban chua dang nhap.");
+//			return 1;
+//		}
+//		else
+//		{
+//			SendClientMessage(playerid, COLOR_GREY, "   Thay doi nay se duoc cap nhat trong lan dang nhap tiep theo.");
+//		}
+//		new tmp[256];
+//		if (sscanf(params, "s[256]", tmp))
+//			return SendClientMessage(playerid, COLOR_GRAD1, "Su dung: /changepass [password]");
+//
+//		format(PlayerInfo[playerid][pKey], 128, tmp);
+//		SavePlayer(playerid);
+//		SendClientMessage(playerid, COLOR_YELLOW, "   Mat khau da duoc thay doi thanh cong!");
+//	}
+//	return 1;
+//}
 CMD:lockhq(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -21244,8 +21244,8 @@ CMD:help(playerid, params[])
 		else if (PlayerInfo[playerid][pJob] == 19) {
 			SendClientMessage(playerid, COLOR_YELLOW2, ":: JOB :: /gieohat");
 		}
-		else if (PlayerInfo[playerid][pJob] == 20) {
-			SendClientMessage(playerid, COLOR_YELLOW2, ":: JOB :: /smuggledrugs /selldrugsto");
+		//else if (PlayerInfo[playerid][pJob] == 20) {
+		//	SendClientMessage(playerid, COLOR_YELLOW2, ":: JOB :: /smuggledrugs /selldrugsto");
 		}
 		else if (PlayerInfo[playerid][pJob] == 21) {
 			SendClientMessage(playerid, COLOR_YELLOW2, ":: JOB :: /batdauquet /dungquet");
@@ -31121,20 +31121,21 @@ CMD:selldrugs(playerid, params[])
 	}
 	return 1;
 }
+CMD:banthuoc(playerid, params[]) { return cmd_selldrugsto(playerid, params); }
 CMD:selldrugsto(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
-		if (PlayerInfo[playerid][pJob] != 20)
-		{
-			SendClientMessage(playerid, COLOR_GREY, "   Ban khong phai la de buon lau thuoc!");
-			return 1;
-		}
-		if (!PlayerToPoint(15.0, playerid, 1484.3933, -1731.2124, 6.7213))
-		{
-			SendClientMessage(playerid, COLOR_GREY, "   Ban khong o cho den!");
-			return 1;
-		}
+		//if (PlayerInfo[playerid][pJob] != 20)
+		//{
+		//	SendClientMessage(playerid, COLOR_GREY, "   Ban khong phai la de buon lau thuoc!");
+		//	return 1;
+		//}
+		//if (!PlayerToPoint(15.0, playerid, 1484.3933, -1731.2124, 6.7213))
+		//{
+		//	SendClientMessage(playerid, COLOR_GREY, "   Ban khong o cho den!");
+		//	return 1;
+		//}
 		new playa, giveplayer[50], string[256], money, needed;
 		if (sscanf(params, "uii", playa, needed, money))
 			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /selldrugsto [playerid/Ten] [So luong] [Gia]");
