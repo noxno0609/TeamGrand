@@ -31,7 +31,6 @@
 #include <streamer>
 #include <zcmd>
 #include <sscanf2>
-#include <YSI\y_timers>
 //MYSQLDEFINE
 new MySQL:conn;
 
@@ -1564,6 +1563,7 @@ enum pInfo
 	pDrugsSkill,
 	pCookSkill,
 	pFishSkill,
+	pFarmerSkill,
 Float:pHealth,
 	Float:pSHealth,
 			  pInt,
@@ -2026,6 +2026,7 @@ public SavePlayer(playerid)
 				DrugsSkill=%d,\
 				CookSkill=%d,\
 				FishSkill=%d,\
+				FarmerSkill=%d,\
 				pSHealth=%f,\
 				pHealth=%f,\
 				`Int`=%d,\
@@ -2045,6 +2046,7 @@ public SavePlayer(playerid)
 				PlayerInfo[playerid][pDrugsSkill],
 				PlayerInfo[playerid][pCookSkill],
 				PlayerInfo[playerid][pFishSkill],
+				PlayerInfo[playerid][pFarmerSkill],
 				PlayerInfo[playerid][pSHealth],
 				PlayerInfo[playerid][pHealth],
 				PlayerInfo[playerid][pInt],
@@ -9382,6 +9384,7 @@ public CreateGuideMenus()
 	AddMenuItem(JobLocations2, 0, "Don rac");
 	AddMenuItem(JobLocations2, 0, "Tho vu khi");
 	AddMenuItem(JobLocations2, 0, "Nguoi buon thuoc");
+	AddMenuItem(JobLocations2, 0, "Trong trot");
 	AddMenuItem(JobLocations2, 0, "<- Lui");
 	AddMenuItem(JobLocations2, 0, "- Thoat -");
 }

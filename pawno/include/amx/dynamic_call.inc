@@ -25,7 +25,6 @@
 
 #include <a_samp>
 
-#include "amx_jit"
 #include "amx_header"
 #include "amx_memory"
 #include "opcode"
@@ -49,16 +48,6 @@ forward CallNativeByAddress(address, {Float,_}:...);
 
 static stock g_nargs = 0;
 static stock g_args[DYNAMIC_CALL_MAX_ARGS];
-
-forward DynamicCallFunctionInclusion_();
-
-public DynamicCallFunctionInclusion_() {
-	// When doing "sysreq.c func" on a native function not used anywhere else in
-	// code, old compilers would crash.  This function ensures that the native
-	// is used in at least one other place so that it will be included in the
-	// native function table.
-	numargs();
-}
 
 stock bool:Push(arg) {
 	if (g_nargs < sizeof(g_args)) {
@@ -98,8 +87,7 @@ stock Call(address, bool:auto_pop = true) {
 	#emit push.pri
 
 	#emit lctrl 6
-	#emit add.c 0x24
-	#emit lctrl 8
+	#emit add.c 0x1c
 	#emit push.pri
 	#emit load.s.pri address
 	#emit sctrl 6
@@ -107,7 +95,7 @@ stock Call(address, bool:auto_pop = true) {
 	#emit stor.s.pri retval
 
 	if (auto_pop) {
-		g_nargs = 0;
+		while (Pop()) {}
 	}
 
 	return retval;
@@ -134,8 +122,7 @@ stock CallN(address, args_to_push, bool:auto_pop = true) {
 	#emit push.pri
 
 	#emit lctrl 6
-	#emit add.c 0x24
-	#emit lctrl 8
+	#emit add.c 0x1c
 	#emit push.pri
 	#emit load.s.pri address
 	#emit sctrl 6
@@ -143,7 +130,9 @@ stock CallN(address, args_to_push, bool:auto_pop = true) {
 	#emit stor.s.pri retval
 
 	if (auto_pop) {
-		g_nargs = end;
+		while (args_to_push--) {
+			Pop();
+		}
 	}
 
 	return retval;
@@ -181,8 +170,7 @@ stock CallFunction(address, {Float,_}:...) {
 	// Call the function
 	#emit push.s arg_bytes
 	#emit lctrl 6
-	#emit add.c 0x24
-	#emit lctrl 8
+	#emit add.c 0x1c
 	#emit push.pri
 	#emit load.s.pri address
 	#emit sctrl 6
@@ -203,10 +191,6 @@ stock SysreqC(index, bool:auto_pop = true) {
 	new Opcode:sysreq_c = RelocateOpcode(OP_SYSREQ_C);
 	new retval;
 
-	if (GetJITGeneratorVersion()) {
-		return cellmin;
-	}
-
 	while (--i >= 0) {
 		arg = g_args[i];
 		#emit push.s arg
@@ -241,7 +225,6 @@ stock SysreqC(index, bool:auto_pop = true) {
 
 	#emit nop
 	#emit nop
-	// #emit sysreq.c 0
 
 	#emit stor.s.pri retval
 
@@ -253,7 +236,7 @@ stock SysreqC(index, bool:auto_pop = true) {
 	#emit sctrl 4
 
 	if (auto_pop) {
-		g_nargs = 0;
+		while (Pop()) {}
 	}
 
 	return retval;
@@ -266,10 +249,6 @@ stock SysreqD(address, bool:auto_pop = true) {
 	new tmp;
 	new Opcode:sysreq_d = RelocateOpcode(OP_SYSREQ_D);
 	new retval;
-
-	if (GetJITGeneratorVersion()) {
-		return cellmin;
-	}
 
 	while (--i >= 0) {
 		arg = g_args[i];
@@ -316,7 +295,7 @@ stock SysreqD(address, bool:auto_pop = true) {
 	#emit sctrl 4
 
 	if (auto_pop) {
-		g_nargs = 0;
+		while (Pop()) {}
 	}
 
 	return retval;
@@ -331,10 +310,6 @@ stock SysreqCN(index, args_to_push, bool:auto_pop = true) {
 	new end = g_nargs - args_to_push;
 	new retval;
 
-	if (GetJITGeneratorVersion()) {
-		return cellmin;
-	}
-
 	if (end < 0) {
 		return cellmin;
 	}
@@ -383,7 +358,9 @@ stock SysreqCN(index, args_to_push, bool:auto_pop = true) {
 	#emit sctrl 4
 
 	if (auto_pop) {
-		g_nargs = end;
+		while (args_to_push--) {
+			Pop();
+		}
 	}
 
 	return retval;
@@ -397,10 +374,6 @@ stock SysreqDN(address, args_to_push, bool:auto_pop = true) {
 	new Opcode:sysreq_d = RelocateOpcode(OP_SYSREQ_D);
 	new end = g_nargs - args_to_push;
 	new retval;
-
-	if (GetJITGeneratorVersion()) {
-		return cellmin;
-	}
 
 	if (end < 0) {
 		return cellmin;
@@ -451,7 +424,9 @@ stock SysreqDN(address, args_to_push, bool:auto_pop = true) {
 	#emit sctrl 4
 
 	if (auto_pop) {
-		g_nargs = end;
+		while (args_to_push--) {
+			Pop();
+		}
 	}
 
 	return retval;
@@ -460,10 +435,6 @@ stock SysreqDN(address, args_to_push, bool:auto_pop = true) {
 stock CallNative(index, {Float,_}:...) {
 	new arg_bytes, arg_begin, arg_end;
 	new Opcode:sysreq_c = RelocateOpcode(OP_SYSREQ_C);
-
-	if (GetJITGeneratorVersion()) {
-		return cellmin;
-	}
 
 	// Get number of bytes passed.
 	#emit load.s.pri 0x8
@@ -540,10 +511,6 @@ stock CallNative(index, {Float,_}:...) {
 stock CallNativeByAddress(address, {Float,_}:...) {
 	new arg_bytes, arg_begin, arg_end;
 	new Opcode:sysreq_d = RelocateOpcode(OP_SYSREQ_D);
-
-	if (GetJITGeneratorVersion()) {
-		return cellmin;
-	}
 
 	// Get number of bytes passed.
 	#emit load.s.pri 0x8

@@ -1,7 +1,177 @@
-CMD:w(playerid, params[])
+
+stock HP(playerid)
 {
-	return cmd_whisper(playerid, params);
+	new name[32];
+	switch (PlayerInfo[playerid][pHelper])
+	{
+	case 1: format(name, sizeof(name), "[Helper]");
+	case 2: format(name, sizeof(name), "[CA]");
+	default: format(name, sizeof(name), "Khong");
+	}
+	return name;
 }
+
+stock IsPlayerNearSeed(playerid)
+{
+	for (new i = 0; i<MAXSEED; i++)
+	{
+		if (IsPlayerInRangeOfPoint(playerid, 5, SeedPos[i][0], SeedPos[i][1], SeedPos[i][2])) return 1;
+	}
+	return 0;
+}
+stock IsPlayerInRectangle(playerid, Float:x1, Float:y1, Float:x2, Float:y2)
+{
+	if (IsPlayerConnected(playerid))
+	{
+		new Float:xs, Float:ys, Float:zs;
+		GetPlayerPos(playerid, xs, ys, zs);
+		return IsPointInRectangle(xs, ys, x1, y1, x2, y2);
+	}
+	return 0;
+}
+stock IsPointInRectangle(Float:xs, Float:ys, Float:x1, Float:y1, Float:x2, Float:y2)
+{
+	if (IsBetweenFloats(xs, x1, x2) && IsBetweenFloats(ys, y1, y2))
+	{
+		return 1;
+	}
+	return 0;
+}
+stock IsBetweenFloats(Float:f, Float:f1, Float:f2)
+{
+	switch (floatcmp(f1, f2))
+	{
+	case 0: if (f == f1) { return 1; }
+	case 1: if (f <= f1 && f >= f2) { return 1; }
+	case -1: if (f >= f1 && f <= f2) { return 1; }
+	}
+	return 0;
+}
+stock IsPlayerInRangeofFarmer(playerid)
+{
+	if (IsPlayerInRectangle(playerid, -1028.2699, -1575.5719, -949.1511, -1626.2856)) return 1;
+	return 0;
+}
+
+stock ClearSeedPos(i)
+{
+	SeedPos[i][0] = 0;
+	SeedPos[i][1] = 0;
+	SeedPos[i][2] = 0;
+}
+
+stock DestroySeed(i)
+{
+	SeedGatLua[i] = 0;
+	SeedTuoiNuoc[i] = 0;
+	DestroyDynamic3DTextLabel(SeedText[i]);
+	SeedTime[i] = 0;
+	SeedTotal[i] = 0;
+	DestroyDynamicObject(SeedObject[i]);
+	SeedObject[i] = 0;
+	ClearSeedPos(i);
+	for (new playerid = 0; playerid <= GetPlayerPoolSize(); playerid++)
+	{
+		if (strcmp(SeedOwner[i], GN(playerid), true) == 0 && SeedOwner[i][0] != EOS) {
+			SeedCount[playerid]--;
+			break;
+		}
+	}
+	SeedOwner[i][0] = EOS;
+}
+
+stock GetPlayerNearSeed(playerid)
+{
+	for (new i = 0; i<MAXSEED; i++)
+	{
+		if (IsValidDynamicObject(SeedObject[i]) && IsPlayerInRangeOfPoint(playerid, 3, SeedPos[i][0], SeedPos[i][1], SeedPos[i][2])) return i;
+	}
+	return 0;
+}
+
+stock GetSlotSeed()
+{
+	for (new i = 0; i<MAXSEED; i++)
+	{
+		if (!SeedObject[i]) return i;
+	}
+	return -1;
+}
+
+stock SeedCheck(i) {
+	new str[100];
+	if (SeedGrowth[i] == 4) {
+		format(str, sizeof(str), "Nguoi gieo hat: %s\n[Da Truong Thanh] Co the gat lua ({00FF00} An ALT{008080})", SeedOwner[i]);
+		UpdateDynamic3DTextLabelText(SeedText[i], 0x008080FF, str);
+	}
+	if (SeedGrowth[i] == 5) {
+		format(str, sizeof(str), "Nguoi gieo hat: %s\n[Thieu Nuoc] Hay tuoi nuoc cho cay ngay! ({00FF00} An ALT{008080})", SeedOwner[i]);
+		UpdateDynamic3DTextLabelText(SeedText[i], 0x008080FF, str);
+	}
+	if (SeedGrowth[i] == 6) {
+		format(str, sizeof(str), "Nguoi gieo hat: %s\n[Chet] Do thieu nuoc !", SeedOwner[i]);
+		UpdateDynamic3DTextLabelText(SeedText[i], 0x008080FF, str);
+	}
+}
+stock RiceGrowth(i, a) {
+	SeedGrowth[i] = a;
+	SeedTotal[i] = 0;
+	SeedTime[i] = 0;
+	switch (SeedGrowth[i]) {
+		case 2: {
+			DestroyDynamicObject(SeedObject[i]);
+			SeedObject[i] = CreateDynamicObject(802, SeedPos[i][0], SeedPos[i][1], SeedPos[i][2] - 0.6, 0.0, 0.0, 0.0);
+		}
+		case 3: {
+			DestroyDynamicObject(SeedObject[i]);
+			SeedObject[i] = CreateDynamicObject(801, SeedPos[i][0], SeedPos[i][1], SeedPos[i][2] - 1.5, 0.0, 0.0, 0.0);
+		}
+		case 4: {
+			DestroyDynamicObject(SeedObject[i]);
+			SeedObject[i] = CreateDynamicObject(809, SeedPos[i][0], SeedPos[i][1], SeedPos[i][2] - 1.5, 0.0, 0.0, 0.0);
+		}
+		case 5: {
+			DestroyDynamicObject(SeedObject[i]);
+			SeedObject[i] = CreateDynamicObject(812, SeedPos[i][0], SeedPos[i][1], SeedPos[i][2] + 0.2, 0.0, 0.0, 0.0);
+		}
+		case 6: {
+			DestroyDynamicObject(SeedObject[i]);
+			SeedObject[i] = CreateDynamicObject(815, SeedPos[i][0], SeedPos[i][1], SeedPos[i][2] - 1.5, 0.0, 0.0, 0.0);
+		}
+	}
+	SeedCheck(i);
+}
+stock GetLevelSkill(playerid, skill)
+{
+	new value = 0;
+	switch (skill)
+	{
+	case FARMER: value = PlayerInfo[playerid][pFarmerSkill];
+	}
+	if (value>0 && value <100) return 1;
+	else if (value >= 100 && value <500) return 2;
+	else if (value >= 500 && value <1000) return 3;
+	else if (value >= 1000 && value <2000) return 4;
+	else if (value >= 2000) return 5;
+	return 0;
+}
+
+stock TangSkill(playerid, skill, soluong)
+{
+	new str[128];
+	switch (skill)
+	{
+		case FARMER:
+		{
+			if (PlayerInfo[playerid][pFarmerSkill] > 0) PlayerInfo[playerid][pFarmerSkill] += soluong;
+			format(str, sizeof(str), "[Trong trot]: Tang %d diem ki nang.", soluong);
+		}
+		default: return 0;
+	}
+	SendClientMessage(playerid, COLOR_YELLOW, str);
+	return 1;
+}
+
 CMD:goto(playerid, params[])
 {
 	if (PlayerInfo[playerid][pAdmin] < 1) return SendClientMessage(playerid, COLOR_GRAD1, "Khong co quyen han su dung cau lenh nay.");
@@ -419,18 +589,77 @@ CMD:c(playerid, params[])
 	return 1;
 }
 
-stock HP(playerid)
+CMD:gieohat(playerid, params[])
 {
-	new name[32];
-	switch (PlayerInfo[playerid][pHelper])
+	if (PlayerInfo[playerid][pJob] != 19) return SendClientMessage(playerid, COLOR_GRAD1, "Ban khong phai nong dan.");
+	if (IsPlayerInAnyVehicle(playerid)) return SendClientMessage(playerid, COLOR_GRAD1, "Ban khong theo gieo hat giong khi dang o trong xe!");
+	if (!IsPlayerInRangeofFarmer(playerid)) return SendClientMessage(playerid, COLOR_GRAD1, "Ban khong dung trong khu vuc co the gieo hat");
+	if (IsPlayerNearSeed(playerid)) return SendClientMessage(playerid, COLOR_GRAD1, "Ban khong the trong gan cay khac!");
+	//if (PInfo[playerid][HatGiong] <= 0) return SendMessage(playerid, COLOR_GRAD1, "Ban khong con hat giong de gieo");
+	new str[128];
+	if (SeedCount[playerid] >= MAX_SEED_PLAYER)
 	{
-	case 1: format(name, sizeof(name), "[Helper]");
-	case 2: format(name, sizeof(name), "[CA]");
-	default: format(name, sizeof(name), "Khong");
+		format(str, sizeof(str), "Ban da gieo hat den toi da [%d/%d] cay lua!", SeedCount[playerid], MAX_SEED_PLAYER);
+		SendClientMessage(playerid, COLOR_GRAD1, str);
+		return 1;
 	}
-	return name;
+	new i = GetSlotSeed();
+	if (i == -1) return SendClientMessage(playerid, COLOR_GRAD1, "Dat da het dinh duong.");
+	GetPlayerPos(playerid, SeedPos[i][0], SeedPos[i][1], SeedPos[i][2]);
+	ApplyAnimation(playerid, "BOMBER", "BOM_Plant_Crouch_In", 4.0, 0, 0, 0, 0, 0, 1);
+	SeedObject[i] = CreateDynamicObject(675, SeedPos[i][0], SeedPos[i][1], SeedPos[i][2] - 1, 0.0, 0.0, 0.0);
+	format(str, sizeof(str), "Nguoi gieo hat: %s\n[Can] Tuoi nuoc", GN(playerid));
+	SeedText[i] = CreateDynamic3DTextLabel(str, 0x008080FF, SeedPos[i][0], SeedPos[i][1], SeedPos[i][2], 5.0);
+	SeedGrowth[i] = 1;
+	SeedCount[playerid]++;
+	SeedTime[i] = 0;
+	SeedTotal[i] = 0;
+	format(SeedOwner[i], 128, "%s", GLN(playerid));
+	SendClientMessage(playerid, COLOR_WHITE, "Ban da gieo hat giong thanh cong!");
+	SendClientMessage(playerid, COLOR_WHITE, "Hay chu y tuoi nuoc thuong xuyen de cay phat trien!");
+	return 1;
 }
 
+task Plant[1000]()
+{
+	/////////////////////////////////////////Growth///////////////////
+	for (new i = 0; i<MAXSEED; i++)
+	{
+		if (IsValidDynamicObject(SeedObject[i]))
+		{
+			SeedTime[i] += 1000;
+			if (SeedGatLua[i] == 0 && SeedTime[i] == TIME_CAYHEO && (SeedGrowth[i] == 1 || SeedGrowth[i] == 2 || SeedGrowth[i] == 3 || SeedGrowth[i] == 4))
+			{
+				RiceGrowth(i, 5);
+			}
+			else if (SeedGatLua[i] == 0 && SeedTime[i] == TIME_CAYCHET && SeedGrowth[i] == 5)
+			{
+				RiceGrowth(i, 6);
+			}
+			else if (SeedGatLua[i] == 0 && SeedTime[i] == (TIME_CAYCHET / 2) && SeedGrowth[i] == 6)
+			{
+				DestroySeed(i);
+			}
+			else if (SeedTime[i] == TIME_CAYHEO && SeedGatLua[i] == 1) DestroySeed(i);
+		}
+	}
+	return 1;
+}
+timer TuoiCay[15000](i, time)
+{
+	new str[100];
+	SeedTuoiNuoc[i] = 0;
+	SeedTime[i] = 0;
+	SeedTotal[i] += time;
+	format(str, sizeof(str), "Nguoi gieo hat: %s\n[Can] Tuoi nuoc ({00FF00} An ALT{008080})", SeedOwner[i]);
+	UpdateDynamic3DTextLabelText(SeedText[i], 0x008080FF, str);
+	if (SeedTotal[i] >= TIME_SEEDGROWTH)
+	{
+		if (SeedGrowth[i] == 5)  RiceGrowth(i, 2);
+		RiceGrowth(i, SeedGrowth[i] + 1);
+	}
+	return 1;
+}
 timer NewbieChannel[1000](playerid)
 {
 	SetPVarInt(playerid, "InNewbieChannel", 0);

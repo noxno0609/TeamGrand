@@ -127,9 +127,7 @@ static stock enter_public(index, address) {
 
 	// modify public's return address so it will jump to exit_public() when done
 	#emit stack 4
-	#emit const.pri exit_public
-	#emit lctrl 8
-	#emit push.pri
+	#emit push.c exit_public
 
 	// jump to the public
 	#emit load.s.pri address

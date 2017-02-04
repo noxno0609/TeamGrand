@@ -361,6 +361,7 @@ CREATE TABLE `user` (
   `DrugsSkill` int(11) DEFAULT '0',
   `CookSkill` int(11) DEFAULT '0',
   `FishSkill` int(11) DEFAULT '0',
+  `FarmerSkill` int(11) DEFAULT '1',
   `pSHealth` float DEFAULT '0',
   `pHealth` float DEFAULT '100',
   `Int` int(11) DEFAULT '0',

@@ -57,8 +57,6 @@ stock const ASM_CTRL_STP = 3;
 stock const ASM_CTRL_STK = 4;
 stock const ASM_CTRL_FRM = 5;
 stock const ASM_CTRL_CIP = 6;
-stock const ASM_CTRL_JIT = 7;
-stock const ASM_CTRL_JMP = 8;
 
 static gPreviousWriteOffset = cellmin;
 
@@ -85,20 +83,18 @@ static stock AsmError:AsmEmitCell(ctx[AsmContext], value) {
 	return ASM_ERROR_NONE;
 }
 
-// Core functions:
-
-stock AsmError:AsmEmitOpcode(ctx[AsmContext], Opcode:opcode) {
+static stock AsmError:AsmEmitOpcode(ctx[AsmContext], Opcode:opcode) {
 	if (opcode <= OP_NONE || _:opcode >= NUM_OPCODES) {
 		return AsmRaiseError(ctx, ASM_ERROR_OPCODE);
 	}
 	return AsmEmitCell(ctx, _:RelocateOpcode(opcode));
 }
 
-stock AsmError:AsmEmitOperand(ctx[AsmContext], value) {
+static stock AsmError:AsmEmitOperand(ctx[AsmContext], value) {
 	return AsmEmitCell(ctx, value);
 }
 
-stock AsmError:AsmEmitInstruction(ctx[AsmContext], Opcode:opcode, ...) {
+static stock AsmError:AsmEmitInstruction(ctx[AsmContext], Opcode:opcode, ...) {
 	// if there's an error while writing then backtracking is useful
 	gPreviousWriteOffset = ctx[AsmContext_buffer_offset];
 
@@ -122,7 +118,7 @@ stock AsmError:AsmEmitInstruction(ctx[AsmContext], Opcode:opcode, ...) {
 	return ASM_ERROR_NONE;
 }
 
-stock AsmGetJumpAddressFromOffset(ctx[AsmContext], offset) {
+static stock AsmGetJumpAddressFromOffset(ctx[AsmContext], offset) {
 	new amxhdr[AMX_HDR];
 	GetAmxHeader(amxhdr);
 
@@ -133,9 +129,11 @@ stock AsmGetJumpAddressFromOffset(ctx[AsmContext], offset) {
 	return base + dest;
 }
 
-stock AsmError:AsmEmitJumpInstruction(ctx[AsmContext], Opcode:opcode, offset) {
+static stock AsmError:AsmEmitJumpInstruction(ctx[AsmContext], Opcode:opcode, offset) {
 	return AsmEmitInstruction(ctx, opcode, AsmGetJumpAddressFromOffset(ctx, offset));
 }
+
+// Core functions:
 
 stock AsmError:AsmInitPtr(ctx[AsmContext], buffer, size) {
 	ctx[AsmContext_buffer] = buffer;
@@ -185,11 +183,6 @@ stock AsmGetErrorHandler(const ctx[AsmContext]) {
 
 stock AsmError:AsmSetErrorHandler(ctx[AsmContext], error_handler) {
 	ctx[AsmContext_error_handler] = error_handler;
-	return ASM_ERROR_NONE;
-}
-
-stock AsmError:AsmSetErrorHandlerName(ctx[AsmContext], error_handler[]) {
-	ctx[AsmContext_error_handler] = GetPublicAddressFromName(error_handler);
 	return ASM_ERROR_NONE;
 }
 
@@ -440,7 +433,7 @@ stock AsmError:AsmEmitJrel(ctx[AsmContext], offset) {
 }
 
 stock AsmError:AsmEmitLctrl(ctx[AsmContext], index) {
-	assert(index >= 0 && index <= 8);
+	assert(index >= 0 && index <= 6);
 	return AsmEmitInstruction(ctx, OP_LCTRL, index);
 }
 
@@ -582,7 +575,7 @@ stock AsmError:AsmEmitRetn(ctx[AsmContext]) {
 }
 
 stock AsmError:AsmEmitSctrl(ctx[AsmContext], index) {
-	assert(index == 2 || 4 <= index <= 6 || index == 8);
+	assert(index == 2 || 4 <= index <= 6);
 	return AsmEmitInstruction(ctx, OP_SCTRL, index);
 }
 
