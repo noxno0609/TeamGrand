@@ -201,7 +201,7 @@ stock IsPlayerInBike(playerid)
 }
 
 forward Float:GetVehicleSpeed(vehicleid, UseMPH);
-stock Float:GetVehicleSpeed(vehicleid, UseMPH)
+public Float:GetVehicleSpeed(vehicleid, UseMPH)
 {
     new Float:speed_x,Float:speed_y,Float:speed_z,Float:temp_speed;
     GetVehicleVelocity(vehicleid,speed_x,speed_y,speed_z);
