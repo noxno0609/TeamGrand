@@ -3087,7 +3087,7 @@ public OnPlayerEnterCheckpoint(playerid)
 	if (IsPlayerInRangeOfPoint(playerid, 4, -1102.0814, -1636.1648, 76.3672))
 	{
 		SafeGivePlayerMoney(playerid, 5000);
-		PlayerInfo[targetid][pDrugs] += 2;
+		PlayerInfo[playerid][pDrugs] += 2;
 		SendClientMessage(playerid, COLOR_WHITE, "Ban da nhan duoc $5000 va 2 grams drug")
 		ApplyAnimation(playerid, "CARRY", "putdwn105", 4.0, 0, 1, 1, 1, 1);
 		SetPlayerSpecialAction(playerid, 0);
@@ -21248,7 +21248,7 @@ CMD:help(playerid, params[])
 		}
 		//else if (PlayerInfo[playerid][pJob] == 20) {
 		//	SendClientMessage(playerid, COLOR_YELLOW2, ":: JOB :: /smuggledrugs /selldrugsto");
-		}
+		//}
 		else if (PlayerInfo[playerid][pJob] == 21) {
 			SendClientMessage(playerid, COLOR_YELLOW2, ":: JOB :: /batdauquet /dungquet");
 		}
