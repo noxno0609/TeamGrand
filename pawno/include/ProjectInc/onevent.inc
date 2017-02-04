@@ -27519,6 +27519,7 @@ CMD:get(playerid, params[])
 	}//not connected
 	return 1;
 }
+CMD:xinviec(playerid, params[]) { return cmd_takejob(playerid, params); }
 CMD:takejob(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
