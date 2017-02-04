@@ -15,7 +15,7 @@ stock IsPlayerNearSeed(playerid)
 {
 	for (new i = 0; i<MAXSEED; i++)
 	{
-		if (IsPlayerInRangeOfPoint(playerid, 5, SeedPos[i][0], SeedPos[i][1], SeedPos[i][2])) return 1;
+		if (IsPlayerInRangeOfPoint(playerid, 3, SeedPos[i][0], SeedPos[i][1], SeedPos[i][2])) return 1;
 	}
 	return 0;
 }

@@ -3058,40 +3058,40 @@ public OnPlayerEnterCheckpoint(playerid)
 		{
 		case 1: // chicken
 		{
-					  ShowMenuForPlayer(chickenmenu, playerid);
-					  SetPlayerPos(playerid, 368.9714, -6.2486, 1001.8516);
-					  SetPlayerFacingAngle(playerid, 357.0132);
+			ShowMenuForPlayer(chickenmenu, playerid);
+			SetPlayerPos(playerid, 368.9714, -6.2486, 1001.8516);
+			SetPlayerFacingAngle(playerid, 357.0132);
 		}
 		case 2: // burger
 		{
-					  ShowMenuForPlayer(burgermenu, playerid);
-					  SetPlayerPos(playerid, 376.8571, -67.6620, 1001.5151);
-					  SetPlayerFacingAngle(playerid, 357.0132);
+			ShowMenuForPlayer(burgermenu, playerid);
+			SetPlayerPos(playerid, 376.8571, -67.6620, 1001.5151);
+			SetPlayerFacingAngle(playerid, 357.0132);
 		}
 		case 3: // pizza
 		{
-					  ShowMenuForPlayer(pizzamenu, playerid);
-					  SetPlayerPos(playerid, 375.6895, -118.9683, 1001.4995);
-					  SetPlayerFacingAngle(playerid, 357.0132);
+			ShowMenuForPlayer(pizzamenu, playerid);
+			SetPlayerPos(playerid, 375.6895, -118.9683, 1001.4995);
+			SetPlayerFacingAngle(playerid, 357.0132);
 		}
 		case 4: // donut
 		{
-					  ShowMenuForPlayer(donutshop, playerid);
-					  SetPlayerPos(playerid, 379.0611, -186.6032, 1000.6328);
-					  SetPlayerFacingAngle(playerid, 280);
+			ShowMenuForPlayer(donutshop, playerid);
+			SetPlayerPos(playerid, 379.0611, -186.6032, 1000.6328);
+			SetPlayerFacingAngle(playerid, 280);
 		}
-		}
-		if (IsPlayerInRangeOfPoint(playerid, 4, -1102.0814, -1636.1648, 76.3672))
-		{
-			SafeGivePlayerMoney(playerid, 5000);
-			ApplyAnimation(playerid, "CARRY", "putdwn105", 4.0, 0, 1, 1, 1, 1);
-			SetPlayerSpecialAction(playerid, 0);
-			RemovePlayerAttachedObject(playerid, 9);
-			new lv = GetLevelSkill(playerid, PLANT);
-			if (lv != 0) TangSkill(playerid, PLANT, 1);
 		}
 		SetCameraBehindPlayer(playerid);
 		return 1;
+	}
+	if (IsPlayerInRangeOfPoint(playerid, 4, -1102.0814, -1636.1648, 76.3672))
+	{
+		SafeGivePlayerMoney(playerid, 5000);
+		ApplyAnimation(playerid, "CARRY", "putdwn105", 4.0, 0, 1, 1, 1, 1);
+		SetPlayerSpecialAction(playerid, 0);
+		RemovePlayerAttachedObject(playerid, 9);
+		new lv = GetLevelSkill(playerid, PLANT);
+		if (lv != 0) TangSkill(playerid, PLANT, 1);
 	}
 	DisablePlayerCheckpoint(playerid);
 	return 1;
@@ -21242,7 +21242,7 @@ CMD:help(playerid, params[])
 			SendClientMessage(playerid, COLOR_YELLOW2, ":: JOB :: /startharvest /stopharvest");
 		}
 		else if (PlayerInfo[playerid][pJob] == 19) {
-			SendClientMessage(playerid, COLOR_YELLOW2, ":: JOB :: /gieohat /thuhoach");
+			SendClientMessage(playerid, COLOR_YELLOW2, ":: JOB :: /gieohat");
 		}
 		else if (PlayerInfo[playerid][pJob] == 20) {
 			SendClientMessage(playerid, COLOR_YELLOW2, ":: JOB :: /smuggledrugs /selldrugsto");
