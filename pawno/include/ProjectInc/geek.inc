@@ -291,7 +291,7 @@ CMD:goto(playerid, params[])
 	else if (IsNumeric(params))
 	{
 		new plo = strval(params);
-		if (plo == INVALID_PLAYER_ID)
+		if (plo == INVALID_PLAYER_ID || !IsPlayerConnected(plo))
 		{
 			format(str, sizeof(str), "   %d , nguoi choi khong hop le.", plo);
 			return SendClientMessage(playerid, COLOR_GRAD1, str);
@@ -488,8 +488,8 @@ CMD:gotopos(playerid, params[])
 CMD:nonewb(playerid, params[])
 {
 	if (PlayerInfo[playerid][pAdmin] < 1) return SendClientMessage(playerid, COLOR_GRAD1, "Khong co quyen han su dung cau lenh nay.");
-	if (NewbieChannelActive == 0) { NewbieChannelActive = 1; SendClientMessageToAll(COLOR_NEWBIE, "Kenh chat Newbie da duoc mo khoa."); }
-	else if (NewbieChannelActive == 1) { NewbieChannelActive = 0; SendClientMessageToAll(COLOR_NEWBIE, "Kenh chat Newbie da duoc khoa."); }
+	if (NewbieChannelActive == 0) { NewbieChannelActive = 1; BroadCast(COLOR_NEWBIE, "Kenh chat Newbie da duoc mo khoa."); }
+	else if (NewbieChannelActive == 1) { NewbieChannelActive = 0; BroadCast(COLOR_NEWBIE, "Kenh chat Newbie da duoc khoa."); }
 	return 1;
 }
 
@@ -507,7 +507,7 @@ CMD:newb(playerid, params[])
 		SetPVarInt(playerid, "InNewbieChannel", 1);
 		defer NewbieChannel[15000](playerid);
 	}
-	SendClientMessageToAll(COLOR_NEWBIE, str);
+	BroadCast(COLOR_NEWBIE, str);
 	return 1;
 }
 CMD:yeucautrogiup(playerid, params[])
@@ -654,6 +654,7 @@ public PlantKeyStateChange(playerid, newkeys, oldkeys)
 			SetPlayerAttachedObject(playerid, 9, 2901, 1, 0.25, 0.470760, 0.000000, 0.000000, 90.217391, 0.000000, 0.8, 0.8, 0.8);
 			SetPlayerSpecialAction(playerid, 25);
 			ApplyAnimation(playerid, "CARRY", "crry_prtial", 4.0, 1, 1, 1, 1, 1);
+			SetPVarInt(playerid, "CantUseAnim", 1);
 			SendClientMessage(playerid, COLOR_WHITE, "Ban da thu hoach lua, hay mang no toi kho!");
 			SetPlayerCheckpoint(playerid, -1102.0814, -1636.1648, 76.3672, 4);
 			DestroySeed(i);

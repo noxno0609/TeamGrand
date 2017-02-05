@@ -2543,7 +2543,7 @@ public LoadMission(playerid, name[])
 			format(strFromFile2, sizeof(strFromFile2), "%s Mission Loaded.", name);
 			SendClientMessage(playerid, COLOR_GREEN, strFromFile2);
 			format(strFromFile2, sizeof(strFromFile2), "Mission Available: %s, By : %s | Reward: $%d", PlayMission[kTitle], PlayMission[kMaker], PlayMission[kReward]);
-			SendClientMessageToAll(COLOR_GREEN, strFromFile2);
+			BroadCast(COLOR_GREEN, strFromFile2);
 			MissionPlayable = PlayMission[kNumber];
 		}
 		else
@@ -5429,18 +5429,18 @@ public GlobalHackCheck()
 					TogglePlayerControllable(i, 0);
 /*
 					format(string, sizeof(string), "AdmCmd: %s was banned by DUCK, reason: money cheat", plname);
-					SendClientMessageToAll(COLOR_LIGHTRED, string);
+					BroadCast(COLOR_LIGHTRED, string);
 */
 					PlayerInfo[i][pLocked] = 1;
 					SavePlayer(i);
 					GetPlayerIp(i, banip, sizeof(banip));
 					new spawnedamount = plactualmoney-ScriptMoney[i];
-					format(string, sizeof(string), "AdmCmd: %s was locked by DUCK, reason: money cheat ($%d)", plname, spawnedamount);
+					format(string, sizeof(string), "AdmCmd: tai khoan %s da bi khoa boi DUCK, ly do: money cheat ($%d)", plname, spawnedamount);
 					BanLog(string);
 					Kick(i);
 					ScriptMoney[i] = 0;
 					ScriptMoneyUpdated[i] = 0;
-					SendClientMessageToAll(COLOR_LIGHTRED, string);
+					BroadCast(COLOR_LIGHTRED, string);
 				}
 				else
 				{
@@ -5469,7 +5469,7 @@ public GlobalHackCheck()
 					TogglePlayerControllable(i, 0);
 					GetPlayerName(i, plname, sizeof(plname));
 					format(string, sizeof(string), "AdmCmd: %s was banned by DUCK, reason: weapon hack", plname);
-					SendClientMessageToAll(COLOR_LIGHTRED, string);
+					BroadCast(COLOR_LIGHTRED, string);
 					BanLog(string);
 					PlayerInfo[i][pLocked] = 1;
 					SavePlayer(i);
@@ -5490,7 +5490,7 @@ public GlobalHackCheck()
 			    {
 				    GetPlayerName(i, plname, sizeof(plname));
     				format(string, sizeof(string), "AdmCmd: %s was banned by DUCK, reason: weapon hack", plname);
-    				SendClientMessageToAll(COLOR_LIGHTRED, string);
+    				BroadCast(COLOR_LIGHTRED, string);
     				BanLog(string);
 					PlayerInfo[i][pLocked] = 1;
 					SavePlayer(i);
@@ -5501,7 +5501,7 @@ public GlobalHackCheck()
 			    {
 				    GetPlayerName(i, plname, sizeof(plname));
     				format(string, sizeof(string), "AdmCmd: %s was banned by DUCK, reason: minigun invasion", plname);
-    				SendClientMessageToAll(COLOR_LIGHTRED, string);
+    				BroadCast(COLOR_LIGHTRED, string);
     				BanLog(string);
 //					PlayerInfo[i][pLocked] = 1;
 //					SavePlayer(i);
@@ -5515,17 +5515,17 @@ public GlobalHackCheck()
 			{
 				// Illegal weapon
 				TogglePlayerControllable(i, 0);
-				SendClientMessage(i, COLOR_LIGHTRED, "Anticheat: You have been banned due to suspected cheating.");
-				SendClientMessage(i, COLOR_LIGHTRED, "Anticheat: Please contact an admin on ventrilo or on the forum immediately if you feel this is in error.");
-				SendClientMessage(i, COLOR_RED, "DUCK Anticheat 1.5 by Luk0r (Edited by Ellis/Scorcher)");
+				SendClientMessage(i, COLOR_LIGHTRED, "Anticheat: Ban da bi khoa tai khoan do co hanh vi gian lan.");
+				SendClientMessage(i, COLOR_LIGHTRED, "Anticheat: Vui long lien he voi admin tai forum neu ban nghi he thong hoat dong khong chinh xac.");
+				//SendClientMessage(i, COLOR_RED, "DUCK Anticheat 1.5 by Luk0r (Edited by Ellis/Scorcher)");
 				//PlayerInfo[i][pLocked] = 1;
 				SavePlayer(i);
 				//GetPlayerIp(i, banip, sizeof(banip));
 				//BanAdd(4, PlayerInfo[i][pSQLID], banip, 38);
 				GetPlayerName(i, plname, sizeof(plname));
-				format(string, sizeof(string), "AdmCmd: %s was banned by DUCK, reason: weapon hack", plname);
+				format(string, sizeof(string), "AdmCmd: tai khoan %s da bi ban boi DUCK, ly do: weapon hack", plname);
 				Ban(i);
-				SendClientMessageToAll(COLOR_LIGHTRED, string);
+				BroadCast(COLOR_LIGHTRED, string);
 			}
 		}
 	}
@@ -5551,7 +5551,7 @@ public OtherTimer()
 			{
 				if(gPlayerAccount[i] == 1 && gPlayerLogged[i] == 0)
 				{
-					SendClientMessage(i, COLOR_WHITE, "Meo: You can now login by typing /login <password>");
+					SendClientMessage(i, COLOR_WHITE, "Meo: Bay gio ban co the dang nhap bang cach /login <password>");
 				}
 			}
 		    if(GetPlayerState(i) == 2)
@@ -5685,7 +5685,7 @@ public OtherTimer()
 				    {
 						new called[MAX_PLAYER_NAME];
 						GetPlayerName(Mobile[i], called, sizeof(called));
-						format(string, sizeof(string), "* %s's phone rings.", called);
+						format(string, sizeof(string), "* Dien thoai cua %s dang rung.", called);
 						RingTone[Mobile[i]] = 10;
 						ProxDetector(30.0, Mobile[i], string, COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE);
 					}
@@ -5693,7 +5693,7 @@ public OtherTimer()
 			}
 			if(CellTime[i] == 0 && PlayerInfo2[CallCost][i] > 0)
 			{
-				format(string, sizeof(string), "~w~The call cost~n~~r~$%d",PlayerInfo2[CallCost][i]);
+				format(string, sizeof(string), "~w~Cuoc goi ton~n~~r~$%d",PlayerInfo2[CallCost][i]);
 				//SafeGivePlayerMoney(i, -= PlayerInfo2[CallCost][i];);
 				CellTime[i] -= PlayerInfo2[CallCost][i];
 				SBizzInfo[2][sbTill] += PlayerInfo2[CallCost][i];
@@ -5805,9 +5805,9 @@ public SetPlayerUnjail()
 					    SetPlayerPos(i, 90.2101,1920.4854,17.9422);
 					}
 					PlayerInfo[i][pJailed] = 0;
-					SendClientMessage(i, COLOR_GRAD1,"Warden: You've been released from jail.");
-					SendClientMessage(i, COLOR_GRAD1,"Warden: Think about the time, before you do the crime.");
-					format(string, sizeof(string), "~g~Freedom~n~~w~Try to be a better citizen");
+					SendClientMessage(i, COLOR_GRAD1,"Warden: Ban da duoc tra tu do.");
+					SendClientMessage(i, COLOR_GRAD1,"Warden: Hay nghi den thoi gian trong tu moi khi lam viec pham phap.");
+					format(string, sizeof(string), "~g~Freedom~n~~w~Hay co gang tro thanh mot cong dan tot");
 					GameTextForPlayer(i, string, 5000, 1);
 					if(gTeam[i] == 4) { gTeam[i] = 3; }
 					ClearCrime(i);
@@ -5900,20 +5900,20 @@ public SetPlayerUnjail()
 			    CallLawyer[i] = 111;
 			    if(WantLawyer[i] == 1)
 				{
-				    SendClientMessage(i, COLOR_YELLOW2, "Do you want a Lawyer? (Type yes or no)");
+				    SendClientMessage(i, COLOR_YELLOW2, "Ban co muon Luat su khong? (Go yes hoac no)");
 				}
 				WantLawyer[i] ++;
 				if(WantLawyer[i] == 8)
 				{
-				    SendClientMessage(i, COLOR_YELLOW2, "Do you want a Lawyer? (Type yes or no)");
+				    SendClientMessage(i, COLOR_YELLOW2, "Ban co muon Luat su khong? (Go yes hoac no)");
 				}
 	            if(WantLawyer[i] == 15)
 				{
-				    SendClientMessage(i, COLOR_YELLOW2, "Do you want a Lawyer? (Type yes or no)");
+				    SendClientMessage(i, COLOR_YELLOW2, "Ban co muon Luat su khong? (Go yes hoac no)");
 				}
 				if(WantLawyer[i] == 20)
 				{
-				    SendClientMessage(i, COLOR_YELLOW2, "There is no Lawyer available to you anymore, Jail Time started.");
+				    SendClientMessage(i, COLOR_YELLOW2, "Ban khong the yeu cau Luat su nua, bat dau thoi gian o tu.");
 				    WantLawyer[i] = 0;
 				    CallLawyer[i] = 0;
 				}
@@ -5925,7 +5925,7 @@ public SetPlayerUnjail()
 			    {
 			        ClearChatbox(i, 10);
 			        SendClientMessage(i, COLOR_WHITE, "Vay ban la nguoi moi ? Chung toi se chi cho ban mot vai noi va cho ban mot vai huong dan, goi y.");
-			        SendClientMessage(i, COLOR_WHITE, "Neu ban khong biet cach choi Roleplay, moi ban ra khoi sever.");
+			        SendClientMessage(i, COLOR_WHITE, "Neu ban khong biet cach choi Roleplay, vui long tim hieu them tai Forum.");
 			        SendClientMessage(i, COLOR_WHITE, " ");
 			        SetPlayerCameraPos(i, 2247.0215,-1655.0173,17.2856);
 					SetPlayerCameraLookAt(i, 2244.6536,-1663.9304,15.4766);
@@ -6011,8 +6011,8 @@ public SetPlayerUnjail()
 			        SendClientMessage(i, COLOR_YELLOW, ":: KET THUC PHAN HUONG DAN ::");
 			        SendClientMessage(i, COLOR_WHITE, " ");
 			        SendClientMessage(i, COLOR_YELLOW2, "Con rat nhieu noi khac tai Los Angeles, nhung ban can phai tu minh kham pha.");
-			        SendClientMessage(i, COLOR_YELLOW2, "Dung co quen luat Role-Play nhe, boi vi pham luat (NON-RPing) co the bi canh cao va banned!");
-			        SendClientMessage(i, COLOR_YELLOW2, "Loi chao than ai va quyet thang tu: Team admin Les Angeles Roleplay.");
+			        SendClientMessage(i, COLOR_YELLOW2, "Dung co quen luat Role-Play nhe, boi vi pham luat (NON-RP) co the bi canh cao va khoa tai khoan!");
+			        SendClientMessage(i, COLOR_YELLOW2, "Loi chao than ai va quyet thang tu: Team admin Los Angeles Roleplay.");
 			    }
 			    else if(TutTime[i] == 119)
 			    {
@@ -6164,7 +6164,7 @@ public SetPlayerUnjail()
 					                	        Titel[TitelWins] = PlayerInfo[TBoxer][pWins];
 					                	        Titel[TitelLoses] = PlayerInfo[TBoxer][pLoses];
 					                	        SaveBoxer();
-							                	format(string, sizeof(string), "Boxing News: %s Da thang tran dau tranh dai vo dich hang nang %s Bay gio tro thanh nha vo dich moi.",  titel, loser);
+							                	format(string, sizeof(string), "Boxing News: %s da thang tran dau tranh dai vo dich hang nang voi %s. Tro thanh nha vo dich moi.",  titel, loser);
 												OOCOff(COLOR_WHITE,string);
 				                	        }
 				                	        else
@@ -6175,7 +6175,7 @@ public SetPlayerUnjail()
 										else
 										{
 										    GetPlayerName(TBoxer, titel, sizeof(titel));
-										    format(string, sizeof(string), "Boxing News: Tran dau boxing tranh dai vo dich %s Da gianh chien thang %s.",  titel, loser);
+										    format(string, sizeof(string), "Boxing News: Tran dau boxing tranh dai vo dich %s da gianh chien thang truoc %s.",  titel, loser);
 											OOCOff(COLOR_WHITE,string);
 											Titel[TitelWins] = PlayerInfo[TBoxer][pWins];
 				                	        Titel[TitelLoses] = PlayerInfo[Boxer2][pLoses];
@@ -6183,10 +6183,10 @@ public SetPlayerUnjail()
 										}
 									}
 								}//TBoxer
-								format(string, sizeof(string), "* Ban da thua tran dau %s.", winner);
+								format(string, sizeof(string), "* Ban da thua tran dau voi %s.", winner);
 								SendClientMessage(Boxer1, COLOR_WHITE, string);
 								GameTextForPlayer(Boxer1, "~r~You lost", 3500, 1);
-								format(string, sizeof(string), "* Ban da thang tran dau %s.", loser);
+								format(string, sizeof(string), "* Ban da thang tran dau voi %s.", loser);
 								SendClientMessage(Boxer2, COLOR_WHITE, string);
 								GameTextForPlayer(Boxer2, "~r~You won", 3500, 1);
 								if(GetPlayerHealth(Boxer1, health) < 20)
@@ -6242,7 +6242,7 @@ public SetPlayerUnjail()
 					                	        Titel[TitelWins] = PlayerInfo[TBoxer][pWins];
 					                	        Titel[TitelLoses] = PlayerInfo[TBoxer][pLoses];
 					                	        SaveBoxer();
-							                	format(string, sizeof(string), "Boxing News: %s Da thang tran dau tranh dai vo dich hang nang %s Bay gio tro thanh nha vo dich moi.",  titel, loser);
+							                	format(string, sizeof(string), "Boxing News: %s Da thang tran dau tranh dai vo dich hang nang voi %s. Tro thanh nha vo dich moi.",  titel, loser);
 												OOCOff(COLOR_WHITE,string);
 											}
 				                	        else
@@ -6253,7 +6253,7 @@ public SetPlayerUnjail()
 										else
 										{
 										    GetPlayerName(TBoxer, titel, sizeof(titel));
-										    format(string, sizeof(string), "Boxing News: Tran dau boxing tranh dai vo dich %s Da gianh chien thang %s.",  titel, loser);
+										    format(string, sizeof(string), "Boxing News: Tran dau boxing tranh dai vo dich %s da gianh chien thang truoc %s.",  titel, loser);
 											OOCOff(COLOR_WHITE,string);
 											Titel[TitelWins] = PlayerInfo[TBoxer][pWins];
 				                	        Titel[TitelLoses] = PlayerInfo[Boxer1][pLoses];
@@ -6436,8 +6436,8 @@ public SetPlayerUnjail()
 			    {
 			        new sendername[MAX_PLAYER_NAME];
 			        GetPlayerName(i, sendername, sizeof(sendername));
-				    if(PlayerInfo[i][pSex] == 1) { format(string, sizeof(string), "* %s finishes his cigarette.", sendername); }
-					else { format(string, sizeof(string), "* %s finishes her cigarette.", sendername); }
+				    if(PlayerInfo[i][pSex] == 1) { format(string, sizeof(string), "* %s hut het dieu xi ga.", sendername); }
+					else { format(string, sizeof(string), "* %s hut het dieu xi ga.", sendername); }
 				    ProxDetector(30.0, i, string, COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE);
 				    new Float:PlayerHealth;
 				    GetPlayerHealth(i, PlayerHealth);
@@ -6452,8 +6452,8 @@ public SetPlayerUnjail()
 			    {
 			        new sendername[MAX_PLAYER_NAME];
 			        GetPlayerName(i, sendername, sizeof(sendername));
-			        if(PlayerInfo[i][pSex] == 1) { format(string, sizeof(string), "* %s vut dieu thuoc.", sendername); }
-					else { format(string, sizeof(string), "* %s flicks from her cigarette.", sendername); }
+			        if(PlayerInfo[i][pSex] == 1) { format(string, sizeof(string), "* %s dang hut xi ga.", sendername); }
+					else { format(string, sizeof(string), "* %s dang hut xi ga.", sendername); }
 			        ProxDetector(30.0, i, string, COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE);
 			        new Float:PlayerHealth;
 			        GetPlayerHealth(i, PlayerHealth);
@@ -6463,8 +6463,8 @@ public SetPlayerUnjail()
 			    {
 			        new sendername[MAX_PLAYER_NAME];
 			        GetPlayerName(i, sendername, sizeof(sendername));
-			        if(PlayerInfo[i][pSex] == 1) { format(string, sizeof(string), "* %s vut dieu thuoc.", sendername); }
-					else { format(string, sizeof(string), "* %s flicks from her cigarette.", sendername); }
+			        if(PlayerInfo[i][pSex] == 1) { format(string, sizeof(string), "* %s dang hut xi ga.", sendername); }
+					else { format(string, sizeof(string), "* %s dang hut xi ga.", sendername); }
 			        ProxDetector(30.0, i, string, COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE);
 			        new Float:PlayerHealth;
 			        GetPlayerHealth(i, PlayerHealth);
@@ -6474,8 +6474,8 @@ public SetPlayerUnjail()
 			    {
 			        new sendername[MAX_PLAYER_NAME];
 			        GetPlayerName(i, sendername, sizeof(sendername));
-			        if(PlayerInfo[i][pSex] == 1) { format(string, sizeof(string), "* %s vut dieu thuoc.", sendername); }
-					else { format(string, sizeof(string), "* %s flicks from her cigarette.", sendername); }
+			        if(PlayerInfo[i][pSex] == 1) { format(string, sizeof(string), "* %s dang hut xi ga.", sendername); }
+					else { format(string, sizeof(string), "* %s dang hut xi ga.", sendername); }
 			        ProxDetector(30.0, i, string, COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE);
 			        new Float:PlayerHealth;
 			        GetPlayerHealth(i, PlayerHealth);
@@ -7333,7 +7333,7 @@ public Checkprop()
 				HouseInfo[h][hVcol2] = -1;
 				strmid(HouseInfo[h][hOwner], "The State", 0, strlen("The State"), 255);
 				format(string, sizeof(string), "REAL ESTATE: A House is available at a value of $%d",HouseInfo[h][hValue]);
-				SendClientMessageToAll(TEAM_BALLAS_COLOR, string);
+				BroadCast(TEAM_BALLAS_COLOR, string);
 				OnPropUpdate();
 			}
 		}
@@ -8696,7 +8696,7 @@ public IdleKick()
 					new string[128];
 					GetPlayerName(i, plname, sizeof(plname));
 					format(string, sizeof(string), "AdmCmd: %s da bi kick boi Nick_Dep_Trai, Ly do: AFK", plname);
-					SendClientMessageToAll(COLOR_LIGHTRED, string);
+					BroadCast(COLOR_LIGHTRED, string);
 					Kick(i);
 				}
 				PlayerPos[i][3] = PlayerPos[i][0];
