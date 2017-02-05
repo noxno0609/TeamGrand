@@ -3087,9 +3087,11 @@ public OnPlayerEnterCheckpoint(playerid)
 	}
 	if (IsPlayerInRangeOfPoint(playerid, 4, -1102.0814, -1636.1648, 76.3672))
 	{
-		SafeGivePlayerMoney(playerid, 5000);
-		PlayerInfo[playerid][pDrugs] += 2;
-		SendClientMessage(playerid, COLOR_WHITE, "Ban da nhan duoc $5000 va 2 grams drug")
+		new str[255];
+		SafeGivePlayerMoney(playerid, PLANTMONEY);
+		PlayerInfo[playerid][pDrugs] += PLANTDRUG;
+		format(str, sizeof(str), "Ban da nhan duoc $%d va %d grams drug", PLANTMONEY, PLANTDRUG);
+		SendClientMessage(playerid, COLOR_WHITE, str);
 		ApplyAnimation(playerid, "CARRY", "putdwn105", 4.0, 0, 1, 1, 1, 1);
 		SetPlayerSpecialAction(playerid, 0);
 		RemovePlayerAttachedObject(playerid, 9);

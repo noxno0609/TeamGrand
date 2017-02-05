@@ -36,6 +36,7 @@ new MySQL:conn;
 
 //DEFINE
 #include <ProjectInc\declare>
+#include <ProjectInc\reward>
 
 #define DIALOG_REG 1
 #define DIALOG_LOGIN 2
