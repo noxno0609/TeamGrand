@@ -59,6 +59,42 @@ task ServerBeat[1000]()
 			SetPlayerInterior(EscortedPlayer[playerid], intid);
 			SetPlayerVirtualWorld(EscortedPlayer[playerid], vir);
 		}
+		if (DDTime[playerid] > 0 && DrugDealing[playerid] == 2)
+		{
+			new str[128];
+			format(str, sizeof(str), "~y~%d giay ~n~~g~de bat dau buon lau.", DDTime[playerid]);
+			GameTextForPlayer(playerid, str, 1000, 4);
+			DDTime[playerid]--;
+		}
+		if (DDTime[playerid] == 10 && DrugDealing[playerid] == 2)
+		{
+			new zone[MAX_ZONE_NAME];
+			GetPlayer2DZone(playerid, zone, MAX_ZONE_NAME);
+			new str[128];
+			format(str, sizeof(str), "[Duong day buon lau]: %s dang tien hanh buon lau o khu vuc %s tren chiec xe %s.", GN(playerid), zone, GetVehicleName(GetVehicleModel(GetPlayerVehicleID(playerid))));
+			SendRadioMessage(1, TEAM_RADIO_COLOR, str);
+		}
+		if (DDTime[playerid] == 0 && DrugDealing[playerid] == 2)
+		{
+			TogglePlayerControllable(playerid, 1);
+			if (WantedPoints[playerid] == 0) { WantedPoints[playerid] = 3; }
+			else { WantedPoints[playerid] += 2; }
+			SetPlayerCriminalEx(playerid, 255, "Buon lau");
+			new str[128];
+			format(str, sizeof(str), "Nhan hang da xong, bay gio hay toi diem do tren ban do de giao hang buon lau, hay can than voi canh sat.");
+			SCM(playerid, COLOR_YELLOW, str);
+			format(str, sizeof(str), "Ban co the yeu cau thay doi dia diem giao hang. (/doibuonlau)");
+			SCM(playerid, COLOR_YELLOW, str);
+
+			new rand = random(sizeof(BuonLauGiveCP));
+			DrugDealing[playerid] = 3;
+			ChangeDD[playerid] = 0;
+			OldDD[playerid] = rand;
+			new vid = GetPlayerVehicleID(playerid);
+			CarDD[playerid] = vid;
+
+			SetPlayerCheckpoint(playerid, BuonLauGiveCP[rand][0], BuonLauGiveCP[rand][1], BuonLauGiveCP[rand][2], 5);
+		}
 	}
 	//printf("Called every second, but not at the same time as RepeatingFunction2.");
 }

@@ -544,6 +544,7 @@ public OnGameModeInit()
 	AddStaticPickup(1239, 23, 359.6820, 207.0294, 1008.3828); // AD
 	AddStaticPickup(1239, 23, -382.6660, -1426.5121, 26.2410); // Farmer job pickup
 	AddStaticPickup(1239, 23, -1109.5745, -1637.6207, 76.3672); // Trong trot job pickup
+	AddStaticPickup(1239, 23, -1111.4635, -1681.5151, 76.3739); // Trong trot job pickup
 	AddStaticPickup(1239, 23, -38.8664, 56.3031, 3.1172); // Drugs for smugglers
 	AddStaticPickup(1239, 23, 2022.1492, -1108.7837, 26.2031); // Drugs Smuggler pickup
 	AddStaticPickup(1239, 23, 2072.5486, -1582.8029, 13.4741); // Drugs Dealer reg
@@ -679,6 +680,13 @@ public OnPlayerConnect(playerid)
 	Tazered[playerid] = 0;
 	Tazering[playerid] = 0;
 	WearTazer[playerid] = 0;
+
+	DDTime[playerid] = 0;
+	DrugDealing[playerid] = 0;
+	DrugDealer[playerid] = 0;
+	CarDD[playerid] = -1;
+	OldDD[playerid] = -1;
+	ChangeDD[playerid] = 0;
 
 	HitTimes[playerid] = 0;
 
@@ -1216,6 +1224,17 @@ public OnPlayerDeath(playerid, killerid, reason)
 	new victimteam;
 	new Float:px, Float:py, Float:pz;
 	new killerteam;
+
+	if (DrugDealing[playerid] > 0)
+	{
+		DDTime[playerid] = 0;
+		DrugDealing[playerid] = 0;
+		DrugDealer[playerid] = 0;
+		CarDD[playerid] = -1;
+		OldDD[playerid] = -1;
+		ChangeDD[playerid] = 0;
+		SCM(playerid, COLOR_WHITE, "Phi vu buon lau that bai!");
+	}
 
 	victimteam = gTeam[playerid];
 	killerteam = gTeam[killerid];
@@ -1796,6 +1815,45 @@ public OnPlayerEnterCheckpoint(playerid)
 	new string[128];
 	new string2[128];
 	new name[MAX_PLAYER_NAME];
+	if (DrugDealing[playerid] == 1)
+	{
+		for (new i = 0; i<sizeof(BuonLauTakeCP); i++)
+		{
+			if (IsPlayerInRangeOfPoint(playerid, 5, BuonLauTakeCP[i][0], BuonLauTakeCP[i][1], BuonLauTakeCP[i][2]))
+			{
+				if (IsPlayerInBike(playerid)) return SCM(playerid, COLOR_GREY, "Ban phai dung xe bon banh de di buon lau.");
+				DDTime[playerid] = 15;
+				DrugDealing[playerid] = 2;
+				TogglePlayerControllable(playerid, 0);
+				SCM(playerid, COLOR_YELLOW, "Hay cho 15 giay de hang duoc chuyen len xe.");
+				DisablePlayerCheckpoint(playerid);
+				return 1;
+			}
+		}
+	}
+	if (DrugDealing[playerid] == 3)
+	{
+		for (new i = 0; i<sizeof(BuonLauGiveCP); i++)
+		{
+			if (IsPlayerInRangeOfPoint(playerid, 5, BuonLauGiveCP[i][0], BuonLauGiveCP[i][1], BuonLauGiveCP[i][2]))
+			{
+				new vid = GetPlayerVehicleID(playerid);
+				if (vid != CarDD[playerid] && !IsPlayerInAnyVehicle(playerid)) return SCM(playerid, COLOR_GREY, "Ban khong o tren xe buon lau cua minh.");
+
+				new money = DrugDealer[playerid] * 10000;
+				SafeGivePlayerMoney(playerid, money);
+				GameTextForPlayer(playerid, "Chuc mung! Ban da buon lau thanh cong!", 5000, 4);
+				new str[128];
+				format(str, sizeof(str), "Ban nhan duoc %d$ cho phi vu buon lau.", money);
+				SCM(playerid, COLOR_GREEN, str);
+				DrugDealing[playerid] = 0;
+				DrugDealer[playerid] = 0;
+				CarDD[playerid] = -1;
+				OldDD[playerid] = -1;
+				ChangeDD[playerid] = 0;
+			}
+		}
+	}
 	if (TaxiCallTime[playerid] > 0 && TaxiAccepted[playerid] < 999)
 	{
 		TaxiAccepted[playerid] = 999;
@@ -3469,10 +3527,16 @@ public OnPlayerSelectedMenuRow(playerid, row)
 		}
 		case 5:
 		{
+					SendClientMessage(playerid, COLOR_LIGHTRED, "Dia diem de buon lau duoc danh dau do tren ban do.");
+					SetPlayerCheckpoint(playerid, -1111.4635, -1681.5151, 76.3739, 5.0);
+					TogglePlayerControllable(playerid, 1);
+		}
+		case 6:
+		{
 					HideMenuForPlayer(JobLocations2, playerid);
 					ShowMenuForPlayer(JobLocations, playerid);
 		}
-		case 6:
+		case 7:
 		{
 					HideMenuForPlayer(JobLocations2, playerid);
 					//ShowMenuForPlayer(Guide, playerid);
@@ -13417,6 +13481,7 @@ CMD:mdc(playerid, params[])
 	}
 	return 1;
 }
+ CMD:su(playerid, params[]) { return cmd_suspect(playerid, params); }
 CMD:suspect(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -21172,6 +21237,7 @@ CMD:help(playerid, params[])
 		SendClientMessage(playerid, COLOR_GRAD2, ":: GENERAL :: /resetupgrades(50k) /buygun /lock /skill /licenses /showlicenses(/sl) /report /askq /animlist /stopanim /fuel");
 		SendClientMessage(playerid, COLOR_GRAD2, ":: GENERAL :: (/re)port /cancel /accept /eject /usedrugs /contract /fill /admins /licensers (/f)actionlist");
 		SendClientMessage(playerid, COLOR_GRAD3, ":: GENERAL :: (/wi)ndows /coin /trunk (/inv)entory /gocua /knockout /give /gateopen /sid /smoke");
+		SendClientMessage(playerid, COLOR_GRAD3, ":: GENERAL :: /buonlau /doibuonlau");
 		SendClientMessage(playerid, COLOR_GRAD3, ":: CHAT :: (/p)me (/cw)hisper (/o)oc (/s)hout /low (/b) (/f)action /me /do /togooc /tognews /togfam /togpm /togphone");
 		SendClientMessage(playerid, COLOR_GRAD4, ":: BANK :: /balance /withdraw /deposit /wiretransfer");
 		if (PlayerInfo[playerid][pLeader] == 1 || PlayerInfo[playerid][pMember] == 1)
@@ -21246,7 +21312,7 @@ CMD:help(playerid, params[])
 		}
 		//else if (PlayerInfo[playerid][pJob] == 20) {
 		//	SendClientMessage(playerid, COLOR_YELLOW2, ":: JOB :: /smuggledrugs /selldrugsto");
-		}
+		//}
 		else if (PlayerInfo[playerid][pJob] == 21) {
 			SendClientMessage(playerid, COLOR_YELLOW2, ":: JOB :: /batdauquet /dungquet");
 		}

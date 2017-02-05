@@ -242,3 +242,49 @@ stock GetIp(playerid)
 	GetPlayerIp(playerid, ip, sizeof(ip));
 	return ip;
 }
+
+CMD:buonlau(playerid, params[])
+{
+	if (gTeam[playerid] == 2 || IsACop(playerid)) return SCM(playerid, COLOR_GREY, "Ban la nhan vien chinh phu, khong the di buon lau.");
+	if (PlayerInfo[playerid][pLevel] < 5) return SCM(playerid, COLOR_GREY, "Ban phai dat cap 8 moi co the di buon.");
+	if (!IsPlayerInRangeOfPoint(playerid, 3, -1111.4635, -1681.5151, 76.3739)) return SCM(playerid, COLOR_GREY, "Ban khong dung o khu vuc thuong luong de buon lau (/huongdan tim O Buon Lau");
+	new drugs, str[128];
+	if (sscanf(params, "i", drugs)) return SCM(playerid, COLOR_GRAD2, "Su dung: /buonlau [so luong thuoc]");
+	if (drugs < 10 || drugs > 100) return SCM(playerid, COLOR_GREY, "Ban chi co the buon lau tu 10 den 100 thuoc mot phi vu.");
+	if (PlayerInfo[playerid][pDrugs] < drugs) return SCM(playerid, COLOR_GREY, "Ban khong co du thuoc de buon lau.");
+
+	new rand = random(sizeof(BuonLauTakeCP));
+
+	format(str, sizeof(str), "Ban da thoa thuan %d thuoc de buon lau, hay toi cham do va mang theo mot chiec xe bon banh de chuan bi hang.", drugs);
+	SCM(playerid, COLOR_YELLOW, str);
+	SCM(playerid, COLOR_YELLOW, "Day la mot phi vu nguy hiem, xin hay chuan bi sung ong ky cang.");
+	SetPlayerCheckpoint(playerid, BuonLauTakeCP[rand][0], BuonLauTakeCP[rand][1], BuonLauTakeCP[rand][2], 3);
+	PlayerInfo[playerid][pDrugs] -= drugs;
+	DrugDealer[playerid] = drugs;
+	DrugDealing[playerid] = 1;
+	return 1;
+}
+
+ CMD:doibuonlau(playerid, params[])
+ {
+		if (DrugDealing[playerid] != 3) return SCM(playerid, COLOR_GREY, "Ban hien tai khong buon lau hoac chua tien hanh buon lau.");
+		if (ChangeDD[playerid] == 1) return SCM(playerid, COLOR_GREY, "Ban chi co the doi diem giao dich 1 lan.");
+		new rand = random(sizeof(BuonLauGiveCP));
+		while (rand == OldDD[playerid])
+		{
+			rand = random(sizeof(BuonLauGiveCP));
+		}
+		SCM(playerid, COLOR_WHITE, "Dang lien lac de yeu cau doi dia diem giao dich...");
+		SetTimerEx("ChangeDrugDealer", 5000, false, "ii", playerid, rand);
+		return 1;
+ }
+
+forward ChangeDrugDealer(playerid, rand);
+public ChangeDrugDealer(playerid, rand)
+{
+	SCM(playerid, COLOR_YELLOW, "[Stranger]: Tao da gui cho may thong tin dia diem giao dich moi, nhanh toi day va de phong may thang com!");
+	SCM(playerid, COLOR_WHITE, "Dia diem giao dich da duoc doi, hay toi cham do moi de giao dich.");
+	SetPlayerCheckpoint(playerid, BuonLauGiveCP[rand][0], BuonLauGiveCP[rand][1], BuonLauGiveCP[rand][2], 5);
+	return 1;
+}
+
