@@ -1101,6 +1101,7 @@ public OnPlayerDisconnect(playerid, reason)
 	{
 		CountAdvisor--;
 	}
+	SetPVarInt(playerid, "CantUseAnim", 0);
 }
 dcmd_specplayer(playerid, params[])
 {
