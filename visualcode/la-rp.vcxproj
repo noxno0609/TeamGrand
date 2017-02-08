@@ -16,6 +16,8 @@
     <None Include="..\pawno\include\ProjectInc\declare.inc" />
     <None Include="..\pawno\include\ProjectInc\geek.inc" />
     <None Include="..\pawno\include\ProjectInc\onevent.inc" />
+    <None Include="..\pawno\include\ProjectInc\ontimer.inc" />
+    <None Include="..\pawno\include\ProjectInc\reward.inc" />
     <None Include="..\scriptfiles\mysql.ini" />
     <None Include="..\server.cfg" />
   </ItemGroup>

@@ -1110,6 +1110,7 @@ public OnPlayerDisconnect(playerid, reason)
 	{
 		CountAdvisor--;
 	}
+	SetPVarInt(playerid, "CantUseAnim", 0);
 }
 dcmd_specplayer(playerid, params[])
 {
@@ -3258,12 +3259,15 @@ public OnPlayerEnterCheckpoint(playerid)
 	}
 	if (IsPlayerInRangeOfPoint(playerid, 4, -1102.0814, -1636.1648, 76.3672))
 	{
-		SafeGivePlayerMoney(playerid, 5000);
-		PlayerInfo[playerid][pDrugs] += 2;
-		SendClientMessage(playerid, COLOR_WHITE, "Ban da nhan duoc $5000 va 2 grams drug")
+		new str[255];
+		SafeGivePlayerMoney(playerid, PLANTMONEY);
+		PlayerInfo[playerid][pDrugs] += PLANTDRUG;
+		format(str, sizeof(str), "Ban da nhan duoc $%d va %d grams drug", PLANTMONEY, PLANTDRUG);
+		SendClientMessage(playerid, COLOR_WHITE, str);
 		ApplyAnimation(playerid, "CARRY", "putdwn105", 4.0, 0, 1, 1, 1, 1);
 		SetPlayerSpecialAction(playerid, 0);
 		RemovePlayerAttachedObject(playerid, 9);
+		SetPVarInt(playerid, "CantUseAnim", 0);
 		new lv = GetLevelSkill(playerid, PLANT);
 		if (lv != 0) TangSkill(playerid, PLANT, 1);
 	}
@@ -12714,28 +12718,28 @@ CMD:government(playerid, params[])
 		if(sscanf(params, "s[256]", result))
 			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/gov)ernment [text]");
 
-		SendClientMessageToAll(COLOR_WHITE, "|___________ Government News Announcement ___________|");
+		BroadCast(COLOR_WHITE, "|___________ Government News Announcement ___________|");
 		if (PlayerInfo[playerid][pMember] == 1 || PlayerInfo[playerid][pLeader] == 1)
 		{
 			if (PlayerInfo[playerid][pRank] == 8) { format(string, sizeof(string), "Chief %s: %s", GN(playerid), result); }
 			else if (PlayerInfo[playerid][pRank] == 7) { format(string, sizeof(string), "Deputy Chief %s: %s", GN(playerid), result); }
 			else if (PlayerInfo[playerid][pRank] == 6) { format(string, sizeof(string), "Captain %s: %s", GN(playerid), result); }
-			SendClientMessageToAll(COLOR_BLUE, string);
+			BroadCast(COLOR_BLUE, string);
 		}
 		else if (PlayerInfo[playerid][pMember] == 2 || PlayerInfo[playerid][pLeader] == 2)
 		{
 			format(string, sizeof(string), "Agent %s: %s", GN(playerid), result);
-			SendClientMessageToAll(COLOR_GRAD2, string);
+			BroadCast(COLOR_GRAD2, string);
 		}
 		else if (PlayerInfo[playerid][pMember] == 3 || PlayerInfo[playerid][pLeader] == 3)
 		{
 			format(string, sizeof(string), "Soldier %s: %s", GN(playerid), result);
-			SendClientMessageToAll(COLOR_GREEN, string);
+			BroadCast(COLOR_GREEN, string);
 		}
 		else if (PlayerInfo[playerid][pLeader] == 7)
 		{
 			format(string, sizeof(string), "Mayor %s: %s", GN(playerid), result);
-			SendClientMessageToAll(COLOR_GREY, string);
+			BroadCast(COLOR_GREY, string);
 		}
 	}
 	return 1;
@@ -18709,6 +18713,10 @@ CMD:unprison(playerid, params[])
 				PlayerInfo[giveplayerid][pJailed] = 0;
 				SetPlayerWorldBounds(giveplayerid, 20000.0000, -20000.0000, 20000.0000, -20000.0000);
 				SetPlayerPos(giveplayerid, 93.4852, 1920.6235, 18.0450);
+				SetPlayerInterior(giveplayerid, 0);
+				PlayerInfo[giveplayerid][pInt] = 0;
+				PlayerInfo[playerid][pVirWorld] = 0;
+				SetPlayerVirtualWorld(playerid, 0);
 				format(string, 256, "AdmCMD: %s has da duoc tha tu do boi Admin %s.", GN(giveplayerid), GN(playerid));
 				BroadCast(COLOR_LIGHTRED, string);
 				format(string, 256, "AdmWarning: %s da duoc tha tu do boi Admin %s.", GN(giveplayerid), GN(playerid));
@@ -20923,7 +20931,7 @@ CMD:learn(playerid, params[])
 					Kick(giveplayerid);
 
 					format(string, 256, "AdmCMD: %s da kick %s va bat buoc phai doc lai huong dan.", GN(playerid), GN(giveplayerid));
-					SendClientMessageToAll(COLOR_LIGHTRED, string);
+					BroadCast(COLOR_LIGHTRED, string);
 					return 1;
 				}
 			}
@@ -21031,7 +21039,7 @@ CMD:kick(playerid, params[])
 					format(string, sizeof(string), "AdmCMD: %s da bi kick boi %s, ly do: %s (%d-%d-%d)", GN(giveplayerid), GN(playerid), (result), month, day, year);
 					KickLog(string);
 					format(string, sizeof(string), "AdmCMD: %s da bi kick boi %s, ly do: %s", GN(giveplayerid), GN(playerid), (result));
-					SendClientMessageToAll(COLOR_LIGHTRED, string);
+					BroadCast(COLOR_LIGHTRED, string);
 					Kick(giveplayerid);
 					return 1;
 				}
@@ -21166,7 +21174,7 @@ CMD:ban(playerid, params[])
 					format(string, sizeof(string), "AdmCMD: %s da bi BAN boi %s, ly do: %s (%d-%d-%d)", GN(giveplayerid), GN(playerid), (result), month, day, year);
 					BanLog(string);
 					format(string, sizeof(string), "AdmCMD: %s da bi BAN boi %s, ly do: %s", GN(giveplayerid), GN(playerid), (result));
-					SendClientMessageToAll(COLOR_LIGHTRED, string);
+					BroadCast(COLOR_LIGHTRED, string);
 					PlayerInfo[giveplayerid][pLocked] = 1;
 					Ban(giveplayerid);
 					return 1;
@@ -21508,13 +21516,13 @@ CMD:cellphonehelp(playerid, params[])
 		SendClientMessage(playerid, COLOR_GREEN, "_______________________________________");
 		if (PlayerInfo[playerid][pPnumber] > 0)
 		{
-			SendClientMessage(playerid, COLOR_WHITE, "*** HELP *** type a command for more help");
+			SendClientMessage(playerid, COLOR_WHITE, "*** HELP *** go lenh de biet huong dan cu the");
 			SendClientMessage(playerid, COLOR_GRAD3, "*** CELLPHONE *** /call 'eg: /call 911' /ucall /sms /pickup (/h)angup /number");
 			SendClientMessage(playerid, COLOR_GRAD4, "*** OTHER *** /help /househelp /notehelp /vehiclehelp /renthelp /businesshelp /leaderhelp /fishhelp /cookhelp /irchelp");
 		}
 		else
 		{
-			SendClientMessage(playerid, COLOR_WHITE, "You can buy a cell phone in any 24-7");
+			SendClientMessage(playerid, COLOR_WHITE, "Ban co the mua dien thoai tai cua hang 24-7");
 		}
 	}
 	return 1;
@@ -21524,7 +21532,7 @@ CMD:househelp(playerid, params[])
 	if (IsPlayerConnected(playerid))
 	{
 		SendClientMessage(playerid, COLOR_GREEN, "_______________________________________");
-		SendClientMessage(playerid, COLOR_WHITE, "*** HOUSE HELP *** type a command for more help");
+		SendClientMessage(playerid, COLOR_WHITE, "*** HOUSE HELP *** go lenh de biet huong dan cu the");
 		SendClientMessage(playerid, COLOR_GRAD3, "*** HOUSE *** /enter /exit /open /home /hoimau /nangcapnha /setrentable /tv (off/player)");
 		SendClientMessage(playerid, COLOR_GRAD3, "*** HOUSE *** /evictall /setrent /evict /housewithdraw /bannha /muanha");
 		SendClientMessage(playerid, COLOR_GRAD4, "*** OTHER *** /cellphonehelp /help /notehelp /vehiclehelp /renthelp /businesshelp /leaderhelp /fishhelp /cookhelp /irchelp");
@@ -21536,7 +21544,7 @@ CMD:notehelp(playerid, params[])
 	if (IsPlayerConnected(playerid))
 	{
 		SendClientMessage(playerid, COLOR_GREEN, "_______________________________________");
-		SendClientMessage(playerid, COLOR_WHITE, "*** NOTE HELP *** type a command for more help");
+		SendClientMessage(playerid, COLOR_WHITE, "*** NOTE HELP *** go lenh de biet huong dan cu the");
 		SendClientMessage(playerid, COLOR_GRAD3, "*** NOTE *** /shownotes /deletenote /createnote /givenote");
 		SendClientMessage(playerid, COLOR_GRAD4, "*** OTHER *** /cellphonehelp /help /househelp /vehiclehelp /renthelp /businesshelp /leaderhelp /fishhelp /cookhelp /irchelp");
 	}
@@ -21547,7 +21555,7 @@ CMD:renthelp(playerid, params[])
 	if (IsPlayerConnected(playerid))
 	{
 		SendClientMessage(playerid, COLOR_GREEN, "_______________________________________");
-		SendClientMessage(playerid, COLOR_WHITE, "*** RENTING HELP *** type a command for more help");
+		SendClientMessage(playerid, COLOR_WHITE, "*** RENTING HELP *** go lenh de biet huong dan cu the");
 		SendClientMessage(playerid, COLOR_GRAD3, "*** RENT *** /unrent /enter /exit /lock /home");
 		SendClientMessage(playerid, COLOR_GRAD4, "*** OTHER *** /cellphonehelp /househelp /notehelp /vehiclehelp /help /businesshelp /leaderhelp /fishhelp /cookhelp /irchelp");
 	}
@@ -21558,7 +21566,7 @@ CMD:businesshelp(playerid, params[])
 	if (IsPlayerConnected(playerid))
 	{
 		SendClientMessage(playerid, COLOR_GREEN, "_______________________________________");
-		SendClientMessage(playerid, COLOR_WHITE, "*** BUSINESS HELP *** type a command for more help");
+		SendClientMessage(playerid, COLOR_WHITE, "*** BUSINESS HELP *** go lenh de biet huong dan cu the");
 		SendClientMessage(playerid, COLOR_GRAD3, "*** BUSINESS *** /bizinfo /bizfee /bizname /prodprice /extortion");
 		SendClientMessage(playerid, COLOR_GRAD4, "*** BUSINESS *** /enter /exit /open /banbiz /muabiz /bizbank /bizwithdraw");
 		SendClientMessage(playerid, COLOR_GRAD4, "*** OTHER *** /cellphonehelp /househelp /notehelp /vehiclehelp /renthelp /help");
@@ -21574,7 +21582,7 @@ CMD:leaderhelp(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREEN, "_______________________________________");
 			if (PlayerInfo[playerid][pLeader] != 7)
 			{
-				SendClientMessage(playerid, COLOR_WHITE, "*** LEADER HELP *** type a command for more help");
+				SendClientMessage(playerid, COLOR_WHITE, "*** LEADER HELP *** go lenh de biet huong dan cu the");
 				SendClientMessage(playerid, COLOR_GRAD3, "*** LEADERS *** /invite /uninvite /giverank");
 			}
 			if (PlayerInfo[playerid][pLeader] == 5 || PlayerInfo[playerid][pLeader] == 6 || PlayerInfo[playerid][pLeader] == 16)
@@ -21583,13 +21591,13 @@ CMD:leaderhelp(playerid, params[])
 			}
 			if (PlayerInfo[playerid][pLeader] == 7)
 			{
-				SendClientMessage(playerid, COLOR_GRAD3, "*** LEADERS *** /govinvite /govuninvite /settax /givetax (Give some money to the Cops)");
+				SendClientMessage(playerid, COLOR_GRAD3, "*** LEADERS *** /govinvite /govuninvite /settax /givetax (Dua tien cho cops)");
 			}
 			SendClientMessage(playerid, COLOR_GREEN, "_______________________________________");
 		}
 		else
 		{
-			SendClientMessage(playerid, COLOR_GREY, "   You are not a Leader!");
+			SendClientMessage(playerid, COLOR_GREY, "   Ban khong phai Leader!");
 		}
 	}
 	return 1;
@@ -21599,7 +21607,7 @@ CMD:irchelp(playerid, params[])
 	if (IsPlayerConnected(playerid))
 	{
 		SendClientMessage(playerid, COLOR_GREEN, "_______________________________________");
-		SendClientMessage(playerid, COLOR_WHITE, "*** IRC HELP *** Type a command for more help");
+		SendClientMessage(playerid, COLOR_WHITE, "*** IRC HELP *** go lenh de biet huong dan cu the");
 		SendClientMessage(playerid, COLOR_WHITE, "*** IRC *** (/irc join [channelnr] or /irc join [channelnr] [password])  (/irc leave)");
 		SendClientMessage(playerid, COLOR_WHITE, "*** IRC *** (/irc Password [channelnr])  (/irc NeedPass [channelnr])  (/irc Lock [channelnr])");
 		SendClientMessage(playerid, COLOR_WHITE, "*** IRC *** (/irc Admins)  (/irc MOTD [motdtext])  (/irc status [channelnr])  (/i [text])");
@@ -21611,8 +21619,8 @@ CMD:fishhelp(playerid, params[])
 	if (IsPlayerConnected(playerid))
 	{
 		SendClientMessage(playerid, COLOR_GREEN, "_______________________________________");
-		SendClientMessage(playerid, COLOR_WHITE, "*** FISH HELP *** type a command for more help");
-		SendClientMessage(playerid, COLOR_GRAD3, "*** FISHING *** /fish (Try to catch a fish)   /fishes (Show the fishes you have caught)");
+		SendClientMessage(playerid, COLOR_WHITE, "*** FISH HELP *** go lenh de biet huong dan cu the");
+		SendClientMessage(playerid, COLOR_GRAD3, "*** FISHING *** /fish (Try to catch a fish)   /fishes (Xem so ca ma ban cau duoc)");
 		SendClientMessage(playerid, COLOR_GRAD3, "*** FISHING *** /throwback (Throw the last fish you caught back)   /throwbackall");
 		SendClientMessage(playerid, COLOR_GRAD3, "*** FISHING *** /releasefish (Release one of your fishes)");
 	}
@@ -21623,7 +21631,7 @@ CMD:fishhelp(playerid, params[])
 	if(IsPlayerConnected(playerid))
 	{
 	SendClientMessage(playerid, COLOR_GREEN,"_______________________________________");
-	SendClientMessage(playerid, COLOR_WHITE,"*** COOK HELP *** type a command for more help");
+	SendClientMessage(playerid, COLOR_WHITE,"*** COOK HELP *** go lenh de biet huong dan cu the");
 	SendClientMessage(playerid, COLOR_GRAD3,"*** COOKING *** /cook (See all the options available)   /cooked (See everything that you have Cooked)");
 	SendClientMessage(playerid, COLOR_GRAD3,"*** COOKING *** /eat (Eat something that you have Cooked)");
 	}
