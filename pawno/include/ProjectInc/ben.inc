@@ -7,7 +7,7 @@ public TazerKeyStateChange(playerid, newkeys, oldkeys)
 		for (new i = 0; i<MAX_PLAYERS; i++)
 		{
 			if (PlayerInfo[i][pMember] == 1 || PlayerInfo[i][pLeader] == 1) continue;
-			if (IsPlayerNearPlayer(playerid, i, 2) && i != playerid && Tazered[i] == 0)
+			if (IsPlayerNearPlayer(playerid, i, 2) && i != playerid && Tazered[i] == 0 && !IsPlayerInAnyVehicle(i))
 			{
 				Tazered[i] = 15;
 				TogglePlayerControllable(i, 0);
@@ -241,4 +241,89 @@ stock GetIp(playerid)
 	new ip[16];
 	GetPlayerIp(playerid, ip, sizeof(ip));
 	return ip;
+}
+
+CMD:buonlau(playerid, params[])
+{
+	if (gTeam[playerid] == 2 || IsACop(playerid)) return SCM(playerid, COLOR_GREY, "Ban la nhan vien chinh phu, khong the di buon lau.");
+	if (PlayerInfo[playerid][pLevel] < 5) return SCM(playerid, COLOR_GREY, "Ban phai dat cap 8 moi co the di buon.");
+	if (!IsPlayerInRangeOfPoint(playerid, 3, -1111.4635, -1681.5151, 76.3739)) return SCM(playerid, COLOR_GREY, "Ban khong dung o khu vuc thuong luong de buon lau (/huongdan tim O Buon Lau");
+	new drugs, str[128];
+	if (sscanf(params, "i", drugs)) return SCM(playerid, COLOR_GRAD2, "Su dung: /buonlau [so luong thuoc]");
+	if (drugs < 10 || drugs > 100) return SCM(playerid, COLOR_GREY, "Ban chi co the buon lau tu 10 den 100 thuoc mot phi vu.");
+	if (PlayerInfo[playerid][pDrugs] < drugs) return SCM(playerid, COLOR_GREY, "Ban khong co du thuoc de buon lau.");
+
+	new rand = random(sizeof(BuonLauTakeCP));
+
+	format(str, sizeof(str), "Ban da thoa thuan %d thuoc de buon lau, hay toi cham do va mang theo mot chiec xe bon banh de chuan bi hang.", drugs);
+	SCM(playerid, COLOR_YELLOW, str);
+	SCM(playerid, COLOR_YELLOW, "Day la mot phi vu nguy hiem, xin hay chuan bi sung ong ky cang.");
+	SetPlayerCheckpoint(playerid, BuonLauTakeCP[rand][0], BuonLauTakeCP[rand][1], BuonLauTakeCP[rand][2], 3);
+	PlayerInfo[playerid][pDrugs] -= drugs;
+	DrugDealer[playerid] = drugs;
+	DrugDealing[playerid] = 1;
+	OldDD[playerid] = rand;
+	return 1;
+}
+
+ CMD:doibuonlau(playerid, params[])
+ {
+		if (DrugDealing[playerid] != 3) return SCM(playerid, COLOR_GREY, "Ban hien tai khong buon lau hoac chua tien hanh buon lau.");
+		if (CoopDD[playerid] >= 0) return SCM(playerid, COLOR_GREY, "Chi co truong nhom buon lau moi co the doi noi giao dich.");
+		if (ChangeDD[playerid] == 1) return SCM(playerid, COLOR_GREY, "Ban chi co the doi diem giao dich 1 lan.");
+		new rand = random(sizeof(BuonLauGiveCP));
+		while (rand == OldDD[playerid])
+		{
+			rand = random(sizeof(BuonLauGiveCP));
+		}
+		SCM(playerid, COLOR_WHITE, "Dang lien lac de yeu cau doi dia diem giao dich...");
+		SetTimerEx("ChangeDrugDealer", 5000, false, "ii", playerid, rand);
+		return 1;
+ }
+
+forward ChangeDrugDealer(playerid, rand);
+public ChangeDrugDealer(playerid, rand)
+{
+	SCM(playerid, COLOR_WHITE, "[Stranger]: Tao da gui cho may thong tin dia diem giao dich moi, nhanh toi day va de phong may thang com!");
+	SCM(playerid, COLOR_YELLOW, "Dia diem giao dich da duoc doi, hay toi cham do moi de giao dich.");
+	SetPlayerCheckpoint(playerid, BuonLauGiveCP[rand][0], BuonLauGiveCP[rand][1], BuonLauGiveCP[rand][2], 5);
+
+	foreach(Player, ddid)
+	{
+		if (CoopDD[ddid] == playerid)
+		{
+			SetPlayerCheckpoint(ddid, BuonLauGiveCP[rand][0], BuonLauGiveCP[rand][1], BuonLauGiveCP[rand][2], 5);
+			SCM(playerid, COLOR_YELLOW, "Truong nhom buon lau da doi dia diem giao dich, noi giao dich moi da duoc danh dau tren ban do.");
+		}
+	}
+	return 1;
+}
+
+stock GetDriverVehicle(vid)
+{
+	foreach(Player, playerid)
+	{
+		if (IsPlayerInVehicle(playerid, vid) && GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
+			return playerid;
+	}
+	return -1;
+}
+
+stock CheckDrugDealerInVehicle(vid, ddcase)
+{
+	new count = 0;
+	foreach(Player, playerid)
+	{
+		if (DrugDealing[playerid] == ddcase && IsPlayerInVehicle(playerid, vid))
+			count++;
+	}
+	return count;
+}
+
+stock IsPlayerDrugDealingCooperate(ddid, playerid, ddcase)
+{
+	new vid = GetPlayerVehicleID(playerid);
+	if (DrugDealing[ddid] == ddcase && IsPlayerInVehicle(ddid, vid))
+		return 1;
+	return 0;
 }

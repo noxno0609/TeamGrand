@@ -317,7 +317,6 @@ forward StoppedVehicle();
 forward SyncTime();
 forward SyncUp();
 forward SaveAccounts();
-forward IsPlayerInZone(playerid, zoneid);
 forward Production();
 forward Checkprop();
 forward PayDay();
@@ -8325,7 +8324,11 @@ public CustomPickups()
 					}
 				}
 			}//custompickups end
-			if (PlayerToPoint(2.0, i, 2029.5945,-1404.6426,17.2512))
+			if (PlayerToPoint(2.0, i, -1111.4635, -1681.5151, 76.3739))
+			{// Hospital near speedway
+				GameTextForPlayer(i, "~w~/buonlau de tien hanh buon lau", 5000, 5);
+			}
+			else if (PlayerToPoint(2.0, i, 2029.5945, -1404.6426, 17.2512))
 			{// Hospital near speedway
 				GameTextForPlayer(i, "~w~Go /hoimau de hoi mau", 5000, 5);
 			}
@@ -9709,6 +9712,7 @@ public CreateGuideMenus()
 	AddMenuItem(JobLocations2, 0, "Tho vu khi");
 	AddMenuItem(JobLocations2, 0, "Nguoi buon thuoc");
 	AddMenuItem(JobLocations2, 0, "Trong trot");
+	AddMenuItem(JobLocations2, 0, "Buon lau");
 	AddMenuItem(JobLocations2, 0, "<- Lui");
 	AddMenuItem(JobLocations2, 0, "- Thoat -");
 }
@@ -10058,6 +10062,9 @@ public SafeGivePlayerMoney(plyid, amounttogive)
 		ScriptMoney[plyid] = (ScriptMoney[plyid] + amounttogive);
 		GivePlayerMoney(plyid, amounttogive);
 	}
+	new str[128];
+	if (amounttogive > 0) format(str, sizeof(str), "~g~ +%d$", amounttogive);
+	else format(str, sizeof(str), "~r~ -%d$", amounttogive);
 	return 1;
 }
 
