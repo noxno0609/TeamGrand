@@ -72,7 +72,7 @@ stock DestroySeed(i)
 	ClearSeedPos(i);
 	for (new playerid = 0; playerid <= GetPlayerPoolSize(); playerid++)
 	{
-		if (strcmp(SeedOwner[i], GN(playerid), true) == 0 && SeedOwner[i][0] != EOS) {
+		if (strcmp(SeedOwner[i], GLN(playerid), true) == 0 && SeedOwner[i][0] != EOS) {
 			SeedCount[playerid]--;
 			break;
 		}
@@ -648,7 +648,7 @@ public PlantKeyStateChange(playerid, newkeys, oldkeys)
 			format(str, sizeof(str), "Nguoi gieo hat: %s\nLua da gat, hay mang toi kho! ({00FF00} An ALT{008080})", SeedOwner[i]);
 			UpdateDynamic3DTextLabelText(SeedText[i], 0x008080FF, str);
 		}
-		else if (SeedGatLua[i] == 1)
+		else if (SeedGatLua[i] == 1 && !IsPlayerAttachedObjectSlotUsed(playerid, 9))
 		{
 			if (strcmp(SeedOwner[i], GLN(playerid), true) != 0 && SeedOwner[i][0] != EOS) return SendClientMessage(playerid, COLOR_GRAD1, "Day la cay thuoc so huu cua nguoi khac!");
 			SetPlayerAttachedObject(playerid, 9, 2901, 1, 0.25, 0.470760, 0.000000, 0.000000, 90.217391, 0.000000, 0.8, 0.8, 0.8);

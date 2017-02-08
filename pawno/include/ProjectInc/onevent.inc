@@ -3085,7 +3085,7 @@ public OnPlayerEnterCheckpoint(playerid)
 		SetCameraBehindPlayer(playerid);
 		return 1;
 	}
-	if (IsPlayerInRangeOfPoint(playerid, 4, -1102.0814, -1636.1648, 76.3672))
+	if (IsPlayerInRangeOfPoint(playerid, 4, -1102.0814, -1636.1648, 76.3672) && IsPlayerAttachedObjectSlotUsed(playerid, 9))
 	{
 		new str[255];
 		SafeGivePlayerMoney(playerid, PLANTMONEY);
@@ -3894,7 +3894,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 					}*/
 					if (TakingLesson[playerid] == 1) {}
 					else {
-						SendClientMessage(playerid, COLOR_YELLOW, "   Ban khong co giay phep lai xe, canh sat se bat ban.");
+						SendClientMessage(playerid, COLOR_YELLOW, "   Ban khong co giay phep lai xe, hay lai xe can than neu khong muon bi cops chu y.");
 					}
 				}
 			}
@@ -18501,8 +18501,8 @@ CMD:unprison(playerid, params[])
 				SetPlayerPos(giveplayerid, 93.4852, 1920.6235, 18.0450);
 				SetPlayerInterior(giveplayerid, 0);
 				PlayerInfo[giveplayerid][pInt] = 0;
-				PlayerInfo[playerid][pVirWorld] = 0;
-				SetPlayerVirtualWorld(playerid, 0);
+				PlayerInfo[giveplayerid][pVirWorld] = 0;
+				SetPlayerVirtualWorld(giveplayerid, 0);
 				format(string, 256, "AdmCMD: %s has da duoc tha tu do boi Admin %s.", GN(giveplayerid), GN(playerid));
 				BroadCast(COLOR_LIGHTRED, string);
 				format(string, 256, "AdmWarning: %s da duoc tha tu do boi Admin %s.", GN(giveplayerid), GN(playerid));
