@@ -10061,6 +10061,9 @@ public SafeGivePlayerMoney(plyid, amounttogive)
 		ScriptMoney[plyid] = (ScriptMoney[plyid] + amounttogive);
 		GivePlayerMoney(plyid, amounttogive);
 	}
+	new str[128];
+	if (amounttogive > 0) format(str, sizeof(str), "~g~ +%d$", amounttogive);
+	else format(str, sizeof(str), "~r~ -%d$", amounttogive);
 	return 1;
 }
 

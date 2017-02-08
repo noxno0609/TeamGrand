@@ -32,7 +32,7 @@ task ServerBeat[1000]()
 			SetPlayerPos(playerid, Pos[0], Pos[1], Pos[2] + 0.1);
 			if (speed <= 10) ApplyAnimation(playerid, "PED", "BIKE_fall_off", 4.1, 0, 1, 1, 0, 1500, 1);
 			else ApplyAnimation(playerid, "PED", "BIKE_fallR", 4.1, 0, 1, 1, 0, 1500, 1);
-			for (new i = 0; i<MAX_PLAYERS; i++)
+			for (new i = 0; i < MAX_PLAYERS; i++)
 			{
 				if (IsPlayerInVehicle(i, GetPlayerVehicleID(playerid)))
 				{
@@ -48,7 +48,7 @@ task ServerBeat[1000]()
 		{
 			new Float:Pos[3];
 			GetPlayerPos(playerid, Pos[0], Pos[1], Pos[2]);
-			if (!IsPlayerInRangeOfPoint(EscortedPlayer[playerid], 4, Pos[0], Pos[1], Pos[2])) 
+			if (!IsPlayerInRangeOfPoint(EscortedPlayer[playerid], 4, Pos[0], Pos[1], Pos[2]))
 				SetPlayerPos(EscortedPlayer[playerid], Pos[0] + 0.5, Pos[1] + 0.5, Pos[2]);
 
 			new vir = GetPlayerVirtualWorld(playerid);
@@ -66,15 +66,29 @@ task ServerBeat[1000]()
 			GameTextForPlayer(playerid, str, 1000, 4);
 			DDTime[playerid]--;
 		}
-		if (DDTime[playerid] == 10 && DrugDealing[playerid] == 2)
+		if (DDTime[playerid] == 10 && DrugDealing[playerid] == 2 && GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
 		{
 			new zone[MAX_ZONE_NAME];
 			GetPlayer2DZone(playerid, zone, MAX_ZONE_NAME);
 			new str[128];
-			format(str, sizeof(str), "[Duong day buon lau]: %s dang tien hanh buon lau o khu vuc %s tren chiec xe %s.", GN(playerid), zone, GetVehicleName(GetVehicleModel(GetPlayerVehicleID(playerid))));
+
+			new vid = GetPlayerVehicleID(playerid);
+			format(str, sizeof(str), "[Duong day buon lau]: %s cung cac doi tuong ", GN(playerid));
+			if (CheckDrugDealerInVehicle(vid, 2) > 1)
+			{
+				foreach(Player, ddid)
+				{
+					if (IsPlayerDrugDealingCooperate(ddid, playerid, 2))
+					{
+						format(str, sizeof(str), "%s %s, ", str, GN(ddid));
+					}
+				}
+				format(str, sizeof(str), "%s dang tien hanh buon lau o khu vuc %s tren chiec xe %s.", str, zone, GetVehicleName(GetVehicleModel(vid)));
+			}
+			else format(str, sizeof(str), "[Duong day buon lau]: %s dang tien hanh buon lau o khu vuc %s tren chiec xe %s.", GN(playerid), zone, GetVehicleName(GetVehicleModel(GetPlayerVehicleID(playerid))));
 			SendRadioMessage(1, TEAM_RADIO_COLOR, str);
 		}
-		if (DDTime[playerid] == 0 && DrugDealing[playerid] == 2)
+		if (DDTime[playerid] == 0 && DrugDealing[playerid] == 2 && GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
 		{
 			TogglePlayerControllable(playerid, 1);
 			if (WantedPoints[playerid] == 0) { WantedPoints[playerid] = 3; }
@@ -87,14 +101,37 @@ task ServerBeat[1000]()
 			SCM(playerid, COLOR_YELLOW, str);
 
 			new rand = random(sizeof(BuonLauGiveCP));
+
+			new vid = GetPlayerVehicleID(playerid);
+			if (CheckDrugDealerInVehicle(vid, 2) > 1)
+			{
+				foreach(Player, ddid)
+				{
+					if (IsPlayerDrugDealingCooperate(ddid, playerid, 2))
+					{
+						if (WantedPoints[ddid] == 0) { WantedPoints[ddid] = 3; }
+						else { WantedPoints[ddid] += 2; }
+						SetPlayerCriminalEx(ddid, 255, "Buon lau");
+						DrugDealing[ddid] = 3;
+						ChangeDD[ddid] = 1;
+						OldDD[ddid] = rand;
+						new vid = GetPlayerVehicleID(ddid);
+						CarDD[ddid] = vid;
+						SetPlayerCheckpoint(ddid, BuonLauGiveCP[rand][0], BuonLauGiveCP[rand][1], BuonLauGiveCP[rand][2], 5);
+						CoopDD[ddid] = playerid;
+						format(str, sizeof(str), "Nhan hang da xong, %s se la truong nhom buon lau cua ban.", GN(playerid));
+						SCM(ddid, COLOR_YELLOW, str);
+						SCM(ddid, COLOR_YELLOW, "Hay dam bao rang chiec xe nay se toi duoc noi giao hang.");
+						SCM(ddid, COLOR_GREEN, "Meo: Ban chi can mot nguoi giao xe toi dia diem buon lau la phi vu se thanh cong!");
+					}
+				}
+			}
 			DrugDealing[playerid] = 3;
 			ChangeDD[playerid] = 0;
 			OldDD[playerid] = rand;
-			new vid = GetPlayerVehicleID(playerid);
 			CarDD[playerid] = vid;
 
 			SetPlayerCheckpoint(playerid, BuonLauGiveCP[rand][0], BuonLauGiveCP[rand][1], BuonLauGiveCP[rand][2], 5);
 		}
 	}
-	//printf("Called every second, but not at the same time as RepeatingFunction2.");
 }

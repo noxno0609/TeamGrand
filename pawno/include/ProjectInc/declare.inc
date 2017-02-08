@@ -56,6 +56,7 @@ new DrugDealer[MAX_PLAYERS];
 new CarDD[MAX_PLAYERS];
 new ChangeDD[MAX_PLAYERS];
 new OldDD[MAX_PLAYERS];
+new CoopDD[MAX_PLAYERS];
 
 new Float:BuonLauTakeCP[3][3] =
 {

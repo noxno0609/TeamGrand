@@ -7,7 +7,7 @@ public TazerKeyStateChange(playerid, newkeys, oldkeys)
 		for (new i = 0; i<MAX_PLAYERS; i++)
 		{
 			if (PlayerInfo[i][pMember] == 1 || PlayerInfo[i][pLeader] == 1) continue;
-			if (IsPlayerNearPlayer(playerid, i, 2) && i != playerid && Tazered[i] == 0)
+			if (IsPlayerNearPlayer(playerid, i, 2) && i != playerid && Tazered[i] == 0 && !IsPlayerInAnyVehicle(i))
 			{
 				Tazered[i] = 15;
 				TogglePlayerControllable(i, 0);
@@ -262,12 +262,14 @@ CMD:buonlau(playerid, params[])
 	PlayerInfo[playerid][pDrugs] -= drugs;
 	DrugDealer[playerid] = drugs;
 	DrugDealing[playerid] = 1;
+	OldDD[playerid] = rand;
 	return 1;
 }
 
  CMD:doibuonlau(playerid, params[])
  {
 		if (DrugDealing[playerid] != 3) return SCM(playerid, COLOR_GREY, "Ban hien tai khong buon lau hoac chua tien hanh buon lau.");
+		if (CoopDD[playerid] >= 0) return SCM(playerid, COLOR_GREY, "Chi co truong nhom buon lau moi co the doi noi giao dich.");
 		if (ChangeDD[playerid] == 1) return SCM(playerid, COLOR_GREY, "Ban chi co the doi diem giao dich 1 lan.");
 		new rand = random(sizeof(BuonLauGiveCP));
 		while (rand == OldDD[playerid])
@@ -282,9 +284,46 @@ CMD:buonlau(playerid, params[])
 forward ChangeDrugDealer(playerid, rand);
 public ChangeDrugDealer(playerid, rand)
 {
-	SCM(playerid, COLOR_YELLOW, "[Stranger]: Tao da gui cho may thong tin dia diem giao dich moi, nhanh toi day va de phong may thang com!");
-	SCM(playerid, COLOR_WHITE, "Dia diem giao dich da duoc doi, hay toi cham do moi de giao dich.");
+	SCM(playerid, COLOR_WHITE, "[Stranger]: Tao da gui cho may thong tin dia diem giao dich moi, nhanh toi day va de phong may thang com!");
+	SCM(playerid, COLOR_YELLOW, "Dia diem giao dich da duoc doi, hay toi cham do moi de giao dich.");
 	SetPlayerCheckpoint(playerid, BuonLauGiveCP[rand][0], BuonLauGiveCP[rand][1], BuonLauGiveCP[rand][2], 5);
+
+	foreach(Player, ddid)
+	{
+		if (CoopDD[ddid] == playerid)
+		{
+			SetPlayerCheckpoint(ddid, BuonLauGiveCP[rand][0], BuonLauGiveCP[rand][1], BuonLauGiveCP[rand][2], 5);
+			SCM(playerid, COLOR_YELLOW, "Truong nhom buon lau da doi dia diem giao dich, noi giao dich moi da duoc danh dau tren ban do.");
+		}
+	}
 	return 1;
 }
 
+stock GetDriverVehicle(vid)
+{
+	foreach(Player, playerid)
+	{
+		if (IsPlayerInVehicle(playerid, vid) && GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
+			return playerid;
+	}
+	return -1;
+}
+
+stock CheckDrugDealerInVehicle(vid, ddcase)
+{
+	new count = 0;
+	foreach(Player, playerid)
+	{
+		if (DrugDealing[playerid] == ddcase && IsPlayerInVehicle(playerid, vid))
+			count++;
+	}
+	return count;
+}
+
+stock IsPlayerDrugDealingCooperate(ddid, playerid, ddcase)
+{
+	new vid = GetPlayerVehicleID(playerid);
+	if (DrugDealing[ddid] == ddcase && IsPlayerInVehicle(ddid, vid))
+		return 1;
+	return 0;
+}
