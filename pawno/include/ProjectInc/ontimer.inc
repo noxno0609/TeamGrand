@@ -70,10 +70,10 @@ task ServerBeat[1000]()
 		{
 			new zone[MAX_ZONE_NAME];
 			GetPlayer2DZone(playerid, zone, MAX_ZONE_NAME);
-			new str[128];
+			new str[256];
 
 			new vid = GetPlayerVehicleID(playerid);
-			format(str, sizeof(str), "[Duong day buon lau]: %s cung cac doi tuong ", GN(playerid));
+			format(str, sizeof(str), "** [Duong day buon lau]: %s cung cac doi tuong ", GN(playerid));
 			if (CheckDrugDealerInVehicle(vid, 2) > 1)
 			{
 				foreach(Player, ddid)
@@ -83,9 +83,9 @@ task ServerBeat[1000]()
 						format(str, sizeof(str), "%s %s, ", str, GN(ddid));
 					}
 				}
-				format(str, sizeof(str), "%s dang tien hanh buon lau o khu vuc %s tren chiec xe %s.", str, zone, GetVehicleName(GetVehicleModel(vid)));
+				format(str, sizeof(str), "%s dang tien hanh buon lau o khu vuc %s tren chiec xe %s. **", str, zone, GetVehicleName(vid));
 			}
-			else format(str, sizeof(str), "[Duong day buon lau]: %s dang tien hanh buon lau o khu vuc %s tren chiec xe %s.", GN(playerid), zone, GetVehicleName(GetVehicleModel(GetPlayerVehicleID(playerid))));
+			else format(str, sizeof(str), "** [Duong day buon lau]: %s dang tien hanh buon lau o khu vuc %s tren chiec xe %s. **", GN(playerid), zone, GetVehicleName(GetPlayerVehicleID(playerid)));
 			SendRadioMessage(1, TEAM_RADIO_COLOR, str);
 		}
 		if (DDTime[playerid] == 0 && DrugDealing[playerid] == 2 && GetPlayerState(playerid) == PLAYER_STATE_DRIVER)

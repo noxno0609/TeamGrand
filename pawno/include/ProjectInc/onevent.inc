@@ -1232,14 +1232,15 @@ public OnVehicleDeath(vehicleid, killerid)
 			CoopDD[pid] = -1;
 			SCM(pid, COLOR_WHITE, "Xe cho hang da no, phi vu buon lau that bai!");
 			ddvehicle = 1;
+			DisablePlayerCheckpoint(pid);
 		}
 	}
 	if (ddvehicle == 1)
 	{
 		new str[128];
-		format(str, sizeof(str), "[Tong dai]: %s da ban no chiec xe buon lau %s, toan bo so hang buon lau tren xe bi tieu huy!", GN(killerid), GetVehicleName(GetVehicleModel(vehicleid)));
+		format(str, sizeof(str), "** [Tong dai]: %s da ban no chiec xe buon lau %s, toan bo so hang buon lau tren xe bi tieu huy! **", GN(killerid), GetVehicleName(vehicleid));
 		SendRadioMessage(1, TEAM_RADIO_COLOR, str);
-		SendRadioMessage(1, TEAM_RADIO_COLOR, "[Tong dai]: Cac dong chi hay mau chong truy bat cac doi tuong buon lau con lai!");
+		SendRadioMessage(1, TEAM_RADIO_COLOR, "** [Tong dai]: Cac dong chi hay mau chong truy bat cac doi tuong buon lau con lai! **");
 	}
 	return 1;
 }
@@ -1258,7 +1259,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 	{
 		new str[128];
 		new money = DrugDealer[playerid] * 7000;
-		format(str, sizeof(str), "[Tong dai]: %s da ban ha doi tuong buon lau %s, tich thu %d gram thuoc, tuong ung %d$", GN(killerid), GN(playerid), DrugDealer[playerid], money);
+		format(str, sizeof(str), "** [Tong dai]: %s da ban ha doi tuong buon lau %s, tich thu %d gram thuoc, tuong ung %d$. **", GN(killerid), GN(playerid), DrugDealer[playerid], money);
 		SendRadioMessage(1, TEAM_RADIO_COLOR, str);
 		SafeGivePlayerMoney(killerid, money);
 
@@ -1270,6 +1271,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 		ChangeDD[playerid] = 0;
 		CoopDD[playerid] = -1;
 		SCM(playerid, COLOR_WHITE, "Phi vu buon lau that bai, ban mat toan bo so thuoc!");
+		DisablePlayerCheckpoint(playerid);
 	}
 
 	victimteam = gTeam[playerid];
@@ -3262,7 +3264,7 @@ public OnPlayerEnterCheckpoint(playerid)
 		new str[255];
 		SafeGivePlayerMoney(playerid, PLANTMONEY);
 		PlayerInfo[playerid][pDrugs] += PLANTDRUG;
-		format(str, sizeof(str), "Ban da nhan duoc $%d va %d grams drug", PLANTMONEY, PLANTDRUG);
+		format(str, sizeof(str), "Ban da nhan duoc $%d va %d grams thuoc.", PLANTMONEY, PLANTDRUG);
 		SendClientMessage(playerid, COLOR_WHITE, str);
 		ApplyAnimation(playerid, "CARRY", "putdwn105", 4.0, 0, 1, 1, 1, 1);
 		SetPlayerSpecialAction(playerid, 0);
