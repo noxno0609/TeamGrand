@@ -608,7 +608,7 @@ CMD:gieohat(playerid, params[])
 	GetPlayerPos(playerid, SeedPos[i][0], SeedPos[i][1], SeedPos[i][2]);
 	ApplyAnimation(playerid, "BOMBER", "BOM_Plant_Crouch_In", 4.0, 0, 0, 0, 0, 0, 1);
 	SeedObject[i] = CreateDynamicObject(675, SeedPos[i][0], SeedPos[i][1], SeedPos[i][2] - 1, 0.0, 0.0, 0.0);
-	format(str, sizeof(str), "Nguoi gieo hat: %s\n[Can] Tuoi nuoc", GN(playerid));
+	format(str, sizeof(str), "Nguoi gieo hat: %s\n[Can] Tuoi nuoc ({00FF00} An ALT{008080})", GN(playerid));
 	SeedText[i] = CreateDynamic3DTextLabel(str, 0x008080FF, SeedPos[i][0], SeedPos[i][1], SeedPos[i][2], 5.0);
 	SeedGrowth[i] = 1;
 	SeedCount[playerid]++;
@@ -627,7 +627,7 @@ public PlantKeyStateChange(playerid, newkeys, oldkeys)
 	{
 		if (IsPlayerInAnyVehicle(playerid)) return 1;
 		new i = GetPlayerNearSeed(playerid), str[100], RandomTime[3][1] = { { TIME_SEEDGROWTH / 3 }, { TIME_SEEDGROWTH * 2 / 3 }, { TIME_SEEDGROWTH } }, rand = random(sizeof(RandomTime));
-		if (SeedGrowth[i] < 4 && SeedTuoiNuoc[i] == 0)
+		if (SeedGrowth[i] < 4 && SeedTuoiNuoc[i] == 0 && !IsPlayerAttachedObjectSlotUsed(playerid, 9) && GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_NONE)
 		{
 			SeedTuoiNuoc[i] = 1;
 			ApplyAnimation(playerid, "MISC", "CASE_PICKUP", 4.0, 1, 0, 0, 0, 5000, 1);
@@ -636,7 +636,7 @@ public PlantKeyStateChange(playerid, newkeys, oldkeys)
 			format(str, sizeof(str), "Nguoi gieo hat: %s\nCay da tuoi nuoc", SeedOwner[i]);
 			UpdateDynamic3DTextLabelText(SeedText[i], 0x008080FF, str);
 		}
-		else if (SeedGrowth[i] == 4 && SeedGatLua[i] == 0)
+		else if (SeedGrowth[i] == 4 && SeedGatLua[i] == 0 && !IsPlayerAttachedObjectSlotUsed(playerid, 9) && GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_NONE)
 		{
 			if (strcmp(SeedOwner[i], GLN(playerid), true) != 0 && SeedOwner[i][0] != EOS) return SendClientMessage(playerid, COLOR_GRAD1, "Day la cay thuoc so huu cua nguoi khac!");
 			ApplyAnimation(playerid, "BOMBER", "BOM_Plant_Crouch_Out", 4.0, 0, 0, 0, 0, 0, 1);

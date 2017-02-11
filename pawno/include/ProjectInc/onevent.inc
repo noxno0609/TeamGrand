@@ -3276,19 +3276,26 @@ public OnPlayerEnterCheckpoint(playerid)
 		SetCameraBehindPlayer(playerid);
 		return 1;
 	}
-	if (IsPlayerInRangeOfPoint(playerid, 4, -1102.0814, -1636.1648, 76.3672) && IsPlayerAttachedObjectSlotUsed(playerid, 9))
+	if (IsPlayerInRangeOfPoint(playerid, 4, -1102.0814, -1636.1648, 76.3672))
 	{
-		new str[255];
-		SafeGivePlayerMoney(playerid, PLANTMONEY);
-		PlayerInfo[playerid][pDrugs] += PLANTDRUG;
-		format(str, sizeof(str), "Ban da nhan duoc $%d va %d grams thuoc.", PLANTMONEY, PLANTDRUG);
-		SendClientMessage(playerid, COLOR_WHITE, str);
-		ApplyAnimation(playerid, "CARRY", "putdwn105", 4.0, 0, 1, 1, 1, 1);
-		SetPlayerSpecialAction(playerid, 0);
-		RemovePlayerAttachedObject(playerid, 9);
-		SetPVarInt(playerid, "CantUseAnim", 0);
-		new lv = GetLevelSkill(playerid, PLANT);
-		if (lv != 0) TangSkill(playerid, PLANT, 1);
+		if (IsPlayerAttachedObjectSlotUsed(playerid, 9) && GetPlayerSpecialAction(playerid) == SPECIAL_ACTION_CARRY)
+		{
+			new str[255];
+			SafeGivePlayerMoney(playerid, PLANTMONEY);
+			PlayerInfo[playerid][pDrugs] += PLANTDRUG;
+			format(str, sizeof(str), "Ban da nhan duoc $%d va %d grams thuoc.", PLANTMONEY, PLANTDRUG);
+			SendClientMessage(playerid, COLOR_WHITE, str);
+			ApplyAnimation(playerid, "CARRY", "putdwn105", 4.0, 0, 1, 1, 1, 1);
+			SetPlayerSpecialAction(playerid, 0);
+			RemovePlayerAttachedObject(playerid, 9);
+			SetPVarInt(playerid, "CantUseAnim", 0);
+			new lv = GetLevelSkill(playerid, PLANT);
+			if (lv != 0) TangSkill(playerid, PLANT, 1);
+		}
+		else {
+			RemovePlayerAttachedObject(playerid, 9);
+			SetPlayerSpecialAction(playerid, 0);
+		}
 	}
 	DisablePlayerCheckpoint(playerid);
 	return 1;
