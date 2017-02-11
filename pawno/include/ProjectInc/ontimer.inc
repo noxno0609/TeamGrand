@@ -135,3 +135,12 @@ task ServerBeat[1000]()
 		}
 	}
 }
+
+task VehicleLastShot[10000]()
+{
+	for (new i = 0; i < MAX_VEHICLES; i++)
+	{
+		if (LastShot[i] != -1)
+			LastShot[i] = -1;
+	}
+}

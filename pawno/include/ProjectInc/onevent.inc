@@ -1216,6 +1216,13 @@ public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 	}
 	return 1;
 }
+public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY, Float:fZ)
+{
+	if (hittype == 2)
+		LastShot[hitid] = playerid;
+
+	return 1;
+}
 public OnVehicleDeath(vehicleid, killerid)
 {
 	new ddvehicle = 0;
@@ -1238,23 +1245,19 @@ public OnVehicleDeath(vehicleid, killerid)
 	if (ddvehicle == 1)
 	{
 		new str[128];
-		format(str, sizeof(str), "** [Tong dai]: %s da ban no chiec xe buon lau %s, toan bo so hang buon lau tren xe bi tieu huy! **", GN(killerid), GetVehicleName(vehicleid));
+		if (LastShot[vehicleid] != -1)
+			format(str, sizeof(str), "** [Tong dai]: %s da ban no chiec xe buon lau %s, toan bo so hang buon lau tren xe bi tieu huy! **", GN(LastShot[vehicleid]), GetVehicleName(vehicleid));
+		else format(str, sizeof(str), "** [Tong dai]: Chiec xe buon lau %s, toan bo so hang buon lau tren xe bi tieu huy! **", GetVehicleName(vehicleid));
+
 		SendRadioMessage(1, TEAM_RADIO_COLOR, str);
 		SendRadioMessage(1, TEAM_RADIO_COLOR, "** [Tong dai]: Cac dong chi hay mau chong truy bat cac doi tuong buon lau con lai! **");
 	}
+	LastShot[vehicleid] = -1;
 	return 1;
 }
-public OnPlayerDeath(playerid, killerid, reason)
+forward delayfaildd(playerid, killerid);
+public delayfaildd(playerid, killerid)
 {
-	new name[MAX_PLAYER_NAME];
-	new string[256];
-	//new dmessage[128];
-	//new deathreason[20];
-	new playercash;
-	new victimteam;
-	new Float:px, Float:py, Float:pz;
-	new killerteam;
-
 	if (DrugDealing[playerid] > 0)
 	{
 		new str[128];
@@ -1273,6 +1276,20 @@ public OnPlayerDeath(playerid, killerid, reason)
 		SCM(playerid, COLOR_WHITE, "Phi vu buon lau that bai, ban mat toan bo so thuoc!");
 		DisablePlayerCheckpoint(playerid);
 	}
+	return 1;
+}
+public OnPlayerDeath(playerid, killerid, reason)
+{
+	new name[MAX_PLAYER_NAME];
+	new string[256];
+	//new dmessage[128];
+	//new deathreason[20];
+	new playercash;
+	new victimteam;
+	new Float:px, Float:py, Float:pz;
+	new killerteam;
+
+	SetTimerEx("delayfaildd", 100, false, "ii", playerid, killerid);
 
 	victimteam = gTeam[playerid];
 	killerteam = gTeam[killerid];

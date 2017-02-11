@@ -114,3 +114,5 @@ stock GetVehicleName(vehicleid)
 	format(str, sizeof(str), "%s", VehicleNames[GetVehicleModel(vehicleid) - 400]);
 	return str;
 }
+
+new LastShot[MAX_VEHICLES];
