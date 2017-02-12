@@ -4605,8 +4605,8 @@ public OnPlayerRequestClass(playerid, classid)
 
 		TogglePlayerSpectating(playerid, true);
 
-		InterpolateCameraPos(playerid, 1367.386230, -840.428833, 80.202323, 1663.663574, -1549.623657, 83.137756, 10000);
-		InterpolateCameraLookAt(playerid, 1370.542602, -836.631530, 80.988113, 1661.490234, -1554.123779, 83.297882, 10000);
+		InterpolateCameraPos(playerid, 369.950805, -1788.111450, 8.951775, 369.644744, -1985.193359, 7.471849, 15000);
+		InterpolateCameraLookAt(playerid, 372.290924, -1792.513671, 8.572257, 370.491302, -1990.051025, 8.300358, 14500);
 
 		ClearChatbox(playerid, 10);
 		format(string, sizeof(string), "Chao mung den voi server Los Angeles Roleplay! Phien ban: %s", SCRIPT_VERSION);
