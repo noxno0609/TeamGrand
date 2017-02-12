@@ -126,3 +126,15 @@ stock GetVehicleName(vehicleid)
 }
 
 new LastShot[MAX_VEHICLES];
+
+//Anti Checkpoint Cheat
+new Float:AntiCPDistance[MAX_PLAYERS],
+	AntiCPTime[MAX_PLAYERS],
+	AntiCheckpoint[MAX_PLAYERS];
+
+//PD Find
+new PFind[MAX_PLAYERS];
+new LSArea;
+new Float:LSZone[] = {
+	48.0, -1531.0, 324.0, -2083.0, 1324.0, -2739.0, 2916.0, -2735.0, 2896.0, -919.0, 1220.0, -771.0, 476.0, -1023.0, 48.0, -1531.0
+};

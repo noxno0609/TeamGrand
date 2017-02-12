@@ -1,6 +1,7 @@
 public OnGameModeInit()
 {
 	ConnectMySQL();
+	LSArea = CreateDynamicPolygon(LSZone);
 	new string[MAX_PLAYER_NAME];
 	new string1[MAX_PLAYER_NAME];
 	for (new c = 0; c<CAR_AMOUNT; c++)
@@ -531,6 +532,7 @@ public OnGameModeInit()
 	AddStaticPickup(1239, 23, 1381.0413, -1088.8511, 27.3906); //Bill Board (old Job Department)
 	AddStaticPickup(1239, 23, 1512.33, -1459.90, 9.50); //Factory
 	AddStaticPickup(1239, 23, 1073.0619, -344.5148, 73.9922); //Hitman Agency entrance
+	AddStaticPickup(1239, 23, 1182.6879, -1317.7358, 1006.4028); //Tri thuong
 	/*AddStaticPickup(371, 23, 1544.2,-1353.4,329.4); //LS towertop
 	AddStaticPickup(371, 23, 1536.0, -1360.0, 1150.0); //LS towertop*/
 	AddStaticPickup(1242, 23, 1527.5, -12.1, 1002.0); // binco armor
@@ -663,7 +665,7 @@ public OnPlayerConnect(playerid)
 	if (Security != 0)
 	{
 		SendClientMessage(playerid, COLOR_YELLOW, "Host has broken one of the Agreement rules, action has been taken.");
-		Kick(playerid);
+		KickEx(playerid);
 		return 1;
 	}
 	new namestring = strfind(plname, "_", true);
@@ -671,7 +673,7 @@ public OnPlayerConnect(playerid)
 	{
 		SendClientMessage(playerid, COLOR_YELLOW2, "Immigration Department: Your name is not acceptable.");
 		SendClientMessage(playerid, COLOR_YELLOW2, "Hint: Your name must be in the format Firstname_Lastname.");
-		Kick(playerid);
+		KickEx(playerid);
 		return 1;
 	}
 	gActivePlayers[playerid]++;
@@ -680,6 +682,8 @@ public OnPlayerConnect(playerid)
 	Tazered[playerid] = 0;
 	Tazering[playerid] = 0;
 	WearTazer[playerid] = 0;
+
+	PFind[playerid] = -1;
 
 	CallMedic[playerid] = 0;
 	MedicCaller[playerid] = -1;
@@ -913,7 +917,7 @@ public OnPlayerConnect(playerid)
 	if (MySQLCheckAccountLocked(sqlaccountstatus) != 0)
 	{
 	SendClientMessage(playerid, COLOR_LIGHTRED, "This account has been locked and cannot be accessed. Please contact an admin.");
-	Kick(playerid);
+	KickEx(playerid);
 	return 0;
 	}
 	gPlayerAccount[playerid] = 1;
@@ -970,7 +974,7 @@ public OnPlayerDisconnect(playerid, reason)
 					TaxiAccepted[i] = 999;
 					GameTextForPlayer(i, "~w~Nguoi goi taxi~n~~r~Da roi khoi game", 5000, 1);
 					TaxiCallTime[i] = 0;
-					DisablePlayerCheckpoint(i);
+					DisableCheckpoint(i);
 				}
 			}
 			else if (BusAccepted[i] < 999)
@@ -980,7 +984,7 @@ public OnPlayerDisconnect(playerid, reason)
 					BusAccepted[i] = 999;
 					GameTextForPlayer(i, "~w~Nguoi goi xe buyt~n~~r~Da roi khoi game", 5000, 1);
 					BusCallTime[i] = 0;
-					DisablePlayerCheckpoint(i);
+					DisableCheckpoint(i);
 				}
 			}
 		}
@@ -1246,7 +1250,7 @@ public OnVehicleDeath(vehicleid, killerid)
 			CoopDD[pid] = -1;
 			SCM(pid, COLOR_WHITE, "Xe cho hang da no, phi vu buon lau that bai!");
 			ddvehicle = 1;
-			DisablePlayerCheckpoint(pid);
+			DisableCheckpoint(pid);
 		}
 	}
 	if (ddvehicle == 1)
@@ -1281,7 +1285,7 @@ public delayfaildd(playerid, killerid)
 		ChangeDD[playerid] = 0;
 		CoopDD[playerid] = -1;
 		SCM(playerid, COLOR_WHITE, "Phi vu buon lau that bai, ban mat toan bo so thuoc!");
-		DisablePlayerCheckpoint(playerid);
+		DisableCheckpoint(playerid);
 	}
 	return 1;
 }
@@ -1451,7 +1455,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 	}
 	if (gPlayerCheckpointStatus[playerid] > 4 && gPlayerCheckpointStatus[playerid] < 11)
 	{
-		DisablePlayerCheckpoint(playerid);
+		DisableCheckpoint(playerid);
 		gPlayerCheckpointStatus[playerid] = CHECKPOINT_NONE;
 	}
 	new caller = Mobile[playerid];
@@ -1741,17 +1745,17 @@ public OnPlayerDeath(playerid, killerid, reason)
 	if (FarmerVar[playerid] != 0)
 	{
 		FarmerVar[playerid] = 0;
-		DisablePlayerCheckpoint(playerid);
+		DisableCheckpoint(playerid);
 	}
 	if (DrugFarmerVar[playerid] != 0)
 	{
 		DrugFarmerVar[playerid] = 0;
-		DisablePlayerCheckpoint(playerid);
+		DisableCheckpoint(playerid);
 	}
 	if (SmugglerWork[playerid] != 0)
 	{
 		SmugglerWork[playerid] = 0;
-		DisablePlayerCheckpoint(playerid);
+		DisableCheckpoint(playerid);
 	}
 	killerid = INVALID_PLAYER_ID;
 	SetPlayerColor(playerid, COLOR_GRAD2);
@@ -1895,11 +1899,28 @@ public OnPlayerEnterCheckpoint(playerid)
 	new string[128];
 	new string2[128];
 	new name[MAX_PLAYER_NAME];
+	if(AntiCheckpoint[playerid] == 1)
+	{
+		new time = floatround(floatdiv(AntiCPDistance[playerid], 190));
+		if (AntiCPTime[playerid] < time)
+		{
+			new str[128];
+			format(str, sizeof(str), "[Hack/Cheat]: %s co the dang su dung hack teleport checkpoint!", GN(playerid));
+			SendAdminMessage(COLOR_LIGHTRED, str);
+			return KickEx(playerid);
+		}
+		else
+		{
+			AntiCheckpoint[playerid] = 0;
+			AntiCPDistance[playerid] = 0;
+			AntiCPTime[playerid] = 0;
+		}
+	}
 	if (IsPlayerInRangeOfPoint(playerid, 5, MedicPos[playerid][0], MedicPos[playerid][1], MedicPos[playerid][2]))
 	{
 		SCM(playerid, COLOR_WHITE, "Da den vi tri cua benh nhan, hay dua benh nhan len xe va vao phia sau de de tien hanh dieu tri.");
 		SCM(playerid, COLOR_WHITE, "MEO: /dualenxe /dieutri");
-		DisablePlayerCheckpoint(playerid);
+		DisableCheckpoint(playerid);
 		return 1;
 	}
 	if (DrugDealing[playerid] == 1 && GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
@@ -1923,7 +1944,7 @@ public OnPlayerEnterCheckpoint(playerid)
 							new str[128];
 							format(str, sizeof(str), "Ban se cung hop tac buon lau voi %s", GN(playerid));
 							SCM(ddid, COLOR_GREEN, str);
-							DisablePlayerCheckpoint(ddid);
+							DisableCheckpoint(ddid);
 						}
 					}
 				}
@@ -1931,7 +1952,7 @@ public OnPlayerEnterCheckpoint(playerid)
 				DrugDealing[playerid] = 2;
 				TogglePlayerControllable(playerid, 0);
 				SCM(playerid, COLOR_YELLOW, "Hay cho 15 giay de hang duoc chuyen len xe.");
-				DisablePlayerCheckpoint(playerid);
+				DisableCheckpoint(playerid);
 				return 1;
 			}
 		}
@@ -2025,14 +2046,14 @@ public OnPlayerEnterCheckpoint(playerid)
 		TaxiAccepted[playerid] = 999;
 		GameTextForPlayer(playerid, "~w~Da den", 5000, 1);
 		TaxiCallTime[playerid] = 0;
-		DisablePlayerCheckpoint(playerid);
+		DisableCheckpoint(playerid);
 	}
 	else if (BusCallTime[playerid] > 0 && BusAccepted[playerid] < 999)
 	{
 		BusAccepted[playerid] = 999;
 		GameTextForPlayer(playerid, "~w~Da den", 5000, 1);
 		BusCallTime[playerid] = 0;
-		DisablePlayerCheckpoint(playerid);
+		DisableCheckpoint(playerid);
 	}
 	else if (CP[playerid] == 1)
 	{
@@ -2098,7 +2119,7 @@ public OnPlayerEnterCheckpoint(playerid)
 			}
 			GameTextForPlayer(playerid, "~y~Sold the car", 2500, 1);
 			CP[playerid] = 0;
-			DisablePlayerCheckpoint(playerid);
+			DisableCheckpoint(playerid);
 			SetVehicleToRespawn(GetPlayerVehicleID(playerid));
 		}
 		else
@@ -2110,27 +2131,27 @@ public OnPlayerEnterCheckpoint(playerid)
 	{
 		GameTextForPlayer(playerid, "~y~At the Missions Checkpoint", 2500, 1);
 		CP[playerid] = 0;
-		DisablePlayerCheckpoint(playerid);
+		DisableCheckpoint(playerid);
 	}
 	else if (CP[playerid] == 9)//Karting
 	{
 		GameTextForPlayer(playerid, "~r~Wait here for more Kart Racers", 4000, 3);
-		DisablePlayerCheckpoint(playerid);
+		DisableCheckpoint(playerid);
 	}
-	else if (CP[playerid] == 10) { CP[playerid] = 11; DisablePlayerCheckpoint(playerid); SetPlayerCheckpoint(playerid, 2258.7874, -2402.9712, 12.7035, 8.0); }
-	else if (CP[playerid] == 11) { CP[playerid] = 12; DisablePlayerCheckpoint(playerid); SetPlayerCheckpoint(playerid, 2225.8755, -2461.3875, 12.7190, 8.0); }
-	else if (CP[playerid] == 12) { CP[playerid] = 13; DisablePlayerCheckpoint(playerid); SetPlayerCheckpoint(playerid, 2276.9983, -2662.8328, 12.8580, 8.0); }
-	else if (CP[playerid] == 13) { CP[playerid] = 14; DisablePlayerCheckpoint(playerid); SetPlayerCheckpoint(playerid, 2449.1399, -2663.0562, 12.8138, 8.0); }
-	else if (CP[playerid] == 14) { CP[playerid] = 15; DisablePlayerCheckpoint(playerid); SetPlayerCheckpoint(playerid, 2566.9814, -2504.5686, 12.7692, 8.0); }
-	else if (CP[playerid] == 15) { CP[playerid] = 16; DisablePlayerCheckpoint(playerid); SetPlayerCheckpoint(playerid, 2719.0520, -2503.5962, 12.7706, 8.0); }
-	else if (CP[playerid] == 16) { CP[playerid] = 17; DisablePlayerCheckpoint(playerid); SetPlayerCheckpoint(playerid, 2720.7881, -2405.6589, 12.7441, 8.0); }
-	else if (CP[playerid] == 17) { CP[playerid] = 18; DisablePlayerCheckpoint(playerid); SetPlayerCheckpoint(playerid, 2571.5195, -2401.1531, 12.7528, 8.0); }
-	else if (CP[playerid] == 18) { CP[playerid] = 19; DisablePlayerCheckpoint(playerid); SetPlayerCheckpoint(playerid, 2406.6995, -2423.1182, 12.6641, 8.0); }
-	else if (CP[playerid] == 19) { CP[playerid] = 20; DisablePlayerCheckpoint(playerid); SetPlayerCheckpoint(playerid, 2322.9194, -2341.5715, 12.6664, 8.0); }
+	else if (CP[playerid] == 10) { CP[playerid] = 11; DisableCheckpoint(playerid); SetPlayerCheckpoint(playerid, 2258.7874, -2402.9712, 12.7035, 8.0); }
+	else if (CP[playerid] == 11) { CP[playerid] = 12; DisableCheckpoint(playerid); SetPlayerCheckpoint(playerid, 2225.8755, -2461.3875, 12.7190, 8.0); }
+	else if (CP[playerid] == 12) { CP[playerid] = 13; DisableCheckpoint(playerid); SetPlayerCheckpoint(playerid, 2276.9983, -2662.8328, 12.8580, 8.0); }
+	else if (CP[playerid] == 13) { CP[playerid] = 14; DisableCheckpoint(playerid); SetPlayerCheckpoint(playerid, 2449.1399, -2663.0562, 12.8138, 8.0); }
+	else if (CP[playerid] == 14) { CP[playerid] = 15; DisableCheckpoint(playerid); SetPlayerCheckpoint(playerid, 2566.9814, -2504.5686, 12.7692, 8.0); }
+	else if (CP[playerid] == 15) { CP[playerid] = 16; DisableCheckpoint(playerid); SetPlayerCheckpoint(playerid, 2719.0520, -2503.5962, 12.7706, 8.0); }
+	else if (CP[playerid] == 16) { CP[playerid] = 17; DisableCheckpoint(playerid); SetPlayerCheckpoint(playerid, 2720.7881, -2405.6589, 12.7441, 8.0); }
+	else if (CP[playerid] == 17) { CP[playerid] = 18; DisableCheckpoint(playerid); SetPlayerCheckpoint(playerid, 2571.5195, -2401.1531, 12.7528, 8.0); }
+	else if (CP[playerid] == 18) { CP[playerid] = 19; DisableCheckpoint(playerid); SetPlayerCheckpoint(playerid, 2406.6995, -2423.1182, 12.6641, 8.0); }
+	else if (CP[playerid] == 19) { CP[playerid] = 20; DisableCheckpoint(playerid); SetPlayerCheckpoint(playerid, 2322.9194, -2341.5715, 12.6664, 8.0); }
 	else if (CP[playerid] == 20)//End of Karting
 	{
 		CP[playerid] = 0;
-		DisablePlayerCheckpoint(playerid);
+		DisableCheckpoint(playerid);
 		GetPlayerName(playerid, name, sizeof(name));
 		if (FirstKartWinner == 999)
 		{
@@ -2175,7 +2196,7 @@ public OnPlayerEnterCheckpoint(playerid)
 						SendClientMessage(i, COLOR_WHITE, string);
 						SendClientMessage(i, COLOR_WHITE, "** Kart Race ket thuc**");
 						CP[i] = 0;
-						DisablePlayerCheckpoint(i);
+						DisableCheckpoint(i);
 					}
 				}
 			}
@@ -2196,7 +2217,7 @@ public OnPlayerEnterCheckpoint(playerid)
 					SendClientMessage(playerid, COLOR_YELLOW2, string);
 					format(string, sizeof(string), "%s", PlayMission[kText6]);
 					SendClientMessage(playerid, COLOR_YELLOW2, string);
-					DisablePlayerCheckpoint(playerid);
+					DisableCheckpoint(playerid);
 					SetPlayerCheckpoint(playerid, PlayMission[kCP2][0], PlayMission[kCP2][1], PlayMission[kCP2][2], 8);
 					MissionCheckpoint[playerid] = 2;
 		}
@@ -2210,7 +2231,7 @@ public OnPlayerEnterCheckpoint(playerid)
 					SendClientMessage(playerid, COLOR_YELLOW2, string);
 					format(string, sizeof(string), "%s", PlayMission[kText9]);
 					SendClientMessage(playerid, COLOR_YELLOW2, string);
-					DisablePlayerCheckpoint(playerid);
+					DisableCheckpoint(playerid);
 					SetPlayerCheckpoint(playerid, PlayMission[kCP3][0], PlayMission[kCP3][1], PlayMission[kCP3][2], 8);
 					MissionCheckpoint[playerid] = 3;
 		}
@@ -2224,7 +2245,7 @@ public OnPlayerEnterCheckpoint(playerid)
 					SendClientMessage(playerid, COLOR_YELLOW2, string);
 					format(string, sizeof(string), "%s", PlayMission[kText12]);
 					SendClientMessage(playerid, COLOR_YELLOW2, string);
-					DisablePlayerCheckpoint(playerid);
+					DisableCheckpoint(playerid);
 					SetPlayerCheckpoint(playerid, PlayMission[kCP4][0], PlayMission[kCP4][1], PlayMission[kCP4][2], 8);
 					MissionCheckpoint[playerid] = 4;
 		}
@@ -2238,7 +2259,7 @@ public OnPlayerEnterCheckpoint(playerid)
 					SendClientMessage(playerid, COLOR_YELLOW2, string);
 					format(string, sizeof(string), "%s", PlayMission[kText15]);
 					SendClientMessage(playerid, COLOR_YELLOW2, string);
-					DisablePlayerCheckpoint(playerid);
+					DisableCheckpoint(playerid);
 					SetPlayerCheckpoint(playerid, PlayMission[kCP5][0], PlayMission[kCP5][1], PlayMission[kCP5][2], 8);
 					MissionCheckpoint[playerid] = 5;
 		}
@@ -2252,7 +2273,7 @@ public OnPlayerEnterCheckpoint(playerid)
 					SendClientMessage(playerid, COLOR_YELLOW2, string);
 					format(string, sizeof(string), "%s", PlayMission[kText18]);
 					SendClientMessage(playerid, COLOR_YELLOW2, string);
-					DisablePlayerCheckpoint(playerid);
+					DisableCheckpoint(playerid);
 					SetPlayerCheckpoint(playerid, PlayMission[kCP6][0], PlayMission[kCP6][1], PlayMission[kCP6][2], 8);
 					MissionCheckpoint[playerid] = 6;
 		}
@@ -2262,7 +2283,7 @@ public OnPlayerEnterCheckpoint(playerid)
 					GameTextForPlayer(playerid, string, 8000, 3);
 					format(string, sizeof(string), "..:: Mission Passed : %s | Reward received: $%d ::..", PlayMission[kTitle], PlayMission[kReward]);
 					SendClientMessage(playerid, COLOR_GREEN, string);
-					DisablePlayerCheckpoint(playerid);
+					DisableCheckpoint(playerid);
 					SafeGivePlayerMoney(playerid, PlayMission[kReward]);
 					PlayerInfo[playerid][pMissionNr] = PlayerOnMission[playerid];
 					MissionCheckpoint[playerid] = 0;
@@ -2277,7 +2298,7 @@ public OnPlayerEnterCheckpoint(playerid)
 		case CHECKPOINT_HOME:
 		{
 									  PlayerPlaySound(playerid, 1058, 0.0, 0.0, 0.0);
-									  DisablePlayerCheckpoint(playerid);
+									  DisableCheckpoint(playerid);
 									  gPlayerCheckpointStatus[playerid] = CHECKPOINT_NONE;
 									  GameTextForPlayer(playerid, "~w~You are~n~~y~Home", 5000, 1);
 		}
@@ -2384,7 +2405,7 @@ public OnPlayerEnterCheckpoint(playerid)
 						 TogglePlayerControllable(playerid, 0);
 						 SendClientMessage(playerid, COLOR_YELLOW, "Xe buyt da toi tram cuoi cung, su dung /starteast hoac /startwest de tiep tuc di xe buyt.");
 						 SendClientMessage(playerid, COLOR_YELLOW, "Su dung /exit de roi khoi xe buyt.");
-						 DisablePlayerCheckpoint(playerid);
+						 DisableCheckpoint(playerid);
 			}
 			}
 			BusrouteEast[playerid][0]++;
@@ -2515,7 +2536,7 @@ public OnPlayerEnterCheckpoint(playerid)
 						 TogglePlayerControllable(playerid, 0);
 						 SendClientMessage(playerid, COLOR_YELLOW, "Xe buyt da toi tram cuoi cung, su dung /starteast hoac /startwest de tiep tuc di xe buyt.");
 						 SendClientMessage(playerid, COLOR_YELLOW, "Su dung /exit de roi khoi xe buyt.");
-						 DisablePlayerCheckpoint(playerid);
+						 DisableCheckpoint(playerid);
 			}
 			}
 			BusrouteWest[playerid][0]++;
@@ -2547,7 +2568,7 @@ public OnPlayerEnterCheckpoint(playerid)
 	}
 	if (BusShowLocationC[playerid] == 1)
 	{
-		DisablePlayerCheckpoint(playerid);
+		DisableCheckpoint(playerid);
 		BusShowLocationC[playerid] = 0;
 		return 1;
 	}
@@ -2799,7 +2820,7 @@ public OnPlayerEnterCheckpoint(playerid)
 				}
 				case 22:
 				{
-							 DisablePlayerCheckpoint(playerid);
+							 DisableCheckpoint(playerid);
 							 TogglePlayerControllable(playerid, 0);
 							 GameTextForPlayer(playerid, "~w~Su dung /exit de dung thu hoach~n~~r~Bonus 100$", 5000, 1);
 							 SafeGivePlayerMoney(playerid, 100);
@@ -2815,7 +2836,7 @@ public OnPlayerEnterCheckpoint(playerid)
 	{
 		/*if (PlayerInfo[playerid][pJob] == 22)
 		{
-			DisablePlayerCheckpoint(playerid);
+			DisableCheckpoint(playerid);
 			PlayerPlaySound(playerid, 1056, 0.0, 0.0, 0.0);
 			SafeGivePlayerMoney(playerid, 300);
 			SendClientMessage(playerid, COLOR_WHITE, "Ban da ban 25 vat lieu .");
@@ -2824,7 +2845,7 @@ public OnPlayerEnterCheckpoint(playerid)
 			GameTextForPlayer(playerid, "~w~Vat lieu da duoc them vao", 5000, 1);
 			SaveMatsSystem();
 		}*/
-		DisablePlayerCheckpoint(playerid);
+		DisableCheckpoint(playerid);
 		PlayerPlaySound(playerid, 1056, 0.0, 0.0, 0.0);
 		SafeGivePlayerMoney(playerid, 300);
 		SendClientMessage(playerid, COLOR_WHITE, "Ban da ban 25 vat lieu .");
@@ -2842,7 +2863,7 @@ public OnPlayerEnterCheckpoint(playerid)
 			SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu ");
 			return 1;
 		}
-		DisablePlayerCheckpoint(playerid);
+		DisableCheckpoint(playerid);
 		PlayerPlaySound(playerid, 1056, 0.0, 0.0, 0.0);
 		GameTextForPlayer(playerid, "~w~Vat lieu duoc giao thanh cong", 5000, 1);
 		PlayerInfo[playerid][pMats] -= CreatingGunPrice[playerid];
@@ -2863,7 +2884,7 @@ public OnPlayerEnterCheckpoint(playerid)
 		{
 			return 1;
 		}
-		DisablePlayerCheckpoint(playerid);
+		DisableCheckpoint(playerid);
 		new gunname[128];
 		GetWeaponName(CreatingGun[playerid], gunname, sizeof(gunname));
 		format(string, sizeof(string), "   Ban da nhan duoc %s.", gunname);
@@ -3217,7 +3238,7 @@ public OnPlayerEnterCheckpoint(playerid)
 							 PlayerInfo[playerid][pPayCheck] += cash * 5;
 							 drugsys[DrugAmmount]++;
 							 SaveDrugSystem();
-							 DisablePlayerCheckpoint(playerid);
+							 DisableCheckpoint(playerid);
 							 TogglePlayerControllable(playerid, 0);
 							 GameTextForPlayer(playerid, "~w~Use /exit de ket thuc thu hoach~n~~b~Nhieu do la du", 5000, 1);
 				}
@@ -3244,7 +3265,7 @@ public OnPlayerEnterCheckpoint(playerid)
 							PlayerInfo[playerid][pDrugs] += SmuggledDrugs[playerid];
 							format(string, sizeof(string), "~b~%d ~w~grams drugs da them", SmuggledDrugs[playerid]);
 							GameTextForPlayer(playerid, string, 5000, 1);
-							DisablePlayerCheckpoint(playerid);
+							DisableCheckpoint(playerid);
 							SmuggledDrugs[playerid] = 0;
 							SmugglerWork[playerid] = 0;
 							SavePlayer(playerid);
@@ -3266,7 +3287,7 @@ public OnPlayerEnterCheckpoint(playerid)
 				PlayerPlaySound(playerid, 1056, 0.0, 0.0, 0.0);
 				format(string, sizeof(string), "~g~%d$ ~w~Da them vao tien luong cua ban", cashes);
 				GameTextForPlayer(playerid, string, 5000, 1);
-				DisablePlayerCheckpoint(playerid);
+				DisableCheckpoint(playerid);
 				PlayerInfo[playerid][pPayCheck] += cashes * 5;
 				new randomss;
 				randomss = random(sizeof(gSweeperPoints));
@@ -3329,7 +3350,7 @@ public OnPlayerEnterCheckpoint(playerid)
 			SetPlayerSpecialAction(playerid, 0);
 		}
 	}
-	DisablePlayerCheckpoint(playerid);
+	DisableCheckpoint(playerid);
 	return 1;
 }
 public OnPlayerLeaveCheckpoint(playerid)
@@ -4573,16 +4594,20 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 }
 public OnPlayerRequestClass(playerid, classid)
 {
-	SetPlayerCameraPos(playerid, 1890.1014, -1194.7969, 25.8091);
-	SetPlayerCameraLookAt(playerid, 1933.4393, -1196.2479, 18.8163);
-
 	new string[128];
 	PlayerPlaySound(playerid, 1068, 0.0, 0.0, 0.0);
 	PlayerInfo[playerid][pModel] = Peds[classid][0];
 
 	if (RegistrationStep[playerid] == 0 && gPlayerLogged[playerid] != 1)
 	{
+		/*SetPlayerCameraPos(playerid, 1890.1014, -1194.7969, 25.8091);
+		SetPlayerCameraLookAt(playerid, 1933.4393, -1196.2479, 18.8163);*/
+
 		TogglePlayerSpectating(playerid, true);
+
+		InterpolateCameraPos(playerid, 1367.386230, -840.428833, 80.202323, 1663.663574, -1549.623657, 83.137756, 10000);
+		InterpolateCameraLookAt(playerid, 1370.542602, -836.631530, 80.988113, 1661.490234, -1554.123779, 83.297882, 10000);
+
 		ClearChatbox(playerid, 10);
 		format(string, sizeof(string), "Chao mung den voi server Los Angeles Roleplay! Phien ban: %s", SCRIPT_VERSION);
 		SendClientMessage(playerid, COLOR_YELLOW, string);
@@ -4839,7 +4864,6 @@ public OnPlayerLogin(playerid, password[])
          cache_get_value_name_int(0, "Car2", temp); PlayerInfo[playerid][pPcarkey][1] = temp; 
 			cache_get_value_name_int(0, "Car3", temp); PlayerInfo[playerid][pPcarkey][2] = temp;
 			cache_get_value_name_int(0, "Bleeding", temp); PlayerInfo[playerid][pBleeding] = temp;
-
 			for (new i = 0; i < 5; i++)
 			{
 				new str[128];
@@ -4865,7 +4889,7 @@ public OnPlayerLogin(playerid, password[])
 			format(str, sizeof(str), "\n--------------LA-Roleplay--------------\nChao mung ban den voi server!\n\nMat khau sai, ban con %d lan de thu lai: ", 4 - gPlayerLogTries[playerid]);
 			ShowPlayerDialog(playerid, DIALOG_LOGIN, DIALOG_STYLE_PASSWORD, "DANG NHAP", str, "Dang Nhap", "Thoat");
 			gPlayerLogTries[playerid] += 1;
-			if (gPlayerLogTries[playerid] == 4) { Kick(playerid); }
+			if (gPlayerLogTries[playerid] == 4) { KickEx(playerid); }
 			return 1;
 		}
 		//PlayerInfo[playerid][pAdjustable] = 0;
@@ -4900,7 +4924,7 @@ public OnPlayerLogin(playerid, password[])
 		if (PlayerInfo[playerid][pLocked] == 1) // Auto-kick
 		{
 			SendClientMessage(playerid, COLOR_LIGHTRED, "Your account is locked. Make a unlock/unban request on forums; 'Wrongly Banned'.");
-			Kick(playerid);
+			KickEx(playerid);
 		}
 		if (PlayerInfo[playerid][pLevel] == -999) //autoban
 		{
@@ -4908,18 +4932,18 @@ public OnPlayerLogin(playerid, password[])
 		}
 		else if (PlayerInfo[playerid][pCK] > 0)
 		{
-			Kick(playerid);
+			KickEx(playerid);
 		}
 		ClearChatbox(playerid, 8);
 		SendClientMessage(playerid, COLOR_GREEN, "=============================================");
-		format(string2, sizeof(string2), "Welcome to Los Angeles Roleplay, %s.", GN(playerid));
+		format(string2, sizeof(string2), "Chao mung ban tham gia server Los Angeles Roleplay, %s.", GN(playerid));
 		SendClientMessage(playerid, COLOR_WHITE, string2);
 		SendClientMessage(playerid, COLOR_GREEN, "=============================================");
 		/*SendClientMessage(playerid, COLOR_WHITE, "Server Owned by Hoodstar");
 		SendClientMessage(playerid, COLOR_WHITE, "Server Scripted by Hoodstar");
 		SendClientMessage(playerid, COLOR_WHITE, "Official Ventrilo Server IP:");
 		SendClientMessage(playerid, COLOR_WHITE, "Forums:");*/
-		format(string2, sizeof(string2), "Current script version: %s.", SCRIPT_VERSION);
+		format(string2, sizeof(string2), "Phien ban: %s.", SCRIPT_VERSION);
 		SendClientMessage(playerid, COLOR_WHITE, string2);
 		if (PlayerInfo[playerid][pDonateRank] > 0)
 		{
@@ -4934,6 +4958,9 @@ public OnPlayerLogin(playerid, password[])
 		{
 			CountAdvisor++;
 		}
+		if (PlayerInfo[playerid][pBleeding] == 1)
+			SCM(playerid, COLOR_LIGHTRED, "Ban hien tai dang bi thuong, hay den benh vien de chua tri.");
+
 		SendClientMessage(playerid, COLOR_GREEN, "=============================================");
 		SendClientMessage(playerid, COLOR_WHITE, " ");
 		printf("%s da dang nhap.", playername2);
@@ -5030,7 +5057,7 @@ public OnPlayerEnterFood(playerid, foodid)
 }
 public OnPlayerExitFood(playerid)
 {
-	DisablePlayerCheckpoint(playerid);
+	DisableCheckpoint(playerid);
 	InAFoodPlace[playerid] = 0;
 	return 1;
 }
@@ -6501,7 +6528,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		{
 			OnPlayerRegister(playerid, inputtext);
 		}
-		else Kick(playerid);
+		else KickEx(playerid);
 		return 1;
 	}
 	if (dialogid == DIALOG_LOGIN)
@@ -6516,7 +6543,7 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 			OnPlayerLogin(playerid, inputtext);
 			return 1;
 		}
-		else Kick(playerid);
+		else KickEx(playerid);
 	}
 	return 0;
 }
@@ -7451,7 +7478,7 @@ CMD:stopharvest(playerid, params[])
 			}
 			JustStarted[playerid] = 0;
 			FarmerVar[playerid] = 0;
-			DisablePlayerCheckpoint(playerid);
+			DisableCheckpoint(playerid);
 		}
 	}
 	return 1;
@@ -7512,7 +7539,7 @@ CMD:stopharvest(playerid, params[])
 //			}
 //			JustStarted[playerid] = 0;
 //			DrugFarmerVar[playerid] = 0;
-//			DisablePlayerCheckpoint(playerid);
+//			DisableCheckpoint(playerid);
 //		}
 //	}
 //	return 1;
@@ -8931,7 +8958,7 @@ CMD:dungquet(playerid, params[])
 	{
 		if (PlayerIsSweeping[playerid] == 1)
 		{
-			DisablePlayerCheckpoint(playerid);
+			DisableCheckpoint(playerid);
 			PlayerIsSweeping[playerid] = 0;
 			SendClientMessage(playerid, COLOR_WHITE, "Ban da dung quet bui.");
 			if (IsASweeper(idcar))
@@ -20925,7 +20952,7 @@ CMD:slap(playerid, params[])
 					SetPlayerHealth(playa, shealth - 5);
 					GetPlayerPos(playa, slx, sly, slz);
 					SetPlayerPos(playa, slx, sly, slz + 5);
-					PlayerPlaySound(playa, 1130, slx, sly, slz + 5);
+					PlayerPlaySound(playa, 1190, slx, sly, slz + 5);
 					printf("AdmCMD: %s slapped %s", GN(playerid), GN(playa));
 					format(string, sizeof(string), "AdmCMD: %s da bi slap boi %s", GN(playa), GN(playerid));
 					BroadCast(COLOR_LIGHTRED, string);
@@ -21004,7 +21031,7 @@ CMD:learn(playerid, params[])
 					PlayerInfo[giveplayerid][pTut] = 0;
 					format(string, sizeof(string), "Ban da bi truc xuat khoi dat nuoc. Ban se duoc tuyen huan lai.");
 					SendClientMessage(giveplayerid, COLOR_LIGHTRED, string);
-					Kick(giveplayerid);
+					KickEx(giveplayerid);
 
 					format(string, 256, "AdmCMD: %s da kick %s va bat buoc phai doc lai huong dan.", GN(playerid), GN(giveplayerid));
 					BroadCast(COLOR_LIGHTRED, string);
@@ -21041,7 +21068,7 @@ CMD:name(playerid, params[])
 					SendAdminMessage(COLOR_YELLOW, string);
 					format(string, sizeof(string), " AdmCMD: Ban da bi kick boi Admin %s vi ly do : NON-RP name ( TenLot_Ten )", GN(playerid));
 					SendClientMessage(giveplayerid, COLOR_LIGHTRED, string);
-					Kick(giveplayerid);
+					KickEx(giveplayerid);
 				}
 			}
 		}
@@ -21094,7 +21121,7 @@ CMD:changename(playerid, params[])
 	}
 	return 1;
 }
-CMD:kick(playerid, params[])
+CMD:KickEx(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
@@ -21116,7 +21143,7 @@ CMD:kick(playerid, params[])
 					KickLog(string);
 					format(string, sizeof(string), "AdmCMD: %s da bi kick boi %s, ly do: %s", GN(giveplayerid), GN(playerid), (result));
 					BroadCast(COLOR_LIGHTRED, string);
-					Kick(giveplayerid);
+					KickEx(giveplayerid);
 					return 1;
 				}
 			}
@@ -21146,7 +21173,7 @@ CMD:kick(playerid, params[])
 	{
 	if(giveplayerid != INVALID_PLAYER_ID)
 	{
-	Kick(giveplayerid);
+	KickEx(giveplayerid);
 	}
 	}
 	}
@@ -21180,7 +21207,7 @@ CMD:kickres(playerid, params[])
 				if (PlayerInfo[i][pLevel] == level && PlayerInfo[i][pAdmin] < 1 && PlayerInfo[i][pDonateRank] < 1 && ammount > 0)
 				{
 					ammount -= 1;
-					Kick(i);
+					KickEx(i);
 				}
 			}
 		}
@@ -28605,11 +28632,11 @@ CMD:removegps(playerid, params[])
 	{
 		if (PlayerInfo[playerid][pMember] == 1 || PlayerInfo[playerid][pLeader] == 1)
 		{
-			DisablePlayerCheckpoint(playerid);
+			DisableCheckpoint(playerid);
 		}
 		else if (PlayerInfo[playerid][pMember] == 4 || PlayerInfo[playerid][pLeader] == 4)
 		{
-			DisablePlayerCheckpoint(playerid);
+			DisableCheckpoint(playerid);
 		}
 	}
 	return 1;
@@ -28770,7 +28797,7 @@ CMD:cancel(playerid, params[])
 					TaxiAccepted[playerid] = 999;
 					GameTextForPlayer(playerid, "~w~Ban vua~n~~r~Tu choi cuoc goi", 5000, 1);
 					TaxiCallTime[playerid] = 0;
-					DisablePlayerCheckpoint(playerid);
+					DisableCheckpoint(playerid);
 					TaxiCall = 999;
 				}
 				else
@@ -28787,7 +28814,7 @@ CMD:cancel(playerid, params[])
 									TaxiAccepted[i] = 999;
 									GameTextForPlayer(i, "~w~Taxi Caller~n~~r~Tu choi cuoc goi", 5000, 1);
 									TaxiCallTime[i] = 0;
-									DisablePlayerCheckpoint(i);
+									DisableCheckpoint(i);
 								}
 							}
 						}
@@ -28804,7 +28831,7 @@ CMD:cancel(playerid, params[])
 					BusAccepted[playerid] = 999;
 					GameTextForPlayer(playerid, "~w~Ban vua~n~~r~Tu choi cuoc goi", 5000, 1);
 					BusCallTime[playerid] = 0;
-					DisablePlayerCheckpoint(playerid);
+					DisableCheckpoint(playerid);
 					BusCall = 999;
 				}
 				else
@@ -28821,7 +28848,7 @@ CMD:cancel(playerid, params[])
 									BusAccepted[i] = 999;
 									GameTextForPlayer(i, "~w~Bus Caller~n~~r~Tu choi cuoc goi", 5000, 1);
 									BusCallTime[i] = 0;
-									DisablePlayerCheckpoint(i);
+									DisableCheckpoint(i);
 								}
 							}
 						}
@@ -28858,6 +28885,7 @@ CMD:accept(playerid, params[])
 				new str[128];
 				format(str, sizeof(str), "Ban can cho %d giay de co the thuc hien.", DyingTimeOut[playerid]);
 				SCM(playerid, COLOR_WHITE, str);
+				return 1;
 			}
 			SetPlayerHealth(playerid, 0);
 		}
@@ -32343,7 +32371,7 @@ CMD:exit(playerid, params[])
 		TogglePlayerControllable(playerid, 1);
 		RemovePlayerFromVehicle(playerid);
 		FarmerVar[playerid] = 0;
-		DisablePlayerCheckpoint(playerid);
+		DisableCheckpoint(playerid);
 	}
 	else if(IsADrugHarvest(carid))
 	{
@@ -32356,7 +32384,7 @@ CMD:exit(playerid, params[])
 		TogglePlayerControllable(playerid, 1);
 		RemovePlayerFromVehicle(playerid);
 		DrugFarmerVar[playerid] = 0;
-		DisablePlayerCheckpoint(playerid);
+		DisableCheckpoint(playerid);
 	}
 	else if(IsASmuggleCar(carid))
 	{
@@ -32366,7 +32394,7 @@ CMD:exit(playerid, params[])
 		TogglePlayerControllable(playerid, 1);
 		RemovePlayerFromVehicle(playerid);
 		SmugglerWork[playerid] = 0;
-		DisablePlayerCheckpoint(playerid);
+		DisableCheckpoint(playerid);
 	}
 	else if(IsAnOwnableCar(carid) && CarInfo[carid][cOwned] == 0)
 	{

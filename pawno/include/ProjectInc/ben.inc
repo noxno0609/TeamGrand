@@ -307,7 +307,25 @@ CMD:dichvu(playerid, params[])
 	}
 	return 1;
 }
-
+ CMD:hoisinh(playerid, params[])
+ {
+		if (PlayerInfo[playerid][pAdmin] < 1) return SCM(playerid, COLOR_GREY, "Ban khong phai la Admin");
+		new phs, str[128];
+		if (sscanf(params, "u", phs)) return SCM(playerid, COLOR_GRAD2, "Su dung: /hoisinh [playerid]");
+		if (IsPlayerConnected(phs) && phs != INVALID_PLAYER_ID)
+		{
+			if (Dying[phs] != 1) return SCM(playerid, COLOR_GREY, "Nguoi choi nay khong chet.");
+			printf("AdmCMD: %s hoi sinh %s", GN(playerid), GN(phs));
+			format(str, sizeof(str), "AdmCMD: %s da duoc hoi sinh boi %s", GN(phs), GN(playerid));
+			BroadCast(COLOR_LIGHTRED, str);
+			Dying[phs] = 0;
+			DyingTimeOut[phs] = 0;
+			SetPlayerHealth(phs, 100);
+			TogglePlayerControllable(phs, 1);
+			ClearAnimations(phs);
+		}
+		return 1;
+ }
  CMD:ncc(playerid, params[]) { return cmd_nhancapcuu(playerid, params); }
  CMD:nhancapcuu(playerid, params[])
  {
@@ -324,7 +342,15 @@ CMD:dichvu(playerid, params[])
 		MedicCaller[playerid] = pncc;
 		return 1;
  }
-
+CMD:trithuong(playerid, params[])
+{
+	if (PlayerInfo[playerid][pBleeding] != 1) return SCM(playerid, COLOR_GREY, "Ban khong can tri thuong.");
+	if (!IsPlayerInRangeOfPoint(playerid, 10, 1182.6879, -1317.7358, 1006.4028)) return SCM(playerid, COLOR_GREY, "Ban khong o benh vien de tri thuong.");
+	SafeGivePlayerMoney(playerid, -5000);
+	PlayerInfo[playerid][pBleeding] = 0;
+	SCM(playerid, COLOR_LIGHTGREEN, "Ban da chua tri dut diem vet thuong! Chi phi: 5,000$");
+	return 1;
+}
 CMD:xoamuctieu(playerid, params[])
 {
 	if (MedicCaller[playerid] != -1)
@@ -332,7 +358,7 @@ CMD:xoamuctieu(playerid, params[])
 		MedicCaller[playerid] = -1;
 		SCM(playerid, COLOR_WHITE, "Xoa nhan benh nhan thanh cong.");
 	}
-	DisablePlayerCheckpoint(playerid);
+	DisableCheckpoint(playerid);
 	return 1;
 }
 CMD:dieutri(playerid, params[])
@@ -350,6 +376,29 @@ CMD:dieutri(playerid, params[])
 	SaveVehicle[patient] = GetPlayerVehicleID(playerid);
 	TogglePlayerControllable(patient, 0);
 	return 1;
+}
+ CMD:pdfind(playerid, params[])
+ {
+		if (!IsACop(playerid)) return SCM(playerid, COLOR_GREY, "Ban khong phai nhan vien canh sat.");
+		new pfind;
+		if (sscanf(params, "u", pfind)) return SCM(playerid, COLOR_GRAD2, "Su dung: /pdfind [playerid]");
+		if (pfind == INVALID_PLAYER_ID) return SCM(playerid, COLOR_GREY, "Nguoi choi nay khong ton tai.");
+		if (PFind[playerid] != -1) return SCM(playerid, COLOR_GREY, "Ban hien dang tim kiem mot nguoi (/stopfind de dung tim kiem)");
+		PFind[playerid] = pfind;
+		new str[128];
+		format(str, sizeof(str), "Tien hanh tim kiem %s! Cham do se xuat hien neu doi tuong trong thanh pho Los Santos.", GN(pfind));
+		SCM(playerid, COLOR_LIGHTBLUE, str);
+		return 1;
+ }
+CMD:stopfind(playerid, params[])
+{
+		if (PFind[playerid] != -1)
+		{
+			SetPlayerMarkerForPlayer(playerid, PFind[playerid], 0xFFFFFF00);
+			PFind[playerid] = -1;
+			SCM(playerid, COLOR_WHITE, "Xoa muc tieu tim kiem thanh cong.");
+		}
+		return 1;
 }
 stock GetFreeSeatAmbulance(vid)
 {
@@ -480,4 +529,32 @@ stock IsPlayerDrugDealingCooperate(ddid, playerid, ddcase)
 	if (DrugDealing[ddid] == ddcase && IsPlayerInVehicle(ddid, vid))
 		return 1;
 	return 0;
+}
+
+stock DisableCheckpoint(playerid)
+{
+	PlayerPlaySound(playerid, 1058, 0.0, 0.0, 0.0);
+	DisablePlayerCheckpoint(playerid);
+}
+
+stock SetCheckpoint(playerid, Float:x, Float:y, Float:z, Float:range)
+{
+	PlayerPlaySound(playerid, 1002, 0.0, 0.0, 0.0);
+	AntiCheckpoint[playerid] = 1;
+	AntiCPDistance[playerid] = GetPlayerDistanceFromPoint(playerid, x, y, z);
+	SetPlayerCheckpoint(playerid, x,y,z,range);
+	return 1;
+}
+
+stock KickEx(playerid)
+{
+	SetTimerEx("KickTime", 1000, 0, "i", playerid);
+	return 1;
+}
+
+forward KickTime(playerid);
+public KickTime(playerid)
+{
+	Kick(playerid);
+	return 1;
 }

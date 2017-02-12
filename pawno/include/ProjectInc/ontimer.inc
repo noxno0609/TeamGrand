@@ -2,6 +2,17 @@ task ServerBeat[1000]()
 {
 	foreach(Player, playerid)
 	{
+		if (PFind[playerid] != -1)
+		{
+			if (IsPlayerInDynamicArea(PFind[playerid], LSArea))
+				SetPlayerMarkerForPlayer(playerid, PFind[playerid], 0xFF0000FF);
+			else
+				SetPlayerMarkerForPlayer(playerid, PFind[playerid], 0xFFFFFF00);
+		}
+
+		if (AntiCheckpoint[playerid] == 1) 
+			AntiCPTime[playerid]++;
+
 		if (CallMedic[playerid] > 0)
 			CallMedic[playerid]--;
 
@@ -10,9 +21,6 @@ task ServerBeat[1000]()
 
 		if (Dying[playerid] == 1 && !IsOnSavePosAmbulance(playerid))
 		{
-			new Float:mau;
-			GetPlayerHealth(playerid, mau);
-			SetPlayerHealth(playerid, mau - 0.1);
 			new AnimLib[32], AnimName[32];
 			//if (!IsPlayerInRangeOfPoint(playerid, 3, BTPos[playerid][0], BTPos[playerid][1], BTPos[playerid][2])) NamVien(playerid);
 			GetAnimationName(GetPlayerAnimationIndex(playerid), AnimLib, 32, AnimName, 32);
@@ -191,7 +199,20 @@ task VehicleLastShot[10000]()
 	}
 }
 
-task Bleeding[20000]()
+task DyingTime[5000]()
+{
+	foreach(Player, playerid)
+	{
+		if (Dying[playerid] == 1 && !IsOnSavePosAmbulance(playerid))
+		{
+			new Float:zxc;
+			GetPlayerHealth(playerid, zxc);
+			SetPlayerHealth(playerid, zxc - 1);
+		}
+	}
+}
+
+task Bleeding[10000]()
 {
 	foreach(Player, playerid)
 	{

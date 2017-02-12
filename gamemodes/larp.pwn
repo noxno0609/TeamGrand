@@ -3388,7 +3388,7 @@ public KartingEnded()
 	        if(PlayerKarting[i] != 0 && PlayerInKart[i] != 0)
 	        {
 	            CP[i] = 0;
-	            DisablePlayerCheckpoint(i);
+	            DisableCheckpoint(i);
 	        }
 		}
 	}
@@ -3577,9 +3577,9 @@ public Spectator()
 	{
 		if(IsPlayerConnected(i))
 		{
-		    if(KickPlayer[i]==1) { Kick(i); }
+		    if(KickPlayer[i]==1) { KickEx(i); }
 			else if(KickPlayer[i]==2) { Ban(i); }
-			//if(GetPlayerPing(i) >= 500 && PlayerInfo[i][pAdmin] < 1) { Kick(i); }
+			//if(GetPlayerPing(i) >= 500 && PlayerInfo[i][pAdmin] < 1) { KickEx(i); }
 			if(Spectate[i] < 253 && Spectate[i] != 255)
 			{
 				SetPlayerColor(i,COLOR_SPEC);
@@ -5456,7 +5456,7 @@ public GlobalHackCheck()
 					new spawnedamount = plactualmoney-ScriptMoney[i];
 					format(string, sizeof(string), "AdmCmd: tai khoan %s da bi khoa boi DUCK, ly do: money cheat ($%d)", plname, spawnedamount);
 					BanLog(string);
-					Kick(i);
+					KickEx(i);
 					ScriptMoney[i] = 0;
 					ScriptMoneyUpdated[i] = 0;
 					BroadCast(COLOR_LIGHTRED, string);
@@ -5495,7 +5495,7 @@ public GlobalHackCheck()
 					GetPlayerIp(i, banip, sizeof(banip));
 					BanAdd(4, PlayerInfo[i][pSQLID], banip, hacking);
 					//format(string, sizeof(string), "Anticheat: %s [SQL: %d] has just been locked and kicked for weapon hacking. Please check the account.", plname, PlayerInfo[i][pSQLID]);
-					Kick(i);
+					KickEx(i);
 					for (new c=0; c<13; c++) ScriptWeapons[i][c] = 0;
 					ScriptWeaponsUpdated[i] = 0;
 					//ABroadCast(COLOR_LIGHTRED,string,1);
@@ -5513,7 +5513,7 @@ public GlobalHackCheck()
     				BanLog(string);
 					PlayerInfo[i][pLocked] = 1;
 					SavePlayer(i);
-					Kick(i);
+					KickEx(i);
 			    }
 
 			    if (weaponid == 38)
@@ -6341,13 +6341,13 @@ public SetPlayerUnjail()
 			{
 			    if(PlayerKarting[i] != 0 && PlayerInKart[i] != 0)
 			    {
-			        DisablePlayerCheckpoint(i);
+			        DisableCheckpoint(i);
 			        CP[i] = 0;
 			    }
 			}
 			if(FindTime[i] > 0)
 			{
-			    if(FindTime[i] == FindTimePoints[i]) { FindTime[i] = 0; FindTimePoints[i] = 0; DisablePlayerCheckpoint(i); PlayerPlaySound(i, 1056, 0.0, 0.0, 0.0); GameTextForPlayer(i, "~r~RedMarker gone", 2500, 1); }
+			    if(FindTime[i] == FindTimePoints[i]) { FindTime[i] = 0; FindTimePoints[i] = 0; DisableCheckpoint(i); PlayerPlaySound(i, 1056, 0.0, 0.0, 0.0); GameTextForPlayer(i, "~r~RedMarker gone", 2500, 1); }
 			    else
 				{
 				    format(string, sizeof(string), "%d", FindTimePoints[i] - FindTime[i]);
@@ -6381,7 +6381,7 @@ public SetPlayerUnjail()
 			}
 			if(MedicCallTime[i] > 0)
 			{
-			    if(MedicCallTime[i] == 90) { MedicCallTime[i] = 0; DisablePlayerCheckpoint(i); PlayerPlaySound(i, 1056, 0.0, 0.0, 0.0); GameTextForPlayer(i, "~r~RedMarker gone", 2500, 1); }
+			    if(MedicCallTime[i] == 90) { MedicCallTime[i] = 0; DisableCheckpoint(i); PlayerPlaySound(i, 1056, 0.0, 0.0, 0.0); GameTextForPlayer(i, "~r~RedMarker gone", 2500, 1); }
 			    else
 				{
 				    format(string, sizeof(string), "%d", 90 - MedicCallTime[i]);
@@ -6391,7 +6391,7 @@ public SetPlayerUnjail()
 			}
 			if(MechanicCallTime[i] > 0)
 			{
-			    if(MechanicCallTime[i] == 30) { MechanicCallTime[i] = 0; DisablePlayerCheckpoint(i); PlayerPlaySound(i, 1056, 0.0, 0.0, 0.0); GameTextForPlayer(i, "~r~RedMarker gone", 2500, 1); }
+			    if(MechanicCallTime[i] == 30) { MechanicCallTime[i] = 0; DisableCheckpoint(i); PlayerPlaySound(i, 1056, 0.0, 0.0, 0.0); GameTextForPlayer(i, "~r~RedMarker gone", 2500, 1); }
 			    else
 				{
 				    format(string, sizeof(string), "%d", 30 - MechanicCallTime[i]);
@@ -6401,7 +6401,7 @@ public SetPlayerUnjail()
 			}
 			if(PizzaCallTime[i] > 0)
    			{
-       			if(PizzaCallTime[i] == 90) { PizzaCallTime[i] = 0; DisablePlayerCheckpoint(i); PlayerPlaySound(i, 1056, 0.0, 0.0, 0.0); GameTextForPlayer(i, "~r~RedMarker gone", 2500, 1); }
+       			if(PizzaCallTime[i] == 90) { PizzaCallTime[i] = 0; DisableCheckpoint(i); PlayerPlaySound(i, 1056, 0.0, 0.0, 0.0); GameTextForPlayer(i, "~r~RedMarker gone", 2500, 1); }
        			else
     			{
         			format(string, sizeof(string), "%d", 90 - PizzaCallTime[i]);
@@ -7159,7 +7159,7 @@ public SetPlayerToTeamColor(playerid)
 	{
 		if(IsPlayerConnected(i))
 		{
-			DisablePlayerCheckpoint(i);
+			DisableCheckpoint(i);
 			gPlayerCheckpointStatus[i] = CHECKPOINT_NONE;
 			GameTextForPlayer(i, string, 4000, 5);
 			SetPlayerCameraPos(i,1460.0, -1324.0, 287.2);
@@ -8480,6 +8480,10 @@ public CustomPickups()
 			    if(PlayerInfo[i][pMember] == 4 || PlayerInfo[i][pLeader] == 4) { SetTimerEx("elevator2", 1000, false, "i", i); }
 			    else { GameTextForPlayer(i, "~r~You can not use an elevator", 5000, 3); }
 			}
+			else if (PlayerToPoint(2.0, i, 1182.6879, -1317.7358, 1006.4028))
+			{
+				GameTextForPlayer(i, "~y~Go /trithuong de tri thuong", 5000, 3);
+			}
 			else if (GetPlayerState(i) == 1 && PlayerToPoint(2.0, i,1381.0413,-1088.8511,27.3906))
 			{
 			    GameTextForPlayer(i, "~g~Welcome,~n~~y~Use /mission to take on a Mission", 5000, 3);
@@ -8720,7 +8724,7 @@ public IdleKick()
 					GetPlayerName(i, plname, sizeof(plname));
 					format(string, sizeof(string), "AdmCmd: %s da bi kick boi Nick_Dep_Trai, Ly do: AFK", plname);
 					BroadCast(COLOR_LIGHTRED, string);
-					Kick(i);
+					KickEx(i);
 				}
 				PlayerPos[i][3] = PlayerPos[i][0];
 				PlayerPos[i][4] = PlayerPos[i][1];
@@ -8823,7 +8827,7 @@ public RemoveRoadblock(playerid)
 		{
 			if(PlayerInfo[i][pMember] == 1 || PlayerInfo[i][pLeader] == 1)
 			{
-				DisablePlayerCheckpoint(i);
+				DisableCheckpoint(i);
 			}
 		}
 	}
@@ -8896,7 +8900,7 @@ public BusrouteEnd(playerid, vehicleid)
 		GameTextForPlayer(playerid, "~r~Bus Route Ended", 5000, 3);
 		PlayerPlaySound(playerid, 1055, 0.0, 0.0, 0.0);
 	}
-	DisablePlayerCheckpoint(playerid);
+	DisableCheckpoint(playerid);
 	if (vehicleid != 0) SetVehicleToRespawn(vehicleid);
 	BusrouteEast[playerid][0] = 0;
 	BusrouteEast[playerid][1] = 0;
@@ -9908,7 +9912,7 @@ public FarmerExit(playerid)
 		{
 			FarmerPickup[playerid][0]--;
 		}
-    	DisablePlayerCheckpoint(playerid);
+    	DisableCheckpoint(playerid);
     	FarmerVar[playerid] = 0;
 	}
 	return 1;
@@ -9931,7 +9935,7 @@ public DrugFarmerExit(playerid)
 		{
 			DrugFarmerPickup[playerid][0]--;
 		}
-    	DisablePlayerCheckpoint(playerid);
+    	DisableCheckpoint(playerid);
     	DrugFarmerVar[playerid] = 0;
 	}
 	return 1;
@@ -10060,7 +10064,7 @@ public SmugglerExit(playerid)
 	    {
 	        return 1;
 	    }
-    	DisablePlayerCheckpoint(playerid);
+    	DisableCheckpoint(playerid);
     	SmugglerWork[playerid] = 0;
 	}
 	return 1;
@@ -10084,6 +10088,8 @@ public SafeGivePlayerMoney(plyid, amounttogive)
 	new str[128];
 	if (amounttogive > 0) format(str, sizeof(str), "~g~ +%d$", amounttogive);
 	else format(str, sizeof(str), "~r~ -%d$", amounttogive);
+	GameTextForPlayer(plyid, str, 3000, 1);
+	PlayerPlaySound(plyid, 1150, 0.0, 0.0, 0.0);
 	return 1;
 }
 
@@ -10104,6 +10110,7 @@ public SafeGivePlayerWeapon(plyid, weaponid, ammo)
 	ScriptWeaponsUpdated[plyid] = curSecond;*/
 	GivePlayerWeapon(plyid, weaponid, ammo);
 	//UpdateWeaponSlots(plyid);
+	PlayerPlaySound(plyid, 1052, 0.0, 0.0, 0.0);
 	return 1;
 }
 
