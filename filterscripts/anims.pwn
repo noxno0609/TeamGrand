@@ -27,7 +27,7 @@ ________________________________________________________________________________
 #undef MAX_PLAYERS
 #define MAX_PLAYERS 1000
 
-#include "../include/gl_common.inc"
+#include "../../include/gl_common.inc"
 #define COLOR_GRAD1 0xB4B5B7FF
 #define COLOR_GRAD2 0xBFC0C2FF
 #define COLOR_GRAD3 0xCBCCCEFF
@@ -71,6 +71,11 @@ PreloadAnimLib(playerid, animlib[])
 
 IsAblePedAnimation(playerid)
 {
+	new str[12];
+	format(str, sizeof(str), "%d", GetPVarInt(playerid, "CantUseAnim"));
+	SendClientMessage(playerid, COLOR_GRAD1, str);
+	SendClientMessage(playerid, COLOR_GRAD1, str);
+	SendClientMessage(playerid, COLOR_GRAD1, str);
     if(GetPVarType(playerid, "PlayerCuffed") || GetPVarType(playerid, "Injured") || GetPVarType(playerid, "IsFrozen") || GetPVarInt(playerid, "Hospital") || GetPVarInt(playerid, "CantUseAnim")) {
    		SendClientMessage(playerid, COLOR_GRAD2, "Ban khong the su dung anim!");
    		return 0;
