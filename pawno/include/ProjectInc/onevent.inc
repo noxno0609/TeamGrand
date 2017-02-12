@@ -6594,7 +6594,7 @@ CMD:askq(playerid, params[])
 }
  CMD:handsup(playerid, params[]) {
 	if (GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) {
-		SetPlayerSpecialAction(playerid, SPECIAL_ACTION_HANDSUP);
+		ApplyAnimation(playerid, "PED", "handsup", 4.1, 0, 1, 1, 1, 1, 1); 
 		return 1;
 	}
 	return 1;
