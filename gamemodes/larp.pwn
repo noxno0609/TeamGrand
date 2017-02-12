@@ -4639,6 +4639,7 @@ public SetPlayerSpawn(playerid)
 				NeedMedicTime[playerid] = 0;*/
 				DyingTimeOut[playerid] = 0;
 				Dying[playerid] = 0;
+				SetPVarInt(playerid, "CantUseAnim", 0);
 				PlayerInfo[playerid][pDeaths] += 1;
 				SetPlayerHealth(playerid, 25.0);
 		    	SetPlayerInterior(playerid, 3);
