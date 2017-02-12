@@ -2,6 +2,52 @@ task ServerBeat[1000]()
 {
 	foreach(Player, playerid)
 	{
+		if (CallMedic[playerid] > 0)
+			CallMedic[playerid]--;
+
+		if (DyingTimeOut[playerid] > 0)
+			DyingTimeOut[playerid]--;
+
+		if (Dying[playerid] == 1 && !IsOnSavePosAmbulance(playerid))
+		{
+			new Float:mau;
+			GetPlayerHealth(playerid, mau);
+			SetPlayerHealth(playerid, mau - 0.1);
+			new AnimLib[32], AnimName[32];
+			//if (!IsPlayerInRangeOfPoint(playerid, 3, BTPos[playerid][0], BTPos[playerid][1], BTPos[playerid][2])) NamVien(playerid);
+			GetAnimationName(GetPlayerAnimationIndex(playerid), AnimLib, 32, AnimName, 32);
+			if (strcmp(AnimName, "KILL_Knife_Ped_Die", true) != 0) ApplyAnimation(playerid, "KNIFE", "KILL_Knife_Ped_Die", 4.0, 0, 1, 1, 1, 0, 1);
+			GameTextForPlayer(playerid, "~r~Ban da bi thuong ~n~~y~Go /dichvu capcuu de goi cuu thuong", 1000, 4);
+		}
+		if (Dying[playerid] == 1 && Saving[playerid] > 0)
+		{
+			new vid = SaveVehicle[playerid];
+			if (!IsPlayerInVehicle(Saver[playerid], vid) ||
+				!IsPlayerInVehicle(playerid, vid))
+			{
+				SCM(playerid, COLOR_GREY, "Dieu tri that bai.");
+				SCM(Saver[playerid], COLOR_GREY, "Dieu tri that bai.");
+				ClearSaving(playerid);
+			}
+			Saving[playerid]--;
+			new str[128];
+			format(str, sizeof(str), "~g~Thoi gian dieu tri con~n~~y~%d ~y~giay~y~!", Saving[playerid]);
+			GameTextForPlayer(playerid, str, 1000, 4);
+			GameTextForPlayer(Saver[playerid], str, 1000, 4);
+			if (Saving[playerid] == 0)
+			{
+				format(str, sizeof(str), "Ban da dieu tri cho %s thanh cong.", GN(playerid));
+				SCM(Saver[playerid], COLOR_LIGHTGREEN, str);
+				SCM(playerid, COLOR_LIGHTGREEN, "Vet thuong cua ban da duoc dieu tri tam thoi, hay den benh vien de binh phuc hoan toan.");
+				SCM(playerid, COLOR_LIGHTRED, "Ban se bi mat mau moi 10 giay.");
+				SCM(playerid, COLOR_WHITE, "MEO: Hay den benh vien va /trithuong.");
+				Dying[playerid] = 0;
+				ClearSaving(playerid);
+				TogglePlayerControllable(playerid, 1);
+				RemovePlayerFromVehicle(playerid);
+				PlayerInfo[playerid][pBleeding] = 1;
+			}
+		}
 		if (OnDuty[playerid] == 1 && (PlayerInfo[playerid][pMember] == 1 || PlayerInfo[playerid][pLeader] == 1) && WearTazer[playerid] != 1)
 		{
 			Tazering[playerid] = 0;
@@ -115,8 +161,8 @@ task ServerBeat[1000]()
 						DrugDealing[ddid] = 3;
 						ChangeDD[ddid] = 1;
 						OldDD[ddid] = rand;
-						new vid = GetPlayerVehicleID(ddid);
-						CarDD[ddid] = vid;
+						new viddd = GetPlayerVehicleID(ddid);
+						CarDD[ddid] = viddd;
 						SetPlayerCheckpoint(ddid, BuonLauGiveCP[rand][0], BuonLauGiveCP[rand][1], BuonLauGiveCP[rand][2], 5);
 						CoopDD[ddid] = playerid;
 						format(str, sizeof(str), "Nhan hang da xong, %s se la truong nhom buon lau cua ban.", GN(playerid));
@@ -132,6 +178,28 @@ task ServerBeat[1000]()
 			CarDD[playerid] = vid;
 
 			SetPlayerCheckpoint(playerid, BuonLauGiveCP[rand][0], BuonLauGiveCP[rand][1], BuonLauGiveCP[rand][2], 5);
+		}
+	}
+}
+
+task VehicleLastShot[10000]()
+{
+	for (new i = 0; i < MAX_VEHICLES; i++)
+	{
+		if (LastShot[i] != -1)
+			LastShot[i] = -1;
+	}
+}
+
+task Bleeding[20000]()
+{
+	foreach(Player, playerid)
+	{
+		if (PlayerInfo[playerid][pBleeding] == 1)
+		{
+			new Float:health;
+			GetPlayerHealth(playerid, health);
+			SetPlayerHealth(playerid, health - 1);
 		}
 	}
 }

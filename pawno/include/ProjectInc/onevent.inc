@@ -681,6 +681,14 @@ public OnPlayerConnect(playerid)
 	Tazering[playerid] = 0;
 	WearTazer[playerid] = 0;
 
+	CallMedic[playerid] = 0;
+	MedicCaller[playerid] = -1;
+	Dying[playerid] = 0;
+	DyingTimeOut[playerid] = 0;
+	MedicPos[playerid][0] = 0;
+	MedicPos[playerid][1] = 0;
+	MedicPos[playerid][2] = 0;
+
 	DDTime[playerid] = 0;
 	DrugDealing[playerid] = 0;
 	DrugDealer[playerid] = 0;
@@ -928,7 +936,6 @@ public OnPlayerDisconnect(playerid, reason)
 		{
 			new wep, ammo;
 			GetPlayerWeaponData(playerid, slot, wep, ammo);
-
 			if (wep != 0 && ammo != 0)
 			{
 				if (PlayerInfo[playerid][pGun][0] == 0) { PlayerInfo[playerid][pGun][0] = wep; PlayerInfo[playerid][pAmmo][0] = ammo; }
@@ -1216,6 +1223,13 @@ public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
 	}
 	return 1;
 }
+public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY, Float:fZ)
+{
+	if (hittype == 2)
+		LastShot[hitid] = playerid;
+
+	return 1;
+}
 public OnVehicleDeath(vehicleid, killerid)
 {
 	new ddvehicle = 0;
@@ -1238,23 +1252,19 @@ public OnVehicleDeath(vehicleid, killerid)
 	if (ddvehicle == 1)
 	{
 		new str[128];
-		format(str, sizeof(str), "** [Tong dai]: %s da ban no chiec xe buon lau %s, toan bo so hang buon lau tren xe bi tieu huy! **", GN(killerid), GetVehicleName(vehicleid));
+		if (LastShot[vehicleid] != -1)
+			format(str, sizeof(str), "** [Tong dai]: %s da ban no chiec xe buon lau %s, toan bo so hang buon lau tren xe bi tieu huy! **", GN(LastShot[vehicleid]), GetVehicleName(vehicleid));
+		else format(str, sizeof(str), "** [Tong dai]: Chiec xe buon lau %s, toan bo so hang buon lau tren xe bi tieu huy! **", GetVehicleName(vehicleid));
+
 		SendRadioMessage(1, TEAM_RADIO_COLOR, str);
 		SendRadioMessage(1, TEAM_RADIO_COLOR, "** [Tong dai]: Cac dong chi hay mau chong truy bat cac doi tuong buon lau con lai! **");
 	}
+	LastShot[vehicleid] = -1;
 	return 1;
 }
-public OnPlayerDeath(playerid, killerid, reason)
+forward delayfaildd(playerid, killerid);
+public delayfaildd(playerid, killerid)
 {
-	new name[MAX_PLAYER_NAME];
-	new string[256];
-	//new dmessage[128];
-	//new deathreason[20];
-	new playercash;
-	new victimteam;
-	new Float:px, Float:py, Float:pz;
-	new killerteam;
-
 	if (DrugDealing[playerid] > 0)
 	{
 		new str[128];
@@ -1273,6 +1283,38 @@ public OnPlayerDeath(playerid, killerid, reason)
 		SCM(playerid, COLOR_WHITE, "Phi vu buon lau that bai, ban mat toan bo so thuoc!");
 		DisablePlayerCheckpoint(playerid);
 	}
+	return 1;
+}
+public OnPlayerDeath(playerid, killerid, reason)
+{
+	//printf("Dying: %d", Dying[playerid]);
+	if (Dying[playerid] == 0)
+	{
+		Dying[playerid] = 1;
+		DyingTimeOut[playerid] = 30;
+		new Float:x, Float:y, Float:z, Float:ang, interior, vw;
+		GetPlayerPos(playerid, x, y, z);
+		GetPlayerFacingAngle(playerid, ang);
+		SetPVarFloat(playerid, "DeathX", x);
+		SetPVarFloat(playerid, "DeathY", y);
+		SetPVarFloat(playerid, "DeathZ", z);
+		SetPVarFloat(playerid, "DeathAngle", ang);
+		SetPVarInt(playerid, "DeathInt", interior);
+		SetPVarInt(playerid, "DeathVW", vw);
+		//printf("Death Work");
+	}
+	else Dying[playerid] = 0;
+
+	new name[MAX_PLAYER_NAME];
+	new string[256];
+	//new dmessage[128];
+	//new deathreason[20];
+	new playercash;
+	new victimteam;
+	new Float:px, Float:py, Float:pz;
+	new killerteam;
+
+	SetTimerEx("delayfaildd", 100, false, "ii", playerid, killerid);
 
 	victimteam = gTeam[playerid];
 	killerteam = gTeam[killerid];
@@ -1853,6 +1895,13 @@ public OnPlayerEnterCheckpoint(playerid)
 	new string[128];
 	new string2[128];
 	new name[MAX_PLAYER_NAME];
+	if (IsPlayerInRangeOfPoint(playerid, 5, MedicPos[playerid][0], MedicPos[playerid][1], MedicPos[playerid][2]))
+	{
+		SCM(playerid, COLOR_WHITE, "Da den vi tri cua benh nhan, hay dua benh nhan len xe va vao phia sau de de tien hanh dieu tri.");
+		SCM(playerid, COLOR_WHITE, "MEO: /dualenxe /dieutri");
+		DisablePlayerCheckpoint(playerid);
+		return 1;
+	}
 	if (DrugDealing[playerid] == 1 && GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
 	{
 		for (new i = 0; i<sizeof(BuonLauTakeCP); i++)
@@ -4535,7 +4584,7 @@ public OnPlayerRequestClass(playerid, classid)
 	{
 		TogglePlayerSpectating(playerid, true);
 		ClearChatbox(playerid, 10);
-		format(string, sizeof(string), "Welcome to Los Angeles Roleplay, running %s", SCRIPT_VERSION);
+		format(string, sizeof(string), "Chao mung den voi server Los Angeles Roleplay! Phien ban: %s", SCRIPT_VERSION);
 		SendClientMessage(playerid, COLOR_YELLOW, string);
 		SendClientMessage(playerid, COLOR_YELLOW2, " ");
 		if (gPlayerAccount[playerid] != 0)
@@ -4553,7 +4602,7 @@ public OnPlayerRequestClass(playerid, classid)
 		SetPlayerTeamFromClass(playerid, classid);
 	}
 	else SpawnPlayer(playerid);
-	return false;
+	return 0;
 	/*if (classid == 1)
 	{
 	format(string, sizeof(string), "~y~> ~p~Police Chief ~y~< ~n~Leaders only!");
@@ -4788,7 +4837,8 @@ public OnPlayerLogin(playerid, password[])
          cache_get_value_name_int(0, "Locked", temp); PlayerInfo[playerid][pLocked] = temp; 
          cache_get_value_name_int(0, "Car", temp); PlayerInfo[playerid][pPcarkey][0] = temp; 
          cache_get_value_name_int(0, "Car2", temp); PlayerInfo[playerid][pPcarkey][1] = temp; 
-         cache_get_value_name_int(0, "Car3", temp); PlayerInfo[playerid][pPcarkey][2] = temp; 
+			cache_get_value_name_int(0, "Car3", temp); PlayerInfo[playerid][pPcarkey][2] = temp;
+			cache_get_value_name_int(0, "Bleeding", temp); PlayerInfo[playerid][pBleeding] = temp;
 
 			for (new i = 0; i < 5; i++)
 			{
@@ -6542,7 +6592,7 @@ CMD:askq(playerid, params[])
 	}
 	return 1;
 }
-CMD:handsup(playerid, params[]) {
+ CMD:handsup(playerid, params[]) {
 	if (GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) {
 		SetPlayerSpecialAction(playerid, SPECIAL_ACTION_HANDSUP);
 		return 1;
@@ -6974,7 +7024,7 @@ CMD:drag(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
-		if (!IsACop(playerid))
+		if (!IsACop(playerid) && !IsFD(playerid))
 		{
 			SendClientMessage(playerid, COLOR_GRAD1, "Ban khong phai la canh sat!");
 			return 1;
@@ -6996,6 +7046,27 @@ CMD:drag(playerid, params[])
 					if (PlayerToPoint(5, playerid, x, y, z))
 					{
 						PutPlayerInVehicle(giveplayerid, newcar, 1);
+						format(string, sizeof(string), "* %s keo %s len xe.", GN(playerid), GN(giveplayerid));
+						ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+					}
+					else SendClientMessage(playerid, COLOR_GREY, "Nguoi choi do khong gan ban.");
+				}
+			}
+		}
+		else if (IsAnAmbulance(newcar))
+		{
+			if (IsPlayerConnected(giveplayerid))
+			{
+				if (giveplayerid != INVALID_PLAYER_ID)
+				{
+					if (Dying[giveplayerid] == 0) return SCM(playerid, COLOR_GREY, "Nguoi cho nay khong bi thuong.");
+					new vehicleseat = GetFreeSeatAmbulance(newcar);
+					if (vehicleseat == -1) return SCM(playerid, COLOR_GREY, "Vi tri cuu thuong tren xe da co nguoi ngoi.");
+					new Float:x, Float:y, Float:z;
+					GetPlayerPos(giveplayerid, x, y, z);
+					if (PlayerToPoint(5, playerid, x, y, z))
+					{
+						PutPlayerInVehicle(giveplayerid, newcar, vehicleseat);
 						format(string, sizeof(string), "* %s keo %s len xe.", GN(playerid), GN(giveplayerid));
 						ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 					}
@@ -13151,7 +13222,6 @@ CMD:radio(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
-		
 		new result[64];
 		new string[256];
 		if (sscanf(params, "s[256]", result))
@@ -18049,7 +18119,6 @@ CMD:heal(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
-
 		new location = PlayerInfo[playerid][pLocal], giveplayerid, moneys, string[255];
 		if (sscanf(params, "ui", giveplayerid, moneys))
 		{
@@ -18139,7 +18208,6 @@ CMD:heal(playerid, params[])
 		{
 			if (giveplayerid != INVALID_PLAYER_ID)
 			{
-
 				new giveambu = GetPlayerVehicleID(giveplayerid);
 				new playambu = GetPlayerVehicleID(playerid);
 				if (PlayerInfo[playerid][pMember] == 4 || PlayerInfo[playerid][pLeader] == 4)//model
@@ -19650,7 +19718,6 @@ CMD:setskin(playerid, params[])
 			{
 				if (para1 != INVALID_PLAYER_ID)
 				{
-
 					PlayerInfo[para1][pChar] = level;
 					format(string, sizeof(string), "Skin cua ban da duoc thay doi boi Admin %s", GN(playerid));
 					SendClientMessage(para1, COLOR_WHITE, string);
@@ -28778,10 +28845,21 @@ CMD:accept(playerid, params[])
 		{
 			SendClientMessage(playerid, COLOR_WHITE, "|__________________ Accept __________________|");
 			SendClientMessage(playerid, COLOR_WHITE, "Su dung: accept [name]");
-			SendClientMessage(playerid, COLOR_GREY, "Available names: Sex, Drugs, Repair, Lawyer, Bodyguard, Job, Live, Refill, OwnableCar");
+			SendClientMessage(playerid, COLOR_GREY, "Available names: Chet, Sex, Drugs, Repair, Lawyer, Bodyguard, Job, Live, Refill, OwnableCar");
 			SendClientMessage(playerid, COLOR_GREY, "Available names: Taxi, Bus, Boxing, Medic, Mechanic, Paper, Ticket, Pizza, Vukhi");
 			SendClientMessage(playerid, COLOR_WHITE, "|____________________________________________|");
 			return 1;
+		}
+		if (strcmp(x_job, "chet", true) == 0)
+		{
+			if (Dying[playerid] == 0) return SCM(playerid, COLOR_GREY, "Ban khong bi thuong.");
+			if (DyingTimeOut[playerid] != 0)
+			{
+				new str[128];
+				format(str, sizeof(str), "Ban can cho %d giay de co the thuc hien.", DyingTimeOut[playerid]);
+				SCM(playerid, COLOR_WHITE, str);
+			}
+			SetPlayerHealth(playerid, 0);
 		}
 		if (strcmp(x_job, "vukhi", true) == 0 && GetPVarInt(playerid, "OfferType") == OFFERWEAPON)
 		{
