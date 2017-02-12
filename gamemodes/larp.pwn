@@ -1564,61 +1564,62 @@ enum pInfo
 	pCookSkill,
 	pFishSkill,
 	pPlantSkill ,
-Float:pHealth,
+	Float:pHealth,
 	Float:pSHealth,
-			  pInt,
-			  pLocal,
-			  pTeam,
-			  pModel,
-			  pPnumber,
-			  pPhousekey,
-			  pPcarkey[3],
-			  pGangKey,
-			  pPbiskey,
-		  Float:pPos_x,
-			  Float:pPos_y,
-					 Float:pPos_z,
-								pCarLic,
-								pFlyLic,
-								pBoatLic,
-								pFishLic,
-								pGunLic,
-								pGun[4],
-								pAmmo[4],
-								pCarTime,
-								pPayDay,
-								pPayDayHad,
-								pWatch,
-								pCrashed,
-								pWins,
-								pLoses,
-								pAlcoholPerk,
-								pDrugPerk,
-								pMiserPerk,
-								pPainPerk,
-								pTraderPerk,
-								pTut,
-								pMissionNr,
-								pWarns,
-								pVirWorld,
-								pFuel,
-								pMarried,
-								pMarriedTo[128],
-								pFishTool,
-								pNote[noteSize],
-								pNotes[5],
-								pInvWeapon,
-								pInvAmmo,
-								pLighter,
-								pCigarettes,
-								pRequestingBackup,
-								pRoadblock,
-								pMask,
-								pMaskuse,
-								pHideNumber,
-								pSpeaker,
-								pLocked
-								//pSQLID,
+	pInt,
+	pLocal,
+	pTeam,
+	pModel,
+	pPnumber,
+	pPhousekey,
+	pPcarkey[3],
+	pGangKey,
+	pPbiskey,
+	Float:pPos_x,
+	Float:pPos_y,
+	Float:pPos_z,
+	pCarLic,
+	pFlyLic,
+	pBoatLic,
+	pFishLic,
+	pGunLic,
+	pGun[4],
+	pAmmo[4],
+	pCarTime,
+	pPayDay,
+	pPayDayHad,
+	pWatch,
+	pCrashed,
+	pWins,
+	pLoses,
+	pAlcoholPerk,
+	pDrugPerk,
+	pMiserPerk,
+	pPainPerk,
+	pTraderPerk,
+	pTut,
+	pMissionNr,
+	pWarns,
+	pVirWorld,
+	pFuel,
+	pMarried,
+	pMarriedTo[128],
+	pFishTool,
+	pNote[noteSize],
+	pNotes[5],
+	pInvWeapon,
+	pInvAmmo,
+	pLighter,
+	pCigarettes,
+	pRequestingBackup,
+	pRoadblock,
+	pMask,
+	pMaskuse,
+	pHideNumber,
+	pSpeaker,
+	pLocked,
+	pBleeding
+	//pSQLID,
 };
 new PlayerInfo[MAX_PLAYERS][pInfo];
 
@@ -2123,6 +2124,7 @@ public SavePlayer(playerid)
 				Lighter=%d,\
 				Cigarettes=%d,\
 				Locked=%d,\
+				Bleeding=%d,\
 				HouseEntered=%d WHERE `Name` = '%s'",
 				sql,
 				PlayerInfo[playerid][pWins],
@@ -2145,6 +2147,7 @@ public SavePlayer(playerid)
 				PlayerInfo[playerid][pLighter],
 				PlayerInfo[playerid][pCigarettes],
 				PlayerInfo[playerid][pLocked],
+				PlayerInfo[playerid][pBleeding],
 				PlayerInfo2[HouseEntered][playerid],
 				playername3);
 
@@ -3628,13 +3631,13 @@ public Spectator()
 				if(PlayerInfo[i][pDonateRank] > 0)
 		        {
 		            SetSpawnInfo(i, PlayerInfo[i][pTeam], PlayerInfo[i][pModel], Unspec[i][Coords][0], Unspec[i][Coords][1], Unspec[i][Coords][2], 10.0, -1, -1, -1, -1, -1, -1);
-					SpawnPlayer(i);
-					SetCameraBehindPlayer(i);
+						SpawnPlayer(i);
+						SetCameraBehindPlayer(i);
 		        }
 		        else
 		        {
 					SpawnPlayer(i);
-				}
+					}
 				Spectate[i] = 255;
 			}
 			if(Spectate[i] == 254)
@@ -4565,6 +4568,20 @@ public SetPlayerSpawn(playerid)
 	if(IsPlayerConnected(playerid))
 	{
 	    SetPlayerSkin(playerid, PlayerInfo[playerid][pChar]);
+		 if (Dying[playerid] == 1)
+		 {
+			 ClearAnimations(playerid);
+			 if (PlayerInfo[playerid][pChar] > 0) { SetPlayerSkin(playerid, PlayerInfo[playerid][pChar]); }
+			 else { SetPlayerSkin(playerid, PlayerInfo[playerid][pModel]); }
+			 TogglePlayerControllable(playerid, 0);
+			 ApplyAnimation(playerid, "KNIFE", "KILL_Knife_Ped_Die", 4.0, 0, 1, 1, 1, 0, 1);
+			 GameTextForPlayer(playerid, "~r~Bi thuong~n~~w~Go /dichvu capcuu de goi Cuu Thuong den", 5000, 3);
+			 SetPlayerPos(playerid, GetPVarFloat(playerid, "DeathX"), GetPVarFloat(playerid, "DeathY"), GetPVarFloat(playerid, "DeathZ"));
+			 SetPlayerFacingAngle(playerid, GetPVarFloat(playerid, "DeathAngle"));
+			 SetPlayerVirtualWorld(playerid, GetPVarInt(playerid, "DeathVW"));
+			 SetPlayerInterior(playerid, GetPVarInt(playerid, "DeathInt"));
+			 return 1;
+		 }
 	    if(PlayerInfo[playerid][pTut] == 0)
 	    {
 			gOoc[playerid] = 1; gNews[playerid] = 1; gFam[playerid] = 1;
@@ -4597,7 +4614,7 @@ public SetPlayerSpawn(playerid)
 		    SetPlayerInterior(playerid, 6);
 		    PlayerInfo[playerid][pInt] = 6;
 			SetPlayerPos(playerid,264.6288,77.5742,1001.0391);
-			SendClientMessage(playerid, COLOR_LIGHTRED, "Chua hoan thanh an phat, Tro ve nha tu.");
+			SendClientMessage(playerid, COLOR_LIGHTRED, "Chua hoan thanh an phat, tro ve nha tu.");
 			return 1;
 		}
 		if(PlayerInfo[playerid][pJailed] == 2)
@@ -4620,6 +4637,8 @@ public SetPlayerSpawn(playerid)
 				MedicBill[playerid] = 0;
 				MedicTime[playerid] = 0;
 				NeedMedicTime[playerid] = 0;*/
+				DyingTimeOut[playerid] = 0;
+				Dying[playerid] = 0;
 				PlayerInfo[playerid][pDeaths] += 1;
 				SetPlayerHealth(playerid, 25.0);
 		    	SetPlayerInterior(playerid, 3);
@@ -4628,7 +4647,7 @@ public SetPlayerSpawn(playerid)
 				SetPlayerPos(playerid, gMedicSpawns[rand][0], gMedicSpawns[rand][1], gMedicSpawns[rand][2]); // Warp the player
 				SetPlayerFacingAngle(playerid, 0);
 	        	TogglePlayerControllable(playerid, 0);
-	        	GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~n~~n~~n~~n~~w~Bay gio ban can nghi ngoi ...", 30000, 3);
+	        	GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~n~~n~~n~~n~~w~Bay gio ban can nghi ngoi...", 30000, 3);
 	        	JustDied[playerid] = 1;
 	        	MedicTime[playerid] = 1;
 	        	ApplyAnimation(playerid, "CRACK", "crckdeth2", 4.0, 1, 0, 0, 0, 0);

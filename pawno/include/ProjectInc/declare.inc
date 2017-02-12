@@ -49,6 +49,16 @@ new
 	SeedTotal[MAX_OBJECTS],
 Text3D:SeedText[MAX_OBJECTS];
 
+//Medic
+new Float:MedicPos[MAX_PLAYERS][3];
+new MedicCaller[MAX_PLAYERS];
+new CallMedic[MAX_PLAYERS];
+new Dying[MAX_PLAYERS];
+new DyingTimeOut[MAX_PLAYERS];
+new Saving[MAX_PLAYERS];
+new Saver[MAX_PLAYERS];
+new SaveVehicle[MAX_PLAYERS];
+
 //BUON LAU
 new DDTime[MAX_PLAYERS];
 new DrugDealing[MAX_PLAYERS];

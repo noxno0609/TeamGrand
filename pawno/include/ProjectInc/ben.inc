@@ -245,6 +245,7 @@ stock GetIp(playerid)
 
 CMD:buonlau(playerid, params[])
 {
+	if (countFaction(1) < 3) return SCM(playerid, COLOR_GREY, "Phai co it nhat 3 canh sat onduty trong server moi co the thuc hien.");
 	if (gTeam[playerid] == 2 || IsACop(playerid)) return SCM(playerid, COLOR_GREY, "Ban la nhan vien chinh phu, khong the di buon lau.");
 	if (PlayerInfo[playerid][pLevel] < 5) return SCM(playerid, COLOR_GREY, "Ban phai dat cap 8 moi co the di buon.");
 	if (!IsPlayerInRangeOfPoint(playerid, 3, -1111.4635, -1681.5151, 76.3739)) return SCM(playerid, COLOR_GREY, "Ban khong dung o khu vuc thuong luong de buon lau (/huongdan tim O Buon Lau");
@@ -281,6 +282,159 @@ CMD:buonlau(playerid, params[])
 		return 1;
  }
 
+CMD:dichvu(playerid, params[])
+{
+	if (sscanf(params, "s[30]", params)) return SCM(playerid, COLOR_GRAD2, "Su dung: /dichvu [luachon]");
+	if (!strcmp(params, "capcuu", true))
+	{
+		if (countFaction(4) == 0) return SCM(playerid, COLOR_GREY, "Hien tai khong co nhan vien y te nao onduty.");
+		if (Dying[playerid] == 0) return SCM(playerid, COLOR_GREY, "Ban khong bi thuong.");
+		if (CallMedic[playerid] > 0)
+		{
+			SCM(playerid, COLOR_GREY, "Ban da goi cap cuu, hay cho cap cuu den.");
+			SCM(playerid, COLOR_GREY, "Ban co the goi lai sau 30 giay.");
+			return 1;
+		}
+		CallMedic[playerid] = 30;
+		new str[128];
+		new zone[40];
+		format(str, sizeof(str), "** [Tong Dai]: Da nhan duoc cuoc goi, nhan vien y te se den do ngay...");
+		SCM(playerid, COLOR_YELLOW, str);
+		GetPlayer2DZone(playerid, zone, sizeof(zone));
+		format(str, sizeof(str), "** [Tong Dai]: %s(%d) bi thuong nang tai %s, dang yeu cau mot chiec xe cap cuu. (/nhancapcuu [id]) **", GN(playerid), playerid, zone);
+		SendRadioMessage(4, TEAM_RADIO_COLOR, str);
+		printf("%s", str);
+	}
+	return 1;
+}
+
+ CMD:ncc(playerid, params[]) { return cmd_nhancapcuu(playerid, params); }
+ CMD:nhancapcuu(playerid, params[])
+ {
+		if (PlayerInfo[playerid][pMember] != 4 && PlayerInfo[playerid][pLeader] != 4) return SCM(playerid, COLOR_GREY, "Khong phai nhan vien cuu thuong.");
+		new pncc, str[128];
+		if (sscanf(params, "r", pncc)) return SCM(playerid, COLOR_GRAD2, "Su dung: /nhancapcuu [Ten/ID Nguoi Choi]");
+		if (CallMedic[pncc] == 0) return SCM(playerid, COLOR_GREY, "Nguoi nay khong goi cap cuu");
+		if (MedicCaller[playerid] != -1) return SCM(playerid, COLOR_GREY, "Ban da nhan mot dot cap cuu, xin hay giai quyet.");
+		format(str, sizeof(str), "** [Tong Dai]: %s da nhan cuoc goi cap cuu cua %s (%d)", GN(playerid), GN(pncc), pncc);
+		SendRadioMessage(4, TEAM_RADIO_COLOR, str);
+		SCM(pncc, COLOR_YELLOW, "** [Tong Dai]: Benh vien dang dua xe toi vi tri cua ban, xin hay co chiu dung.");
+		GetPlayerPos(pncc, MedicPos[pncc][0], MedicPos[pncc][1], MedicPos[pncc][2]);
+		SetPlayerCheckpoint(playerid, MedicPos[pncc][0], MedicPos[pncc][1], MedicPos[pncc][2], 4);
+		MedicCaller[playerid] = pncc;
+		return 1;
+ }
+
+CMD:xoamuctieu(playerid, params[])
+{
+	if (MedicCaller[playerid] != -1)
+	{
+		MedicCaller[playerid] = -1;
+		SCM(playerid, COLOR_WHITE, "Xoa nhan benh nhan thanh cong.");
+	}
+	DisablePlayerCheckpoint(playerid);
+	return 1;
+}
+CMD:dieutri(playerid, params[])
+{
+	if (PlayerInfo[playerid][pMember] != 4 && PlayerInfo[playerid][pLeader] != 4) return SCM(playerid, COLOR_GREY, "Khong phai nhan vien cuu thuong.");
+	if (!IsOnSavePosAmbulance(playerid)) return SCM(playerid, COLOR_GREY, "Ban khong ngoi tren xe cuu thuong hoac ngoi sai vi tri de cap cuu.");
+	new patient = GetPatientAmbulance(GetPlayerVehicleID(playerid));
+	if (patient == -1) return SCM(playerid, COLOR_GREY, "Khong co benh nhan nao o tren xe.");
+	SCM(playerid, COLOR_LIGHTRED, "Tien hanh so cuu benh nhan, hay chac chan o yen tren xe trong 30 giay de cuu song benh nhan.");
+	new str[128];
+	format(str, sizeof(str), "Nhan vien y te %s dang tien hanh so cuu cho ban, trong 30 giay ban se duoc tri thuong.", GN(playerid));
+	SCM(patient, COLOR_LIGHTRED, str);
+	Saving[patient] = 30;
+	Saver[patient] = playerid;
+	SaveVehicle[patient] = GetPlayerVehicleID(playerid);
+	TogglePlayerControllable(patient, 0);
+	return 1;
+}
+stock GetFreeSeatAmbulance(vid)
+{
+	new freeseat = 2;
+	for (new i = 0; i<MAX_PLAYERS; i++)
+	{
+		if (IsPlayerInVehicle(i, vid))
+		{
+			if (GetPlayerVehicleSeat(i) == 2)
+				freeseat = -1;
+		}
+	}
+	if (freeseat == -1)
+	{
+			freeseat = 3;
+		for (new i = 0; i < MAX_PLAYERS; i++)
+		{
+			if (IsPlayerInVehicle(i, vid))
+			{
+				if (GetPlayerVehicleSeat(i) == 3)
+					freeseat = -1;
+			}
+		}
+	}
+	return freeseat;
+}
+stock ClearSaving(playerid)
+{
+	Saving[playerid] = 0;
+	Saver[playerid] = -1;
+	SaveVehicle[playerid] = -1;
+}
+
+stock GetPatientAmbulance(vid)
+{
+	foreach(Player, playerid)
+	{
+		if (IsPlayerInVehicle(playerid, vid))
+		{
+			if (GetPlayerVehicleSeat(playerid) == 2 || GetPlayerVehicleSeat(playerid) == 3 && Dying[playerid] == 1)
+				return playerid;
+		}
+	}
+	return -1;
+}
+stock IsFD(playerid)
+{
+	if (IsPlayerConnected(playerid))
+	{
+		new leader = PlayerInfo[playerid][pLeader];
+		new member = PlayerInfo[playerid][pMember];
+		if (member == 4)
+		{
+			return 1;
+		}
+		else if (leader == 4)
+		{
+			return 1;
+		}
+	}
+	return 0;
+}
+stock IsOnSavePosAmbulance(playerid)
+{
+	new vid = GetPlayerVehicleID(playerid);
+	if (IsAnAmbulance(vid))
+	{
+		new seat = GetPlayerVehicleSeat(playerid);
+		if (seat == 2 || seat == 3)
+			return 1;
+	}
+	return 0;
+}
+
+stock countFaction(idfac)
+{
+	new count = 0;
+	foreach(Player, playerid)
+	{
+		if ((PlayerInfo[playerid][pMember] == idfac || PlayerInfo[playerid][pLeader] == idfac) && (OnDuty[playerid] == 1 || JobDuty[playerid] == 1))
+			count++;
+	}
+	return count;
+}
+		 
 forward ChangeDrugDealer(playerid, rand);
 public ChangeDrugDealer(playerid, rand)
 {
