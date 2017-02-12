@@ -27,7 +27,7 @@ ________________________________________________________________________________
 #undef MAX_PLAYERS
 #define MAX_PLAYERS 1000
 
-#include "../include/gl_common.inc"
+#include "../../include/gl_common.inc"
 #define COLOR_GRAD1 0xB4B5B7FF
 #define COLOR_GRAD2 0xBFC0C2FF
 #define COLOR_GRAD3 0xCBCCCEFF
