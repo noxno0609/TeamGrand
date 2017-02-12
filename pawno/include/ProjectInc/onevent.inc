@@ -21307,7 +21307,6 @@ CMD:freeze(playerid, params[])
 			{
 				if (playa != INVALID_PLAYER_ID)
 				{
-
 					TogglePlayerControllable(playa, 0);
 					SetPVarInt(playerid, "CantUseAnim", 1);
 					GameTextForPlayer(playa, "~r~Frozen", 5000, 3);
