@@ -1,4 +1,3 @@
-
 stock HP(playerid)
 {
 	new name[32];
