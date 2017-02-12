@@ -118,7 +118,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 	if(GetPVarInt(playerid, "Injured") != 0) return;
 	if(!gPlayerUsingLoopingAnim[playerid]) return;
 
-	if(IsKeyJustDown(KEY_SPRINT,newkeys,oldkeys))
+	if(IsKeyJustDown(KEY_SPRINT,newkeys,oldkeys) && GetPVarInt(playerid, "CantUseAnim") != 1)
 	{
 	    StopLoopingAnim(playerid);
         TextDrawHideForPlayer(playerid,TDAnimHelp);
