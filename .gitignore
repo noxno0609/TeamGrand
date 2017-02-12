@@ -6,6 +6,7 @@
 *.user
 *.sln.docstates
 *.json
+larp.amx
 
 # Build results
 
