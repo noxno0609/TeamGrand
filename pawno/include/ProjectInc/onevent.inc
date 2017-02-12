@@ -6619,13 +6619,7 @@ CMD:askq(playerid, params[])
 	}
 	return 1;
 }
- CMD:handsup(playerid, params[]) {
-	if (GetPlayerState(playerid) == PLAYER_STATE_ONFOOT) {
-		ApplyAnimation(playerid, "PED", "handsup", 4.1, 0, 1, 1, 1, 1, 1); 
-		return 1;
-	}
-	return 1;
-}
+
 CMD:engine(playerid, params[])
 {
 	new idcar;
@@ -21315,6 +21309,7 @@ CMD:freeze(playerid, params[])
 				{
 
 					TogglePlayerControllable(playa, 0);
+					SetPVarInt(playerid, "CantUseAnim", 1);
 					GameTextForPlayer(playa, "~r~Frozen", 5000, 3);
 					format(string, sizeof(string), "AdmCMD: %s dong bang %s", GN(playerid), GN(playa));
 					printf("%s", string);
@@ -21348,6 +21343,7 @@ CMD:unfreeze(playerid, params[])
 				{
 
 					TogglePlayerControllable(playa, 1);
+					SetPVarInt(playerid, "CantUseAnim", 0);
 					GameTextForPlayer(playa, "~w~Unfrozen", 5000, 3);
 					format(string, sizeof(string), "AdmCMD: %s bo dong bang %s", GN(playerid), GN(playa));
 					printf("%s", string);
