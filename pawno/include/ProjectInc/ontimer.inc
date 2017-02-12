@@ -52,6 +52,7 @@ task ServerBeat[1000]()
 				Dying[playerid] = 0;
 				ClearSaving(playerid);
 				TogglePlayerControllable(playerid, 1);
+				SetPVarInt(playerid, "CantUseAnim", 0);
 				RemovePlayerFromVehicle(playerid);
 				PlayerInfo[playerid][pBleeding] = 1;
 			}
