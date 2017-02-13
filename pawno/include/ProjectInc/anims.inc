@@ -24,16 +24,15 @@ PreloadAnimLib(playerid, animlib[])
 
 IsAbleUseAnimation(playerid)
 {
-	new var = CallRemoteFunction("IsAbleUseAnimation", "i", playerid);
-	new str[12];
-	format(str, sizeof(str), "%d", var);
-	SendClientMessage(playerid, COLOR_GRAD1, str);
-	return var;
+	if(GetPVarInt(playerid, "CantUseAnim") > 0 || Dying[playerid] > 0 || Tazered[playerid] > 0 || PlayerCuffed[playerid] > 0 || PlayerTied[playerid] > 0) {
+   		SendClientMessage(playerid, COLOR_GRAD2, "Ban khong the su dung anim!");
+   		return 0;
+    }
 }
 
 IsAblePedAnimation(playerid)
 {
-    if(IsAblePedAnimation(playerid) == 0) {
+    if(IsAbleUseAnimation(playerid) == 0) {
    		SendClientMessage(playerid, COLOR_GRAD2, "Ban khong the su dung anim!");
    		return 0;
 	}
@@ -47,7 +46,7 @@ IsAblePedAnimation(playerid)
 
 IsAbleVehicleAnimation(playerid)
 {
-    if(IsAblePedAnimation(playerid) == 0) {
+    if(IsAbleUseAnimation(playerid) == 0) {
    		SendClientMessage(playerid, COLOR_GRAD2, "Ban khong the su dung anim!");
    		return 0;
 	}
