@@ -1306,7 +1306,6 @@ public OnPlayerDeath(playerid, killerid, reason)
 		SetPVarFloat(playerid, "DeathAngle", ang);
 		SetPVarInt(playerid, "DeathInt", interior);
 		SetPVarInt(playerid, "DeathVW", vw);
-		SetPVarInt(playerid, "CantUseAnim", 1);
 		//printf("Death Work");
 	}
 	else Dying[playerid] = 0;
@@ -3462,7 +3461,6 @@ public OnPlayerSelectedMenuRow(playerid, row)
 					if (PlayerTied[playerid] != 1 || PlayerCuffed[playerid] != 1)
 					{
 						TogglePlayerControllable(playerid, 1);
-						SetPVarInt(playerid, "CantUseAnim", 0);
 
 					}
 					SetTimerEx("CanDriveThruAgain", 7000, 0, "i", playerid);
@@ -3523,7 +3521,6 @@ public OnPlayerSelectedMenuRow(playerid, row)
 					if (PlayerTied[playerid] != 1 || PlayerCuffed[playerid] != 1)
 					{
 						TogglePlayerControllable(playerid, 1);
-						SetPVarInt(playerid, "CantUseAnim", 0);
 
 					}
 					SetTimerEx("CanDriveThruAgain", 7000, 0, "i", playerid);
@@ -25296,7 +25293,6 @@ CMD:tie(playerid, params[])
 							ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 							GameTextForPlayer(giveplayerid, "~r~Tied", 2500, 3);
 							TogglePlayerControllable(giveplayerid, 0);
-							SetPVarInt(playerid, "CantUseAnim", 1);
 							PlayerTied[giveplayerid] = 1;
 							Rope[playerid]--;
 						}
@@ -25351,7 +25347,6 @@ CMD:untie(playerid, params[])
 						SendClientMessage(playerid, COLOR_WHITE, string);
 						GameTextForPlayer(giveplayerid, "~g~Untied", 2500, 3);
 						TogglePlayerControllable(giveplayerid, 1);
-						SetPVarInt(playerid, "CantUseAnim", 0);
 						PlayerTied[giveplayerid] = 0;
 						format(string, sizeof(string), "* %s da coi troi cho %s , va mang day thung ben minh.", GN(playerid), giveplayer);
 						ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
@@ -25410,7 +25405,6 @@ CMD:copuntie(playerid, params[])
 							SendClientMessage(playerid, COLOR_WHITE, string);
 							GameTextForPlayer(giveplayerid, "~g~Untied", 2500, 3);
 							TogglePlayerControllable(giveplayerid, 1);
-							SetPVarInt(playerid, "CantUseAnim", 1);
 							PlayerTied[giveplayerid] = 0;
 							format(string, sizeof(string), "* %s da coi troi cho %s.", GN(playerid), giveplayer);
 							ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
@@ -28448,7 +28442,6 @@ CMD:cuff(playerid, params[])
 							ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 							GameTextForPlayer(giveplayerid, "~r~Cong tay", 2500, 3);
 							TogglePlayerControllable(giveplayerid, 0);
-							SetPVarInt(playerid, "CantUseAnim", 1);
 							PlayerCuffed[giveplayerid] = 1;
 							PlayerCuffedTime[giveplayerid] = 99999999999999;
 						}
@@ -28458,7 +28451,6 @@ CMD:cuff(playerid, params[])
 							{
 								SetPlayerSpecialAction(giveplayerid, 24);
 								TogglePlayerControllable(giveplayerid, 0);
-								SetPVarInt(playerid, "CantUseAnim", 1);
 								Tazered[giveplayerid] = 0;
 								format(string, sizeof(string), "* Ban da bi cong tay boi %s.", GN(playerid));
 								SendClientMessage(giveplayerid, COLOR_WHITE, string);
@@ -28520,7 +28512,6 @@ CMD:uncuff(playerid, params[])
 							GameTextForPlayer(giveplayerid, "~g~Thao cong", 2500, 3);
 							TogglePlayerControllable(giveplayerid, 1);
 							PlayerCuffed[giveplayerid] = 0;
-							SetPVarInt(playerid, "CantUseAnim", 0);
 						}
 						else
 						{

@@ -661,6 +661,51 @@ public PlantKeyStateChange(playerid, newkeys, oldkeys)
 	}
 	return 1;
 }
+forward IsAbleUseAnimation(playerid);
+forward IsAbleUseAnimation(playerid)
+{
+	if(GetPVarInt(playerid, "CantUseAnim") > 0 && Dying[playerid] == 1 && Tazered[playerid] > 0 && PlayerCuffed[playerid] > 0 && PlayerTied[playerid] > 0) {
+   		SendClientMessage(playerid, COLOR_GRAD2, "Ban khong the su dung anim!");
+   		return 0;
+	}
+}
+
+forward IsAblePedAnimation(playerid);
+public IsAblePedAnimation(playerid)
+{
+    if(IsAblePedAnimation(playerid) == 0) {
+   		SendClientMessage(playerid, COLOR_GRAD2, "Ban khong the su dung anim!");
+   		return 0;
+	}
+    if(IsPlayerInAnyVehicle(playerid) == 1)
+    {
+		SendClientMessage(playerid, COLOR_GRAD2, "Ban phai o ngoai xe de thuc hien anim nay.");
+		return 0;
+	}
+	return 1;
+}
+
+forward IsAbleVehicleAnimation(playerid);
+public IsAbleVehicleAnimation(playerid)
+{
+    if(IsAblePedAnimation(playerid) == 0) {
+   		SendClientMessage(playerid, COLOR_GRAD2, "Ban khong the su dung anim!");
+   		return 0;
+	}
+	if(IsPlayerInAnyVehicle(playerid) == 0)
+    {
+		SendClientMessage(playerid, COLOR_GRAD2, "Ban phai o trong xe de thuc hien anim nay.");
+		return 0;
+	}
+	return 1;
+}
+
+forward GetDyingPlayer(playerid);
+public GetDyingPlayer(playerid)
+{
+    return Dying[playerid];
+}
+
 task Plant[1000]()
 {
 	/////////////////////////////////////////Growth///////////////////

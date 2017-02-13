@@ -69,39 +69,25 @@ PreloadAnimLib(playerid, animlib[])
 	ApplyAnimation(playerid,animlib,"null",0.0,0,0,0,0,0,1);
 }
 
+IsAbleUseAnimation(playerid)
+{
+	return CallRemoteFunction("IsAbleUseAnimation", "i", playerid);
+}
+
 IsAblePedAnimation(playerid)
 {
-	new str[12];
-	format(str, sizeof(str), "%d", GetPVarInt(playerid, "CantUseAnim"));
-	SendClientMessage(playerid, COLOR_GRAD1, str);
-	SendClientMessage(playerid, COLOR_GRAD1, str);
-	SendClientMessage(playerid, COLOR_GRAD1, str);
-    if(GetPVarType(playerid, "PlayerCuffed") || GetPVarType(playerid, "Injured") || GetPVarType(playerid, "IsFrozen") || GetPVarInt(playerid, "Hospital") || GetPVarInt(playerid, "CantUseAnim")) {
-   		SendClientMessage(playerid, COLOR_GRAD2, "Ban khong the su dung anim!");
-   		return 0;
-	}
-    if(IsPlayerInAnyVehicle(playerid) == 1)
-    {
-		SendClientMessage(playerid, COLOR_GRAD2, "Ban phai o ngoai xe de thuc hien anim nay.");
-		return 0;
-	}
-	return 1;
+    return CallRemoteFunction("IsAblePedAnimation", "i", playerid);
 }
 
 IsAbleVehicleAnimation(playerid)
 {
-    if(GetPVarType(playerid, "PlayerCuffed") || GetPVarType(playerid, "Injured") || GetPVarType(playerid, "IsFrozen") || GetPVarInt(playerid, "Hospital") || GetPVarInt(playerid, "CantUseAnim")) {
-   		SendClientMessage(playerid, COLOR_GRAD2, "Ban khong the su dung anim!");
-   		return 0;
-	}
-	if(IsPlayerInAnyVehicle(playerid) == 0)
-    {
-		SendClientMessage(playerid, COLOR_GRAD2, "Ban phai o trong xe de thuc hien anim nay.");
-		return 0;
-	}
-	return 1;
+    return CallRemoteFunction("IsAbleVehicleAnimation", "i", playerid);
 }
 
+GetDyingPlayer(playerid)
+{
+	return CallRemoteFunction("GetDyingPlayer", "i", playerid);
+}
 //-------------------------------------------------
 
 // ********** SPECIFIC VEHICLES **********
@@ -120,10 +106,10 @@ IsCLowrider(carid)
 
 public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 {
-	if(GetPVarInt(playerid, "Injured") != 0) return;
+	if(GetDyingPlayer(playerid) != 0) return;
 	if(!gPlayerUsingLoopingAnim[playerid]) return;
 
-	if(IsKeyJustDown(KEY_SPRINT,newkeys,oldkeys) && GetPVarInt(playerid, "CantUseAnim") != 1)
+	if(IsKeyJustDown(KEY_SPRINT,newkeys,oldkeys))
 	{
 	    StopLoopingAnim(playerid);
         TextDrawHideForPlayer(playerid,TDAnimHelp);
@@ -332,7 +318,7 @@ CMD:animhelp(playerid, params[])
 
 CMD:stopani(playerid, params[])
 {
-	if(GetPVarInt(playerid, "PlayerCuffed") != 0 || GetPVarInt(playerid, "Injured") == 1 || GetPVarInt(playerid, "IsFrozen") == 1 || GetPVarInt(playerid, "CantUseAnim") == 1)
+	if(IsAbleUseAnimation(playerid) == 0)
 	{
 		SendClientMessage(playerid, COLOR_GRAD2, "Ban khong the su dung anim!");
 		return 1;

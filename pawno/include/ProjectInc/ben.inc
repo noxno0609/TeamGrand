@@ -319,7 +319,6 @@ CMD:dichvu(playerid, params[])
 			format(str, sizeof(str), "AdmCMD: %s da duoc hoi sinh boi %s", GN(phs), GN(playerid));
 			BroadCast(COLOR_LIGHTRED, str);
 			Dying[phs] = 0;
-			SetPVarInt(playerid, "CantUseAnim", 0);
 			DyingTimeOut[phs] = 0;
 			SetPlayerHealth(phs, 100);
 			TogglePlayerControllable(phs, 1);
