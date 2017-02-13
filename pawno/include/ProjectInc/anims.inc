@@ -28,6 +28,7 @@ IsAbleUseAnimation(playerid)
    		SendClientMessage(playerid, COLOR_GRAD2, "Ban khong the su dung anim!");
    		return 0;
     }
+    return 1;
 }
 
 IsAblePedAnimation(playerid)
