@@ -443,6 +443,9 @@ public OnGameModeInit()
 	AddStaticVehicle(426, 588.0759, 893.6481, -44.7892, 128.3505, 7, 7); // Reservation 182
 	AddStaticVehicle(426, 579.7737, 910.1716, -43.5148, 321.5789, 7, 7); // Reservation 183
 	//-------------------------------------------------------------------------------------------
+
+	//////////////Text draw
+	OnAnimtInit();
 	for (new h = 184; h < sizeof(CarInfo); h++)
 	{
 		AddStaticVehicleEx(CarInfo[h][cModel], CarInfo[h][cLocationx], CarInfo[h][cLocationy], CarInfo[h][cLocationz] + 1.0, CarInfo[h][cAngle], CarInfo[h][cColorOne], CarInfo[h][cColorTwo], 60000);
@@ -908,6 +911,7 @@ public OnPlayerConnect(playerid)
 		//SendClientMessage(playerid,COLOR_YELLOW2,"Immigration: Please supply the necessary immigration documents by typing /register <password>");
 		//return 1;
 	}
+	AnimOnPlayerConnect(playerid);
 	//MySQLCheckConnection();
 
 	// Check if the account exists
@@ -1758,6 +1762,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 		SmugglerWork[playerid] = 0;
 		DisableCheckpoint(playerid);
 	}
+	AnimOnPlayerDeath(playerid, killerid, reason);
 	killerid = INVALID_PLAYER_ID;
 	SetPlayerColor(playerid, COLOR_GRAD2);
 	return 1;
@@ -1893,6 +1898,7 @@ public OnPlayerSpawn(playerid)
 			SetPlayerMapIcon(playerid, i + 20, SBizzInfo[i][sbEntranceX], SBizzInfo[i][sbEntranceY], SBizzInfo[i][sbEntranceZ], 36, COLOR_LIGHTRED);
 		}
 	}
+	AnimOnPlayerSpawn(playerid);
 	return 1;
 }
 public OnPlayerEnterCheckpoint(playerid)
@@ -5151,6 +5157,7 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 			}
 		}
 	}
+	AnimOnPlayerKeyStateChange(playerid, newkeys, oldkeys);
 	return 1;
 }
 public OnPlayerText(playerid, text[])
@@ -10461,6 +10468,7 @@ CMD:smoke(playerid, params[])
 			SendClientMessage(playerid, COLOR_GREY, "   Ban can phai dang nhap truoc. !");
 			return 1;
 		}
+		if(!IsAblePedAnimation(playerid)) return 1;
 		if (IsSmoking[playerid] == 0)
 		{
 			if (PlayerInfo[playerid][pLighter] == 0)
@@ -22093,18 +22101,7 @@ CMD:loadmission(playerid, params[])
 	}
 	return 1;
 }
-CMD:stopani(playerid, params[])
-{
-	if (IsPlayerConnected(playerid))
-	{
-		ClearAnimations(playerid);
-		if (UsingSmokeAnim[playerid] == 1)
-		{
-			UsingSmokeAnim[playerid] = 0;
-		}
-	}
-	return 1;
-}
+
 CMD:kinang(playerid, params[]) { return cmd_skill(playerid, params); }
 CMD:skill(playerid, params[])
 {
