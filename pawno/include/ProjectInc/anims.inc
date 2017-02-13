@@ -1,50 +1,3 @@
-/*==============================================================================================================================================================
-
-           *** Mostly All Animations Filterscript ***
-               "Simple but useful"
-
-Created by: BenJackster.
-Developed & Released by: BenJackster.
-Credits: Kalcor for SA-MP.
-		 Zeex for ZCMD.
-
-_______________________________________________________________________________________________
-BE A NOOB AND STEAL ALL THE CREDITS.
-								   BE A HERO AND WORK HONEST - NOT REMOVING THE CREDITS.
-								   
-     ********* Kindly do not remove these and other credits. ********
-_______________________________________________________________________________________________*/
-
-
-
-#define FILTERSCRIPT
-
-#include <a_samp>
-#include <core>
-#include <float>
-#include <zcmd>
-
-#undef MAX_PLAYERS
-#define MAX_PLAYERS 1000
-
-#include "../../include/gl_common.inc"
-#define COLOR_GRAD1 0xB4B5B7FF
-#define COLOR_GRAD2 0xBFC0C2FF
-#define COLOR_GRAD3 0xCBCCCEFF
-#define COLOR_GRAD4 0xD8D8D8FF
-#define COLOR_GRAD5 0xE3E3E3FF
-#define COLOR_GRAD6 0xF0F0F0FF
-#define COLOR_GREEN 0x33AA33AA
-#define COLOR_RED 0xFF0000FF
-#define COLOR_WHITE 0xFFFFFFAA
-
-new gPlayerUsingLoopingAnim[MAX_PLAYERS];
-new gPlayerAnimLibsPreloaded[MAX_PLAYERS];
-
-new Text:TDAnimHelp;
-
-//-------------------------------------------------
-
 PlayAnim(playerid, animlib[], animname[], Float:fDelta, loop, lockx, locky, freeze, time, forcesync)
 {
 	ApplyAnimation(playerid, animlib, animname, fDelta, loop, lockx, locky, freeze, time, forcesync);
@@ -69,14 +22,18 @@ PreloadAnimLib(playerid, animlib[])
 	ApplyAnimation(playerid,animlib,"null",0.0,0,0,0,0,0,1);
 }
 
+IsAbleUseAnimation(playerid)
+{
+	new var = CallRemoteFunction("IsAbleUseAnimation", "i", playerid);
+	new str[12];
+	format(str, sizeof(str), "%d", var);
+	SendClientMessage(playerid, COLOR_GRAD1, str);
+	return var;
+}
+
 IsAblePedAnimation(playerid)
 {
-	new str[12];
-	format(str, sizeof(str), "%d", GetPVarInt(playerid, "CantUseAnim"));
-	SendClientMessage(playerid, COLOR_GRAD1, str);
-	SendClientMessage(playerid, COLOR_GRAD1, str);
-	SendClientMessage(playerid, COLOR_GRAD1, str);
-    if(GetPVarType(playerid, "PlayerCuffed") || GetPVarType(playerid, "Injured") || GetPVarType(playerid, "IsFrozen") || GetPVarInt(playerid, "Hospital") || GetPVarInt(playerid, "CantUseAnim")) {
+    if(IsAblePedAnimation(playerid) == 0) {
    		SendClientMessage(playerid, COLOR_GRAD2, "Ban khong the su dung anim!");
    		return 0;
 	}
@@ -90,7 +47,7 @@ IsAblePedAnimation(playerid)
 
 IsAbleVehicleAnimation(playerid)
 {
-    if(GetPVarType(playerid, "PlayerCuffed") || GetPVarType(playerid, "Injured") || GetPVarType(playerid, "IsFrozen") || GetPVarInt(playerid, "Hospital") || GetPVarInt(playerid, "CantUseAnim")) {
+    if(IsAblePedAnimation(playerid) == 0) {
    		SendClientMessage(playerid, COLOR_GRAD2, "Ban khong the su dung anim!");
    		return 0;
 	}
@@ -118,12 +75,13 @@ IsCLowrider(carid)
 
 // ********** CALLBACKS **********
 
-public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
+forward AnimOnPlayerKeyStateChange(playerid, newkeys, oldkeys);
+public AnimOnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 {
-	if(GetPVarInt(playerid, "Injured") != 0) return;
+	if(Dying[playerid] != 0) return;
 	if(!gPlayerUsingLoopingAnim[playerid]) return;
 
-	if(IsKeyJustDown(KEY_SPRINT,newkeys,oldkeys) && GetPVarInt(playerid, "CantUseAnim") != 1)
+	if (newkeys & KEY_SPRINT)
 	{
 	    StopLoopingAnim(playerid);
         TextDrawHideForPlayer(playerid,TDAnimHelp);
@@ -132,7 +90,8 @@ public OnPlayerKeyStateChange(playerid, newkeys, oldkeys)
 
 //------------------------------------------------
 
-public OnPlayerDeath(playerid, killerid, reason)
+forward AnimOnPlayerDeath(playerid, killerid, reason);
+public AnimOnPlayerDeath(playerid, killerid, reason)
 {
 	if(gPlayerUsingLoopingAnim[playerid])
 	{
@@ -145,7 +104,8 @@ public OnPlayerDeath(playerid, killerid, reason)
 
 //-------------------------------------------------
 
-public OnPlayerSpawn(playerid)
+forward AnimOnPlayerSpawn(playerid);
+public AnimOnPlayerSpawn(playerid)
 {
 	if(!gPlayerAnimLibsPreloaded[playerid])
 	{
@@ -290,7 +250,8 @@ public OnPlayerSpawn(playerid)
 
 //-------------------------------------------------
 
-public OnPlayerConnect(playerid)
+forward AnimOnPlayerConnect(playerid);
+public AnimOnPlayerConnect(playerid)
 {
     gPlayerUsingLoopingAnim[playerid] = 0;
 	gPlayerAnimLibsPreloaded[playerid] = 0;
@@ -299,7 +260,8 @@ public OnPlayerConnect(playerid)
 
 //-------------------------------------------------
 
-public OnFilterScriptInit()
+forward OnAnimtInit();
+public OnAnimtInit()
 {
 	TDAnimHelp = TextDrawCreate(630.0, 420.0,
 	"~r~~k~~PED_SPRINT~ ~w~hoac~r~ /stopani~w~ de dung anim");
@@ -332,7 +294,7 @@ CMD:animhelp(playerid, params[])
 
 CMD:stopani(playerid, params[])
 {
-	if(GetPVarInt(playerid, "PlayerCuffed") != 0 || GetPVarInt(playerid, "Injured") == 1 || GetPVarInt(playerid, "IsFrozen") == 1 || GetPVarInt(playerid, "CantUseAnim") == 1)
+	if(IsAbleUseAnimation(playerid) == 0)
 	{
 		SendClientMessage(playerid, COLOR_GRAD2, "Ban khong the su dung anim!");
 		return 1;
@@ -846,17 +808,6 @@ CMD:stripclub(playerid, params[])
 	return 1;
 }
 
-CMD:smoke(playerid, params[])
-{
-	if(!IsAblePedAnimation(playerid)) return 1;
-	switch(strval(params))
-	{
-	case 1: PlayAnim(playerid, "SMOKING", "M_smk_in", 4.0, 0, 0, 0, 0, 0, 1);
-	case 2: PlayAnimEx(playerid, "SMOKING", "M_smklean_loop", 4.0, 1, 0, 0, 0, 0, 1);
-	default: SendClientMessage(playerid, COLOR_WHITE, "USAGE: /smoke [1-2]");
-	}
-	return 1;
-}
 
 CMD:dj(playerid, params[])
 {
@@ -1242,4 +1193,3 @@ CMD:carchat(playerid, params[])
 	}
 	return 1;
 }
-
