@@ -25,7 +25,6 @@ PreloadAnimLib(playerid, animlib[])
 IsAbleUseAnimation(playerid)
 {
 	if(GetPVarInt(playerid, "CantUseAnim") > 0 || Dying[playerid] > 0 || Tazered[playerid] > 0 || PlayerCuffed[playerid] > 0 || PlayerTied[playerid] > 0) {
-   		SendClientMessage(playerid, COLOR_GRAD2, "Ban khong the su dung anim!");
    		return 0;
     }
     return 1;
