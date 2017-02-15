@@ -41,7 +41,18 @@ new MySQL:conn;
 #define DIALOG_REG 1
 #define DIALOG_LOGIN 2
 
-#define SCRIPT_OWNCARS 85 //
+#if defined MAX_PLAYERS 
+#undef MAX_PLAYERS 
+#endif 
+
+#if defined MAX_VEHICLES 
+#undef MAX_VEHICLES 
+#endif 
+
+#define MAX_VEHICLES 1000
+#define MAX_PLAYERS 500
+
+#define SCRIPT_OWNCARS 500 //
 #define SCRIPT_MAXPLAYERS 50 //
 #define SCRIPT_MAXHOUSES 36 //
 #define MAX_BIZ 7 //
@@ -190,8 +201,9 @@ forward LoadIRC();
 forward SaveIRC();
 forward LoadPapers();
 forward SavePapers();
+forward AddCar(model, Float:x, Float:y, Float:z, Float:a, color1, color2, respawntime, owner[], owned, price);
 forward LoadCar();
-forward SaveCarCoords();
+//forward SaveCarCoords();
 forward LoadBoxer();
 forward SaveBoxer();
 forward OnPropUpdate();
@@ -243,7 +255,6 @@ forward IsNgCar(carid);
 forward IsAGovernmentCar(carid);
 forward IsAHspdCar(carid);
 forward IsAnOwnableCar(vehicleid);
-forward IsAtDealership(playerid);
 forward IsAtCarrental(playerid);
 forward IsAPlane(carid);
 forward IsABoat(carid);
@@ -289,7 +300,7 @@ forward SendIRCMessage(channel, color, string[]);
 forward SendTeamMessage(team, color, string[]);
 forward SendRadioMessage(member, color, string[]);
 forward SendAdminMessage(color, string[]);
-forward AddCar(carcoords);
+//forward AddCar(carcoords);
 forward ProxDetector(Float:radi, playerid, string[],col1,col2,col3,col4,col5);
 forward ProxDetectorS(Float:radi, playerid, targetid);
 forward ClearCK(ck);
@@ -589,7 +600,7 @@ new CellTime[MAX_PLAYERS];
 new StartTime[MAX_PLAYERS];
 new HireCar[MAX_PLAYERS];
 new SafeTime[MAX_PLAYERS];
-new Specing[MAX_PLAYERS];
+//new Specing[MAX_PLAYERS];
 new HidePM[MAX_PLAYERS];
 new PhoneOnline[MAX_PLAYERS];
 new gDice[MAX_PLAYERS];
@@ -1336,9 +1347,9 @@ new Peds[200][1] = {
 //ENUM
 enum SavePlayerPosEnum
 {
-Float:LastX,
+	Float:LastX,
 	Float:LastY,
-		  Float:LastZ
+	Float:LastZ
 }
 new SavePlayerPos[MAX_PLAYERS][SavePlayerPosEnum];
 
@@ -1469,13 +1480,13 @@ new Groceries[MAX_PLAYERS][pGroceries];
 
 enum pSpec
 {
-Float:Coords[3],
+	Float:Coords[3],
 	Float:sPx,
-		  Float:sPy,
-				 Float:sPz,
-							sPint,
-							sLocal,
-							sCam,
+	Float:sPy,
+	Float:sPz,
+	sPint,
+	sLocal,
+	sCam,
 };
 
 new Unspec[MAX_PLAYERS][pSpec];
@@ -1664,23 +1675,23 @@ new HouseInfo[SCRIPT_MAXHOUSES][hInfo];
 
 enum cInfo
 {
+	cID,
 	cModel,
-Float:cLocationx,
+	Float:cLocationx,
 	Float:cLocationy,
-		  Float:cLocationz,
-				 Float:cAngle,
-							cColorOne,
-							cColorTwo,
-							cOwner[MAX_PLAYER_NAME],
-							cDescription[MAX_PLAYER_NAME],
-							cValue,
-							cLicense,
-							cRegistration,
-							cOwned,
-							cLock,
+	Float:cLocationz,
+	Float:cAngle,
+	cColorOne,
+	cColorTwo,
+	cOwner[MAX_PLAYER_NAME],
+	cDescription[MAX_PLAYER_NAME],
+	cValue,
+	cLicense,
+	cRegistration,
+	cOwned,
+	cLock,
 };
-
-new CarInfo[SCRIPT_OWNCARS][cInfo];
+new CarInfo[MAX_VEHICLES][cInfo];
 
 enum bInfo
 {
@@ -2025,8 +2036,8 @@ public SavePlayer(playerid)
 				CookSkill=%d,\
 				FishSkill=%d,\
 				PlantSkill=%d,\
-				pSHealth=%f,\
-				pHealth=%f,\
+				SHealth=%f,\
+				Health=%f,\
 				`Int`=%d,\
 				Local=%d,\
 				`Team`=%d,\
@@ -2389,35 +2400,37 @@ public SavePapers()
 	}
 	return 1;
 }
-public SaveCarCoords()
-{
-	new idx;
-	new File: file2;
-	while (idx < sizeof(CarInfo))
-	{
-		new coordsstring[256];
-		format(coordsstring, sizeof(coordsstring), "%d|%f|%f|%f|%f|%d|%d\n",
-			CarInfo[idx][cModel],
-			CarInfo[idx][cLocationx],
-			CarInfo[idx][cLocationy],
-			CarInfo[idx][cLocationz],
-			CarInfo[idx][cAngle],
-			CarInfo[idx][cColorOne],
-			CarInfo[idx][cColorTwo]);
-		if (idx == 0)
-		{
-			file2 = fopen("cars.cfg", io_write);
-		}
-		else
-		{
-			file2 = fopen("cars.cfg", io_append);
-		}
-		fwrite(file2, coordsstring);
-		idx++;
-		fclose(file2);
-	}
-	return 1;
-}
+
+//public SaveCarCoords(vehicleid)
+//{
+//	new idx;
+//	new File: file2;
+//	while (idx < sizeof(CarInfo))
+//	{
+//		new coordsstring[256];
+//		format(coordsstring, sizeof(coordsstring), "%d|%f|%f|%f|%f|%d|%d\n",
+//			CarInfo[idx][cModel],
+//			CarInfo[idx][cLocationx],
+//			CarInfo[idx][cLocationy],
+//			CarInfo[idx][cLocationz],
+//			CarInfo[idx][cAngle],
+//			CarInfo[idx][cColorOne],
+//			CarInfo[idx][cColorTwo]);
+//		if (idx == 0)
+//		{
+//			file2 = fopen("cars.cfg", io_write);
+//		}
+//		else
+//		{
+//			file2 = fopen("cars.cfg", io_append);
+//		}
+//		fwrite(file2, coordsstring);
+//		idx++;
+//		fclose(file2);
+//	}
+//	return 1;
+//}
+
 public SaveDrugSystem()
 {
 	new coordsstring[256];
@@ -2447,9 +2460,37 @@ public SaveHQLocks()
 }
 public SaveTrunk()
 {
-	new idx;
+	new sql[500];
+	for (new idx = 0; idx < MAX_VEHICLES; idx++)
+	{
+		format(sql, sizeof(sql), "UPDATE cartrunk SET \
+					Trunk1 = %d,\
+					TrunkAmmo1 = %d,\
+					Trunk2 = %d,\
+					TrunkAmmo2 = %d,\
+					Trunk3 = %d,\
+					TrunkAmmo3 = %d,\
+					Trunk4 = %d,\
+					TrunkAmmo4 = %d,\
+					TrunkCounter = %d,\
+					TrunkArmour = %f \
+					WHERE VehID = %d",
+					vehTrunk[idx][1],
+					vehTrunkAmmo[idx][1],
+					vehTrunk[idx][2],
+					vehTrunkAmmo[idx][2],
+					vehTrunk[idx][3],
+					vehTrunkAmmo[idx][3],
+					vehTrunk[idx][4],
+					vehTrunkAmmo[idx][4],
+					vehTrunkCounter[idx],
+					vehTrunkArmour[idx],
+					CarInfo[idx][cID]);
+		mysql_query(conn, sql);
+	}
+
+	/*new idx;
 	new File: file2;
-	idx = 1;
 	while (idx < sizeof(CarInfo))
 	{
 		new coordsstring[256];
@@ -2475,7 +2516,7 @@ public SaveTrunk()
 		fwrite(file2, coordsstring);
 		idx++;
 		fclose(file2);
-	}
+	}*/
 	return 1;
 }
 
@@ -2735,9 +2776,81 @@ public LoadPapers()
 	}
 	return 1;
 }
+public AddCar(model, Float:x, Float:y, Float:z, Float:a, color1, color2, respawntime, owner[], owned, price)
+{
+	new sql[500];
+	format(sql, sizeof(sql), "INSERT INTO car (Owner, Owned, `Model`, Locationx, Locationy,\
+															 Locationz, Angle, ColorOne, ColorTwo, `Value`) \
+									 					VALUES ('%s', %d, %d, %f, %f, %f, %f, %d, %d, %d)",
+														owner, owned, model, x,y,z,a,color1,color2,price);
+	mysql_query(conn, sql);
+	new newId = cache_insert_id();
+
+	new vid = CreateVehicle(model, x, y, z, a, color1, color2, respawntime);
+	format(CarInfo[vid][cOwner], 999, owner);
+	CarInfo[vid][cOwned] = 0;
+	CarInfo[vid][cModel] = model;
+	CarInfo[vid][cLocationx] = x;
+	CarInfo[vid][cLocationy] = y;
+	CarInfo[vid][cLocationz] = z;
+	CarInfo[vid][cAngle] = a;
+	CarInfo[vid][cColorOne] = color1;
+	CarInfo[vid][cColorTwo] = color2;
+	CarInfo[vid][cValue] = price;
+	CarInfo[vid][cID] = newId;
+
+	format(sql, sizeof(sql), "INSERT INTO cartrunk (VehID) VALUES (%d)", newId);
+	mysql_query(conn, sql);
+	vehTrunk[vid][1] = 0;
+	vehTrunkAmmo[vid][1] = 0;
+	vehTrunk[vid][2] = 0; 
+	vehTrunkAmmo[vid][2] = 0;
+	vehTrunk[vid][3] = 0;
+	vehTrunkAmmo[vid][3] = 0;
+	vehTrunk[vid][4] = 0;
+	vehTrunkAmmo[vid][4] = 0;
+	vehTrunkCounter[vid] = 0;
+	vehTrunkArmour[vid] = 0;
+}
 public LoadCar()
 {
-	new arrCoords[13][64];
+	new tmpstr[128];
+	new tmp;
+	new sql[500];
+	format(sql, sizeof(sql), "SELECT * FROM car");
+	mysql_query(conn, sql);
+	new row;
+	cache_get_row_count(row);
+	for (new idx = 0; idx < row; idx++)
+	{
+		new model, Float:pos[4], color[2];
+		cache_get_value_name_int(idx, "Model", model);
+		cache_get_value_name_int(idx, "ColorOne", color[0]);
+		cache_get_value_name_int(idx, "ColorTwo", color[1]);
+		cache_get_value_name_float(idx, "Locationx", pos[0]);
+		cache_get_value_name_float(idx, "Locationy", pos[1]);
+		cache_get_value_name_float(idx, "Locationz", pos[2]);
+		cache_get_value_name_float(idx, "Angle", pos[3]);
+		new vid = CreateVehicle(model, pos[0], pos[1], pos[2], pos[3], color[0], color[1], 60000);
+
+		CarInfo[vid][cModel] = model;
+		CarInfo[vid][cLocationx] = pos[0];
+		CarInfo[vid][cLocationy] = pos[1];
+		CarInfo[vid][cLocationz] = pos[2];
+		CarInfo[vid][cAngle] = pos[3];
+		CarInfo[vid][cColorOne] = color[0];
+		CarInfo[vid][cColorTwo] = color[1];
+
+		cache_get_value_name(idx, "Owner", tmpstr); format(CarInfo[vid][cOwner], 128, tmpstr);
+		cache_get_value_name(idx, "Description", tmpstr); format(CarInfo[vid][cDescription], 128, tmpstr);
+		cache_get_value_name_int(idx, "Value", tmp); CarInfo[vid][cValue] = tmp;
+		cache_get_value_name_int(idx, "License", tmp); CarInfo[vid][cLicense] = tmp;
+		cache_get_value_name_int(idx, "Owned", tmp); CarInfo[vid][cOwned] = tmp;
+		cache_get_value_name_int(idx, "Lock", tmp); CarInfo[vid][cLock] = tmp;
+		
+		printf("CarInfo: %d Owner:%s LicensePlate %s", vid, CarInfo[vid][cOwner], CarInfo[vid][cLicense]);
+	}
+	/*new arrCoords[13][64];
 	new strFromFile2[256];
 	new File: file = fopen("cars.cfg", io_read);
 	if (file)
@@ -2763,7 +2876,7 @@ public LoadCar()
 			printf("CarInfo: %d Owner:%s LicensePlate %s", idx, CarInfo[idx][cOwner], CarInfo[idx][cLicense]);
 			idx++;
 		}
-	}
+	}*/
 	return 1;
 }
 public LoadProperty()
@@ -3126,9 +3239,43 @@ public LoadHQLocks()
 	}
 	return 1;
 }
+stock GetVehicleIDFromSQLID(sqlid)
+{
+	for (new i = 0; i < MAX_VEHICLES; i++)
+	{
+		if (CarInfo[i][cID] == sqlid)
+			return i;
+	}
+	return -1;
+}
 public LoadTrunk()
 {
-	new arrCoords[13][64];
+	new tmp, Float:tmpf, sql[500];
+	format(sql, sizeof(sql), "SELECT * FROM car");
+	mysql_query(conn, sql);
+	new row;
+	cache_get_row_count(row);
+	for (new idx = 1; idx < row + 1; idx++)
+	{
+		new vsqlid;
+		cache_get_value_name_int(idx, "VehID", vsqlid);
+		new vid = GetVehicleIDFromSQLID(vsqlid);
+		if (vid != -1)
+		{
+			cache_get_value_name_int(idx, "Trunk1", tmp); vehTrunk[vid][1] = tmp;
+			cache_get_value_name_int(idx, "TrunkAmmo1", tmp); vehTrunkAmmo[vid][1] = tmp;
+			cache_get_value_name_int(idx, "Trunk2", tmp); vehTrunk[vid][2] = tmp;
+			cache_get_value_name_int(idx, "TrunkAmmo2", tmp); vehTrunkAmmo[vid][2] = tmp;
+			cache_get_value_name_int(idx, "Trunk3", tmp); vehTrunk[vid][3] = tmp;
+			cache_get_value_name_int(idx, "TrunkAmmo3", tmp); vehTrunkAmmo[vid][3] = tmp;
+			cache_get_value_name_int(idx, "Trunk4", tmp); vehTrunk[vid][4] = tmp;
+			cache_get_value_name_int(idx, "TrunkAmmo4", tmp); vehTrunkAmmo[vid][4] = tmp;
+			cache_get_value_name_int(idx, "TrunkCounter", tmp); vehTrunkCounter[vid] = tmp;
+			cache_get_value_name_float(idx, "TrunkArmour", tmpf); vehTrunkArmour[vid] = tmpf;
+		}
+	}
+
+	/*new arrCoords[13][64];
 	new strFromFile2[256];
 	new File: file = fopen("trunk.cfg", io_read);
 	if (file)
@@ -3150,7 +3297,7 @@ public LoadTrunk()
 			vehTrunkArmour[idx] = floatstr(arrCoords[9]);
 			idx++;
 		}
-	}
+	}*/
 	return 1;
 }
 
@@ -3736,19 +3883,17 @@ public IsAPDMember(playerid)
 
 public IsAnOwnableCar(vehicleid)
 {
-	if(vehicleid >= 184 && vehicleid <= 268) { return 1; }
+	//if(vehicleid >= 184 && vehicleid <= 268) { return 1; }
+	if (CarInfo[vehicleid][cID] != -1)
+		return 1;
 	return 0;
 }
 
-public IsAtDealership(playerid)
+stock IsAtDealership(playerid)
 {
-	if(IsPlayerConnected(playerid))
-	{
-	    if(PlayerToPoint(25.0,playerid,2128.0864,-1135.3912,25.5855) || PlayerToPoint(50,playerid,537.3366,-1293.2140,17.2422) || PlayerToPoint(35,playerid,2521.5544,-1524.4504,23.8365) || PlayerToPoint(50,playerid,2155.0146,-1177.3333,23.8211) || PlayerToPoint(50,playerid,299.1723,-1518.6627,24.6007))
-		{
-			return 1;
-		}
-	}
+	if(PlayerToPoint(25.0,playerid,2128.0864,-1135.3912,25.5855) || PlayerToPoint(50,playerid,537.3366,-1293.2140,17.2422) || PlayerToPoint(35,playerid,2521.5544,-1524.4504,23.8365) || PlayerToPoint(50,playerid,2155.0146,-1177.3333,23.8211) || PlayerToPoint(50,playerid,299.1723,-1518.6627,24.6007))
+		return 1;
+
 	return 0;
 }
 public IsAtCarrental(playerid)
@@ -4568,6 +4713,18 @@ public SetPlayerSpawn(playerid)
 	if(IsPlayerConnected(playerid))
 	{
 	    SetPlayerSkin(playerid, PlayerInfo[playerid][pChar]);
+		 if (Spectating[playerid] == 1)
+		 {
+			 SetPlayerPos(playerid, GetPVarFloat(playerid, "SX"), GetPVarFloat(playerid, "SY"), GetPVarFloat(playerid, "SZ"));
+			 SetPlayerInterior(playerid, GetPVarInt(playerid, "SInt"));
+			 SetPlayerVirtualWorld(playerid, GetPVarInt(playerid, "SWorld"));
+			 if (Spectated[SpecPlayer[playerid]] > 0) Spectated[SpecPlayer[playerid]]--;
+			 SpecPlayer[playerid] = -1;
+			 if (PlayerInfo[playerid][pChar] > 0) { SetPlayerSkin(playerid, PlayerInfo[playerid][pChar]); }
+			 else { SetPlayerSkin(playerid, PlayerInfo[playerid][pModel]); }
+			 Spectating[playerid] = 0;
+			 return 1;
+		 }
 		 if (Dying[playerid] == 1)
 		 {
 			 ClearAnimations(playerid);
@@ -7087,9 +7244,9 @@ public ShowStats(playerid,targetid)
 		//new costlevel = nxtlevel*levelcost;//10k for testing purposes
 		new housekey = PlayerInfo[targetid][pPhousekey];
 		new bizkey = PlayerInfo[targetid][pPbiskey];
-		new carkey = PlayerInfo[targetid][pPcarkey][0];
-		new carkey2 = PlayerInfo[targetid][pPcarkey][1];
-		new carkey3 = PlayerInfo[targetid][pPcarkey][2];
+		new carkey = GetVehicleIDFromKey(PlayerInfo[targetid][pPcarkey][0]);
+		new carkey2 = GetVehicleIDFromKey(PlayerInfo[targetid][pPcarkey][1]);
+		new carkey3 = GetVehicleIDFromKey(PlayerInfo[targetid][pPcarkey][2]);
 		new intir = PlayerInfo[targetid][pInt];
 		new virworld = PlayerInfo[targetid][pVirWorld];
 		new local = PlayerInfo[targetid][pLocal];
@@ -7109,17 +7266,17 @@ public ShowStats(playerid,targetid)
 		SendClientMessage(playerid, COLOR_GRAD3,coordsstring);
 		format(coordsstring, sizeof(coordsstring), "Drugs:[%d] Materials:[%d] Team:[%s] To chuc:[%s] Rank:[%s]",drugs,mats,ttext,ftext,rtext);
 		SendClientMessage(playerid, COLOR_GRAD5,coordsstring);
-		if (PlayerInfo[targetid][pPcarkey][0] != 999)
+		if (PlayerInfo[targetid][pPcarkey][0] != -1)
 		{
 		    format(coordsstring, sizeof(coordsstring), "1| VehModel:[%s] VehValue:[%d] VehColor1:[%d] VehColor2:[%d] VehLocked:[%d]", CarInfo[carkey][cDescription], CarInfo[carkey][cValue], CarInfo[carkey][cColorOne], CarInfo[carkey][cColorTwo], CarInfo[carkey][cLock]);
 		    SendClientMessage(playerid, COLOR_GRAD5,coordsstring);
 		}
-		if (PlayerInfo[targetid][pPcarkey][1] != 999)
+		if (PlayerInfo[targetid][pPcarkey][1] != -1)
 		{
 		    format(coordsstring, sizeof(coordsstring), "2| VehModel:[%s] VehValue:[%d] VehColor1:[%d] VehColor2:[%d] VehLocked:[%d]", CarInfo[carkey2][cDescription], CarInfo[carkey2][cValue], CarInfo[carkey2][cColorOne], CarInfo[carkey2][cColorTwo], CarInfo[carkey2][cLock]);
 		    SendClientMessage(playerid, COLOR_GRAD5,coordsstring);
 		}
-		if (PlayerInfo[targetid][pPcarkey][2] != 999)
+		if (PlayerInfo[targetid][pPcarkey][2] != -1)
 		{
 		    format(coordsstring, sizeof(coordsstring), "3| VehModel:[%s] VehValue:[%d] VehColor1:[%d] VehColor2:[%d] VehLocked:[%d]", CarInfo[carkey3][cDescription], CarInfo[carkey3][cValue], CarInfo[carkey3][cColorOne], CarInfo[carkey3][cColorTwo], CarInfo[carkey3][cLock]);
 		    SendClientMessage(playerid, COLOR_GRAD5,coordsstring);
@@ -7559,9 +7716,8 @@ stock ini_GetValue( line[] )
 
 public OnPropUpdate()
 {
-	new File: file2;
-
-	new sql[2000];
+	//new File: file2;
+	new sql[600];
 	for (new i = 0; i < SCRIPT_MAXHOUSES; i++)
 	{
 		format(sql, sizeof(sql), "UPDATE house SET \
@@ -7617,7 +7773,8 @@ public OnPropUpdate()
 					i);
 		mysql_query(conn, sql);
 	}
-										 										
+	//printf("Save houses successfully.");
+	
 	//while (idx < sizeof(HouseInfo))
 	//{
 	//	new coordsstring[256];
@@ -7714,7 +7871,7 @@ public OnPropUpdate()
 				i);
 				mysql_query(conn, sql);
 	}
-
+	//printf("Save business successfully.");
 	for (new i = 0; i < MAX_SBIZ; i++)
 	{
 		format(sql, sizeof(sql), "UPDATE sbiz SET \
@@ -7756,6 +7913,7 @@ public OnPropUpdate()
 				i);
 		mysql_query(conn, sql);
 	}
+	//printf("Save sbusiness successfully.");
 	/*idx = 0;
 	while (idx < sizeof(BizzInfo))
 	{
@@ -7826,6 +7984,43 @@ public OnPropUpdate()
 		idx++;
 		fclose(file2);
 	}*/
+
+	for (new idx = 0; idx < MAX_VEHICLES; idx++)
+	{
+		if (CarInfo[idx][cID] == -1) continue;
+		format(sql, sizeof(sql), "UPDATE car SET \
+				Owner = '%s',\
+				Owned = %d,\
+				Model = %d,\
+				Locationx = %f,\
+				Locationy = %f,\
+				Locationz = %f,\
+				Angle = %f,\
+				ColorOne = %d,\
+				ColorTwo = %d,\
+				Description = '%s',\
+				`Value` = %d,\
+				License = %d,\
+				`Lock` = %d \
+				WHERE ID = %d",
+				CarInfo[idx][cOwner],
+				CarInfo[idx][cOwned],
+				CarInfo[idx][cModel],
+				CarInfo[idx][cLocationx],
+				CarInfo[idx][cLocationy],
+				CarInfo[idx][cLocationz],
+				CarInfo[idx][cAngle],
+				CarInfo[idx][cColorOne],
+				CarInfo[idx][cColorTwo],
+				CarInfo[idx][cDescription],
+				CarInfo[idx][cValue],
+				CarInfo[idx][cLicense],
+				CarInfo[idx][cLock],
+				CarInfo[idx][cID]);
+		mysql_query(conn, sql);
+	}			
+	//printf("Save cars successfully.");
+	/*
 	new idx = 184;
  	while (idx < sizeof(CarInfo))
 	{
@@ -7856,6 +8051,7 @@ public OnPropUpdate()
 		idx++;
 		fclose(file2);
 	}
+	*/
 	return 1;
 }
 

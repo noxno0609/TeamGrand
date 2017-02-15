@@ -143,3 +143,8 @@ new gPlayerUsingLoopingAnim[MAX_PLAYERS];
 new gPlayerAnimLibsPreloaded[MAX_PLAYERS];
 
 new Text:TDAnimHelp;
+
+//Spec
+new SpecPlayer[MAX_PLAYERS],
+	Spectating[MAX_PLAYERS],
+	Spectated[MAX_PLAYERS];

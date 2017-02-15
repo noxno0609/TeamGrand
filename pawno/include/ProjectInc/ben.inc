@@ -101,6 +101,16 @@ stock IsAnyAdminInVehicle(vid)
 	return false;
 }
 
+stock GetVehicleIDFromKey(keyid)
+{
+	for (new i = 0; i < MAX_VEHICLES; i++)
+	{
+		if (CarInfo[i][cID] == keyid)
+			return i;
+	}
+	return -1;
+}
+
 CMD:veh(playerid, params[])
 {
 		 if (PlayerInfo[playerid][pAdmin] == 0) return SCM(playerid, COLOR_GREY, "Khong co quyen han su dung cau lenh nay.");
@@ -153,20 +163,49 @@ CMD:xoaveh(playerid, params[])
 			 SendAdminMessage(COLOR_LIGHTRED, "AdmCMD: Da xoa tat ca Admin Vehicle!");
 			 return 1;
 		 }
-		new vid = strval(vidid);
-		if (vid != INVALID_VEHICLE_ID)
+		new avid = strval(vidid);
+		if (avid != -1)
 		{
-			new avid = IsAdminVehicle(vid);
-			if (avid != -1)
-			{
-				DeleteAdminVeh(avid);
-				SCM(playerid, COLOR_LIGHTRED, "AdmCMD: Da xoa chiec Admin Vehicle nay thanh cong!");
-				return 1;
-			}
-			else SCM(playerid, COLOR_GREY, "Day khong phai Admin Vehicle.");
+			DeleteAdminVeh(avid);
+			SCM(playerid, COLOR_LIGHTRED, "AdmCMD: Da xoa chiec Admin Vehicle nay thanh cong!");
+			return 1;
 		}
-		else SCM(playerid, COLOR_GREY, "Chiec xe nay khong ton tai.");
+		else SCM(playerid, COLOR_GREY, "Id Admin Vehicle khong hop le.");
+		//else SCM(playerid, COLOR_GREY, "Chiec xe nay khong ton tai.");
 		 return 1;
+}
+CMD:spec(playerid, params[])
+{
+		if (PlayerInfo[playerid][pAdmin] == 0) return SCM(playerid, COLOR_GREY, "Khong du quyen han de su dung cau lenh nay.");
+		if (strcmp(params, "off", true) == 0)
+		{
+			if (Spectating[playerid] == 1)
+				TogglePlayerSpectating(playerid, 0);
+
+			else SCM(playerid, COLOR_GREY, "Hien ban khong theo doi ai.");
+		}
+		else
+		{
+			new pspec;
+			if (sscanf(params, "u", pspec)) return SCM(playerid, COLOR_GRAD2, "Su dung: /spec [Ten/ID Nguoi Choi]");
+			if (pspec == INVALID_PLAYER_ID) return SCM(playerid, COLOR_GREY, "Nguoi choi nay khong ton tai.");
+			if (Spectating[playerid] == 0)
+			{
+				new Float:Pos[3];
+				GetPlayerPos(playerid, Pos[0], Pos[1], Pos[2]);
+				SetPVarFloat(playerid, "SX", Pos[0]);
+				SetPVarFloat(playerid, "SY", Pos[1]);
+				SetPVarFloat(playerid, "SZ", Pos[2]);
+				SetPVarInt(playerid, "SInt", GetPlayerInterior(playerid));
+				SetPVarInt(playerid, "SWorld", GetPlayerVirtualWorld(playerid));
+			}
+			TogglePlayerSpectating(playerid, 1);
+			PlayerSpectatePlayer(playerid, pspec, 0);
+			SpecPlayer[playerid] = pspec;
+			Spectating[playerid] = 1;
+			Spectated[SpecPlayer[playerid]]++;
+		}
+		return 1;
 }
 
 stock DeleteAdminVeh(avid)
@@ -211,6 +250,13 @@ public Float:GetVehicleSpeed(vehicleid, UseMPH)
 	return temp_speed;
 }
 
+stock ClearAllVehicle()
+{
+	for (new i = 0; i < MAX_VEHICLES; i++)
+	{
+		CarInfo[i][cID] = -1;
+	}
+}
 stock ClearApGiai(playerid)
 {
 	if (Escorting[playerid] == 1)
