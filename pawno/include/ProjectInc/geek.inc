@@ -502,7 +502,7 @@ CMD:newb(playerid, params[])
 	else
 	{
 		if (GetPVarInt(playerid, "InNewbieChannel") == 1) return SendClientMessage(playerid, COLOR_GRAD1, "Thoi gian giua hai cau hoi la 15s.");
-		format(str, sizeof(str), "%s: %s", GN(playerid), mess);
+		format(str, sizeof(str), "%s(%d): %s", GN(playerid), playerid, mess);
 		SetPVarInt(playerid, "InNewbieChannel", 1);
 		defer NewbieChannel[15000](playerid);
 	}
@@ -581,10 +581,16 @@ CMD:dagiup(playerid, params[])
 CMD:c(playerid, params[])
 {
 	if (PlayerInfo[playerid][pHelper] < 2 && PlayerInfo[playerid][pAdmin] < 1) return SendClientMessage(playerid, COLOR_GRAD1, "Ban khong the dung lenh nay");
-	new mess[255];
+	new mess[255], str[255];
 	if (sscanf(params, "s[255]", mess)) return SendClientMessage(playerid, COLOR_GRAD1, "/c [Noi Dung]");
-	CBroadCast(COLOR_LIGHT_BLUE, mess, 2);
-	ABroadCast(COLOR_LIGHT_BLUE, mess, 1);
+	if(PInfo[playerid][pAdmin > 0]) {
+		format(str, sizeof(str), "[Admin] %s(%d): %s", GN(playerid), playerid, mess);
+	}
+	else {
+		format(str, sizeof(str), "%s %s(%d): %s", HP(playerid), GN(playerid), playerid, mess);
+	}
+	CBroadCast(COLOR_LIGHT_BLUE, str, 2);
+	ABroadCast(COLOR_LIGHT_BLUE, str, 1);
 	return 1;
 }
 CMD:plant(playerid, params[]) { return cmd_gieohat(playerid, params); }
