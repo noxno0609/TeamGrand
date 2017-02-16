@@ -90,7 +90,6 @@ stock IsAdminVehicle(vid)
 	}
 	return -1;
 }
-
 stock IsAnyAdminInVehicle(vid)
 {
 	for (new i = 0; i < MAX_PLAYERS; i++)
@@ -100,9 +99,61 @@ stock IsAnyAdminInVehicle(vid)
 	}
 	return false;
 }
-
+stock RespawnCar(vid)
+{
+	new newvid = CreateVehicle(CarInfo[vid][cModel], CarInfo[vid][cLocationx], CarInfo[vid][cLocationy], CarInfo[vid][cLocationz], CarInfo[vid][cAngle], CarInfo[vid][cColorOne], CarInfo[vid][cColorTwo], 60000);
+	CarInfo[newvid][cID] = CarInfo[vid][cID];
+	CarInfo[newvid][cModel] = CarInfo[vid][cModel];
+	CarInfo[newvid][cLocationx] = CarInfo[vid][cLocationx];
+	CarInfo[newvid][cLocationy] = CarInfo[vid][cLocationy];
+	CarInfo[newvid][cLocationz] = CarInfo[vid][cLocationz];
+	CarInfo[newvid][cAngle] = CarInfo[vid][cAngle];
+	CarInfo[newvid][cColorOne] = CarInfo[vid][cColorOne];
+	CarInfo[newvid][cColorTwo] = CarInfo[vid][cColorTwo];
+	format(CarInfo[newvid][cOwner], 128, "%s", CarInfo[vid][cOwner]);
+	format(CarInfo[newvid][cDescription], 128, "%s", CarInfo[vid][cDescription]);
+	CarInfo[newvid][cValue] = CarInfo[vid][cValue];
+	CarInfo[newvid][cLicense] = CarInfo[vid][cLicense];
+	CarInfo[newvid][cRegistration] = CarInfo[vid][cRegistration];
+	CarInfo[newvid][cOwned] = CarInfo[vid][cOwned];
+	CarInfo[newvid][cLock] = CarInfo[vid][cLock];
+	DestroyCar(vid);
+	return 1;
+}
+stock GetVehicleByCarID(id)
+{
+	for (new i = 0; i < MAX_VEHICLES; i++)
+	{
+		if (CarInfo[i][cID] == id)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+stock DestroyCar(vid)
+{
+	CarInfo[vid][cID] = -1;
+	CarInfo[vid][cModel] = 0;
+	CarInfo[vid][cLocationx] = 0;
+	CarInfo[vid][cLocationy] = 0;
+	CarInfo[vid][cLocationz] = 0;
+	CarInfo[vid][cAngle] = 0;
+	CarInfo[vid][cColorOne] = 0;
+	CarInfo[vid][cColorTwo] = 0;
+	format(CarInfo[vid][cOwner], 128, "");
+	format(CarInfo[vid][cDescription], 128, "");
+	CarInfo[vid][cValue] = CarInfo[vid][cValue];
+	CarInfo[vid][cLicense] = CarInfo[vid][cLicense];
+	CarInfo[vid][cRegistration] = CarInfo[vid][cRegistration];
+	CarInfo[vid][cOwned] = CarInfo[vid][cOwned];
+	CarInfo[vid][cLock] = CarInfo[vid][cLock];
+	DestroyVehicle(vid);
+	return 1;
+}
 stock GetVehicleIDFromKey(keyid)
 {
+	if (keyid == -1) return -1;
 	for (new i = 0; i < MAX_VEHICLES; i++)
 	{
 		if (CarInfo[i][cID] == keyid)
@@ -110,7 +161,22 @@ stock GetVehicleIDFromKey(keyid)
 	}
 	return -1;
 }
-
+stock GetFirstParams(const string[], result[], len)
+{
+	new index;
+	format(result, len, "%s", strtok(string, index));
+	return 1;
+}
+stock CountParams(const string[])
+{
+	new count = 0;
+	for (new i = 0; i < strlen(string); i++)
+	{
+		if (string[i] == ' ' && string[i + 1] != ' ')
+			count++;
+	}
+	return count;
+}
 CMD:veh(playerid, params[])
 {
 		 if (PlayerInfo[playerid][pAdmin] == 0) return SCM(playerid, COLOR_GREY, "Khong co quyen han su dung cau lenh nay.");

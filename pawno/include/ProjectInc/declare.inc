@@ -148,3 +148,22 @@ new Text:TDAnimHelp;
 new SpecPlayer[MAX_PLAYERS],
 	Spectating[MAX_PLAYERS],
 	Spectated[MAX_PLAYERS];
+
+//TYPECAR
+#define HARVESTVEH 1
+#define DHARVESTVEH 2
+#define SMUGGLEVEH 3
+#define SWEEPERVEH 4
+#define COPVEH 5
+#define FBIVEH 6
+#define NGVEH 7
+#define GORVEH 8
+#define HSPDVEH 9
+#define AMBUVEH 10
+#define TRUCKVEH 11
+#define PIZZAVEH 12
+#define BUSVEH 13
+#define TOWVEH 14
+
+#define UPDLNOVEH 1
+#define UPDLVEH 2

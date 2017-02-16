@@ -201,7 +201,10 @@ forward LoadIRC();
 forward SaveIRC();
 forward LoadPapers();
 forward SavePapers();
+forward DeleteDealership(id);
+forward UpdateDealership();
 forward AddCar(model, Float:x, Float:y, Float:z, Float:a, color1, color2, respawntime, owner[], owned, price);
+forward AddDealership(model, Float:x, Float:y, Float:z, Float:a, color1, color2, respawntime, price, amount);
 forward LoadCar();
 //forward SaveCarCoords();
 forward LoadBoxer();
@@ -1690,6 +1693,7 @@ enum cInfo
 	cRegistration,
 	cOwned,
 	cLock,
+	cType
 };
 new CarInfo[MAX_VEHICLES][cInfo];
 
@@ -2776,6 +2780,79 @@ public LoadPapers()
 	}
 	return 1;
 }
+public AddDealership(model, Float:x, Float:y, Float:z, Float:a, color1, color2, respawntime, price, amount)
+{
+	new sql[500];
+	new vid = AddCar(model, x, y, z, a, color1, color2, 60000, "Dealership", 0, price);
+	format(sql, sizeof(sql), "INSERT INTO dealership (`Model`, PosX, PosY,\
+									 									PosZ, PosAngle, Color1, Color2, `Price`, SellVehID, Amount) \
+																		VALUES (%d, %f, %f, %f, %f, %d, %d, %d, %d, %d)",
+																		model, x, y, z, a, color1, color2, price, CarInfo[vid][cID], amount);
+	mysql_query(conn, sql);
+	UpdateDealership();
+}
+public UpdateDealership()
+{
+	new sql[500];
+	format(sql, sizeof(sql), "SELECT * FROM dealership");
+	mysql_query(conn, sql);
+	new row;
+	cache_get_row_count(row);
+	for (new i = 0; i < row; i++)
+	{
+		new amount;
+		cache_get_value_name_int(i, "Amount", amount);
+		if (amount == 0)
+		{
+			DeleteDealership(i+1);
+			continue;
+		}
+
+		new vehid;
+		cache_get_value_name_int(0, "SellVehID", vehid);
+
+		new vid = GetVehicleByCarID(vehid);
+		if (vid == -1 || (CarInfo[vid][cOwned] == 1 && vid != -1) || vehid == -1)
+		{
+			new model, Float:pos[4], color[2], price;
+			cache_get_value_name_int(i, "Model", model);
+			cache_get_value_name_float(i, "PosX", pos[0]);
+			cache_get_value_name_float(i, "PosY", pos[1]);
+			cache_get_value_name_float(i, "PosZ", pos[2]);
+			cache_get_value_name_float(i, "PosAngle", pos[3]);
+			cache_get_value_name_int(i, "Color1", color[0]);
+			cache_get_value_name_int(i, "Color2", color[1]);
+			cache_get_value_name_int(i, "Price", price);
+			
+			new newvid = AddCar(model, pos[0], pos[1], pos[2], pos[3], color[0], color[1], 60000, "Dealership", 0, price);
+
+			format(sql, sizeof(sql), "UPDATE SellVehID = %d, Amount = %d FROM dealership WHERE ID = %d", CarInfo[newvid][cID], amount-1, i+1);
+			mysql_query(conn, sql);
+		}
+	}
+}
+public DeleteDealership(id)
+{
+	new sql[500];
+	format(sql, sizeof(sql), "SELECT * FROM dealership WHERE ID = %d", id);
+	mysql_query(conn, sql);
+	new row;
+	cache_get_row_count(row);
+	if (row != 0)
+	{
+		new vehid;
+		cache_get_value_name_int(0, "SellVehID", vehid);
+		if (vehid != 0)
+		{
+			new vid = GetVehicleByCarID(vehid);
+			if (vid != -1)
+				DestroyCar(vid);
+		}
+	}
+	format(sql, sizeof(sql), "DELETE FROM dealership WHERE ID = %d", id);
+	mysql_query(conn, sql);
+	return 1;
+}
 public AddCar(model, Float:x, Float:y, Float:z, Float:a, color1, color2, respawntime, owner[], owned, price)
 {
 	new sql[500];
@@ -2798,6 +2875,7 @@ public AddCar(model, Float:x, Float:y, Float:z, Float:a, color1, color2, respawn
 	CarInfo[vid][cColorTwo] = color2;
 	CarInfo[vid][cValue] = price;
 	CarInfo[vid][cID] = newId;
+	CarInfo[vid][cLock] = 0;
 
 	format(sql, sizeof(sql), "INSERT INTO cartrunk (VehID) VALUES (%d)", newId);
 	mysql_query(conn, sql);
@@ -2811,6 +2889,8 @@ public AddCar(model, Float:x, Float:y, Float:z, Float:a, color1, color2, respawn
 	vehTrunkAmmo[vid][4] = 0;
 	vehTrunkCounter[vid] = 0;
 	vehTrunkArmour[vid] = 0;
+
+	return vid;
 }
 public LoadCar()
 {
@@ -2821,6 +2901,7 @@ public LoadCar()
 	mysql_query(conn, sql);
 	new row;
 	cache_get_row_count(row);
+	printf("%d", row);
 	for (new idx = 0; idx < row; idx++)
 	{
 		new model, Float:pos[4], color[2];
@@ -2841,15 +2922,21 @@ public LoadCar()
 		CarInfo[vid][cColorOne] = color[0];
 		CarInfo[vid][cColorTwo] = color[1];
 
+		cache_get_value_name_int(idx, "Owned", tmp); CarInfo[vid][cOwned] = tmp;
 		cache_get_value_name(idx, "Owner", tmpstr); format(CarInfo[vid][cOwner], 128, tmpstr);
 		cache_get_value_name(idx, "Description", tmpstr); format(CarInfo[vid][cDescription], 128, tmpstr);
+		cache_get_value_name_int(idx, "ID", tmp); CarInfo[vid][cID] = tmp;
 		cache_get_value_name_int(idx, "Value", tmp); CarInfo[vid][cValue] = tmp;
 		cache_get_value_name_int(idx, "License", tmp); CarInfo[vid][cLicense] = tmp;
-		cache_get_value_name_int(idx, "Owned", tmp); CarInfo[vid][cOwned] = tmp;
 		cache_get_value_name_int(idx, "Lock", tmp); CarInfo[vid][cLock] = tmp;
+		cache_get_value_name_int(idx, "Type", tmp); CarInfo[vid][cType] = tmp;
+
+		if (CarInfo[vid][cType] > 0)
+			CarInfo[vid][cID] = -1;
 		
 		printf("CarInfo: %d Owner:%s LicensePlate %s", vid, CarInfo[vid][cOwner], CarInfo[vid][cLicense]);
 	}
+
 	/*new arrCoords[13][64];
 	new strFromFile2[256];
 	new File: file = fopen("cars.cfg", io_read);
@@ -2878,6 +2965,79 @@ public LoadCar()
 		}
 	}*/
 	return 1;
+}
+stock InsertVeh()
+{
+	new type = 0;
+	for (new carid = 0; carid < 184; carid++)
+	{
+		if (IsAHarvest(carid))
+			type = HARVESTVEH;
+
+		if (IsADrugHarvest(carid))
+			type = DHARVESTVEH;
+
+		if (IsASmuggleCar(carid))
+			type = SMUGGLEVEH;
+
+		if (IsASweeper(carid))
+			type = SWEEPERVEH;
+
+		if (IsACopCar(carid))
+			type = COPVEH;
+
+		if (IsAnFbiCar(carid))
+			type = FBIVEH;
+
+		if (IsNgCar(carid))
+			type = NGVEH;
+
+		if (IsAGovernmentCar(carid))
+			type = GORVEH;
+
+		if (IsAHspdCar(carid))
+			type = HSPDVEH;
+
+		if (IsAnAmbulance(carid))
+			type = AMBUVEH;
+
+		if (IsATruck(carid))
+			type = TRUCKVEH;
+
+		if (IsAPizzabike(carid))
+			type = PIZZAVEH;
+
+		if (IsABus(carid))
+			type = BUSVEH;
+
+		if (IsATowcar(carid))
+			type = TOWVEH;
+
+		if (type == 0) continue;
+
+		if (CarInfo[carid][cOwned] == 1) continue;
+
+		format(CarInfo[carid][cOwner], 128, "The State");
+		if (CarInfo[carid][cModel] == 0)
+			CarInfo[carid][cModel] = GetVehicleModel(carid);
+
+		GetVehiclePos(carid, CarInfo[carid][cLocationx], CarInfo[carid][cLocationy], CarInfo[carid][cLocationz]);
+		GetVehicleZAngle(carid, CarInfo[carid][cAngle]);
+
+		new sql[500];
+		format(sql, sizeof(sql), "INSERT INTO car (Owner, Owned, `Model`, Locationx, Locationy, \
+															Locationz, `Angle`, ColorOne, ColorTwo, \
+															Description, `Value`, License, `Lock`, Type) \
+												VALUES ('%s', %d, %d, %f, %f, %f, %f, %d, %d, '%s', %d, %d, %d, %d)",
+												CarInfo[carid][cOwner], CarInfo[carid][cOwned],
+												CarInfo[carid][cModel], CarInfo[carid][cLocationx],
+												CarInfo[carid][cLocationy], CarInfo[carid][cLocationz],
+												CarInfo[carid][cAngle], CarInfo[carid][cColorOne],
+												CarInfo[carid][cColorTwo], CarInfo[carid][cDescription],
+												CarInfo[carid][cValue], CarInfo[carid][cLicense], CarInfo[carid][cLock], type);
+		mysql_query(conn, sql);
+		printf("Insert");
+	}
 }
 public LoadProperty()
 {
@@ -3251,11 +3411,11 @@ stock GetVehicleIDFromSQLID(sqlid)
 public LoadTrunk()
 {
 	new tmp, Float:tmpf, sql[500];
-	format(sql, sizeof(sql), "SELECT * FROM car");
+	format(sql, sizeof(sql), "SELECT * FROM cartrunk");
 	mysql_query(conn, sql);
 	new row;
 	cache_get_row_count(row);
-	for (new idx = 1; idx < row + 1; idx++)
+	for (new idx = 0; idx < row; idx++)
 	{
 		new vsqlid;
 		cache_get_value_name_int(idx, "VehID", vsqlid);
@@ -4032,18 +4192,233 @@ public IsAtBar(playerid)
 	return 0;
 }
 
+//public IsABoat(carid)
+//{
+//	if (carid == 10 || carid == 11)
+//	{
+//		return 1;
+//	}
+//	return 0;
+//}
+//
+//public IsAHarvest(carid)
+//{
+//	if (carid == 155 || carid == 156 || carid == 157 || carid == 158)
+//	{
+//		return 1;
+//	}
+//	return 0;
+//}
+//
+//public IsADrugHarvest(carid)
+//{
+//	if (carid == 159 || carid == 160 || carid == 161 || carid == 162)
+//	{
+//		return 1;
+//	}
+//	return 0;
+//}
+//
+//public IsASmuggleCar(carid)
+//{
+//	if (carid == 163 || carid == 164 || carid == 165)
+//	{
+//		return 1;
+//	}
+//	return 0;
+//}
+//
+//public IsASweeper(carid)
+//{
+//	if ((carid >= 169) && (carid <= 171))
+//	{
+//		return 1;
+//	}
+//	return 0;
+//}
+//
+//public IsAPlane(carid)
+//{
+//	if (carid == 38 || carid == 55 || carid == 73 || carid == 167 || carid == 168)
+//	{
+//		return 1;
+//	}
+//	return 0;
+//}
+//
+//public IsACopCar(carid)
+//{
+//	if ((carid >= 16) && (carid <= 38))
+//	{
+//		return 1;
+//	}
+//	return 0;
+//}
+//
+//public IsAnFbiCar(carid)
+//{
+//	if ((carid >= 39) && (carid <= 43))
+//	{
+//		return 1;
+//	}
+//	return 0;
+//}
+//
+//public IsNgCar(carid)
+//{
+//	if ((carid >= 1) && (carid <= 11))
+//	{
+//		return 1;
+//	}
+//	return 0;
+//}
+//
+//public IsAGovernmentCar(carid)
+//{
+//	if ((carid >= 12) && (carid <= 15) || carid == 168)
+//	{
+//		return 1;
+//	}
+//	return 0;
+//}
+//
+//public IsAHspdCar(carid)
+//{
+//	if ((carid >= 44) && (carid <= 51))
+//	{
+//		return 1;
+//	}
+//	return 0;
+//}
+//
+//public IsATank(carid)
+//{
+//	if (carid == 5)
+//	{
+//		return 1;
+//	}
+//	return 0;
+//}
+//
+//public IsAnAmbulance(carid)
+//{
+//	if ((carid >= 52) && (carid <= 55))
+//	{
+//		return 1;
+//	}
+//	return 0;
+//}
+//
+//public IsATruck(carid)
+//{
+//	if (carid >= 108 && carid <= 111)
+//	{
+//		return 1;
+//	}
+//	return 0;
+//}
+//
+//public IsAPizzabike(carid)
+//{
+//	if (carid >= 102 && carid <= 107)
+//	{
+//		return 1;
+//	}
+//	return 0;
+//}
+//
+//public IsABus(carid)
+//{
+//	if (carid == 59 || carid == 60)
+//	{
+//		return 1;
+//	}
+//	return 0;
+//}
+//
+//public IsATowcar(carid)
+//{
+//	if (carid >= 74 && carid <= 77)
+//	{
+//		return 1;
+//	}
+//	return 0;
+//}
+//
+///*public IsAGangCar(carid)
+//{
+//if(carid >= 160 && carid <= 163)
+//{
+//return 1;
+//}
+//return 0;
+//}
+//
+//public IsAGangCar2(carid)
+//{
+//if(carid >= 164 && carid <= 167)
+//{
+//return 1;
+//}
+//return 0;
+//}
+//
+//public IsAGangCar3(carid)
+//{
+//if(carid >= 189 && carid <= 191)
+//{
+//return 1;
+//}
+//return 0;
+//}
+//
+//public IsAGangCar4(carid)
+//{
+//if(carid >= 155 && carid <= 159)
+//{
+//return 1;
+//}
+//return 0;
+//}
+//
+//public IsAGangCar5(carid)
+//{
+//if(carid >= 168 && carid <= 171)
+//{
+//return 1;
+//}
+//return 0;
+//}*/
+//
+//public IsABike(carid)
+//{
+//	if ((carid >= 102 && carid <= 107) || (carid >= 112 && carid <= 130) || (carid >= 262 && carid <= 267))
+//	{
+//		return 1;
+//	}
+//	return 0;
+//}
+//
+//public IsAOBike(carid)
+//{
+//	if ((carid >= 237 && carid <= 267))
+//	{
+//		return 1;
+//	}
+//	return 0;
+//}
+
 public IsABoat(carid)
 {
-	if(carid == 10 || carid == 11)
-	{
+	new model = GetVehicleModel(carid);
+	if (model == 472 || model == 473 || model == 493 || model == 595 || model == 484 || model == 430 || model == 453 || model == 452 || model == 446 || model == 454)
 		return 1;
-	}
 	return 0;
 }
 
 public IsAHarvest(carid)
 {
-	if(carid == 155 || carid == 156 || carid == 157 || carid == 158)
+	if (CarInfo[carid][cType] == HARVESTVEH)
 	{
 		return 1;
 	}
@@ -4052,7 +4427,7 @@ public IsAHarvest(carid)
 
 public IsADrugHarvest(carid)
 {
-	if(carid == 159 || carid == 160 || carid == 161 || carid == 162)
+	if (CarInfo[carid][cType] == DHARVESTVEH)
 	{
 		return 1;
 	}
@@ -4061,7 +4436,7 @@ public IsADrugHarvest(carid)
 
 public IsASmuggleCar(carid)
 {
-	if(carid == 163 || carid == 164 || carid == 165)
+	if (CarInfo[carid][cType] == SMUGGLEVEH)
 	{
 		return 1;
 	}
@@ -4070,7 +4445,7 @@ public IsASmuggleCar(carid)
 
 public IsASweeper(carid)
 {
-	if((carid >= 169) && (carid <= 171))
+	if (CarInfo[carid][cType] == SWEEPERVEH)
 	{
 	    return 1;
 	}
@@ -4079,7 +4454,7 @@ public IsASweeper(carid)
 
 public IsAPlane(carid)
 {
-	if(carid == 38 || carid == 55 || carid == 73 || carid == 167 || carid == 168)
+	if (GetVehicleModel(carid) == 592 || GetVehicleModel(carid) == 577 || GetVehicleModel(carid) == 511 || GetVehicleModel(carid) == 512 || GetVehicleModel(carid) == 593 || GetVehicleModel(carid) == 520 || GetVehicleModel(carid) == 553 || GetVehicleModel(carid) == 476 || GetVehicleModel(carid) == 519 || GetVehicleModel(carid) == 460 || GetVehicleModel(carid) == 513)
 	{
 		return 1;
 	}
@@ -4088,7 +4463,7 @@ public IsAPlane(carid)
 
 public IsACopCar(carid)
 {
-	if((carid >= 16) && (carid <= 38))
+	if (CarInfo[carid][cType] == COPVEH)
 	{
 		return 1;
 	}
@@ -4097,7 +4472,7 @@ public IsACopCar(carid)
 
 public IsAnFbiCar(carid)
 {
-	if((carid >= 39) && (carid <= 43))
+	if (CarInfo[carid][cType] == FBIVEH)
 	{
 	    return 1;
 	}
@@ -4106,7 +4481,7 @@ public IsAnFbiCar(carid)
 
 public IsNgCar(carid)
 {
-	if((carid >= 1) && (carid <= 11))
+	if (CarInfo[carid][cType] == NGVEH)
 	{
 	    return 1;
 	}
@@ -4115,7 +4490,7 @@ public IsNgCar(carid)
 
 public IsAGovernmentCar(carid)
 {
-	if((carid >= 12) && (carid <= 15) || carid == 168)
+	if (CarInfo[carid][cType] == GORVEH)
 	{
 		return 1;
 	}
@@ -4124,7 +4499,7 @@ public IsAGovernmentCar(carid)
 
 public IsAHspdCar(carid)
 {
-	if((carid >= 44) && (carid <= 51))
+	if (CarInfo[carid][cType] == HSPDVEH)
 	{
 	    return 1;
 	}
@@ -4133,16 +4508,15 @@ public IsAHspdCar(carid)
 
 public IsATank(carid)
 {
-	if(carid==5)
-	{
+	if (GetVehicleModel(carid) == 432)
 		return 1;
-	}
+
 	return 0;
 }
 
 public IsAnAmbulance(carid)
 {
-	if((carid >= 52) && (carid <= 55))
+	if (CarInfo[carid][cType] == AMBUVEH)
 	{
 		return 1;
 	}
@@ -4151,7 +4525,7 @@ public IsAnAmbulance(carid)
 
 public IsATruck(carid)
 {
-	if(carid >= 108 && carid <= 111)
+	if (CarInfo[carid][cType] == TRUCKVEH)
 	{
 		return 1;
 	}
@@ -4160,7 +4534,7 @@ public IsATruck(carid)
 
 public IsAPizzabike(carid)
 {
-	if(carid >= 102 && carid <= 107)
+	if (CarInfo[carid][cType] == PIZZAVEH)
 	{
 		return 1;
 	}
@@ -4169,7 +4543,7 @@ public IsAPizzabike(carid)
 
 public IsABus(carid)
 {
-	if(carid == 59 || carid == 60)
+	if (CarInfo[carid][cType] == BUSVEH)
 	{
 		return 1;
 	}
@@ -4178,7 +4552,7 @@ public IsABus(carid)
 
 public IsATowcar(carid)
 {
-	if(carid >= 74 && carid <= 77)
+	if (CarInfo[carid][cType] == TOWVEH)
 	{
 		return 1;
 	}
@@ -4232,21 +4606,22 @@ if(carid >= 168 && carid <= 171)
 
 public IsABike(carid)
 {
-if((carid >= 102 && carid <= 107) || (carid >= 112 && carid <= 130) || (carid >= 262 && carid <= 267))
-	{
+	new vmd = GetVehicleModel(carid);
+	if (vmd == 448 || vmd == 461 || vmd == 462 || vmd == 463 || vmd == 468
+		|| vmd == 471 || vmd == 481 || vmd == 509 || vmd == 510 || vmd == 521
+		|| vmd == 522 || vmd == 523 || vmd == 581 || vmd == 586)
 		return 1;
-	}
 	return 0;
 }
 
-public IsAOBike(carid)
-{
-if((carid >= 237 && carid <= 267))
-	{
-		return 1;
-	}
-	return 0;
-}
+//public IsAOBike(carid)
+//{
+//if((carid >= 237 && carid <= 267))
+//	{
+//		return 1;
+//	}
+//	return 0;
+//}
 
 public JoinChannel(playerid, number, line[])
 {
@@ -7531,8 +7906,8 @@ public PayDay()
 		    {
 			    if(MoneyMessage[i]==1)
 				{
-				    SendClientMessage(i, COLOR_LIGHTRED, "You failed to pay your debt, Jail time.");
-				    GameTextForPlayer(i, "~r~Busted!", 2000, 1);
+				    SendClientMessage(i, COLOR_LIGHTRED, "Ban da bi bo tu vi thieu no tien chinh phu.");
+				    GameTextForPlayer(i, "~r~Bi Bat!", 2000, 1);
 				    SetPlayerInterior(i, 6);
 				    PlayerInfo[i][pInt] = 6;
 			   		SetPlayerPos(i, 264.6288,77.5742,1001.0391);
@@ -7541,7 +7916,7 @@ public PayDay()
 		            SafeResetPlayerMoney(i);
 					WantedPoints[i] = 0;
 					PlayerInfo[i][pJailTime] = 240;
-					format(string, sizeof(string), "You are jailed for %d seconds.   Bail: Unable", PlayerInfo[i][pJailTime]);
+					format(string, sizeof(string), "Ban da bi bo tu %d giay.", PlayerInfo[i][pJailTime]);
 					SendClientMessage(i, COLOR_WHITE, string);
 				}
 				new playername2[MAX_PLAYER_NAME];
@@ -7558,7 +7933,7 @@ public PayDay()
 					else if(rent > GetPlayerMoney(i))
 					{
 						PlayerInfo[i][pPhousekey] = 255;
-						SendClientMessage(i, COLOR_WHITE, "You have been evicted.");
+						SendClientMessage(i, COLOR_WHITE, "Ban da bi duoi khoi nha.");
 						rent = 0;
 					}
 					HouseInfo[key][hTakings] = HouseInfo[key][hTakings]+rent;
@@ -7602,25 +7977,25 @@ public PayDay()
 					PlayerPlayMusic(i);
 					PlayerInfo[i][pAccount] = account+interest;
 					SendClientMessage(i, COLOR_GREEN, "|___ BANK STATMENT ___|");
-					format(string, sizeof(string), "  Paycheck: $%d   Tax Money: -$%d", checks, TaxValue);
+					format(string, sizeof(string), "  Paycheck: $%d   Thue: -$%d", checks, TaxValue);
 					SendClientMessage(i, COLOR_WHITE, string);
 					if(PlayerInfo[i][pPhousekey] != 255 || PlayerInfo[i][pPbiskey] != 255)
 					{
-					    format(string, sizeof(string), "  Electricity Bill: -$%d", ebill);
+					    format(string, sizeof(string), "  Tien Dien (Nha): -$%d", ebill);
 						SendClientMessage(i, COLOR_GRAD1, string);
 					}
-					format(string, sizeof(string), "  Balance: $%d", account - checks);
+					format(string, sizeof(string), "  So Du: $%d", account - checks);
 					SendClientMessage(i, COLOR_WHITE, string);
-					format(string, sizeof(string), "  Interest Rate: 0.%d percent",tmpintrate);
+					format(string, sizeof(string), "  Lai Suat: 0.%d%",tmpintrate);
 					SendClientMessage(i, COLOR_GRAD2, string);
-					format(string, sizeof(string), "  Interest Gained $%d", interest);
+					format(string, sizeof(string), "  Lai: $%d", interest);
 					SendClientMessage(i, COLOR_GRAD3, string);
 					SendClientMessage(i, COLOR_GREEN, "|--------------------------------------|");
-					format(string, sizeof(string), "  New Balance: $%d", PlayerInfo[i][pAccount]);
+					format(string, sizeof(string), "  So Du Moi: $%d", PlayerInfo[i][pAccount]);
 					SendClientMessage(i, COLOR_GRAD5, string);
-					format(string, sizeof(string), "  Rent: -$%d", rent);
+					format(string, sizeof(string), "  Thue Nha: -$%d", rent);
 					SendClientMessage(i, COLOR_GRAD5, string);
-					format(string, sizeof(string), "~y~PayDay~n~~w~Check paid into your account");
+					format(string, sizeof(string), "~y~PayDay~n~~w~Toan bo khoang tien da duoc xu ly");
 					GameTextForPlayer(i, string, 5000, 1);
 					rent = 0;
 					PlayerInfo[i][pPayDay] = 0;
@@ -7655,6 +8030,7 @@ public PayDay()
 			}
 		}
 	}
+	UpdateDealership();
 	SaveAccounts();
 	Checkprop();
 	return 1;
@@ -7987,7 +8363,7 @@ public OnPropUpdate()
 
 	for (new idx = 0; idx < MAX_VEHICLES; idx++)
 	{
-		if (CarInfo[idx][cID] == -1) continue;
+		if (CarInfo[idx][cID] == -1 || CarInfo[idx][cOwned] == -1) continue;
 		format(sql, sizeof(sql), "UPDATE car SET \
 				Owner = '%s',\
 				Owned = %d,\
@@ -8001,7 +8377,8 @@ public OnPropUpdate()
 				Description = '%s',\
 				`Value` = %d,\
 				License = %d,\
-				`Lock` = %d \
+				`Lock` = %d,\
+				Type = %d \
 				WHERE ID = %d",
 				CarInfo[idx][cOwner],
 				CarInfo[idx][cOwned],
@@ -8016,6 +8393,7 @@ public OnPropUpdate()
 				CarInfo[idx][cValue],
 				CarInfo[idx][cLicense],
 				CarInfo[idx][cLock],
+				CarInfo[idx][cType],
 				CarInfo[idx][cID]);
 		mysql_query(conn, sql);
 	}			
