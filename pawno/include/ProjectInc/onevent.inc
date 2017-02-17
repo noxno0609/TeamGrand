@@ -1341,7 +1341,7 @@ public delayfaildd(playerid, killerid)
 public OnPlayerDeath(playerid, killerid, reason)
 {
 	//printf("Dying: %d", Dying[playerid]);
-	if (Dying[playerid] == 0)
+	if (Dying[playerid] == 0 && PlayerInfo[playerid][pJail] == 0)
 	{
 		Dying[playerid] = 1;
 		DyingTimeOut[playerid] = 30;
@@ -4170,7 +4170,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 			}
 		}
 	}
-	if (newstate == PLAYER_STATE_WASTED && Dying[playerid] == 1)
+	if (newstate == PLAYER_STATE_WASTED)
 	{
 		if (WantedLevel[playerid] >= 1)
 		{
@@ -4183,7 +4183,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 					if (gTeam[i] == 2 && CrimInRange(30.0, playerid, i))
 					{
 						count = 1;
-						format(string, sizeof(string), "~w~Doi tuong da bi ha guc~r~Killed~n~Bonus~g~$%d", price);
+						format(string, sizeof(string), "~w~Doi tuong da bi ha guc~r~Tien~n~Thuong~g~$%d", price);
 						GameTextForPlayer(i, string, 5000, 1);
 						//ConsumingMoney[i] = 1;
 						SafeGivePlayerMoney(i, price / 2);
@@ -19739,17 +19739,17 @@ CMD:makeleader(playerid, params[])
 						gTeam[para1] = 15;
 						PlayerInfo[para1][pTeam] = 15;
 					}
-
-					SetPlayerSkin(para1, PlayerInfo[para1][pChar]);
-
+					
 					if (level == 0)
-					{
 						PlayerInfo[para1][pRank] = 0;
-					}
 					else
-					{
 						PlayerInfo[para1][pRank] = 6;
+
+					if (PlayerInfo[para1][pChar] == 0)
+					{
+						SetPlayerSkin(para1, PlayerInfo[para1][pModel]);
 					}
+					else SetPlayerSkin(para1, PlayerInfo[para1][pChar]);
 				}
 			}//not connected
 		}

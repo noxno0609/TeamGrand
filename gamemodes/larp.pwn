@@ -5087,7 +5087,8 @@ public SetPlayerSpawn(playerid)
 {
 	if(IsPlayerConnected(playerid))
 	{
-	    SetPlayerSkin(playerid, PlayerInfo[playerid][pChar]);
+		if (PlayerInfo[playerid][pChar] > 0) SetPlayerSkin(playerid, PlayerInfo[playerid][pChar]);
+		else SetPlayerSkin(playerid, PlayerInfo[playerid][pModel]);
 		 if (Spectating[playerid] == 1)
 		 {
 			 SetPlayerPos(playerid, GetPVarFloat(playerid, "SX"), GetPVarFloat(playerid, "SY"), GetPVarFloat(playerid, "SZ"));
@@ -5143,6 +5144,7 @@ public SetPlayerSpawn(playerid)
 		}
 		if(PlayerInfo[playerid][pJailed] == 1)
 		{
+			SetPlayerSkin(playerid, 50);
 		    SetPlayerInterior(playerid, 6);
 		    PlayerInfo[playerid][pInt] = 6;
 			SetPlayerPos(playerid,264.6288,77.5742,1001.0391);
@@ -5151,6 +5153,7 @@ public SetPlayerSpawn(playerid)
 		}
 		if(PlayerInfo[playerid][pJailed] == 2)
 		{
+			SetPlayerSkin(playerid, 50);
 		    SetPlayerInterior(playerid, 0);
 		    PlayerInfo[playerid][pInt] = 0;
 			SetPlayerPos(playerid,268.5777,1857.9351,9.8133);
@@ -5889,9 +5892,9 @@ public SetPlayerFree(playerid,declare,reason[])
 			{
 			    if(PlayerInfo[i][pMember] == 1||PlayerInfo[i][pLeader] == 1)
 			    {
-					format(crbjstore, sizeof(crbjstore), "HQ: All Units Officer %s Has Completed Assignment",turner);
+					format(crbjstore, sizeof(crbjstore), "HQ: Tat ca don vi - Dong chi %s da hoan thanh nhiem vu",turner);
 					SendClientMessage(i, COLOR_DBLUE, crbjstore);
-					format(crbjstore, sizeof(crbjstore), "HQ: %s Has Been Processed, %s",turned,reason);
+					format(crbjstore, sizeof(crbjstore), "HQ: Doi tuong %s da duoc xu ly, toi danh: %s",turned,reason);
 					SendClientMessage(i, COLOR_DBLUE, crbjstore);
 				}
 			}
