@@ -664,6 +664,7 @@ public OnGameModeInit()
 }
 public OnPlayerConnect(playerid)
 {
+	CheckBan(playerid);
 	new plname[MAX_PLAYER_NAME];
 	GetPlayerName(playerid, plname, sizeof(plname));
 	if (Security != 0)
@@ -11385,7 +11386,7 @@ CMD:roadunblockall(playerid, params[])
 	}
 	return 1;
 }
-CMD:tratien(playerid, params[]) { return cmd_pay(playerid, params); }
+CMD:duatien(playerid, params[]) { return cmd_pay(playerid, params); }
 CMD:pay(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -11465,7 +11466,7 @@ CMD:pay(playerid, params[])
 	}
 	return 1;
 }
-CMD:tuthie(playerid, params[]) { return cmd_charity(playerid, params); }
+CMD:tuthien(playerid, params[]) { return cmd_charity(playerid, params); }
 CMD:charity(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -14340,7 +14341,7 @@ CMD:withdraw(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
-		if (PlayerInfo[playerid][pLocal] == 103 || PlayerToPoint(1.5, playerid, 1346.5016, -1758.7649, 13.5156) || PlayerToPoint(1.5, playerid, 1592.7152, -2335.3748, 13.5400) || PlayerToPoint(1.5, playerid, 2308.4612, -1634.4176, 14.8270) || PlayerToPoint(1.5, playerid, 2865.9014, -1415.4203, 11.0061) || PlayerToPoint(1.5, playerid, 2404.5913, -1229.8973, 23.8301) || PlayerToPoint(1.5, playerid, 1172.5912, -1328.4365, 15.4034))
+		if (PlayerInfo[playerid][pLocal] == 103 || IsAtATM(playerid))
 		{
 			new cashdeposit, string[256];
 			if(sscanf(params, "i", cashdeposit))
@@ -14375,7 +14376,7 @@ CMD:bank(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
-		if (PlayerInfo[playerid][pLocal] != 103)
+		if (PlayerInfo[playerid][pLocal] != 103 && !IsAtATM(playerid))
 		{
 			SendClientMessage(playerid, COLOR_GREY, "   Ban khong co o ngan hang !");
 			return 1;
@@ -14414,7 +14415,7 @@ CMD:balance(playerid, params[])
 	if (IsPlayerConnected(playerid))
 	{
 		new string[256];
-		if (PlayerInfo[playerid][pLocal] == 103 || PlayerToPoint(1.5, playerid, 1346.5016, -1758.7649, 13.5156) || PlayerToPoint(1.5, playerid, 1592.7152, -2335.3748, 13.5400) || PlayerToPoint(1.5, playerid, 2308.4612, -1634.4176, 14.8270) || PlayerToPoint(1.5, playerid, 2865.9014, -1415.4203, 11.0061) || PlayerToPoint(1.5, playerid, 2404.5913, -1229.8973, 23.8301) || PlayerToPoint(1.5, playerid, 1172.5912, -1328.4365, 15.4034))
+		if (PlayerInfo[playerid][pLocal] == 103 || IsAtATM(playerid))
 		{
 			format(string, sizeof(string), "  Ban co $%d trong tai khoan.", PlayerInfo[playerid][pAccount]);
 			SendClientMessage(playerid, COLOR_YELLOW, string);
@@ -14456,8 +14457,8 @@ CMD:coin(playerid, params[])
 		new coin = random(2) + 1;
 		
 		new coinname[20];
-		if (coin == 1) { coinname = "head"; }
-		else { coinname = "tail"; }
+		if (coin == 1) { coinname = "Tien"; }
+		else { coinname = "Hinh"; }
 		format(string, sizeof(string), "*** %s tung dong xu va xuat hien mat %s", GN(playerid), coinname);
 		ProxDetector(10.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 	}
@@ -21214,7 +21215,7 @@ CMD:changename(playerid, params[])
 	}
 	return 1;
 }
-CMD:KickEx(playerid, params[])
+CMD:kick(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
@@ -21307,84 +21308,244 @@ CMD:kickres(playerid, params[])
 	}
 	return 1;
 }
-CMD:unbanip(playerid, params[])
-{
-	if (PlayerInfo[playerid][pAdmin] >= 3)
-	{
-		new giveplayerid, string[255];
-		if (sscanf(params, "u", giveplayerid))
-		{
-			SendClientMessage(playerid, COLOR_GRAD1, "Su dung: /unbanip [players ip]");
-			return 1;
-		}
-		format(string, sizeof(string), "unbanip %s", GN(giveplayerid));
-		SendRconCommand(string);
-		SendRconCommand("reloadbans");
 
-		format(string, 256, "AdmWarning: %s da unban IP %s", GN(playerid), GN(giveplayerid));
-		ABroadCast(COLOR_YELLOW, string, 1);
-	}
-	return 1;
-}
-CMD:unban(playerid, params[])
-{
-	if ((IsPlayerAdmin(playerid)) || PlayerInfo[playerid][pAdmin] >= 3)
-	{
-		new tmp[255], string[255];
-		if (sscanf(params, "s[255]", tmp))
-		{
-			SendClientMessage(playerid, COLOR_WHITE, "Su dung: /unban [PlayerName_PlayerLastName]");
-			return 1;
-		}
-		format(string, 256, "AdmWarning: %s da unbann %s", GN(playerid), tmp);
-		ABroadCast(COLOR_YELLOW, string, 1);
-		format(string, 256, "AdmWarning: %s da unbanned %s", GN(playerid), tmp);
-		printf(string);
-		format(string, sizeof(string), "%s.ini", tmp);
-		fremove(string);
-		SendClientMessage(playerid, COLOR_WHITE, "UNBANNED");
-		SendRconCommand(string);
-		SendRconCommand("reloadbans");
-
-	}
-	return 1;
-}
 CMD:ban(playerid, params[])
 {
-	if (IsPlayerConnected(playerid))
+	if (PlayerInfo[playerid][pAdmin] < 3) return SCM(playerid, COLOR_GREY, "Admin level 3 tro len moi co the thuc hien.");
+	new banobject[50], reason[50];
+	if (sscanf(params, "s[50]s[50]", banobject, reason)) return SCM(playerid, COLOR_GREY, "Su dung: /ban [playername/ip] [ly do]");
+	if (IsContainChar(banobject, '.') == 1)
 	{
-		new giveplayerid, result[255], string[255];
-		if (sscanf(params, "us[255]", giveplayerid, result))
+		if (PlayerInfo[playerid][pAdmin] < 1337) return SCM(playerid, COLOR_GREY, "Admin level 1337 moi co the ban IP.");
+		if (!IsValidIP(banobject)) return SCM(playerid, COLOR_GREY, "IP khong hop le.");
+		new str[128];
+		BanIP(banobject);
+		format(str, sizeof(str), "AdmCMD: %s da ban IP %s. Ly do: %s", GN(playerid), banobject, reason);
+		SendAdminMessage(COLOR_LIGHTRED, str);
+	}
+	else BanPlayer(playerid, banobject, reason);
+	return 1;
+}
+ CMD:unban(playerid, params[])
+ {
+	if (PlayerInfo[playerid][pAdmin] < 3) return SCM(playerid, COLOR_GREY, "Admin level 3 tro len moi co the thuc hien.");
+	new banobject[50];
+	if (sscanf(params, "s[50]", banobject)) return SCM(playerid, COLOR_GREY, "Su dung: /unban [playername/ip]");
+	if (IsContainChar(banobject, '.') == 1)
+	{
+		if (PlayerInfo[playerid][pAdmin] < 1337) return SCM(playerid, COLOR_GREY, "Admin level 1337 moi co the ban IP.");
+		if (!IsValidIP(banobject)) return SCM(playerid, COLOR_GREY, "IP khong hop le.");
+		new str[128];
+		
+		if (UnBanIP(banobject))
 		{
-			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /ban [playerid/PartOfName] [Ly do]");
-			return 1;
+			format(str, sizeof(str), "AdmCMD: %s da unban IP %s.", GN(playerid), banobject);
+			SendAdminMessage(COLOR_LIGHTRED, str);
 		}
-		if (PlayerInfo[playerid][pAdmin] >= 1)
+		else SCM(playerid, COLOR_GREY, "IP nay khong bi banned!");
+	}
+	else UnBanPlayer(playerid, banobject);
+	return 1;
+ }
+stock fdeleteline(filename[], line)
+{
+	new count, string[256], File:file, File:temp;
+
+	file = fopen(filename, io_read);
+	temp = fopen("tmpfile.tmp", io_write);
+
+	while (fread(file, string))
+	if (++count != line)
+		fwrite(temp, string);
+
+	fclose(file);
+	fclose(temp);
+
+	file = fopen(filename, io_write);
+	temp = fopen("tmpfile.tmp", io_read);
+
+	while (fread(temp, string))
+		fwrite(file, string);
+
+	fclose(file);
+	fclose(temp);
+	fremove("tmpfile.tmp");
+}
+stock GetPlayerIdFromName(playername[])
+{
+	for (new i = 0; i <= MAX_PLAYERS; i++)
+	{
+		if (IsPlayerConnected(i))
 		{
-			if (IsPlayerConnected(giveplayerid))
+			if (strcmp(GLN(i), playername, true) == 0)
 			{
-				if (giveplayerid != INVALID_PLAYER_ID)
-				{
-					new year, month, day;
-					getdate(year, month, day);
-					format(string, sizeof(string), "AdmCMD: %s da bi BAN boi %s, ly do: %s (%d-%d-%d)", GN(giveplayerid), GN(playerid), (result), month, day, year);
-					BanLog(string);
-					format(string, sizeof(string), "AdmCMD: %s da bi BAN boi %s, ly do: %s", GN(giveplayerid), GN(playerid), (result));
-					BroadCast(COLOR_LIGHTRED, string);
-					PlayerInfo[giveplayerid][pLocked] = 1;
-					Ban(giveplayerid);
-					return 1;
-				}
-			}//not connected
+				return i;
+			}
+		}
+	}
+	return INVALID_PLAYER_ID;
+}
+stock BanPlayer(playerid, name[], reason[])
+{
+	SCM(playerid, COLOR_WHITE, "[Ban] Kiem tra tai khoan...");
+	new sql[400];
+	format(sql, sizeof(sql), "UPDATE user SET Banned = 1 WHERE Name = '%s'", name);
+	mysql_tquery(conn, sql, "BanCheck", "issi", playerid, name, reason, 0);
+}
+stock UnBanPlayer(playerid, name[])
+{
+	SCM(playerid, COLOR_WHITE, "[UnBan] Kiem tra tai khoan...");
+	new sql[400];
+	format(sql, sizeof(sql), "UPDATE user SET Banned = 0 WHERE Name = '%s'", name);
+	mysql_tquery(conn, sql, "BanCheck", "issi", playerid, name, "", 1);
+}
+forward BanCheck(playerid, name[], reason[], type);
+public BanCheck(playerid, name[], reason[], type)
+{
+	new countresult = cache_affected_rows();
+	if (countresult != -1)
+	{
+		if (type == 0)
+		{
+			new str[128];
+			format(str, sizeof(str), "AdmCMD: %s da ban tai khoan %s. Ly do: %s", GN(playerid), name, reason);
+			BroadCast(COLOR_LIGHTRED, str);
+
+			new pid = GetPlayerIdFromName(name);
+			if (pid != INVALID_PLAYER_ID)
+				KickEx(pid);
 		}
 		else
 		{
-			format(string, sizeof(string), "   %d , la nguoi choi khong hop le.", giveplayerid);
-			SendClientMessage(playerid, COLOR_GRAD1, string);
+			new str[128];
+			format(str, sizeof(str), "AdmCMD: %s da unban tai khoan %s", GN(playerid), name);
+			BroadCast(COLOR_LIGHTRED, str);
+		}
+	}
+	else
+	{
+		if (type == 1) SCM(playerid, COLOR_RED, "[Ban] Ban that bai! Khong tim thay tai khoan.");
+		else SCM(playerid, COLOR_RED, "[UnBan] Ban that bai! Khong tim thay tai khoan.");
+	}
+}
+stock BanIP(IP[])
+{
+	new string[24];
+	new File:ban = fopen("ban.cfg", io_append);
+	format(string, sizeof(string), "%s\r\n", IP);
+	fwrite(ban, string);
+	fclose(ban);
+	for (new i = 0; i<MAX_PLAYERS; i++)
+	{
+		if (strcmp(IP, GetIp(i), true) == 0)
+		{
+			new str[128];
+			format(str, sizeof(str), "IP cua ban da bi khoa, ban se bi kick khoi server.");
+			SCM(i, COLOR_RED, str);
+			KickEx(i);
 		}
 	}
 	return 1;
 }
+stock UnBanIP(IP[])
+{
+	new str[128];
+	new File:ban = fopen("ban.cfg", io_read);
+	new idx = 1, done = 0;
+	while (fread(ban, str))
+	{
+		if (!strcmp(IP, str, true))
+		{
+			fdeleteline("ban.cfg", idx);
+			done = 1;
+		}
+		idx++;
+	}
+	fclose(ban);
+	return done;
+}
+stock CheckBan(playerid)
+{
+	if (CheckBanPlayer(GLN(playerid)) == 1)
+	{
+		SCM(playerid, COLOR_RED, "Tai khoan da bi banned.");
+		KickEx(playerid);
+	}
+	if (CheckBanIP(GetIp(playerid)))
+	{
+		SCM(playerid, COLOR_RED, "IP cua ban da bi banned.");
+		KickEx(playerid);
+	}
+}
+stock CheckBanPlayer(name[])
+{
+	new sql[400];
+	format(sql, sizeof(sql), "SELECT Banned FROM user WHERE Name = '%s'", name);
+	mysql_query(conn, sql);
+	new row;
+	cache_get_row_count(row);
+	if (row != 0)
+	{
+		new isbanned = 0;
+		cache_get_value_name_int(0, "Banned", isbanned);
+		return isbanned;
+	}
+	return 0;
+}
+stock CheckBanIP(ip[])
+{
+	new string[128];
+	new File: file = fopen("ban.cfg", io_read);
+	while (fread(file, string))
+	{
+		new readip[128];
+		format(readip, sizeof(readip), string);
+		Replace(readip, "\r\n", "");
+		if (!strcmp(ip, readip, true))
+		{
+			fclose(file);
+			return 1;
+		}
+	}
+	fclose(file);
+	return 0;
+}
+//CMD:ban(playerid, params[])
+//{
+//	if (IsPlayerConnected(playerid))
+//	{
+//		new giveplayerid, result[255], string[255];
+//		if (sscanf(params, "us[255]", giveplayerid, result))
+//		{
+//			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /ban [playerid/PartOfName] [Ly do]");
+//			return 1;
+//		}
+//		if (PlayerInfo[playerid][pAdmin] >= 1)
+//		{
+//			if (IsPlayerConnected(giveplayerid))
+//			{
+//				if (giveplayerid != INVALID_PLAYER_ID)
+//				{
+//					new year, month, day;
+//					getdate(year, month, day);
+//					format(string, sizeof(string), "AdmCMD: %s da bi BAN boi %s, ly do: %s (%d-%d-%d)", GN(giveplayerid), GN(playerid), (result), month, day, year);
+//					BanLog(string);
+//					format(string, sizeof(string), "AdmCMD: %s da bi BAN boi %s, ly do: %s", GN(giveplayerid), GN(playerid), (result));
+//					BroadCast(COLOR_LIGHTRED, string);
+//					PlayerInfo[giveplayerid][pLocked] = 1;
+//					Ban(giveplayerid);
+//					return 1;
+//				}
+//			}//not connected
+//		}
+//		else
+//		{
+//			format(string, sizeof(string), "   %d , la nguoi choi khong hop le.", giveplayerid);
+//			SendClientMessage(playerid, COLOR_GRAD1, string);
+//		}
+//	}
+//	return 1;
+//}
 CMD:freeze(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))

@@ -2826,7 +2826,7 @@ public UpdateDealership()
 			
 			new newvid = AddCar(model, pos[0], pos[1], pos[2], pos[3], color[0], color[1], 60000, "Dealership", 0, price);
 
-			format(sql, sizeof(sql), "UPDATE SellVehID = %d, Amount = %d FROM dealership WHERE ID = %d", CarInfo[newvid][cID], amount-1, i+1);
+			format(sql, sizeof(sql), "UPDATE SellVehID = %d, `Amount` = %d FROM dealership WHERE ID = %d", CarInfo[newvid][cID], amount-1, i+1);
 			mysql_query(conn, sql);
 		}
 	}
@@ -3191,6 +3191,7 @@ public LoadBizz()
 
 		new idx;
 		cache_get_value_name_int(0, "ID", idx);
+		idx -= 1;
 		cache_get_value_name_int(0, "Owned", tmp); BizzInfo[idx][bOwned] = tmp;
 		cache_get_value_name(0, "Owner", tmpstr); format(BizzInfo[idx][bOwner], 128, tmpstr);
 		cache_get_value_name(0, "Message", tmpstr); format(BizzInfo[idx][bMessage], 128, tmpstr);
@@ -10710,6 +10711,15 @@ public UpdateWeaponSlots(plyid)
 	return 1;
 }
 
+stock IsContainChar(const string[], cchar)
+{
+	for (new i = 0; i < strlen(string); i++)
+	{
+		if (string[i] == cchar)
+			return 1;
+	}
+	return 0;
+}
 //*public BanAdd(bantype, sqlplayerid, ip[], hackamount)
 /*public BanAdd(bantype, sqlplayerid, ip[], hackamount)
 {
