@@ -20689,9 +20689,9 @@ CMD:givegun(playerid, params[])
 		{
 			SendClientMessage(playerid, COLOR_GRAD1, "   wrong WeaponID!"); return 1;
 		}
-		if (ammo <1 || ammo > 9999)
+		if (ammo <1 || ammo > 10000)
 		{
-			SendClientMessage(playerid, COLOR_GRAD1, "   Khong the duoi 1 hoac tren 9999 dan duoc!"); return 1;
+			SendClientMessage(playerid, COLOR_GRAD1, "   Khong the duoi 1 hoac tren 10000 dan duoc!"); return 1;
 		}
 		if (PlayerInfo[playerid][pAdmin] >= 1337)
 		{
