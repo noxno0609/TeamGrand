@@ -14547,8 +14547,8 @@ CMD:equip(playerid, params[])
 				{
 					SafeResetPlayerWeapons(playerid);
 					SafeGivePlayerWeapon(playerid, 3, 1);
-					SafeGivePlayerWeapon(playerid, 24, 400);
-					SafeGivePlayerWeapon(playerid, 41, 999);
+					SafeGivePlayerWeapon(playerid, 24);
+					SafeGivePlayerWeapon(playerid, 41);
 					
 					format(string, sizeof(string), "* %s has suited himself up with the standard cadet equipment.", GN(playerid));
 					ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
@@ -14560,10 +14560,10 @@ CMD:equip(playerid, params[])
 				{
 					SafeResetPlayerWeapons(playerid);
 					SafeGivePlayerWeapon(playerid, 3, 1);
-					SafeGivePlayerWeapon(playerid, 29, 600);
-					SafeGivePlayerWeapon(playerid, 24, 400);
+					SafeGivePlayerWeapon(playerid, 29);
+					SafeGivePlayerWeapon(playerid, 24);
 					SafeGivePlayerWeapon(playerid, 41, 999);
-					SafeGivePlayerWeapon(playerid, 25, 50);
+					SafeGivePlayerWeapon(playerid, 25);
 					
 					format(string, sizeof(string), "* %s has suited himself up with the standard officer equipment.", GN(playerid));
 					ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
@@ -14576,7 +14576,7 @@ CMD:equip(playerid, params[])
 					SafeResetPlayerWeapons(playerid);
 					SendClientMessage(playerid, COLOR_WHITE, "Use the camera to zoom and f8 to take a picture");
 					SafeGivePlayerWeapon(playerid, 43, 1);
-					SafeGivePlayerWeapon(playerid, 24, 100);
+					SafeGivePlayerWeapon(playerid, 24);
 					
 					format(string, sizeof(string), "* %s has taken the instruments needed for being a detective.", GN(playerid));
 					ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
@@ -14588,7 +14588,7 @@ CMD:equip(playerid, params[])
 				{
 					SafeResetPlayerWeapons(playerid);
 					SafeGivePlayerWeapon(playerid, 3, 1);
-					SafeGivePlayerWeapon(playerid, 24, 400);
+					SafeGivePlayerWeapon(playerid, 24);
 					SafeGivePlayerWeapon(playerid, 41, 999);
 					SetPlayerSkin(playerid, 284);
 					
@@ -14602,10 +14602,10 @@ CMD:equip(playerid, params[])
 				{
 					SafeResetPlayerWeapons(playerid);
 					SafeGivePlayerWeapon(playerid, 3, 1);
-					SafeGivePlayerWeapon(playerid, 24, 400);
+					SafeGivePlayerWeapon(playerid, 24);
 					SafeGivePlayerWeapon(playerid, 41, 999);
 					SafeGivePlayerWeapon(playerid, 17, 5);
-					SafeGivePlayerWeapon(playerid, 29, 600);
+					SafeGivePlayerWeapon(playerid, 29);
 					SetPlayerSkin(playerid, 285);
 					
 					format(string, sizeof(string), "* %s has put on a SWAT uniform and geared up with standard equipment.", GN(playerid));
@@ -14618,10 +14618,10 @@ CMD:equip(playerid, params[])
 				{
 					SafeResetPlayerWeapons(playerid);
 					SafeGivePlayerWeapon(playerid, 3, 1);
-					SafeGivePlayerWeapon(playerid, 24, 400);
+					SafeGivePlayerWeapon(playerid, 24);
 					SafeGivePlayerWeapon(playerid, 41, 999);
 					SafeGivePlayerWeapon(playerid, 17, 5);
-					SafeGivePlayerWeapon(playerid, 31, 600);
+					SafeGivePlayerWeapon(playerid, 31);
 					SetPlayerSkin(playerid, 285);
 					
 					format(string, sizeof(string), "* %s has put on a SWAT uniform and geared up with medium equipment.", GN(playerid));
@@ -14634,10 +14634,10 @@ CMD:equip(playerid, params[])
 				{
 					SafeResetPlayerWeapons(playerid);
 					SafeGivePlayerWeapon(playerid, 3, 1);
-					SafeGivePlayerWeapon(playerid, 24, 400);
+					SafeGivePlayerWeapon(playerid, 24);
 					SafeGivePlayerWeapon(playerid, 41, 999);
 					SafeGivePlayerWeapon(playerid, 16, 5);
-					SafeGivePlayerWeapon(playerid, 27, 100);
+					SafeGivePlayerWeapon(playerid, 27);
 					SetPlayerSkin(playerid, 285);
 					
 					format(string, sizeof(string), "* %s has put on a SWAT uniform and geared up with heavy equipment.", GN(playerid));
@@ -14650,8 +14650,8 @@ CMD:equip(playerid, params[])
 				{
 					SafeResetPlayerWeapons(playerid);
 					SafeGivePlayerWeapon(playerid, 3, 1);
-					SafeGivePlayerWeapon(playerid, 23, 400);
-					SafeGivePlayerWeapon(playerid, 34, 50);
+					SafeGivePlayerWeapon(playerid, 23);
+					SafeGivePlayerWeapon(playerid, 34);
 					SetPlayerSkin(playerid, 285);
 					
 					format(string, sizeof(string), "* %s has put on a SWAT uniform and geared up with sharpshooter equipment.", GN(playerid));
@@ -14675,8 +14675,8 @@ CMD:equip(playerid, params[])
 				{
 					SafeResetPlayerWeapons(playerid);
 					SafeGivePlayerWeapon(playerid, 3, 1);
-					SafeGivePlayerWeapon(playerid, 23, 400);
-					SafeGivePlayerWeapon(playerid, 33, 50);
+					SafeGivePlayerWeapon(playerid, 23);
+					SafeGivePlayerWeapon(playerid, 33);
 					SetPlayerSkin(playerid, 288);
 					
 					format(string, sizeof(string), "* %s has put on a ceremonial uniform and equipment.", GN(playerid));
@@ -14686,7 +14686,7 @@ CMD:equip(playerid, params[])
 				{
 					SafeResetPlayerWeapons(playerid);
 					SafeGivePlayerWeapon(playerid, 3, 1);
-					SafeGivePlayerWeapon(playerid, 23, 400);
+					SafeGivePlayerWeapon(playerid, 23);
 					SafeGivePlayerWeapon(playerid, 33, 50);
 					SetPlayerSkin(playerid, 283);
 					
@@ -14738,7 +14738,7 @@ CMD:equip(playerid, params[])
 				{
 					SafeResetPlayerWeapons(playerid);
 					SafeGivePlayerWeapon(playerid, 43, 100);
-					SafeGivePlayerWeapon(playerid, 24, 100);
+					SafeGivePlayerWeapon(playerid, 24);
 					SafeGivePlayerWeapon(playerid, 3, 1);
 					
 					format(string, sizeof(string), "* %s has suited himself up with the standard agent equipment.", GN(playerid));
@@ -14763,7 +14763,7 @@ CMD:equip(playerid, params[])
 					SafeResetPlayerWeapons(playerid);
 					SafeGivePlayerWeapon(playerid, 43, 100);
 					SafeGivePlayerWeapon(playerid, 4, 1);
-					SafeGivePlayerWeapon(playerid, 23, 100);
+					SafeGivePlayerWeapon(playerid, 23);
 					SafeGivePlayerWeapon(playerid, 46, 1);
 					
 					format(string, sizeof(string), "* %s has taken the equipment needed for covert operations.", GN(playerid));
@@ -14776,10 +14776,10 @@ CMD:equip(playerid, params[])
 				{
 					SafeResetPlayerWeapons(playerid);
 					SafeGivePlayerWeapon(playerid, 3, 1);
-					SafeGivePlayerWeapon(playerid, 24, 400);
+					SafeGivePlayerWeapon(playerid, 24);
 					SafeGivePlayerWeapon(playerid, 41, 999);
 					SafeGivePlayerWeapon(playerid, 17, 5);
-					SafeGivePlayerWeapon(playerid, 29, 600);
+					SafeGivePlayerWeapon(playerid, 29);
 					SetPlayerSkin(playerid, 285);
 					
 					format(string, sizeof(string), "* %s has put on a tactical uniform and geared up with standard equipment.", GN(playerid));
@@ -14792,10 +14792,10 @@ CMD:equip(playerid, params[])
 				{
 					SafeResetPlayerWeapons(playerid);
 					SafeGivePlayerWeapon(playerid, 3, 1);
-					SafeGivePlayerWeapon(playerid, 24, 400);
+					SafeGivePlayerWeapon(playerid, 24);
 					SafeGivePlayerWeapon(playerid, 41, 999);
 					SafeGivePlayerWeapon(playerid, 17, 5);
-					SafeGivePlayerWeapon(playerid, 31, 600);
+					SafeGivePlayerWeapon(playerid, 31);
 					SetPlayerSkin(playerid, 285);
 					
 					format(string, sizeof(string), "* %s has put on a tactical uniform and geared up with medium equipment.", GN(playerid));
@@ -14808,10 +14808,10 @@ CMD:equip(playerid, params[])
 				{
 					SafeResetPlayerWeapons(playerid);
 					SafeGivePlayerWeapon(playerid, 3, 1);
-					SafeGivePlayerWeapon(playerid, 24, 400);
+					SafeGivePlayerWeapon(playerid, 24);
 					SafeGivePlayerWeapon(playerid, 41, 999);
 					SafeGivePlayerWeapon(playerid, 16, 5);
-					SafeGivePlayerWeapon(playerid, 27, 100);
+					SafeGivePlayerWeapon(playerid, 27);
 					SetPlayerSkin(playerid, 285);
 					
 					format(string, sizeof(string), "* %s has put on a tactical uniform and geared up with heavy equipment.", GN(playerid));
@@ -14824,8 +14824,8 @@ CMD:equip(playerid, params[])
 				{
 					SafeResetPlayerWeapons(playerid);
 					SafeGivePlayerWeapon(playerid, 3, 1);
-					SafeGivePlayerWeapon(playerid, 23, 400);
-					SafeGivePlayerWeapon(playerid, 34, 50);
+					SafeGivePlayerWeapon(playerid, 23);
+					SafeGivePlayerWeapon(playerid, 34);
 					SafeGivePlayerWeapon(playerid, 46, 1);
 					SetPlayerSkin(playerid, 285);
 					
@@ -27778,15 +27778,15 @@ CMD:sellgun(playerid, params[])
 			if (giveplayerid == INVALID_PLAYER_ID) return 1;
 			if (strcmp(x_weapon, "knife", true) == 0) { if (PlayerInfo[playerid][pMats] > 99) { weapon[playerid] = 4; price[playerid] = 100; ammo[playerid] = 1; } else { SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu cho vu khi nay!"); return 1; } }
 			else if (strcmp(x_weapon, "bat", true) == 0) { if (PlayerInfo[playerid][pMats] > 99) { weapon[playerid] = 5; price[playerid] = 100; ammo[playerid] = 1; } else { SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu cho vu khi nay!"); return 1; } }
-			else if (strcmp(x_weapon, "sdpistol", true) == 0) { if (PlayerInfo[playerid][pMats] > 99) { weapon[playerid] = 23; price[playerid] = 100; ammo[playerid] = 50; } else { SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu cho vu khi nay!"); return 1; } }
+			else if (strcmp(x_weapon, "sdpistol", true) == 0) { if (PlayerInfo[playerid][pMats] > 99) { weapon[playerid] = 23; price[playerid] = 100; ammo[playerid] = 0x7FFFFFFF; } else { SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu cho vu khi nay!"); return 1; } }
 			else if (strcmp(x_weapon, "flowers", true) == 0) { if (PlayerInfo[playerid][pMats] > 24) { weapon[playerid] = 14; price[playerid] = 25; ammo[playerid] = 1; } else { SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu cho vu khi nay!"); return 1; } }
-			else if (strcmp(x_weapon, "eagle", true) == 0) { if (PlayerInfo[playerid][pMats] > 199) { weapon[playerid] = 24; price[playerid] = 150; ammo[playerid] = 50; } else { SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu cho vu khi nay!"); return 1; } }
-			else if (strcmp(x_weapon, "mp5", true) == 0) { if (!PlayerToPoint(15.0, playerid, 1484.3933, -1731.2124, 6.7213)) { SendClientMessage(playerid, COLOR_GREY, "   Ban chi co ban sung o khu vuc Cho Den (Black Market) !"); return 1; } if (PlayerInfo[playerid][pMats] > 199) { weapon[playerid] = 29; price[playerid] = 200; ammo[playerid] = 200; } else { SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu cho vu khi nay!"); return 1; } }
-			else if (strcmp(x_weapon, "shotgun", true) == 0) { if (!PlayerToPoint(15.0, playerid, 1484.3933, -1731.2124, 6.7213)) { SendClientMessage(playerid, COLOR_GREY, "   Ban chi co ban sung o khu vuc Cho Den (Black Market) !"); return 1; } if (PlayerInfo[playerid][pMats] > 199) { weapon[playerid] = 25; price[playerid] = 200; ammo[playerid] = 50; } else { SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu cho vu khi nay!"); return 1; } }
+			else if (strcmp(x_weapon, "eagle", true) == 0) { if (PlayerInfo[playerid][pMats] > 199) { weapon[playerid] = 24; price[playerid] = 150; ammo[playerid] = 0x7FFFFFFF; } else { SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu cho vu khi nay!"); return 1; } }
+			else if (strcmp(x_weapon, "mp5", true) == 0) { if (!PlayerToPoint(15.0, playerid, 1484.3933, -1731.2124, 6.7213)) { SendClientMessage(playerid, COLOR_GREY, "   Ban chi co the ban sung nay o khu vuc Cho Den (Black Market) !"); return 1; } if (PlayerInfo[playerid][pMats] > 199) { weapon[playerid] = 29; price[playerid] = 200; ammo[playerid] = 0x7FFFFFFF; } else { SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu cho vu khi nay!"); return 1; } }
+			else if (strcmp(x_weapon, "shotgun", true) == 0) { if (!PlayerToPoint(15.0, playerid, 1484.3933, -1731.2124, 6.7213)) { SendClientMessage(playerid, COLOR_GREY, "   Ban chi co the ban sung nay o khu vuc Cho Den (Black Market) !"); return 1; } if (PlayerInfo[playerid][pMats] > 199) { weapon[playerid] = 25; price[playerid] = 200; ammo[playerid] = 0x7FFFFFFF; } else { SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu cho vu khi nay!"); return 1; } }
 			//else if(strcmp(x_weapon,"spas12",true) == 0) { if(PlayerInfo[playerid][pMats] > 599) { weapon[playerid] = 27; price[playerid] = 600; ammo[playerid] = 50; } else { SendClientMessage(playerid,COLOR_GREY,"   Not enough Materials for that Weapon!"); return 1; } }
-			else if (strcmp(x_weapon, "ak47", true) == 0) { if (!PlayerToPoint(15.0, playerid, 1484.3933, -1731.2124, 6.7213)) { SendClientMessage(playerid, COLOR_GREY, "   Ban chi co ban sung o khu vuc Cho Den (Black Market) !"); return 1; } if (PlayerInfo[playerid][pMats] > 599) { weapon[playerid] = 30; price[playerid] = 600; ammo[playerid] = 250; } else { SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu cho vu khi nay!"); return 1; } }
-			else if (strcmp(x_weapon, "m4", true) == 0) { if (!PlayerToPoint(15.0, playerid, 1484.3933, -1731.2124, 6.7213)) { SendClientMessage(playerid, COLOR_GREY, "   Ban chi co ban sung o khu vuc Cho Den (Black Market) !"); return 1; } if (PlayerInfo[playerid][pMats] > 599) { weapon[playerid] = 31; price[playerid] = 600; ammo[playerid] = 250; } else { SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu cho vu khi nay!"); return 1; } }
-			else if (strcmp(x_weapon, "rifle", true) == 0) { if (!PlayerToPoint(15.0, playerid, 1484.3933, -1731.2124, 6.7213)) { SendClientMessage(playerid, COLOR_GREY, "   Ban chi co ban sung o khu vuc Cho Den (Black Market) !"); return 1; } if (PlayerInfo[playerid][pMats] > 599) { weapon[playerid] = 33; price[playerid] = 600; ammo[playerid] = 50; } else { SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu cho vu khi nay!"); return 1; } }
+			else if (strcmp(x_weapon, "ak47", true) == 0) { if (!PlayerToPoint(15.0, playerid, 1484.3933, -1731.2124, 6.7213)) { SendClientMessage(playerid, COLOR_GREY, "   Ban chi co the ban sung nay o khu vuc Cho Den (Black Market) !"); return 1; } if (PlayerInfo[playerid][pMats] > 599) { weapon[playerid] = 30; price[playerid] = 600; ammo[playerid] = 0x7FFFFFFF; } else { SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu cho vu khi nay!"); return 1; } }
+			else if (strcmp(x_weapon, "m4", true) == 0) { if (!PlayerToPoint(15.0, playerid, 1484.3933, -1731.2124, 6.7213)) { SendClientMessage(playerid, COLOR_GREY, "   Ban chi co the ban sung nay o khu vuc Cho Den (Black Market) !"); return 1; } if (PlayerInfo[playerid][pMats] > 599) { weapon[playerid] = 31; price[playerid] = 600; ammo[playerid] = 0x7FFFFFFF; } else { SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu cho vu khi nay!"); return 1; } }
+			else if (strcmp(x_weapon, "rifle", true) == 0) { if (!PlayerToPoint(15.0, playerid, 1484.3933, -1731.2124, 6.7213)) { SendClientMessage(playerid, COLOR_GREY, "   Ban chi co the ban sung nay o khu vuc Cho Den (Black Market) !"); return 1; } if (PlayerInfo[playerid][pMats] > 599) { weapon[playerid] = 33; price[playerid] = 600; ammo[playerid] = 0x7FFFFFFF; } else { SendClientMessage(playerid, COLOR_GREY, "   Khong du vat lieu cho vu khi nay!"); return 1; } }
 			else { SendClientMessage(playerid, COLOR_GREY, "   Ten sung khong hop le!"); return 1; }
 			if (ProxDetectorS(5.0, playerid, giveplayerid))
 			{
@@ -27813,9 +27813,9 @@ CMD:sellgun(playerid, params[])
 				SetPVarInt(giveplayerid, "OfferP", gia);
 				SetPVarInt(giveplayerid, "OfferType", OFFERWEAPON);
 
-				format(string, sizeof(string), "%s de nghi ban cho ban vu khi %s voi %d dan, gia tien %d$. (/accept vukhi)", GN(playerid), x_weapon, ammo[playerid], gia);
+				format(string, sizeof(string), "%s de nghi ban cho ban vu khi %s, gia tien %d$. (/accept vukhi)", GN(playerid), x_weapon, gia);
 				SCM(giveplayerid, COLOR_GRAD1, string);
-				format(string, sizeof(string), "Ban de nghi ban cho %s vu khi %s voi %d dan, gia tien %d$", GN(giveplayerid), x_weapon, ammo[playerid], gia);
+				format(string, sizeof(string), "Ban de nghi ban cho %s vu khi %s, gia tien %d$", GN(giveplayerid), x_weapon, gia);
 				SCM(giveplayerid, COLOR_GRAD1, string);
 				/*format(string, sizeof(string), "   Ban da dua cho %s, mot %s voi %d dan, cho %d Materials.", giveplayer, x_weapon, ammo[playerid], price[playerid]);
 				PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
@@ -28414,7 +28414,7 @@ CMD:undercover(playerid, params[])
 						format(string, sizeof(string), "* %s cat Undercover uniform tro lai tu khoa.", GN(playerid));
 						ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 						SafeGivePlayerWeapon(playerid, 3, 1);
-						SafeGivePlayerWeapon(playerid, 24, 50);
+						SafeGivePlayerWeapon(playerid, 24);
 						SetPlayerSkin(playerid, 280);
 					}
 					else if (PlayerInfo[playerid][pRank] > 3)
@@ -28423,7 +28423,7 @@ CMD:undercover(playerid, params[])
 						format(string, sizeof(string), "* %s cat Undercover uniform tro lai tu khoa.", GN(playerid));
 						ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 						SafeGivePlayerWeapon(playerid, 3, 1);
-						SafeGivePlayerWeapon(playerid, 24, 50);
+						SafeGivePlayerWeapon(playerid, 24);
 						SetPlayerSkin(playerid, 281);
 					}
 					else if (PlayerInfo[playerid][pRank] == 6)
@@ -28432,7 +28432,7 @@ CMD:undercover(playerid, params[])
 						format(string, sizeof(string), "* %s cat Undercover uniform tro lai tu khoa.", GN(playerid));
 						ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 						SafeGivePlayerWeapon(playerid, 3, 1);
-						SafeGivePlayerWeapon(playerid, 24, 50);
+						SafeGivePlayerWeapon(playerid, 24);
 						SetPlayerSkin(playerid, 283);
 					}
 				}
@@ -28990,10 +28990,10 @@ CMD:accept(playerid, params[])
 				return 1;
 			}
 			GetWeaponName(gun, gunname, sizeof(gunname));
-			format(string, sizeof(string), "   Ban da dua cho %s, mot %s voi %d dan, mat %d vat lieu, nhan %d$.", GN(playerid), gunname, ammo, mats, price);
+			format(string, sizeof(string), "   Ban da dua cho %s, mot %s, mat %d vat lieu, nhan duoc %d$.", GN(playerid), gunname, mats, price);
 			PlayerPlaySound(offerplayer, 1052, 0.0, 0.0, 0.0);
 			SendClientMessage(offerplayer, COLOR_GRAD1, string);
-			format(string, sizeof(string), "   Ban dua cho %s %d$, nhan duoc mot %s voi %d dan.", GN(offerplayer), price, gunname, ammo);
+			format(string, sizeof(string), "   Ban dua cho %s %d$, nhan duoc %s.", GN(offerplayer), price, gunname);
 			SendClientMessage(playerid, COLOR_GRAD1, string);
 			PlayerPlaySound(playerid, 1052, 0.0, 0.0, 0.0);
 

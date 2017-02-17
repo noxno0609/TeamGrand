@@ -371,7 +371,6 @@ forward SaveMatsSystem();
 forward LoadingDrugsForSmugglers(playerid);
 forward SmugglerExit(playerid);
 forward SafeGivePlayerMoney(plyid, amounttogive);
-forward SafeGivePlayerWeapon(plyid, weaponid, ammo);
 forward SafeResetPlayerMoney(plyid);
 forward SafeResetPlayerWeapons(plyid);
 forward UpdateWeaponSlots(plyid);
@@ -7263,26 +7262,26 @@ public SetPlayerWeapons(playerid)
 				if(OnDuty[playerid] == 1 || PlayerInfo[playerid][pMember] == 2)//Cops & FBI/ATF
 				{
 				    SafeGivePlayerWeapon(playerid, 41, 500); //spray
-					SafeGivePlayerWeapon(playerid, 24, 200);
+					SafeGivePlayerWeapon(playerid, 24);
 					SafeGivePlayerWeapon(playerid, 3, 1);
 					if(PlayerInfo[playerid][pChar] == 285)//SWAT
 					{
-					    SafeGivePlayerWeapon(playerid, 24, 200);
-					    SafeGivePlayerWeapon(playerid, 29, 450);
-						SafeGivePlayerWeapon(playerid, 31, 600);
+					    SafeGivePlayerWeapon(playerid, 24);
+					    SafeGivePlayerWeapon(playerid, 29);
+						SafeGivePlayerWeapon(playerid, 31);
 					}
 					else if(PlayerInfo[playerid][pChar] == 287)//Army
 					{
-					    SafeGivePlayerWeapon(playerid, 24, 200);
-					    SafeGivePlayerWeapon(playerid, 29, 450);
-					    SafeGivePlayerWeapon(playerid, 31, 500);
+					    SafeGivePlayerWeapon(playerid, 24);
+					    SafeGivePlayerWeapon(playerid, 29);
+					    SafeGivePlayerWeapon(playerid, 31);
 					}
 				}
 				if(PlayerInfo[playerid][pMember] == 3 || PlayerInfo[playerid][pLeader] == 3)//National Guard
 				{
-				    SafeGivePlayerWeapon(playerid, 24, 200);
-				    SafeGivePlayerWeapon(playerid, 31, 600);
-				    SafeGivePlayerWeapon(playerid, 29, 600);
+				    SafeGivePlayerWeapon(playerid, 24);
+				    SafeGivePlayerWeapon(playerid, 31);
+				    SafeGivePlayerWeapon(playerid, 29);
 				}
 			}
 			if(gTeam[playerid] >= 3)
@@ -9154,43 +9153,70 @@ public CustomPickups()
 			        {
 			            case 1:
 			            {
-			                SafeGivePlayerWeapon(i, 24, 50); SafeGivePlayerWeapon(i, 29, 500); SafeGivePlayerWeapon(i, 25, 50); SafeGivePlayerWeapon(i, 4, 1);
+			                SafeGivePlayerWeapon(i, 24);
+							SafeGivePlayerWeapon(i, 29);
+							SafeGivePlayerWeapon(i, 25);
+							SafeGivePlayerWeapon(i, 4, 1);
 			                SafeGivePlayerMoney(i, - 5000);
 			                SendClientMessage(i, COLOR_WHITE, "* You picked up your Ordered Package.");
 			            }
 			            case 2:
 			            {
-			                SafeGivePlayerWeapon(i, 24, 50); SafeGivePlayerWeapon(i, 29, 500); SafeGivePlayerWeapon(i, 25, 50); SafeGivePlayerWeapon(i, 31, 500); SafeGivePlayerWeapon(i, 4, 1);
+			                SafeGivePlayerWeapon(i, 24);
+							SafeGivePlayerWeapon(i, 29);
+							SafeGivePlayerWeapon(i, 25);
+							SafeGivePlayerWeapon(i, 31);
+							SafeGivePlayerWeapon(i, 4, 1);
 			                SafeGivePlayerMoney(i, - 6000);
 			                SendClientMessage(i, COLOR_WHITE, "* You picked up your Ordered Package.");
 			            }
 			            case 3:
 			            {
-			                SafeGivePlayerWeapon(i, 24, 50); SafeGivePlayerWeapon(i, 29, 500); SafeGivePlayerWeapon(i, 25, 50); SafeGivePlayerWeapon(i, 30, 500); SafeGivePlayerWeapon(i, 4, 1);
+			                SafeGivePlayerWeapon(i, 24);
+							SafeGivePlayerWeapon(i, 29);
+							SafeGivePlayerWeapon(i, 25);
+							SafeGivePlayerWeapon(i, 30);
+							SafeGivePlayerWeapon(i, 4, 1);
 			                SafeGivePlayerMoney(i, - 6000);
 			                SendClientMessage(i, COLOR_WHITE, "* You picked up your Ordered Package.");
 			            }
 			            case 4:
 			            {
-			                SafeGivePlayerWeapon(i, 24, 50); SafeGivePlayerWeapon(i, 29, 500); SafeGivePlayerWeapon(i, 25, 50); SafeGivePlayerWeapon(i, 31, 500); SafeGivePlayerWeapon(i, 4, 1); SafeGivePlayerWeapon(i, 34, 20);
+			                SafeGivePlayerWeapon(i, 24);
+							SafeGivePlayerWeapon(i, 29);
+							SafeGivePlayerWeapon(i, 25);
+							SafeGivePlayerWeapon(i, 31);
+							SafeGivePlayerWeapon(i, 4, 1); SafeGivePlayerWeapon(i, 34);
 			                SafeGivePlayerMoney(i, - 8000);
 			                SendClientMessage(i, COLOR_WHITE, "* You picked up your Ordered Package.");
 			            }
 			            case 5:
 			            {
-			                SafeGivePlayerWeapon(i, 24, 50); SafeGivePlayerWeapon(i, 29, 500); SafeGivePlayerWeapon(i, 25, 50); SafeGivePlayerWeapon(i, 30, 500); SafeGivePlayerWeapon(i, 4, 1); SafeGivePlayerWeapon(i, 34, 20);
+			                SafeGivePlayerWeapon(i, 24);
+							SafeGivePlayerWeapon(i, 29);
+							SafeGivePlayerWeapon(i, 25);
+							SafeGivePlayerWeapon(i, 30);
+							SafeGivePlayerWeapon(i, 4, 1); SafeGivePlayerWeapon(i, 34);
 			                SafeGivePlayerMoney(i, - 8000);
 			                SendClientMessage(i, COLOR_WHITE, "* You picked up your Ordered Package.");
 			            }
 			            case 6:
 			            {
-			                SafeGivePlayerWeapon(i, 24, 50); SafeGivePlayerWeapon(i, 29, 500); SafeGivePlayerWeapon(i, 25, 50); SafeGivePlayerWeapon(i, 31, 500); SafeGivePlayerWeapon(i, 4, 1); SafeGivePlayerWeapon(i, 34, 20);
+			                SafeGivePlayerWeapon(i, 24);
+							SafeGivePlayerWeapon(i, 29);
+							SafeGivePlayerWeapon(i, 25);
+							SafeGivePlayerWeapon(i, 31);
+							SafeGivePlayerWeapon(i, 4, 1); SafeGivePlayerWeapon(i, 34);
 							SafeGivePlayerMoney(i, - 8500);
 							SendClientMessage(i, COLOR_WHITE, "* You picked up your Ordered Package.");
 			            }
 			            case 7:
 			            {
-			                SafeGivePlayerWeapon(i, 24, 50); SafeGivePlayerWeapon(i, 29, 500); SafeGivePlayerWeapon(i, 25, 50); SafeGivePlayerWeapon(i, 30, 500); SafeGivePlayerWeapon(i, 4, 1); SafeGivePlayerWeapon(i, 34, 20);
+			                SafeGivePlayerWeapon(i, 24);
+							SafeGivePlayerWeapon(i, 29);
+							SafeGivePlayerWeapon(i, 25);
+							SafeGivePlayerWeapon(i, 30);
+							SafeGivePlayerWeapon(i, 4, 1); SafeGivePlayerWeapon(i, 34);
 			                SafeGivePlayerMoney(i, - 8500);
 			                SendClientMessage(i, COLOR_WHITE, "* You picked up your Ordered Package.");
 			            }
@@ -10678,7 +10704,7 @@ public SafeResetPlayerMoney(plyid)
 	return 1;
 }
 
-public SafeGivePlayerWeapon(plyid, weaponid, ammo)
+stock SafeGivePlayerWeapon(plyid, weaponid, ammo = 0x7FFFFFFF)
 {
 /*	new curHour, curMinute, curSecond;
 	gettime(curHour, curMinute, curSecond);
@@ -10881,10 +10907,7 @@ public RemovePlayerWeapon(playerid, weaponid)
 	SafeResetPlayerWeapons(playerid);
 	for(new slot = 0; slot != 12; slot++)
 	{
-	    if(plyAmmo[slot] != 0)
-	    {
-			SafeGivePlayerWeapon(playerid, plyWeapons[slot], plyAmmo[slot]);
-		}
+		SafeGivePlayerWeapon(playerid, plyWeapons[slot]);
 	}
 	return 1;
 }

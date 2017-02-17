@@ -583,7 +583,7 @@ CMD:c(playerid, params[])
 	if (PlayerInfo[playerid][pHelper] < 2 && PlayerInfo[playerid][pAdmin] < 1) return SendClientMessage(playerid, COLOR_GRAD1, "Ban khong the dung lenh nay");
 	new mess[255], str[255];
 	if (sscanf(params, "s[255]", mess)) return SendClientMessage(playerid, COLOR_GRAD1, "/c [Noi Dung]");
-	if(PInfo[playerid][pAdmin > 0]) {
+	if(PlayerInfo[playerid][pAdmin > 0]) {
 		format(str, sizeof(str), "[Admin] %s(%d): %s", GN(playerid), playerid, mess);
 	}
 	else {
