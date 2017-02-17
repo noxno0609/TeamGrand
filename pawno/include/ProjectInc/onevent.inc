@@ -1341,7 +1341,7 @@ public delayfaildd(playerid, killerid)
 public OnPlayerDeath(playerid, killerid, reason)
 {
 	//printf("Dying: %d", Dying[playerid]);
-	if (Dying[playerid] == 0 && PlayerInfo[playerid][pJail] == 0)
+	if (Dying[playerid] == 0 && PlayerInfo[playerid][pJailed] == 0)
 	{
 		Dying[playerid] = 1;
 		DyingTimeOut[playerid] = 30;
@@ -21328,11 +21328,20 @@ CMD:ban(playerid, params[])
 		if (PlayerInfo[playerid][pAdmin] < 1337) return SCM(playerid, COLOR_GREY, "Admin level 1337 moi co the ban IP.");
 		if (!IsValidIP(banobject)) return SCM(playerid, COLOR_GREY, "IP khong hop le.");
 		new str[128];
-		BanIP(banobject);
-		format(str, sizeof(str), "AdmCMD: %s da ban IP %s. Ly do: %s", GN(playerid), banobject, reason);
-		SendAdminMessage(COLOR_LIGHTRED, str);
+		if (CheckBanIP(banobject) == 0)
+		{
+			BanIP(banobject);
+			format(str, sizeof(str), "AdmCMD: %s da ban IP %s. Ly do: %s", GN(playerid), banobject, reason);
+			SendAdminMessage(COLOR_LIGHTRED, str);
+		}
+		else SCM(playerid, COLOR_GREY, "IP nay da bi banned!");
 	}
-	else BanPlayer(playerid, banobject, reason);
+	else
+	{
+		if (CheckBan(playerid) == 0)
+			BanPlayer(playerid, banobject, reason);
+		else SCM(playerid, COLOR_GREY, "Nguoi choi nay khong ton tai hoac da bi banned!");
+	}
 	return 1;
 }
  CMD:unban(playerid, params[])
