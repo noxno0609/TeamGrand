@@ -5545,44 +5545,35 @@ public OnPlayerText(playerid, text[])
 			format(string, sizeof(string), "Ban hien nay %d tuoi.", PlayerInfo[playerid][pAge]);
 			SendClientMessage(playerid, COLOR_YELLOW2, string);
 			RegistrationStep[playerid] = 3;
-			SendClientMessage(playerid, COLOR_LIGHTRED, "Ban hien dang sinh song o? (Go: USA, Europe, Asia hoac Africa)");
+			SendClientMessage(playerid, COLOR_LIGHTRED, "Ban hien dang sinh song o? (Go: bac, trung hoac nam)");
 			return 0;
 		}
 		else if (RegistrationStep[playerid] == 3)
 		{
 			new idx;
 			tmp = strtok(text, idx);
-			if ((strcmp("usa", tmp, true, strlen(tmp)) == 0) && (strlen(tmp) == strlen("usa")))
+			if ((strcmp("usa", tmp, true, strlen(tmp)) == 0) && (strlen(tmp) == strlen("bac")))
 			{
 				PlayerInfo[playerid][pOrigin] = 1;
-				SendClientMessage(playerid, COLOR_YELLOW2, "Ban da khai bao minh den tu USA.");
+				SendClientMessage(playerid, COLOR_YELLOW2, "Ban da khai bao minh den tu Mien Bac.");
 				SendClientMessage(playerid, COLOR_LIGHTRED, "Cam on ban da tra loi cau hoi cua chung toi, chung ta se bat dau phan huong dan.");
 				RegistrationStep[playerid] = 0;
 				TutTime[playerid] = 1;
 				return 0;
 			}
-			else if ((strcmp("europe", tmp, true, strlen(tmp)) == 0) && (strlen(tmp) == strlen("")))
+			else if ((strcmp("trung", tmp, true, strlen(tmp)) == 0) && (strlen(tmp) == strlen("trung")))
 			{
 				PlayerInfo[playerid][pOrigin] = 2;
-				SendClientMessage(playerid, COLOR_YELLOW2, "Ban da khai bao minh den tu Europe.");
+				SendClientMessage(playerid, COLOR_YELLOW2, "Ban da khai bao minh den tu Mien Trung.");
 				SendClientMessage(playerid, COLOR_LIGHTRED, "Cam on ban da tra loi cau hoi cua chung toi, chung ta se bat dau phan huong dan.");
 				RegistrationStep[playerid] = 0;
 				TutTime[playerid] = 1;
 				return 0;
 			}
-			else if ((strcmp("asia", tmp, true, strlen(tmp)) == 0) && (strlen(tmp) == strlen("asia")))
+			else if ((strcmp("nam", tmp, true, strlen(tmp)) == 0) && (strlen(tmp) == strlen("nam")))
 			{
 				PlayerInfo[playerid][pOrigin] = 3;
-				SendClientMessage(playerid, COLOR_YELLOW2, "Ban da khai bao minh den tu Asia.");
-				SendClientMessage(playerid, COLOR_LIGHTRED, "Cam on ban da tra loi cau hoi cua chung toi, chung ta se bat dau phan huong dan.");
-				RegistrationStep[playerid] = 0;
-				TutTime[playerid] = 1;
-				return 0;
-			}
-			else if ((strcmp("africa", tmp, true, strlen(tmp)) == 0) && (strlen(tmp) == strlen("africa")))
-			{
-				PlayerInfo[playerid][pOrigin] = 4;
-				SendClientMessage(playerid, COLOR_YELLOW2, "Ban da khai bao minh den tu Africa.");
+				SendClientMessage(playerid, COLOR_YELLOW2, "Ban da khai bao minh den tu Mien Nam.");
 				SendClientMessage(playerid, COLOR_LIGHTRED, "Cam on ban da tra loi cau hoi cua chung toi, chung ta se bat dau phan huong dan.");
 				RegistrationStep[playerid] = 0;
 				TutTime[playerid] = 1;
@@ -5590,7 +5581,7 @@ public OnPlayerText(playerid, text[])
 			}
 			else
 			{
-				SendClientMessage(playerid, COLOR_LIGHTRED, "Ban hien dang sinh song o? (Go: USA, Europe, Asia hoac Africa)");
+				SendClientMessage(playerid, COLOR_LIGHTRED, "Ban hien dang sinh song o? (Go: bac, trung hoac nam)");
 			}
 			return 0;
 		}
