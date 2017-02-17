@@ -177,6 +177,22 @@ stock CountParams(const string[])
 	}
 	return count;
 }
+stock IsValidIP(string[])
+{
+	new dotCount;
+	for (new i; string[i] != EOS; ++i)
+	{
+		if (('0' <= string[i] <= '9') || string[i] == '.')
+		{
+			if ((string[i] == '.') && (string[i + 1] != '.') && ('0' <= string[i - 1] <= '9'))
+			{
+				++dotCount;
+			}
+			continue;
+		}
+	}
+	return (dotCount > 2) ? 1 : 0;
+}
 CMD:veh(playerid, params[])
 {
 		 if (PlayerInfo[playerid][pAdmin] == 0) return SCM(playerid, COLOR_GREY, "Khong co quyen han su dung cau lenh nay.");
@@ -350,9 +366,67 @@ stock ClearApGiai(playerid)
 
 stock GetIp(playerid)
 {
-	new ip[16];
+	new ip[30];
 	GetPlayerIp(playerid, ip, sizeof(ip));
 	return ip;
+}
+
+stock IsAtATM(playerid)
+{
+	if (PlayerToPoint(1.5, playerid, 1346.5016, -1758.7649, 13.5156)
+		|| PlayerToPoint(1.5, playerid, 1592.7152, -2335.3748, 13.5400)
+		|| PlayerToPoint(1.5, playerid, 2308.4612, -1634.4176, 14.8270)
+		|| PlayerToPoint(1.5, playerid, 2865.9014, -1415.4203, 11.0061)
+		|| PlayerToPoint(1.5, playerid, 2404.5913, -1229.8973, 23.8301)
+		|| PlayerToPoint(1.5, playerid, 1172.5912, -1328.4365, 15.4034))
+		return 1;
+	return 0;
+}
+stock Replace(string[], const search[], const replacement[], bool:ignorecase = false, pos = 0, limit = -1, maxlength = sizeof(string)) {
+	// No need to do anything if the limit is 0.
+	if (limit == 0)
+		return 0;
+
+	new
+		sublen = strlen(search),
+		replen = strlen(replacement),
+		bool:packed = ispacked(string),
+		maxlen = maxlength,
+		len = strlen(string),
+		count = 0
+		;
+
+
+	// "maxlen" holds the max string length (not to be confused with "maxlength", which holds the max. array size).
+	// Since packed strings hold 4 characters per array slot, we multiply "maxlen" by 4.
+	if (packed)
+		maxlen *= 4;
+
+	// If the length of the substring is 0, we have nothing to look for..
+	if (!sublen)
+		return 0;
+
+	// In this line we both assign the return value from "strfind" to "pos" then check if it's -1.
+	while (-1 != (pos = strfind(string, search, ignorecase, pos))) {
+		// Delete the string we found
+		strdel(string, pos, pos + sublen);
+
+		len -= sublen;
+
+		// If there's anything to put as replacement, insert it. Make sure there's enough room first.
+		if (replen && len + replen < maxlen) {
+			strins(string, replacement, pos, maxlength);
+
+			pos += replen;
+			len += replen;
+		}
+
+		// Is there a limit of number of replacements, if so, did we break it?
+		if (limit != -1 && ++count >= limit)
+			break;
+	}
+
+	return count;
 }
 
 CMD:buonlau(playerid, params[])
