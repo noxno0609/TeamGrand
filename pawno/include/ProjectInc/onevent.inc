@@ -19678,7 +19678,7 @@ CMD:makeleader(playerid, params[])
 			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /makeleader [playerid/Ten] [Number(1-10)]");
 			return 1;
 		}
-		if (level > 16 || level < 0) { SendClientMessage(playerid, COLOR_GREY, "   Khong the duoi 0, hoac tren 16!"); return 1; }
+		if (level > 10 || level < 0) { SendClientMessage(playerid, COLOR_GREY, "   Khong the duoi 0, hoac tren 16!"); return 1; }
 		if (PlayerInfo[playerid][pAdmin] >= 4)
 		{
 			if (IsPlayerConnected(para1))
@@ -19693,7 +19693,7 @@ CMD:makeleader(playerid, params[])
 					PlayerInfo[para1][pLeader] = level;
 					format(string, sizeof(string), "   Ban da duoc thang chuc thanh Leader cho Faction, boi Admin %s", GN(playerid));
 					SendClientMessage(para1, COLOR_WHITE, string);
-					format(string, sizeof(string), "   Ban da nang %s len thanh leader faction so %d.", GN(para1), level);
+					format(string, sizeof(string), "   Ban da dua %s len  leader faction so %d.", GN(para1), level);
 					SendClientMessage(playerid, COLOR_WHITE, string);
 					if (level == 0) { PlayerInfo[para1][pChar] = 0; PlayerInfo[para1][pRank] = 0; gTeam[para1] = 3; PlayerInfo[para1][pTeam] = 0; return 1; }
 					else if (level == 1) { PlayerInfo[para1][pChar] = 288; } //Police Force
