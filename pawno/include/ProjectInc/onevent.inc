@@ -14242,7 +14242,7 @@ CMD:pme(playerid, params[])
 	}
 	return 1;
 }
- CMD:w(playerid, params[]) { return cmd_whisper(playerid, params); }
+CMD:w(playerid, params[]) { return cmd_whisper(playerid, params); }
 CMD:whisper(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -14264,6 +14264,7 @@ CMD:whisper(playerid, params[])
 				{
 					format(string, sizeof(string), "[Admin] %s: %s", GN(playerid), result);
 					SendClientMessage(giveplayerid, COLOR_YELLOW, string);
+					SendClientMessage(playerid, COLOR_YELLOW2, string);
 				}
 				else {
 					new Float:x, Float:y, Float:z;
@@ -20696,9 +20697,9 @@ CMD:givegun(playerid, params[])
 		{
 			SendClientMessage(playerid, COLOR_GRAD1, "   wrong WeaponID!"); return 1;
 		}
-		if (ammo <1 || ammo > 9999)
+		if (ammo <1 || ammo > 10000)
 		{
-			SendClientMessage(playerid, COLOR_GRAD1, "   Khong the duoi 1 hoac tren 9999 dan duoc!"); return 1;
+			SendClientMessage(playerid, COLOR_GRAD1, "   Khong the duoi 1 hoac tren 10000 dan duoc!"); return 1;
 		}
 		if (PlayerInfo[playerid][pAdmin] >= 1337)
 		{
