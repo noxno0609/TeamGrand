@@ -2825,7 +2825,7 @@ public UpdateDealership()
 			
 			new newvid = AddCar(model, pos[0], pos[1], pos[2], pos[3], color[0], color[1], 60000, "Dealership", 0, price);
 
-			format(sql, sizeof(sql), "UPDATE SellVehID = %d, `Amount` = %d FROM dealership WHERE ID = %d", CarInfo[newvid][cID], amount-1, i+1);
+			format(sql, sizeof(sql), "UPDATE dealership SET SellVehID = %d, `Amount` = %d WHERE ID = %d", CarInfo[newvid][cID], amount-1, i+1);
 			mysql_query(conn, sql);
 		}
 	}
@@ -8146,7 +8146,7 @@ public OnPropUpdate()
 					HouseInfo[i][hDate],
 					HouseInfo[i][hLevel],
 					HouseInfo[i][hWorld],
-					i);
+					i+1);
 		mysql_query(conn, sql);
 	}
 	//printf("Save houses successfully.");
@@ -8244,7 +8244,7 @@ public OnPropUpdate()
 				BizzInfo[i][bMaxProducts],
 				BizzInfo[i][bPriceProd],
 				BizzInfo[i][bType],
-				i);
+				i+1);
 				mysql_query(conn, sql);
 	}
 	//printf("Save business successfully.");
@@ -8286,7 +8286,7 @@ public OnPropUpdate()
 				SBizzInfo[i][sbMaxProducts],
 				SBizzInfo[i][sbPriceProd],
 				SBizzInfo[i][sbType],
-				i);
+				i+1);
 		mysql_query(conn, sql);
 	}
 	//printf("Save sbusiness successfully.");

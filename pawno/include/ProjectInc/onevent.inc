@@ -1314,11 +1314,18 @@ public delayfaildd(playerid, killerid)
 	if (DrugDealing[playerid] > 0)
 	{
 		new str[128];
-		new money = DrugDealer[playerid] * 7000;
-		format(str, sizeof(str), "** [Tong dai]: %s da ban ha doi tuong buon lau %s, tich thu %d gram thuoc, tuong ung %d$. **", GN(killerid), GN(playerid), DrugDealer[playerid], money);
-		SendRadioMessage(1, TEAM_RADIO_COLOR, str);
-		SafeGivePlayerMoney(killerid, money);
-
+		if (killerid != INVALID_PLAYER_ID)
+		{
+			new money = DrugDealer[playerid] * 7000;
+			format(str, sizeof(str), "** [Tong dai]: %s da ban ha doi tuong buon lau %s, tich thu %d gram thuoc, tuong ung %d$. **", GN(killerid), GN(playerid), DrugDealer[playerid], money);
+			SendRadioMessage(1, TEAM_RADIO_COLOR, str);
+			SafeGivePlayerMoney(killerid, money);
+		}
+		else
+		{
+			format(str, sizeof(str), "** [Tong dai]: Doi tuong buon lau %s da tu sat, so thuoc bi tieu huy. **", GN(killerid));
+			SendRadioMessage(1, TEAM_RADIO_COLOR, str);
+		}
 		DDTime[playerid] = 0;
 		DrugDealing[playerid] = 0;
 		DrugDealer[playerid] = 0;
@@ -1967,8 +1974,9 @@ public OnPlayerEnterCheckpoint(playerid)
 		DisableCheckpoint(playerid);
 		return 1;
 	}
-	if (DrugDealing[playerid] == 1 && GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
+	if (DrugDealing[playerid] == 1)
 	{
+		if (GetPlayerState(playerid) != PLAYER_STATE_DRIVER) return 1;
 		for (new i = 0; i<sizeof(BuonLauTakeCP); i++)
 		{
 			new vid = GetPlayerVehicleID(playerid);
@@ -2000,9 +2008,11 @@ public OnPlayerEnterCheckpoint(playerid)
 				return 1;
 			}
 		}
+		return 1;
 	}
-	if (DrugDealing[playerid] == 3 && GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
+	if (DrugDealing[playerid] == 3)
 	{
+		if (GetPlayerState(playerid) != PLAYER_STATE_DRIVER) return 1;
 		for (new i = 0; i<sizeof(BuonLauGiveCP); i++)
 		{
 			if (IsPlayerInRangeOfPoint(playerid, 5, BuonLauGiveCP[i][0], BuonLauGiveCP[i][1], BuonLauGiveCP[i][2]))
@@ -4160,7 +4170,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 			}
 		}
 	}
-	if (newstate == PLAYER_STATE_WASTED)
+	if (newstate == PLAYER_STATE_WASTED && Dying[playerid] == 1)
 	{
 		if (WantedLevel[playerid] >= 1)
 		{
@@ -6639,7 +6649,6 @@ public OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid, bodypart)
 		}
 	}
 }
-
 CMD:baocao(playerid, params[]) { return cmd_report(playerid, params); }
 CMD:report(playerid, params[])
 {
@@ -10255,7 +10264,6 @@ CMD:moctui(playerid, params[])
 				}
 				if (ProxDetectorS(5.0, playerid, giveplayerid))
 				{
-					
 					GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
 					format(string, sizeof(string), "%s co %d$ trong vi.", giveplayer, GetPlayerMoney(giveplayerid));
 					SendClientMessage(playerid, COLOR_WHITE, string);
