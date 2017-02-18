@@ -2,6 +2,7 @@
 #include <foreach>
 #include <zones>
 #include <YSI\y_ini>
+#include <mSelection>
 //#include <jit>
 
 #define OFFERWEAPON 1
@@ -168,3 +169,5 @@ new SpecPlayer[MAX_PLAYERS],
 
 #define UPDLNOVEH 1
 #define UPDLVEH 2
+
+new mSkinList = mS_INVALID_LISTID;

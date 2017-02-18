@@ -37,6 +37,7 @@ new MySQL:conn;
 //DEFINE
 #include <ProjectInc\declare>
 #include <ProjectInc\reward>
+#include <ProjectInc\prize>
 
 #define DIALOG_REG 1
 #define DIALOG_LOGIN 2
@@ -8918,6 +8919,22 @@ public CustomPickups()
 					}
 				}
 			}//custompickups end
+			if (PlayerToPoint(2.0, i, 20.5627,-103.7291,1005.2578))
+			{// Hospital near speedway
+				GameTextForPlayer(i, "~w~/muaquanao de thay doi trang phuc", 5000, 5);
+			}
+			if (PlayerToPoint(2.0, i, 203.9068,-41.0728,1001.8047))
+			{// Hospital near speedway
+				GameTextForPlayer(i, "~w~/buonlau de thay doi trang phuc", 5000, 5);
+			}
+			if (PlayerToPoint(2.0, i, 161.3765,-83.8416,1001.8047))
+			{// Hospital near speedway
+				GameTextForPlayer(i, "~w~/buonlau de thay doi trang phuc", 5000, 5);
+			}
+			if (PlayerToPoint(2.0, i, 214.4470,-7.6471,1001.2109))
+			{// Hospital near speedway
+				GameTextForPlayer(i, "~w~/buonlau de thay doi trang phuc", 5000, 5);
+			}
 			if (PlayerToPoint(2.0, i, -1111.4635, -1681.5151, 76.3739))
 			{// Hospital near speedway
 				GameTextForPlayer(i, "~w~/buonlau de tien hanh buon lau", 5000, 5);

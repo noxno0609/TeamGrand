@@ -606,6 +606,11 @@ public OnGameModeInit()
 	AddStaticPickup(1239, 23, 1557.7257, -1675.2711, 28.3955); // PD roof
 	AddStaticPickup(1239, 23, 248.4994, -33.1366, 1.5781); // Materials pickup
 	AddStaticPickup(1239, 23, 2660.3398, -1590.6552, 13.8936); // Materials bank
+	AddStaticPickup(1239, 23, 20.5627,-103.7291,1005.2578); // Materials bank
+	AddStaticPickup(1239, 23, 203.9068,-41.0728,1001.8047); // Materials bank
+	AddStaticPickup(1239, 23, 214.4470,-7.6471,1001.2109); // Materials bank
+	AddStaticPickup(1239, 23, 161.3765,-83.8416,1001.8047); // Materials bank
+	
 	pickups = pickups + 71;
 	printf("Loading %d pickups... Loaded successfuly !", pickups);
 	new randa = random(sizeof(RandCars));
@@ -651,6 +656,8 @@ public OnGameModeInit()
 	burgertimer = SetTimer("UpdateBurgerPositions", 1000, 1);
 	chickentimer = SetTimer("UpdateChickenPositions", 1000, 1);
 	tracetimer = SetTimer("TraceLastCall", 300000, 1);
+
+	mSkinOnGameModeInit();
 	//updateplayerpos = SetTimer("UpdatePlayerPosition", 3000, 1);
 	//for(new i = 0; i < sizeof(CarSpawns); i++)
 	/*	for(new i = 0; i < 165; i++)
@@ -14260,6 +14267,7 @@ CMD:whisper(playerid, params[])
 						{
 							format(string, sizeof(string), "* %s dang tu lam nham gi do.", GN(playerid));
 							ProxDetector(5.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+							return 1;
 						}
 						else
 						{
