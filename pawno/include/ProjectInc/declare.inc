@@ -177,9 +177,6 @@ new TruckBiz[MAX_PLAYERS];
 #define UPDLNOVEH 1
 #define UPDLVEH 2
 
-<<<<<<< HEAD
 new mSkinList = mS_INVALID_LISTID;
-=======
 //Reward Type
 #define TRUCKREWARD 1
->>>>>>> 2a3a828222d6feebbcb552d5e9b3f5d0cac1a98d
