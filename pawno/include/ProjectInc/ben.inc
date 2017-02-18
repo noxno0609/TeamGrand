@@ -117,6 +117,7 @@ stock RespawnCar(vid)
 	CarInfo[newvid][cRegistration] = CarInfo[vid][cRegistration];
 	CarInfo[newvid][cOwned] = CarInfo[vid][cOwned];
 	CarInfo[newvid][cLock] = CarInfo[vid][cLock];
+	CarInfo[newvid][cType] = CarInfo[vid][cType];
 	DestroyCar(vid);
 	return 1;
 }
@@ -143,11 +144,12 @@ stock DestroyCar(vid)
 	CarInfo[vid][cColorTwo] = 0;
 	format(CarInfo[vid][cOwner], 128, "");
 	format(CarInfo[vid][cDescription], 128, "");
-	CarInfo[vid][cValue] = CarInfo[vid][cValue];
-	CarInfo[vid][cLicense] = CarInfo[vid][cLicense];
-	CarInfo[vid][cRegistration] = CarInfo[vid][cRegistration];
-	CarInfo[vid][cOwned] = CarInfo[vid][cOwned];
-	CarInfo[vid][cLock] = CarInfo[vid][cLock];
+	CarInfo[vid][cValue] = 0;
+	CarInfo[vid][cLicense] = 0;
+	CarInfo[vid][cRegistration] = 0;
+	CarInfo[vid][cOwned] = 0;
+	CarInfo[vid][cLock] = 0;
+	CarInfo[vid][cType] = 0;
 	DestroyVehicle(vid);
 	return 1;
 }
@@ -209,8 +211,9 @@ CMD:veh(playerid, params[])
 				 new str[128];
 				 format(str, sizeof(str), "Xe He Thong\nID Veh: %d", i);
 				 aVehLabel[i] = Create3DTextLabel(str, COLOR_YELLOW, 0, 0, 0, 30, 0, 0);
-
 				 Attach3DTextLabelToVehicle(aVehLabel[i], aVeh[i], 0, 0, 0);
+				 aColor[i][0] = col[0];
+				 aColor[i][1] = col[1];
 				 return 1;
 			 }
 		 }
@@ -273,13 +276,9 @@ CMD:spec(playerid, params[])
 			if (pspec == INVALID_PLAYER_ID) return SCM(playerid, COLOR_GREY, "Nguoi choi nay khong ton tai.");
 			if (Spectating[playerid] == 0)
 			{
-				new Float:Pos[3];
-				GetPlayerPos(playerid, Pos[0], Pos[1], Pos[2]);
-				SetPVarFloat(playerid, "SX", Pos[0]);
-				SetPVarFloat(playerid, "SY", Pos[1]);
-				SetPVarFloat(playerid, "SZ", Pos[2]);
-				SetPVarInt(playerid, "SInt", GetPlayerInterior(playerid));
-				SetPVarInt(playerid, "SWorld", GetPlayerVirtualWorld(playerid));
+				GetPlayerPos(playerid, SpecPos[playerid][0], SpecPos[playerid][1], SpecPos[playerid][2]);
+				SpecInt[playerid] = GetPlayerInterior(playerid);
+				SpecVWorld[playerid] = GetPlayerVirtualWorld(playerid);
 			}
 			TogglePlayerSpectating(playerid, 1);
 			PlayerSpectatePlayer(playerid, pspec, 0);
@@ -635,7 +634,7 @@ stock LoadTruck(playerid)
 	SafeGivePlayerMoney(playerid, -10000);
 	new vid = GetPlayerVehicleID(playerid);
 	Trucking[vid] = 1;
-	SCM(playerid, COLOR_YELLOW, "Dung lenh /timcuahang de tim cua hang de giao hang.");
+	SCM(playerid, COLOR_YELLOW, "Dung lenh /timgiaohang de tim cua hang de giao hang.");
 	SCM(playerid, COLOR_LIGHTGREEN, "Giao hang bang cach dung yen truoc cua hang trong 5 giay.");
 	//SetCheckpoint(playerid, BizzInfo[bizid][bEntranceX], BizzInfo[bizid][bEntranceY], BizzInfo[bizid][bEntranceZ], 5);
 	return 1;
@@ -882,4 +881,66 @@ public KickTime(playerid)
 {
 	Kick(playerid);
 	return 1;
+}
+
+stock RemoveVendingMachine(playerid)
+{
+	//Los Santos and Countryside
+	RemoveBuildingForPlayer(playerid, 956, 1634.1487, -2238.2810, 13.5077, 20.0); //Snack vender @ LS Airport
+	RemoveBuildingForPlayer(playerid, 956, 2480.9885, -1958.5117, 13.5831, 20.0); //Snack vender @ Sushi Shop in Willowfield
+	RemoveBuildingForPlayer(playerid, 955, 1729.7935, -1944.0087, 13.5682, 20.0); //Sprunk machine @ Unity Station
+	RemoveBuildingForPlayer(playerid, 955, 2060.1099, -1898.4543, 13.5538, 20.0); //Sprunk machine opposite Tony's Liqour in Willowfield
+	RemoveBuildingForPlayer(playerid, 955, 2325.8708, -1645.9584, 14.8270, 20.0); //Sprunk machine @ Ten Green Bottles
+	RemoveBuildingForPlayer(playerid, 955, 1153.9130, -1460.8893, 15.7969, 20.0); //Sprunk machine @ Market
+	RemoveBuildingForPlayer(playerid, 955, 1788.3965, -1369.2336, 15.7578, 20.0); //Sprunk machine in Downtown Los Santos
+	RemoveBuildingForPlayer(playerid, 955, 2352.9939, -1357.1105, 24.3984, 20.0); //Sprunk machine @ Liquour shop in East Los Santos
+	RemoveBuildingForPlayer(playerid, 1775, 2224.3235, -1153.0692, 1025.7969, 20.0); //Sprunk machine @ Jefferson Motel
+	RemoveBuildingForPlayer(playerid, 956, 2140.2566, -1161.7568, 23.9922, 20.0); //Snack machine @ pick'n'go market in Jefferson
+	RemoveBuildingForPlayer(playerid, 956, 2154.1199, -1015.7635, 62.8840, 20.0); //Snach machine @ Carniceria El Pueblo in Las Colinas
+	RemoveBuildingForPlayer(playerid, 956, 662.5665, -551.4142, 16.3359, 20.0); //Snack vender at Dillimore Gas Station
+	RemoveBuildingForPlayer(playerid, 955, 200.2010, -107.6401, 1.5513, 20.0); //Sprunk machine @ Blueberry Safe House
+	RemoveBuildingForPlayer(playerid, 956, 2271.4666, -77.2104, 26.5824, 20.0); //Snack machine @ Palomino Creek Library
+	RemoveBuildingForPlayer(playerid, 955, 1278.5421, 372.1057, 19.5547, 20.0); //Sprunk machine @ Papercuts in Montgomery
+	RemoveBuildingForPlayer(playerid, 955, 1929.5527, -1772.3136, 13.5469, 20.0); //Sprunk machine @ Idlewood Gas Station
+
+	//San Fierro
+	RemoveBuildingForPlayer(playerid, 1302, -2419.5835, 984.4185, 45.2969, 20.0); //Soda machine 1 @ Juniper Hollow Gas Station
+	RemoveBuildingForPlayer(playerid, 1209, -2419.5835, 984.4185, 45.2969, 20.0); //Soda machine 2 @ Juniper Hollow Gas Station
+	RemoveBuildingForPlayer(playerid, 956, -2229.2075, 287.2937, 35.3203, 20.0); //Snack vender @ King's Car Park
+	RemoveBuildingForPlayer(playerid, 955, -1349.3947, 493.1277, 11.1953, 20.0); //Sprunk machine @ SF Aircraft Carrier
+	RemoveBuildingForPlayer(playerid, 956, -1349.3947, 493.1277, 11.1953, 20.0); //Snack vender @ SF Aircraft Carrier
+	RemoveBuildingForPlayer(playerid, 955, -1981.6029, 142.7232, 27.6875, 20.0); //Sprunk machine @ Cranberry Station
+	RemoveBuildingForPlayer(playerid, 955, -2119.6245, -422.9411, 35.5313, 20.0); //Sprunk machine 1/2 @ SF Stadium
+	RemoveBuildingForPlayer(playerid, 955, -2097.3696, -397.5220, 35.5313, 20.0); //Sprunk machine 3 @ SF Stadium
+	RemoveBuildingForPlayer(playerid, 955, -2068.5593, -397.5223, 35.5313, 20.0); //Sprunk machine 3 @ SF Stadium
+	RemoveBuildingForPlayer(playerid, 955, -2039.8802, -397.5214, 35.5313, 20.0); //Sprunk machine 3 @ SF Stadium
+	RemoveBuildingForPlayer(playerid, 955, -2011.1403, -397.5225, 35.5313, 20.0); //Sprunk machine 3 @ SF Stadium
+	RemoveBuildingForPlayer(playerid, 955, -2005.7861, -490.8688, 35.5313, 20.0); //Sprunk machine 3 @ SF Stadium
+	RemoveBuildingForPlayer(playerid, 955, -2034.5267, -490.8681, 35.5313, 20.0); //Sprunk machine 3 @ SF Stadium
+	RemoveBuildingForPlayer(playerid, 955, -2063.1875, -490.8687, 35.5313, 20.0); //Sprunk machine 3 @ SF Stadium
+	RemoveBuildingForPlayer(playerid, 955, -2091.9780, -490.8684, 35.5313, 20.0); //Sprunk machine 3 @ SF Stadium
+
+	//Las Venturas
+	RemoveBuildingForPlayer(playerid, 956, -1455.1298, 2592.4138, 55.8359, 20.0); //Snack vender @ El Quebrados GONE
+	RemoveBuildingForPlayer(playerid, 955, -252.9574, 2598.9048, 62.8582, 20.0); //Sprunk machine @ Las Payasadas GONE
+	RemoveBuildingForPlayer(playerid, 956, -252.9574, 2598.9048, 62.8582, 20.0); //Snack vender @ Las Payasadas GONE
+	RemoveBuildingForPlayer(playerid, 956, 1398.7617, 2223.3606, 11.0234, 20.0); //Snack vender @ Redsands West GONE
+	RemoveBuildingForPlayer(playerid, 955, -862.9229, 1537.4246, 22.5870, 20.0); //Sprunk machine @ The Smokin' Beef Grill in Las Barrancas GONE
+	RemoveBuildingForPlayer(playerid, 955, -14.6146, 1176.1738, 19.5634, 20.0); //Sprunk machine @ Fort Carson GONE
+	RemoveBuildingForPlayer(playerid, 956, -75.2839, 1227.5978, 19.7360, 20.0); //Snack vender @ Fort Carson GONE
+	RemoveBuildingForPlayer(playerid, 955, 1519.3328, 1055.2075, 10.8203, 20.0); //Sprunk machine @ LVA Freight Department GONE
+	RemoveBuildingForPlayer(playerid, 956, 1659.5096, 1722.1096, 10.8281, 20.0); //Snack vender near Binco @ LV Airport GONE
+	RemoveBuildingForPlayer(playerid, 955, 2086.5872, 2071.4958, 11.0579, 20.0); //Sprunk machine @ Sex Shop on The Strip
+	RemoveBuildingForPlayer(playerid, 955, 2319.9001, 2532.0376, 10.8203, 20.0); //Sprunk machine @ Pizza co by Julius Thruway (North)
+	RemoveBuildingForPlayer(playerid, 955, 2503.2061, 1244.5095, 10.8203, 20.0); //Sprunk machine @ Club in the Camels Toe
+	RemoveBuildingForPlayer(playerid, 956, 2845.9919, 1294.2975, 11.3906, 20.0); //Snack vender @ Linden Station
+
+	//Interiors: 24/7 and Clubs
+	RemoveBuildingForPlayer(playerid, 1775, 496.0843, -23.5310, 1000.6797, 20.0); //Sprunk machine 1 @ Club in Camels Toe
+	RemoveBuildingForPlayer(playerid, 1775, 501.1219, -2.1968, 1000.6797, 20.0); //Sprunk machine 2 @ Club in Camels Toe
+	RemoveBuildingForPlayer(playerid, 1776, 501.1219, -2.1968, 1000.6797, 20.0); //Snack vender @ Club in Camels Toe
+	RemoveBuildingForPlayer(playerid, 1775, -19.2299, -57.0460, 1003.5469, 20.0); //Sprunk machine @ Roboi's type 24/7 stores
+	RemoveBuildingForPlayer(playerid, 1776, -35.9012, -57.1345, 1003.5469, 20.0); //Snack vender @ Roboi's type 24/7 stores
+	RemoveBuildingForPlayer(playerid, 1775, -17.0036, -90.9709, 1003.5469, 20.0); //Sprunk machine @ Other 24/7 stores
+	RemoveBuildingForPlayer(playerid, 1776, -17.0036, -90.9709, 1003.5469, 20.0); //Snach vender @ Others 24/7 stores
 }

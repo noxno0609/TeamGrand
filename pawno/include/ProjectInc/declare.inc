@@ -12,6 +12,7 @@
 #define MAXCUSTOMVEH 50
 new aVeh[MAXCUSTOMVEH];
 new Text3D:aVehLabel[MAXCUSTOMVEH];
+new aColor[MAXCUSTOMVEH][2];
 
 new Tazering[MAX_PLAYERS];
 new Tazered[MAX_PLAYERS];
@@ -150,8 +151,11 @@ new Text:TDAnimHelp;
 
 //Spec
 new SpecPlayer[MAX_PLAYERS],
-	Spectating[MAX_PLAYERS],
-	Spectated[MAX_PLAYERS];
+Spectating[MAX_PLAYERS],
+Spectated[MAX_PLAYERS],
+Float:SpecPos[MAX_PLAYERS][3],
+SpecInt[MAX_PLAYERS],
+SpecVWorld[MAX_PLAYERS];
 
 new Trucking[MAX_VEHICLES];
 new TruckTime[MAX_PLAYERS];

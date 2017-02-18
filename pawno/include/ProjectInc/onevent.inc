@@ -682,6 +682,7 @@ public OnPlayerConnect(playerid)
 		KickEx(playerid);
 		return 1;
 	}
+	RemoveVendingMachine(playerid);
 	gActivePlayers[playerid]++;
 	numplayers++;
 //	new string[128]; // credits to Virtual1ty taken from GTA: RolePlay topic
@@ -7236,7 +7237,7 @@ CMD:vehslap(playerid, params[])
 					SetVehiclePos(GetPlayerVehicleID(giveplayerid), slx, sly, slz + 550);
 					PlayerPlaySound(giveplayerid, 1130, slx, sly, slz + 5);
 					printf("AdmCMD: %s vehicle slapped %s", GN(playerid), GN(giveplayerid));
-					format(string, sizeof(string), "AdmCMD: %s was vehicle slapped slapped by %s", GN(giveplayerid), GN(playerid));
+					format(string, sizeof(string), "AdmCMD: %s bi vehicle slapped boi %s", GN(giveplayerid), GN(playerid));
 					ABroadCast(COLOR_LIGHTRED, string, 1);
 				}
 			}
@@ -10524,6 +10525,160 @@ CMD:trashreport(playerid, params[])
 	}
 	return 1;
 }
+CMD:editcar(playerid, params[])
+{
+	if (PlayerInfo[playerid][pAdmin] < 1337) return SCM(playerid, COLOR_GREY, "Ban khong du quyen han.");
+	new vid, option[128], choose[50];
+	if (sscanf(params, "is[50]", vid, option))
+	{
+		SCM(playerid, COLOR_GRAD2, "Su dung: /editcar [vehid] [option]");
+		SCM(playerid, COLOR_GRAD2, "Option: model, park, type, color");
+		return 1;
+	}
+	GetFirstParams(option, choose, sizeof(choose));
+	if (IsAnOwnableCar(vid)) return SCM(playerid, COLOR_GREY, "Chi co the edit xe he thong.");
+	if (!strcmp(choose, "model", true))
+	{
+		new modelid;
+		if (sscanf(option, "s[50]i", choose, modelid)) return SCM(playerid, COLOR_GRAD2, "Su dung: /editcar [vehid] model [modelid]");
+		if (modelid < 400 || modelid > 611) return SCM(playerid, COLOR_GREY, "ID tu 400 den 611.");
+		CarInfo[vid][cModel] = modelid;
+		UpdateCar(vid);
+		RespawnCar(vid);
+		SCM(playerid, COLOR_LIGHTRED, "Chinh model xe thanh cong!");
+		return 1;
+	}
+	if (!strcmp(choose, "park", true))
+	{
+		GetVehiclePos(vid, CarInfo[vid][cLocationx], CarInfo[vid][cLocationy], CarInfo[vid][cLocationz]);
+		GetVehicleZAngle(vid, CarInfo[vid][cAngle]);
+		UpdateCar(vid);
+		RespawnCar(vid);
+		SCM(playerid, COLOR_LIGHTRED, "Chinh vi tri xe thanh cong!");
+		return 1;
+	}
+	else if (!strcmp(choose, "type", true))
+	{
+		new nametype[50], type = 0;
+		if (sscanf(option, "s[50]s[50]", choose, nametype))
+		{
+			SCM(playerid, COLOR_GRAD2, "Su dung: /editcar [vehid] type [typename]");
+			SCM(playerid, COLOR_GRAD2, "Type Name: Cop, FBI, NG, Gor, Ambulance, Truck, Pizza, Bus, Tow");
+			return 1;
+		}
+		if (!strcmp(nametype, "cop", true)) type = COPVEH;
+		else if (!strcmp(nametype, "fbi", true)) type = FBIVEH;
+		else if (!strcmp(nametype, "ng", true)) type = NGVEH;
+		else if (!strcmp(nametype, "gor", true)) type = GORVEH;
+		else if (!strcmp(nametype, "ambulance", true)) type = AMBUVEH;
+		else if (!strcmp(nametype, "truck", true)) type = TRUCKVEH;
+		else if (!strcmp(nametype, "pizza", true)) type = PIZZAVEH;
+		else if (!strcmp(nametype, "bus", true)) type = BUSVEH;
+		else if (!strcmp(nametype, "tow", true)) type = TOWVEH;
+		if (type == 0) return 1;
+		CarInfo[vid][cType] = type;
+		UpdateCar(vid);
+		RespawnCar(vid);
+		SCM(playerid, COLOR_LIGHTRED, "Chinh type cua xe thanh cong!");
+		return 1;
+	}
+	else if (!strcmp(choose, "color", true))
+	{
+		new col1, col2;
+		if (sscanf(option, "s[50]ii", option, col1, col2)) return SCM(playerid, COLOR_GRAD2, "Su dung: /editcar [vehid] color [color1] [color2]");
+		CarInfo[vid][cColorOne] = col1;
+		CarInfo[vid][cColorTwo] = col2;
+		UpdateCar(vid);
+		RespawnCar(vid);
+		SCM(playerid, COLOR_LIGHTRED, "Chinh mau cua xe thanh cong!");
+		return 1;
+	}
+	return 1;
+}
+CMD:addcar(playerid, params[])
+{
+	new vid = GetPlayerVehicleID(playerid);
+	new avid = IsAdminVehicle(vid);
+	if (!IsPlayerInAnyVehicle(playerid) || avid == -1)
+		return SCM(playerid, COLOR_GREY, "Ban phai tao mot chiec Admin Vehicle de lam xe.");
+
+	if (PlayerInfo[playerid][pAdmin] < 1337) return SCM(playerid, COLOR_GREY, "Ban khong du quyen han.");
+	new idtype[50];
+	if (sscanf(params, "s[50]", idtype))
+	{
+		SCM(playerid, COLOR_GRAD2, "Su dung: /addcar [type name]");
+		SCM(playerid, COLOR_GRAD2, "Type Name: Cop, FBI, NG, Gor, Ambulance, Truck, Pizza, Bus, Tow");
+		return 1;
+	}
+	new model = GetVehicleModel(vid);
+	new Float:x, Float:y, Float:z, Float:a;
+	GetVehiclePos(vid, x, y, z);
+	GetVehicleZAngle(vid, a);
+	if (!strcmp(idtype, "cop", true))
+	{
+		AddCar(model, x, y, z + 1, a, aColor[avid][0], aColor[avid][1], 60000, "The State", 0, 0, COPVEH);
+		DeleteAdminVeh(avid);
+		GameTextForPlayer(playerid, "Tao xe COP thanh cong", 3000, 4);
+		OnPropUpdate();
+	}
+	else if (!strcmp(idtype, "fbi", true))
+	{
+		AddCar(model, x, y, z + 1, a, aColor[avid][0], aColor[avid][1], 60000, "The State", 0, 0, FBIVEH);
+		DeleteAdminVeh(avid);
+		GameTextForPlayer(playerid, "Tao xe FBI thanh cong", 3000, 4);
+		OnPropUpdate();
+	}
+	else if (!strcmp(idtype, "ng", true))
+	{
+		AddCar(model, x, y, z + 1, a, aColor[avid][0], aColor[avid][1], 60000, "The State", 0, 0, NGVEH);
+		DeleteAdminVeh(avid);
+		GameTextForPlayer(playerid, "Tao xe National Guard thanh cong", 3000, 4);
+		OnPropUpdate();
+	}
+	else if (!strcmp(idtype, "gor", true))
+	{
+		AddCar(model, x, y, z + 1, a, aColor[avid][0], aColor[avid][1], 60000, "The State", 0, 0, GORVEH);
+		DeleteAdminVeh(avid);
+		GameTextForPlayer(playerid, "Tao xe Gorvement thanh cong", 3000, 4);
+		OnPropUpdate();
+	}
+	else if (!strcmp(idtype, "ambulance", true))
+	{
+		AddCar(model, x, y, z + 1, a, aColor[avid][0], aColor[avid][1], 60000, "The State", 0, 0, AMBUVEH);
+		DeleteAdminVeh(avid);
+		GameTextForPlayer(playerid, "Tao xe Ambulance thanh cong", 3000, 4);
+		OnPropUpdate();
+	}
+	else if (!strcmp(idtype, "truck", true))
+	{
+		AddCar(model, x, y, z + 1, a, aColor[avid][0], aColor[avid][1], 60000, "The State", 0, 0, TRUCKVEH);
+		DeleteAdminVeh(avid);
+		GameTextForPlayer(playerid, "Tao xe Truck thanh cong", 3000, 4);
+		OnPropUpdate();
+	}
+	else if (!strcmp(idtype, "pizza", true))
+	{
+		AddCar(model, x, y, z + 1, a, aColor[avid][0], aColor[avid][1], 60000, "The State", 0, 0, PIZZAVEH);
+		DeleteAdminVeh(avid);
+		GameTextForPlayer(playerid, "Tao xe Pizza thanh cong", 3000, 4);
+		OnPropUpdate();
+	}
+	else if (!strcmp(idtype, "bus", true))
+	{
+		AddCar(model, x, y, z + 1, a, aColor[avid][0], aColor[avid][1], 60000, "The State", 0, 0, BUSVEH);
+		DeleteAdminVeh(avid);
+		GameTextForPlayer(playerid, "Tao xe Bus thanh cong", 3000, 4);
+		OnPropUpdate();
+	}
+	else if (!strcmp(idtype, "tow", true))
+	{
+		AddCar(model, x, y, z + 1, a, aColor[avid][0], aColor[avid][1], 60000, "The State", 0, 0, TOWVEH);
+		DeleteAdminVeh(avid);
+		GameTextForPlayer(playerid, "Tao xe Tow thanh cong", 3000, 4);
+		OnPropUpdate();
+	}
+	return 1;
+}
 CMD:addcds(playerid, params[]) { return cmd_addcardealership(playerid, params); }
 CMD:addcardealership(playerid, params[])
 {
@@ -10567,7 +10722,7 @@ CMD:addcardealership(playerid, params[])
 			format(str, sizeof(str), "AdmCMD: %s da tao mot %s gia %d$ cho dealership thanh cong!", GN(playerid), GetVehicleName(vid), gia);
 			SendAdminMessage(COLOR_YELLOW, str);
 			GameTextForPlayer(playerid, "~w~Ban da tao mot phuong tien cho dealership thanh cong!", 10000, 3);
-			AddCar(model, x, y, z + 1, a, 0, 0, 60000, "Dealership", 0, gia);
+			AddCar(model, x, y, z + 1, a, aColor[avid][0], aColor[avid][1], 60000, "Dealership", 0, gia);
 			DeleteAdminVeh(avid);
 			OnPropUpdate();
 			return 1;
@@ -10577,7 +10732,7 @@ CMD:addcardealership(playerid, params[])
 		format(str, sizeof(str), "AdmCMD: %s da tao mot %s gia %d$, so luong %d cho dealership thanh cong!", GN(playerid), GetVehicleName(vid), gia, amount);
 		SendAdminMessage(COLOR_YELLOW, str);
 		GameTextForPlayer(playerid, "~w~Ban da tao mot phuong tien cho dealership thanh cong!", 10000, 3);
-		AddDealership(model, x, y, z + 1, a, 0, 0, 60000, gia, amount);
+		AddDealership(model, x, y, z + 1, a, aColor[avid][0], aColor[avid][1], 60000, gia, amount);
 		DeleteAdminVeh(avid);
 		OnPropUpdate();
 	}
@@ -18120,37 +18275,37 @@ CMD:extortion(playerid, params[])
 	}
 	return 1;
 }
-CMD:bizname(playerid, params[])
-{
-	if (IsPlayerConnected(playerid))
-	{
-		new bouse = PlayerInfo[playerid][pPbiskey];
-		if (bouse == 255)
-		{
-			SendClientMessage(playerid, COLOR_GRAD2, "   Ban khong so huu co so kinh doanh !");
-			return 1;
-		}
-		new string[255];
-		new result[64];
-		if(sscanf(params, "s[64]", result))
-		{
-			SendClientMessage(playerid, COLOR_WHITE, "Sudung: /bizname [Ten]");
-		}
-		if (bouse >= 100)
-		{
-			strmid(SBizzInfo[bouse - 100][sbMessage], result, 0, 64, 255);
-			format(string, sizeof(string), "Ten cua co so kinh doanh duoc doi thanh: %s", SBizzInfo[bouse - 100][sbMessage]);
-		}
-		else
-		{
-			strmid(BizzInfo[bouse][bMessage], result, 0, 64, 255);
-			format(string, sizeof(string), "Ten cua co so kinh doanh duoc doi thanh: %s", BizzInfo[bouse][bMessage]);
-		}
-		OnPropUpdate();
-		SendClientMessage(playerid, COLOR_WHITE, string);
-	}
-	return 1;
-}
+//CMD:bizname(playerid, params[])
+//{
+//	if (IsPlayerConnected(playerid))
+//	{
+//		new bouse = PlayerInfo[playerid][pPbiskey];
+//		if (bouse == 255)
+//		{
+//			SendClientMessage(playerid, COLOR_GRAD2, "   Ban khong so huu co so kinh doanh !");
+//			return 1;
+//		}
+//		new string[255];
+//		new result[64];
+//		if(sscanf(params, "s[64]", result))
+//		{
+//			SendClientMessage(playerid, COLOR_WHITE, "Sudung: /bizname [Ten]");
+//		}
+//		if (bouse >= 100)
+//		{
+//			strmid(SBizzInfo[bouse - 100][sbMessage], result, 0, 64, 255);
+//			format(string, sizeof(string), "Ten cua co so kinh doanh duoc doi thanh: %s", SBizzInfo[bouse - 100][sbMessage]);
+//		}
+//		else
+//		{
+//			strmid(BizzInfo[bouse][bMessage], result, 0, 64, 255);
+//			format(string, sizeof(string), "Ten cua co so kinh doanh duoc doi thanh: %s", BizzInfo[bouse][bMessage]);
+//		}
+//		OnPropUpdate();
+//		SendClientMessage(playerid, COLOR_WHITE, string);
+//	}
+//	return 1;
+//}
 CMD:bizwithdraw(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -21255,47 +21410,46 @@ CMD:name(playerid, params[])
 	}
 	return 1;
 }
-CMD:changename(playerid, params[])
-{
-
-	new giveplayerid, tmp[255], string[255];
-	if (sscanf(params, "us[255]", giveplayerid, tmp))
-	{
-		SendClientMessage(playerid, COLOR_DBLUE, "Su dung: /changename [playerid] [new nick]");
-		return 1;
-	}
-
-	if (IsPlayerConnected(playerid))
-	{
-		if (PlayerInfo[playerid][pAdmin] >= 1337)
-		{
-			if (IsPlayerConnected(giveplayerid))
-			{
-				SetPlayerName(giveplayerid, tmp);
-				format(string, sizeof(string), "AdmCMD: %s(%i) da doi ten cua ban thanh %s", GN(playerid), playerid, tmp);
-				SendClientMessage(giveplayerid, COLOR_DBLUE, string);
-				format(string, sizeof(string), "AdmCMD: Ban da thay doi ID %i's ten thanh %s", giveplayerid, tmp);
-				SendClientMessage(playerid, COLOR_DBLUE, string);
-				format(string, 256, "AdmWarning: %s da thay doi %s's ten cua nguoi choi thanh %s.", GN(playerid), GN(giveplayerid), tmp);
-				ABroadCast(COLOR_YELLOW, string, 1);
-			}
-			else
-			{
-				format(string, sizeof(string), "%d , la nguoi choi khong hop le.", giveplayerid);
-				SendClientMessage(playerid, COLOR_RED, string);
-			}
-		}
-		else
-		{
-			SendClientMessage(playerid, COLOR_RED, "Ban khong the su dung lenh nay!");
-		}
-	}
-	else
-	{
-		SendClientMessage(playerid, COLOR_RED, "Ban phai dang nhap de su dung lenh nay!");
-	}
-	return 1;
-}
+//CMD:changename(playerid, params[])
+//{
+//	new giveplayerid, tmp[255], string[255];
+//	if (sscanf(params, "us[255]", giveplayerid, tmp))
+//	{
+//		SendClientMessage(playerid, COLOR_DBLUE, "Su dung: /changename [playerid] [new nick]");
+//		return 1;
+//	}
+//
+//	if (IsPlayerConnected(playerid))
+//	{
+//		if (PlayerInfo[playerid][pAdmin] >= 1337)
+//		{
+//			if (IsPlayerConnected(giveplayerid))
+//			{
+//				SetPlayerName(giveplayerid, tmp);
+//				format(string, sizeof(string), "AdmCMD: %s(%i) da doi ten cua ban thanh %s", GN(playerid), playerid, tmp);
+//				SendClientMessage(giveplayerid, COLOR_DBLUE, string);
+//				format(string, sizeof(string), "AdmCMD: Ban da thay doi ID %i's ten thanh %s", giveplayerid, tmp);
+//				SendClientMessage(playerid, COLOR_DBLUE, string);
+//				format(string, 256, "AdmWarning: %s da thay doi %s's ten cua nguoi choi thanh %s.", GN(playerid), GN(giveplayerid), tmp);
+//				ABroadCast(COLOR_YELLOW, string, 1);
+//			}
+//			else
+//			{
+//				format(string, sizeof(string), "%d , la nguoi choi khong hop le.", giveplayerid);
+//				SendClientMessage(playerid, COLOR_RED, string);
+//			}
+//		}
+//		else
+//		{
+//			SendClientMessage(playerid, COLOR_RED, "Ban khong the su dung lenh nay!");
+//		}
+//	}
+//	else
+//	{
+//		SendClientMessage(playerid, COLOR_RED, "Ban phai dang nhap de su dung lenh nay!");
+//	}
+//	return 1;
+//}
 CMD:kick(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))

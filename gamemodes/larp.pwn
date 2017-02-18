@@ -204,7 +204,7 @@ forward LoadPapers();
 forward SavePapers();
 forward DeleteDealership(id);
 forward UpdateDealership();
-forward AddCar(model, Float:x, Float:y, Float:z, Float:a, color1, color2, respawntime, owner[], owned, price);
+//forward AddCar(model, Float:x, Float:y, Float:z, Float:a, color1, color2, respawntime, owner[], owned, price);
 forward AddDealership(model, Float:x, Float:y, Float:z, Float:a, color1, color2, respawntime, price, amount);
 forward LoadCar();
 //forward SaveCarCoords();
@@ -2858,13 +2858,13 @@ public DeleteDealership(id)
 	mysql_query(conn, sql);
 	return 1;
 }
-public AddCar(model, Float:x, Float:y, Float:z, Float:a, color1, color2, respawntime, owner[], owned, price)
+stock AddCar(model, Float:x, Float:y, Float:z, Float:a, color1, color2, respawntime, owner[], owned, price, type = 0)
 {
 	new sql[500];
 	format(sql, sizeof(sql), "INSERT INTO car (Owner, Owned, `Model`, Locationx, Locationy,\
-															 Locationz, Angle, ColorOne, ColorTwo, `Value`) \
-									 					VALUES ('%s', %d, %d, %f, %f, %f, %f, %d, %d, %d)",
-														owner, owned, model, x,y,z,a,color1,color2,price);
+															 Locationz, Angle, ColorOne, ColorTwo, `Value`, `Type`) \
+									 					VALUES ('%s', %d, %d, %f, %f, %f, %f, %d, %d, %d, %d)",
+														owner, owned, model, x,y,z,a,color1,color2,price, type);
 	mysql_query(conn, sql);
 	new newId = cache_insert_id();
 
@@ -2879,14 +2879,23 @@ public AddCar(model, Float:x, Float:y, Float:z, Float:a, color1, color2, respawn
 	CarInfo[vid][cColorOne] = color1;
 	CarInfo[vid][cColorTwo] = color2;
 	CarInfo[vid][cValue] = price;
-	CarInfo[vid][cID] = newId;
 	CarInfo[vid][cLock] = 0;
+	CarInfo[vid][cType] = type;
+	CarInfo[vid][cID] = newId;
 
+	//if (CarInfo[vid][cType] > 0)
+	//	CarInfo[vid][cID] = -1;
+	//else CarInfo[vid][cID] = newId;
+
+	/*if (CarInfo[vid][cType] > 0)
+	{
+
+	}*/
 	format(sql, sizeof(sql), "INSERT INTO cartrunk (VehID) VALUES (%d)", newId);
 	mysql_query(conn, sql);
 	vehTrunk[vid][1] = 0;
 	vehTrunkAmmo[vid][1] = 0;
-	vehTrunk[vid][2] = 0; 
+	vehTrunk[vid][2] = 0;
 	vehTrunkAmmo[vid][2] = 0;
 	vehTrunk[vid][3] = 0;
 	vehTrunkAmmo[vid][3] = 0;
@@ -2936,8 +2945,8 @@ public LoadCar()
 		cache_get_value_name_int(idx, "Lock", tmp); CarInfo[vid][cLock] = tmp;
 		cache_get_value_name_int(idx, "Type", tmp); CarInfo[vid][cType] = tmp;
 
-		if (CarInfo[vid][cType] > 0)
-			CarInfo[vid][cID] = -1;
+		/*if (CarInfo[vid][cType] > 0)
+			CarInfo[vid][cID] = -1;*/
 		
 		printf("CarInfo: %d Owner:%s LicensePlate %s", vid, CarInfo[vid][cOwner], CarInfo[vid][cLicense]);
 	}
@@ -4055,7 +4064,7 @@ public IsAPDMember(playerid)
 public IsAnOwnableCar(vehicleid)
 {
 	//if(vehicleid >= 184 && vehicleid <= 268) { return 1; }
-	if (CarInfo[vehicleid][cID] != -1)
+	if (CarInfo[vehicleid][cType] == 0)
 		return 1;
 	return 0;
 }
@@ -5102,9 +5111,9 @@ public SetPlayerSpawn(playerid)
 		else SetPlayerSkin(playerid, PlayerInfo[playerid][pModel]);
 		 if (Spectating[playerid] == 1)
 		 {
-			 SetPlayerPos(playerid, GetPVarFloat(playerid, "SX"), GetPVarFloat(playerid, "SY"), GetPVarFloat(playerid, "SZ"));
-			 SetPlayerInterior(playerid, GetPVarInt(playerid, "SInt"));
-			 SetPlayerVirtualWorld(playerid, GetPVarInt(playerid, "SWorld"));
+			 SetPlayerPos(playerid, SpecPos[playerid][0], SpecPos[playerid][1], SpecPos[playerid][2]);
+			 SetPlayerInterior(playerid, SpecInt[playerid]);
+			 SetPlayerVirtualWorld(playerid, SpecVWorld[playerid]);
 			 if (Spectated[SpecPlayer[playerid]] > 0) Spectated[SpecPlayer[playerid]]--;
 			 SpecPlayer[playerid] = -1;
 			 if (PlayerInfo[playerid][pChar] > 0) { SetPlayerSkin(playerid, PlayerInfo[playerid][pChar]); }
@@ -8104,6 +8113,43 @@ stock ini_GetValue( line[] )
 	return valRes;
 }
 
+stock UpdateCar(idx)
+{
+	new sql[500];
+	format(sql, sizeof(sql), "UPDATE car SET \
+			Owner = '%s',\
+			Owned = %d,\
+			Model = %d,\
+			Locationx = %f,\
+			Locationy = %f,\
+			Locationz = %f,\
+			Angle = %f,\
+			ColorOne = %d,\
+			ColorTwo = %d,\
+			Description = '%s',\
+			`Value` = %d,\
+			License = %d,\
+			`Lock` = %d,\
+			Type = %d \
+			WHERE ID = %d",
+			CarInfo[idx][cOwner],
+			CarInfo[idx][cOwned],
+			CarInfo[idx][cModel],
+			CarInfo[idx][cLocationx],
+			CarInfo[idx][cLocationy],
+			CarInfo[idx][cLocationz],
+			CarInfo[idx][cAngle],
+			CarInfo[idx][cColorOne],
+			CarInfo[idx][cColorTwo],
+			CarInfo[idx][cDescription],
+			CarInfo[idx][cValue],
+			CarInfo[idx][cLicense],
+			CarInfo[idx][cLock],
+			CarInfo[idx][cType],
+			CarInfo[idx][cID]);
+	mysql_query(conn, sql);
+	return 1;
+}
 public OnPropUpdate()
 {
 	//new File: file2;
@@ -8377,7 +8423,7 @@ public OnPropUpdate()
 
 	for (new idx = 0; idx < MAX_VEHICLES; idx++)
 	{
-		if (CarInfo[idx][cID] == -1 || CarInfo[idx][cOwned] == -1) continue;
+		if (IsAnOwnableCar(idx)) continue;
 		format(sql, sizeof(sql), "UPDATE car SET \
 				Owner = '%s',\
 				Owned = %d,\
