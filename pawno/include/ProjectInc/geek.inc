@@ -1,3 +1,18 @@
+public OnPlayerModelSelection(playerid, response, listid, modelid)
+{
+    if(listid == mSkinList)
+    {
+        if(response)
+        {
+        	SetPlayerSkin(playerid, modelid);
+			SafeGivePlayerMoney(playerid, -SKINPRICE)
+			PlayerPlaySound(playerid,5453,0.0,0.0,0.0);
+   		}
+        return 1;
+    }
+    return 1;
+}
+
 stock HP(playerid)
 {
 	new name[32];
@@ -625,6 +640,13 @@ CMD:gieohat(playerid, params[])
 	return 1;
 }
 
+CMD:muaquanao(playerid, params[])
+{
+	if(!IsAtClothShop(playerid)) return SendClientMessage(playerid, COLOR_GRAD1, "Khong dung o shop quan ao.");
+	ShowModelSelectionMenu(playerid, mSkinList, "Mua Trang Phuc");
+	return 1;
+}
+
 forward PlantKeyStateChange(playerid, newkeys, oldkeys);
 public PlantKeyStateChange(playerid, newkeys, oldkeys)
 {
@@ -666,6 +688,10 @@ public PlantKeyStateChange(playerid, newkeys, oldkeys)
 		}
 	}
 	return 1;
+}
+forward mSkinOnGameModeInit();
+public mSkinOnGameModeInit() {
+	mSkinList = LoadModelSelectionMenu("mSelection/skin.txt");
 }
 
 task Plant[1000]()

@@ -2,6 +2,7 @@
 #include <foreach>
 #include <zones>
 #include <YSI\y_ini>
+#include <mSelection>
 //#include <jit>
 
 #define PLANTMONEY 5000
@@ -180,5 +181,6 @@ new TruckBiz[MAX_PLAYERS];
 #define UPDLNOVEH 1
 #define UPDLVEH 2
 
+new mSkinList = mS_INVALID_LISTID;
 //Reward Type
 #define TRUCKREWARD 1
