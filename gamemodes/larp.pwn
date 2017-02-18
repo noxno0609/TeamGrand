@@ -36,10 +36,11 @@ new MySQL:conn;
 
 //DEFINE
 #include <ProjectInc\declare>
-#include <ProjectInc\reward>
 
 #define DIALOG_REG 1
 #define DIALOG_LOGIN 2
+#define DIALOG_FINDTRUCK 3
+#define DIALOG_SELECTTRUCK 4
 
 #if defined MAX_PLAYERS 
 #undef MAX_PLAYERS 
@@ -54,9 +55,9 @@ new MySQL:conn;
 
 #define SCRIPT_OWNCARS 500 //
 #define SCRIPT_MAXPLAYERS 50 //
-#define SCRIPT_MAXHOUSES 36 //
-#define MAX_BIZ 7 //
-#define MAX_SBIZ 13 //
+#define MAX_HOUSES 50 //
+#define MAX_BIZ 50 //
+#define MAX_SBIZ 50 //
 //==============================
 //#define strcpy(%1,%2,%3) strmid(%1,%2,0,%3,strlen(%2)+1)
 #define dcmd(%1,%2,%3) if ((strcmp((%3)[1], #%1, true, (%2)) == 0) && ((((%3)[(%2) + 1] == 0) && (dcmd_%1(playerid, "")))||(((%3)[(%2) + 1] == 32) && (dcmd_%1(playerid, (%3)[(%2) + 2]))))) return 1
@@ -1576,7 +1577,8 @@ enum pInfo
 	pDrugsSkill,
 	pCookSkill,
 	pFishSkill,
-	pPlantSkill ,
+	pPlantSkill,
+	pTruckSkill,
 	Float:pHealth,
 	Float:pSHealth,
 	pInt,
@@ -1647,6 +1649,7 @@ new PlayerInfo2[p2Info][MAX_PLAYERS];
 
 enum hInfo
 {
+	hID,
 	Float:hEntrancex,
 	Float:hEntrancey,
 	Float:hEntrancez,
@@ -1673,7 +1676,7 @@ enum hInfo
 	hWorld
 };
 
-new HouseInfo[SCRIPT_MAXHOUSES][hInfo];
+new HouseInfo[MAX_HOUSES][hInfo];
 
 enum cInfo
 {
@@ -1724,6 +1727,7 @@ new BizzInfo[MAX_BIZ][bInfo];
 
 enum sbInfo
 {
+	sbID,
 	sbOwned,
 	sbOwner[64],
 	sbMessage[128],
@@ -1744,13 +1748,13 @@ enum sbInfo
 };
 new SBizzInfo[MAX_SBIZ][sbInfo];
 
-enum pHaul
-{
-	pCapasity,
-	pLoad,
-};
-
-new PlayerHaul[113][pHaul];
+//enum pHaul
+//{
+//	pCapasity,
+//	pLoad,
+//};
+//
+//new PlayerHaul[113][pHaul];
 
 enum pCrime
 {
@@ -2039,6 +2043,7 @@ public SavePlayer(playerid)
 				CookSkill=%d,\
 				FishSkill=%d,\
 				PlantSkill=%d,\
+				TruckSkill=%d,\
 				SHealth=%f,\
 				Health=%f,\
 				`Int`=%d,\
@@ -2059,6 +2064,7 @@ public SavePlayer(playerid)
 				PlayerInfo[playerid][pCookSkill],
 				PlayerInfo[playerid][pFishSkill],
 				PlayerInfo[playerid][pPlantSkill],
+				PlayerInfo[playerid][pTruckSkill],
 				PlayerInfo[playerid][pSHealth],
 				PlayerInfo[playerid][pHealth],
 				PlayerInfo[playerid][pInt],
@@ -3045,9 +3051,9 @@ public LoadProperty()
 	new Float:tmpf;
 	new tmpstr[128];
 
-	for (new i = 0; i < SCRIPT_MAXHOUSES; i++)
+	for (new i = 0; i < MAX_HOUSES; i++)
 	{
-		format(sql, sizeof(sql), "SELECT * FROM house WHERE ID = %d", i);
+		format(sql, sizeof(sql), "SELECT * FROM house WHERE ID = %d", i+1);
 		mysql_query(conn, sql);
 
 		new rc;
@@ -3056,6 +3062,8 @@ public LoadProperty()
 
 		new idx;
 		cache_get_value_name_int(0, "ID", idx);
+		idx -= 1;
+		HouseInfo[idx][hID] = idx+1;
 		cache_get_value_name_float(0, "Entrancex", tmpf); HouseInfo[idx][hEntrancex] = tmpf;
 		cache_get_value_name_float(0, "Entrancey", tmpf); HouseInfo[idx][hEntrancey] = tmpf;
 		cache_get_value_name_float(0, "Entrancez", tmpf); HouseInfo[idx][hEntrancez] = tmpf;
@@ -3081,7 +3089,7 @@ public LoadProperty()
 		cache_get_value_name_int(0, "Date", tmp); HouseInfo[idx][hDate] = tmp;
 		cache_get_value_name_int(0, "Level", tmp); HouseInfo[idx][hLevel] = tmp;
 		cache_get_value_name_int(0, "World", tmp); HouseInfo[idx][hWorld] = tmp;
-		printf("HouseInfo:%d Owner:%s hTakings %d hVec %d", idx, HouseInfo[idx][hOwner], HouseInfo[idx][hTakings], HouseInfo[idx][hVec]);
+		printf("HouseInfo:%d Owner:%s hTakings %d hVec %d", HouseInfo[idx][hID], HouseInfo[idx][hOwner], HouseInfo[idx][hTakings], HouseInfo[idx][hVec]);
 	}
 	
 	/*new arrCoords[30][64];
@@ -3180,7 +3188,7 @@ public LoadBizz()
 
 	for (new i = 0; i < MAX_BIZ; i++)
 	{
-		format(sql, sizeof(sql), "SELECT * FROM biz WHERE ID = %d", i);
+		format(sql, sizeof(sql), "SELECT * FROM biz WHERE ID = %d", i+1);
 		mysql_query(conn, sql);
 
 		new rc;
@@ -3189,8 +3197,9 @@ public LoadBizz()
 			continue;
 
 		new idx;
-		cache_get_value_name_int(0, "ID", idx);
+		cache_get_value_name_int(0, "ID", idx); 
 		idx -= 1;
+		BizzInfo[idx][bID] = idx+1;
 		cache_get_value_name_int(0, "Owned", tmp); BizzInfo[idx][bOwned] = tmp;
 		cache_get_value_name(0, "Owner", tmpstr); format(BizzInfo[idx][bOwner], 128, tmpstr);
 		cache_get_value_name(0, "Message", tmpstr); format(BizzInfo[idx][bMessage], 128, tmpstr);
@@ -3212,7 +3221,7 @@ public LoadBizz()
 		cache_get_value_name_int(0, "PriceProd", tmp); BizzInfo[idx][bPriceProd] = tmp;
 		cache_get_value_name_int(0, "Type", tmp); BizzInfo[idx][bType] = tmp;
 		printf("BizzInfo:%d Owner:%s Message:%s Entfee:%d Till:%d Products:%d/%d Interior:%d.\n",
-			idx,
+			BizzInfo[idx][bID],
 			BizzInfo[idx][bOwner],
 			BizzInfo[idx][bMessage],
 			BizzInfo[idx][bEntranceCost],
@@ -3275,7 +3284,7 @@ public LoadSBizz()
 
 	for (new i = 0; i < MAX_SBIZ; i++)
 	{
-		format(sql, sizeof(sql), "SELECT * FROM sbiz WHERE ID = %d", i);
+		format(sql, sizeof(sql), "SELECT * FROM sbiz WHERE ID = %d", i+1);
 		mysql_query(conn, sql);
 
 		new rc;
@@ -3285,6 +3294,8 @@ public LoadSBizz()
 
 		new idx;
 		cache_get_value_name_int(0, "ID", idx);
+		idx -= 1;
+		SBizzInfo[idx][sbID] = idx + 1;
 		cache_get_value_name_int(0, "Owned", tmp); SBizzInfo[idx][sbOwned] = tmp;
 		cache_get_value_name(0, "Owner", tmpstr); format(SBizzInfo[idx][sbOwner], 128, tmpstr);
 		cache_get_value_name(0, "Message", tmpstr); format(SBizzInfo[idx][sbMessage], 128, tmpstr);
@@ -3303,7 +3314,7 @@ public LoadSBizz()
 		cache_get_value_name_int(0, "PriceProd", tmp); SBizzInfo[idx][sbPriceProd] = tmp;
 		cache_get_value_name_int(0, "Type", tmp); SBizzInfo[idx][sbType] = tmp;
 		printf("SBizzInfo:%d Owner:%s Message:%s Entfee:%d Till:%d Products:%d/%d Interior:%d.\n",
-			idx,
+			SBizzInfo[idx][sbID],
 			SBizzInfo[idx][sbOwner],
 			SBizzInfo[idx][sbMessage],
 			SBizzInfo[idx][sbEntranceCost],
@@ -5990,7 +6001,7 @@ public GlobalHackCheck()
 					SavePlayer(i);
 					GetPlayerIp(i, banip, sizeof(banip));
 					new spawnedamount = plactualmoney-ScriptMoney[i];
-					format(string, sizeof(string), "AdmCmd: tai khoan %s da bi khoa boi DUCK, ly do: money cheat ($%d)", plname, spawnedamount);
+					format(string, sizeof(string), "AdmCmd: Tai khoan %s da bi khoa boi SERVER, ly do: money cheat ($%d)", plname, spawnedamount);
 					BanLog(string);
 					KickEx(i);
 					ScriptMoney[i] = 0;
@@ -8096,8 +8107,8 @@ stock ini_GetValue( line[] )
 public OnPropUpdate()
 {
 	//new File: file2;
-	new sql[600];
-	for (new i = 0; i < SCRIPT_MAXHOUSES; i++)
+	new sql[800];
+	for (new i = 0; i < MAX_HOUSES; i++)
 	{
 		format(sql, sizeof(sql), "UPDATE house SET \
 					Entrancex = %f, \
@@ -8149,7 +8160,7 @@ public OnPropUpdate()
 					HouseInfo[i][hDate],
 					HouseInfo[i][hLevel],
 					HouseInfo[i][hWorld],
-					i+1);
+					HouseInfo[i][hID]);
 		mysql_query(conn, sql);
 	}
 	//printf("Save houses successfully.");
@@ -8247,7 +8258,7 @@ public OnPropUpdate()
 				BizzInfo[i][bMaxProducts],
 				BizzInfo[i][bPriceProd],
 				BizzInfo[i][bType],
-				i+1);
+				BizzInfo[i][bID]);
 				mysql_query(conn, sql);
 	}
 	//printf("Save business successfully.");
@@ -8289,7 +8300,7 @@ public OnPropUpdate()
 				SBizzInfo[i][sbMaxProducts],
 				SBizzInfo[i][sbPriceProd],
 				SBizzInfo[i][sbType],
-				i+1);
+				SBizzInfo[i][sbID]);
 		mysql_query(conn, sql);
 	}
 	//printf("Save sbusiness successfully.");
@@ -8902,7 +8913,25 @@ public CustomPickups()
 				{
 					if(IsATruck(tmpcar) && PlayerToPoint(10.0, i, BizzInfo[h][bEntranceX], BizzInfo[h][bEntranceY], BizzInfo[h][bEntranceZ]))
 					{
-						format(string, sizeof(string), "~w~%s~n~~r~San pham can~w~: %d~n~~y~Gia moi san pham: ~w~: $%d~n~~g~Tien quy: ~w~: $%d",BizzInfo[h][bMessage],(BizzInfo[h][bMaxProducts]-BizzInfo[h][bProducts]),BizzInfo[h][bPriceProd],BizzInfo[h][bTill]);
+						if (Trucking[tmpcar] == 1)
+						{
+							if (IsBizFullProduct(h))
+								format(string, sizeof(string), "~r~Cua hang da du san pham, khong can mua them!");
+							else if (!IsBizCanBuyProduct(h))
+								format(string, sizeof(string), "~r~Ngan sach cua hang khong du de mua san pham!");
+							else 
+							{
+								if (GetPlayerState(i) == PLAYER_STATE_DRIVER)
+								{
+									GetVehiclePos(tmpcar, TruckPos[i][0], TruckPos[i][1], TruckPos[i][2]);
+									TruckBiz[i] = h;
+									return 1;
+								}
+							}
+						}
+						else
+							format(string, sizeof(string), "~w~%s~n~~r~San pham can~w~: %d~n~~y~Gia moi san pham: ~w~: $%d~n~~g~Ngan sach: ~w~: $%d", BizzInfo[h][bMessage], (BizzInfo[h][bMaxProducts] - BizzInfo[h][bProducts]), BizzInfo[h][bPriceProd], BizzInfo[h][bTill]);
+
 						GameTextForPlayer(i, string, 5000, 3);
 						return 1;
 					}
@@ -10690,11 +10719,14 @@ public SafeGivePlayerMoney(plyid, amounttogive)
 		ScriptMoney[plyid] = (ScriptMoney[plyid] + amounttogive);
 		GivePlayerMoney(plyid, amounttogive);
 	}
-	new str[128];
-	if (amounttogive > 0) format(str, sizeof(str), "~g~ +%d$", amounttogive);
-	else format(str, sizeof(str), "~r~ -%d$", amounttogive);
-	GameTextForPlayer(plyid, str, 3000, 1);
-	PlayerPlaySound(plyid, 1150, 0.0, 0.0, 0.0);
+	if (amounttogive != 0)
+	{
+		new str[128];
+		if (amounttogive > 0) format(str, sizeof(str), "~g~ +%s$", AddCommas(amounttogive));
+		else format(str, sizeof(str), "~r~ %s$", AddCommas(amounttogive));
+		GameTextForPlayer(plyid, str, 3000, 1);
+		PlayerPlaySound(plyid, 1150, 0.0, 0.0, 0.0);
+	}
 	return 1;
 }
 
@@ -11076,5 +11108,7 @@ public SendAdminMessage(color, string[])
 #include <ProjectInc\ben>
 #include <ProjectInc\geek>
 #include <ProjectInc\anims>
+#include <ProjectInc\reward>
 
 #include <ProjectInc\ontimer>
+

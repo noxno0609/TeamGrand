@@ -2,6 +2,34 @@ task ServerBeat[1000]()
 {
 	foreach(Player, playerid)
 	{
+		if (Trucking[GetPlayerVehicleID(playerid)] != 0)
+		{
+			if (!IsPlayerInRangeOfPoint(playerid, 5, TruckPos[playerid][0], TruckPos[playerid][1], TruckPos[playerid][2]))
+				TruckTime[playerid] = 6;
+			else
+			{
+				if (TruckTime[playerid] > 0)
+				{
+					TruckTime[playerid]--;
+					new str[128];
+					format(str, sizeof(str), "~y~Giao hang trong ~g~%d~g~ ~y~giay~y~", TruckTime[playerid]);
+					GameTextForPlayer(playerid, str, 1000, 4);
+					if (TruckTime[playerid] == 0)
+					{
+						SCM(playerid, COLOR_GREEN, "Giao hang thanh cong!");
+						GiveJobReward(playerid, TRUCKREWARD, BizzInfo[TruckBiz[playerid]][bPriceProd]*10);
+						BizzInfo[TruckBiz[playerid]][bTill] -= BizzInfo[TruckBiz[playerid]][bPriceProd] * 10;
+						BizzInfo[TruckBiz[playerid]][bProducts] += 10;
+						if (BizzInfo[TruckBiz[playerid]][bProducts] > BizzInfo[TruckBiz[playerid]][bMaxProducts])
+							BizzInfo[TruckBiz[playerid]][bProducts] = BizzInfo[TruckBiz[playerid]][bMaxProducts];
+						Trucking[GetPlayerVehicleID(playerid)] = 0;
+						TruckBiz[playerid] = -1;
+						PlayerInfo[playerid][pTruckSkill]++;
+						OnPropUpdate();
+					}
+				}
+			}
+		}
 		if (PFind[playerid] != -1)
 		{
 			if (IsPlayerInDynamicArea(PFind[playerid], LSArea))
@@ -9,7 +37,6 @@ task ServerBeat[1000]()
 			else
 				SetPlayerMarkerForPlayer(playerid, PFind[playerid], 0xFFFFFF00);
 		}
-
 		if (AntiCheckpoint[playerid] == 1) 
 			AntiCPTime[playerid]++;
 

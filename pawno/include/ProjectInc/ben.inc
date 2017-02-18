@@ -337,6 +337,18 @@ stock ClearAllVehicle()
 	for (new i = 0; i < MAX_VEHICLES; i++)
 	{
 		CarInfo[i][cID] = -1;
+		Trucking[i] = 0;
+	}
+}
+stock ClearAllBiz()
+{
+	for (new i = 0; i < MAX_BIZ; i++)
+	{
+		BizzInfo[i][bID] = -1;
+	}
+	for (new i = 0; i < MAX_SBIZ; i++)
+	{
+		SBizzInfo[i][sbID] = -1;
 	}
 }
 stock ClearApGiai(playerid)
@@ -585,6 +597,133 @@ CMD:stopfind(playerid, params[])
 			SCM(playerid, COLOR_WHITE, "Xoa muc tieu tim kiem thanh cong.");
 		}
 		return 1;
+}
+stock DeleteTextLetter(string[])
+{
+	for (new i = 0; i < strlen(string); i++)
+	{
+		if (string[i] == '~' && IsTextLetter(string[i + 1]) && string[i+2] == '~')
+			strdel(string, i, i + 3);
+	}
+}
+stock IsTextLetter(cchar)
+{
+	if (cchar == 'n' || cchar == 'r' || cchar == 'g' ||
+		cchar == 'b' || cchar == 'w' || cchar == 'y' ||
+		cchar == 'p' || cchar == 'l' || cchar == 'h' ||
+		cchar == 'u' || cchar == 'd' || cchar == '<' ||
+		cchar == '>' || cchar == 'k')
+		return 1;
+	return 0;
+}
+stock GetRandomBiz()
+{
+	new rand = random(sizeof(BizzInfo));
+	while (BizzInfo[rand][bID] == -1 && IsBizFullProduct(rand) && !IsBizCanBuyProduct(rand))
+	{
+		rand = random(sizeof(BizzInfo));
+	}
+	return rand;
+}
+stock LoadTruck(playerid)
+{
+	/*if (IsBizFullProduct(bizid) && BizzInfo[bizid][bID] != -1)
+		return SCM(playerid, COLOR_GREY, "Cua hang nay da co du hang, khong can cung cap.");*/
+	SCM(playerid, COLOR_WHITE, "Dat hang thanh cong. Phi dat hang: 10,000$!");
+	SCM(playerid, COLOR_WHITE, "Giao hang thanh cong se tra lai tien");
+	SCM(playerid, COLOR_WHITE, "Den cham do de giao hang.");
+	SafeGivePlayerMoney(playerid, -10000);
+	new vid = GetPlayerVehicleID(playerid);
+	Trucking[vid] = 1;
+	SCM(playerid, COLOR_YELLOW, "Dung lenh /timcuahang de tim cua hang de giao hang.");
+	SCM(playerid, COLOR_LIGHTGREEN, "Giao hang bang cach dung yen truoc cua hang trong 5 giay.");
+	//SetCheckpoint(playerid, BizzInfo[bizid][bEntranceX], BizzInfo[bizid][bEntranceY], BizzInfo[bizid][bEntranceZ], 5);
+	return 1;
+}
+stock AddCommas(so)
+{
+	new
+		number,
+		tStr[13]; // Up to 9,999,999,999,999
+
+	if (so <0) number = so *-1;
+	else number = so;
+	format(tStr, sizeof(tStr), "%d", number);
+
+	if (strlen(tStr) < 4)
+		return tStr;
+
+	new
+		//rNumber = floatround((number+(number/3)),floatround_floor),
+		iPos = strlen(tStr),
+		iCount = 1;
+
+	while (iPos > 0)
+	{
+		if (iCount == 4)
+		{
+			iCount = 0;
+			strins(tStr, ",", iPos, 1);
+			iPos++;
+		}
+		iCount++;
+		iPos--;
+	}
+	if (so<0) strins(tStr, "-", 0);
+	return tStr;
+}
+stock CheckAllBizTruck()
+{
+	new havebiz = 0;
+	for (new i = 0; i < MAX_BIZ; i++)
+	{
+		if (BizzInfo[i][bID] == -1) continue;
+		if (!IsBizFullProduct(i) && IsBizCanBuyProduct(i))
+			havebiz = 1;
+	}
+	return havebiz;
+}
+stock GetBizLoadTruck()
+{
+	new str[500];
+	format(str, sizeof(str), "Cua Hang\tTien Thuong Them\n");
+	for (new i = 0; i < MAX_BIZ; i++)
+	{
+		if (BizzInfo[i][bID] == -1) continue;
+		new title[300];
+		format(title, sizeof(title), BizzInfo[i][bMessage]);
+		DeleteTextLetter(title);
+		if (!IsBizFullProduct(i) && IsBizCanBuyProduct(i))
+			format(str, sizeof(str), "%s%s\t%d$\n", str, title, BizzInfo[i][bPriceProd]*10);
+		else
+		{
+			if (IsBizFullProduct(i))
+				format(str, sizeof(str), "%s%s (Full Hang)\t%d$\n", str, title, BizzInfo[i][bPriceProd]*10);
+			else if (!IsBizCanBuyProduct(i))
+				format(str, sizeof(str), "%s%s (Het Ngan Sach)\t%d$\n", str, title, BizzInfo[i][bPriceProd]*10);
+		}
+	}
+	/*for (new i = 0; i < MAX_SBIZ; i++)
+	{
+		new title = SBizzInfo[i][sMessage];
+		DeleteTextLetter(title);
+		if (!IsBizFullProduct(i))
+			format(str, sizeof(str), "%s\t%d$\n", title, SBizzInfo[i][sPriceProd]);
+		else format(str, sizeof(str), "%s (Full Hang)\t%d$\n", title, SBizzInfo[i][sPriceProd]);
+	}*/
+	return str;
+}
+stock IsBizFullProduct(bizid)
+{
+	if (BizzInfo[bizid][bProducts] < BizzInfo[bizid][bMaxProducts])
+		return 0;
+	return 1;
+}
+stock IsBizCanBuyProduct(bizid)
+{
+	if (BizzInfo[bizid][bTill] <  (BizzInfo[bizid][bPriceProd] * 10))
+		return 0;
+	return 1;
 }
 stock GetFreeSeatAmbulance(vid)
 {
