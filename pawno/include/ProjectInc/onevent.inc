@@ -14247,7 +14247,8 @@ CMD:whisper(playerid, params[])
 				{
 					format(string, sizeof(string), "[Admin] %s: %s", GN(playerid), result);
 					SendClientMessage(giveplayerid, COLOR_YELLOW, string);
-					SendClientMessage(playerid, COLOR_YELLOW2, string);
+					format(string, sizeof(string), "Ban noi voi %s: %s", GN(giveplayerid), result);
+					SendClientMessage(playerid, COLOR_YELLOW, string);
 				}
 				else {
 					new Float:x, Float:y, Float:z;
@@ -14262,12 +14263,12 @@ CMD:whisper(playerid, params[])
 						}
 						else
 						{
-							format(string, sizeof(string), "* %s whispers something to %s", GN(playerid), giveplayer);
+							format(string, sizeof(string), "* %s dang noi gi do voi %s", GN(playerid), giveplayer);
 							ProxDetector(15.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 						}
-						format(string, sizeof(string), "%s whispers: %s", GN(playerid), (result));
+						format(string, sizeof(string), "%s noi: %s", GN(playerid), (result));
 						SendClientMessage(giveplayerid, COLOR_YELLOW, string);
-						format(string, sizeof(string), "%s whispers: %s", GN(playerid), (result));
+						format(string, sizeof(string), "Ban noi voi %s: %s", GN(giveplayerid), result);
 						SendClientMessage(playerid, COLOR_YELLOW, string);
 						return 1;
 					}
