@@ -5,6 +5,9 @@
 #include <mSelection>
 //#include <jit>
 
+#define PLANTMONEY 5000
+#define PLANTDRUG 2
+
 #define OFFERWEAPON 1
 
 #define MAXCUSTOMVEH 50
@@ -151,6 +154,10 @@ new SpecPlayer[MAX_PLAYERS],
 	Spectating[MAX_PLAYERS],
 	Spectated[MAX_PLAYERS];
 
+new Trucking[MAX_VEHICLES];
+new TruckTime[MAX_PLAYERS];
+new Float:TruckPos[MAX_PLAYERS][3];
+new TruckBiz[MAX_PLAYERS];
 //TYPECAR
 #define HARVESTVEH 1
 #define DHARVESTVEH 2
@@ -170,4 +177,9 @@ new SpecPlayer[MAX_PLAYERS],
 #define UPDLNOVEH 1
 #define UPDLVEH 2
 
+<<<<<<< HEAD
 new mSkinList = mS_INVALID_LISTID;
+=======
+//Reward Type
+#define TRUCKREWARD 1
+>>>>>>> 2a3a828222d6feebbcb552d5e9b3f5d0cac1a98d
