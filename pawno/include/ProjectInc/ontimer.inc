@@ -2,7 +2,7 @@ task ServerBeat[1000]()
 {
 	foreach(Player, playerid)
 	{
-		if (Trucking[GetPlayerVehicleID(playerid)] != 0)
+		if (Trucking[GetPlayerVehicleID(playerid)] != 0 && TruckPos[playerid][0] != 0)
 		{
 			if (!IsPlayerInRangeOfPoint(playerid, 5, TruckPos[playerid][0], TruckPos[playerid][1], TruckPos[playerid][2]))
 				TruckTime[playerid] = 6;
@@ -25,6 +25,9 @@ task ServerBeat[1000]()
 						Trucking[GetPlayerVehicleID(playerid)] = 0;
 						TruckBiz[playerid] = -1;
 						PlayerInfo[playerid][pTruckSkill]++;
+						TruckPos[playerid][0] = 0;
+						TruckPos[playerid][1] = 0;
+						TruckPos[playerid][2] = 0;
 						OnPropUpdate();
 					}
 				}

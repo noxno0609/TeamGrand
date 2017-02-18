@@ -699,6 +699,10 @@ public OnPlayerConnect(playerid)
 
 	PFind[playerid] = -1;
 
+	TruckPos[playerid][0] = 0;
+	TruckPos[playerid][1] = 0;
+	TruckPos[playerid][2] = 0;
+
 	TruckTime[playerid] = 0;
 
 	SpecPlayer[playerid] = -1;
@@ -1290,6 +1294,7 @@ public OnPlayerWeaponShot(playerid, weaponid, hittype, hitid, Float:fX, Float:fY
 }
 public OnVehicleDeath(vehicleid, killerid)
 {
+	Trucking[vehicleid] = 0;
 	new ddvehicle = 0;
 	foreach(Player, pid)
 	{
@@ -4413,6 +4418,8 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 			{
 				/*format(string, sizeof(string), "Products: %d/%d", PlayerHaul[newcar][pLoad], PlayerHaul[newcar][pCapasity]);
 				SendClientMessage(playerid, TEAM_GROVE_COLOR, string);*/
+				if (Trucking[newcar] != 0)
+					SCM(playerid, COLOR_GREEN, "Xe nay hien tai co hang, ban co the tiep tuc giao (/timgiaohang)");
 				SendClientMessage(playerid, COLOR_WHITE, "Ban co the cung cap san phan cho cua hang .");
 				SendClientMessage(playerid, COLOR_WHITE, "Lenh co the dung /layhang /timgiaohang");
 			}
@@ -4840,12 +4847,15 @@ public OnPlayerRegister(playerid, password[])
 }
 public OnPlayerLogin(playerid, password[])
 {
+	SetPlayerCameraPos(playerid, 369.644744, -1985.193359, 7.471849);
+	SetPlayerCameraLookAt(playerid, 370.491302, -1990.051025, 8.300358);
+
 	new playername2[MAX_PLAYER_NAME];
 	GetPlayerName(playerid, playername2, sizeof(playername2));
 
 	new sql[256];
 	format(sql, sizeof(sql), "SELECT * FROM `user` WHERE `Name` = '%s'", playername2);
-	mysql_pquery(conn, sql, "OnPlayerFinishLogin", "is", playerid, password);
+	mysql_tquery(conn, sql, "OnPlayerFinishLogin", "is", playerid, password);
 	return 1;
 }
 forward OnPlayerFinishLogin(playerid, password[]);
@@ -17411,6 +17421,7 @@ CMD:edit(playerid, params[])
 //}
 CMD:layhang(playerid, params[])
 {
+	if (PlayerInfo[playerid][pJob] != 16) return SCM(playerid, COLOR_GREY, "Ban khong phai trucker");
 	if (CheckAllBizTruck() == 0) return SCM(playerid, COLOR_GREY, "Hien tai khong co cua hang nao can giao hang.");
 	new tmpcar = GetPlayerVehicleID(playerid);
 	if (!PlayerToPoint(70.0, playerid, 2468.4919, -2092.9902, 13.5469)) return SCM(playerid, COLOR_GREY, "Ban khong o noi lay hang.");
@@ -17423,6 +17434,7 @@ CMD:layhang(playerid, params[])
 }
 CMD:timgiaohang(playerid, params[])
 {
+	if (PlayerInfo[playerid][pJob] != 16) return SCM(playerid, COLOR_GREY, "Ban khong phai trucker");
 	new tmpcar = GetPlayerVehicleID(playerid);
 	//new compcost = 20;
 	if (!IsATruck(tmpcar)) return SCM(playerid, COLOR_GREY, "Day khong phai xe truck.");
@@ -24710,89 +24722,89 @@ CMD:spawnchange(playerid, params[])
 	}
 	return 1;
 }
-CMD:muaquanao(playerid, params[]) { return cmd_clothes(playerid, params); }
-CMD:clothes(playerid, params[])
-{
-	if (IsPlayerConnected(playerid))
-	{
-		if (PlayerInfo[playerid][pMember] >= 1)
-		{
-			if (IsAtClothShop(playerid))
-			{
-				if (PlayerInfo[playerid][pMember] == 1) { ChosenSkin[playerid] = 280; SetPlayerSkin(playerid, 280); }
-				else if (PlayerInfo[playerid][pMember] == 2) { ChosenSkin[playerid] = 286; SetPlayerSkin(playerid, 286); }
-				else if (PlayerInfo[playerid][pMember] == 3) { ChosenSkin[playerid] = 287; SetPlayerSkin(playerid, 287); }
-				else if (PlayerInfo[playerid][pMember] == 4) { ChosenSkin[playerid] = 70; SetPlayerSkin(playerid, 70); }
-				else if (PlayerInfo[playerid][pMember] == 5) { ChosenSkin[playerid] = 117; SetPlayerSkin(playerid, 117); }
-				//else if(PlayerInfo[playerid][pMember] == 6) { ChosenSkin[playerid] = 111; SetPlayerSkin(playerid, 111); }
-				else if (PlayerInfo[playerid][pMember] == 8) { ChosenSkin[playerid] = 249; SetPlayerSkin(playerid, 249); }
-				else if (PlayerInfo[playerid][pMember] == 9) { ChosenSkin[playerid] = 148; SetPlayerSkin(playerid, 148); }
-				else if (PlayerInfo[playerid][pMember] == 10) { ChosenSkin[playerid] = 255; SetPlayerSkin(playerid, 255); }
-				else if (PlayerInfo[playerid][pMember] == 11) { ChosenSkin[playerid] = 59; SetPlayerSkin(playerid, 59); }
-				/*else if(PlayerInfo[playerid][pMember] == 14) { ChosenSkin[playerid] = 169; SetPlayerSkin(playerid, 169); }
-				else if(PlayerInfo[playerid][pMember] == 15) { ChosenSkin[playerid] = 270; SetPlayerSkin(playerid, 270); }*/
-				else if (PlayerInfo[playerid][pMember] == 16) { ChosenSkin[playerid] = 144; SetPlayerSkin(playerid, 144); }
-				else { return 1; }
-				GetPlayerPos(playerid, ChangePos[playerid][0], ChangePos[playerid][1], ChangePos[playerid][2]);
-				ChangePos2[playerid][0] = GetPlayerInterior(playerid);
-				ChangePos2[playerid][1] = 1;
-				SetPlayerInterior(playerid, 0);
-				new rand = random(sizeof(gInviteSpawns));
-				SetPlayerPos(playerid, gInviteSpawns[rand][0], gInviteSpawns[rand][1], gInviteSpawns[rand][2]); // Warp the player
-				SetPlayerFacingAngle(playerid, gInviteSpawns[rand][3]);
-				SetPlayerCameraPos(playerid, gInviteSpawns[rand][0] + 3, gInviteSpawns[rand][1], gInviteSpawns[rand][2]);
-				SetPlayerCameraLookAt(playerid, gInviteSpawns[rand][0], gInviteSpawns[rand][1], gInviteSpawns[rand][2]);
-				TogglePlayerControllable(playerid, 0);
-				SelectChar[playerid] = 255;
-				SelectCharID[playerid] = PlayerInfo[playerid][pMember];
-				SelectCharPlace[playerid] = 1;
-				PlayerInfo[playerid][pModel] = ChosenSkin[playerid];
-				PlayerInfo[playerid][pChar] = ChosenSkin[playerid];
-				SendClientMessage(playerid, COLOR_LIGHTRED, "* Go 'next' de chon nhan vat ma ban muon su dung.");
-				SendClientMessage(playerid, COLOR_LIGHTRED, "* Neu ban da tim duoc nhan vat ma ban muon su dung, go 'done'.");
-			}
-			else
-			{
-				SendClientMessage(playerid, COLOR_GRAD2, "   Ban khong o trong cua hang quan ao !");
-				return 1;
-			}
-		}
-		else
-		{
-			if (PlayerInfo[playerid][pLeader] != 0)
-			{
-				SendClientMessage(playerid, COLOR_GRAD2, "   Ban khong the thay doi skin khi ban dang la leader !");
-				return 1;
-			}
-			if (IsAtClothShop(playerid))
-			{
-				if (PlayerInfo[playerid][pSex] == 1) { ChosenSkin[playerid] = 2; SetPlayerSkin(playerid, 2); PlayerInfo[playerid][pChar] = 2; }
-				else if (PlayerInfo[playerid][pSex] == 2) { ChosenSkin[playerid] = 55; SetPlayerSkin(playerid, 55); PlayerInfo[playerid][pChar] = 55; }
-				else { return 1; }
-				GetPlayerPos(playerid, ChangePos[playerid][0], ChangePos[playerid][1], ChangePos[playerid][2]);
-				ChangePos2[playerid][0] = GetPlayerInterior(playerid);
-				ChangePos2[playerid][1] = 1;
-				SetPlayerInterior(playerid, 0);
-				new rand = random(sizeof(gInviteSpawns));
-				SetPlayerPos(playerid, gInviteSpawns[rand][0], gInviteSpawns[rand][1], gInviteSpawns[rand][2]); // Warp the player
-				SetPlayerFacingAngle(playerid, gInviteSpawns[rand][3]);
-				SetPlayerCameraPos(playerid, gInviteSpawns[rand][0] + 3, gInviteSpawns[rand][1], gInviteSpawns[rand][2]);
-				SetPlayerCameraLookAt(playerid, gInviteSpawns[rand][0], gInviteSpawns[rand][1], gInviteSpawns[rand][2]);
-				TogglePlayerControllable(playerid, 0);
-				SelectChar[playerid] = 255;
-				if (PlayerInfo[playerid][pSex] == 1) { SelectCharID[playerid] = 20; }
-				else if (PlayerInfo[playerid][pSex] == 2) { SelectCharID[playerid] = 30; }
-				else { return 1; }
-				SelectCharPlace[playerid] = 1;
-				PlayerInfo[playerid][pModel] = ChosenSkin[playerid];
-				PlayerInfo[playerid][pChar] = ChosenSkin[playerid];
-				SendClientMessage(playerid, COLOR_LIGHTRED, "* Go 'next' de chon nhan vat ma ban muon su dung.");
-				SendClientMessage(playerid, COLOR_LIGHTRED, "* Neu ban da tim duoc nhan vat ma ban muon su dung, go 'done'.");
-			}
-		}
-	}
-	return 1;
-}
+//CMD:muaquanao(playerid, params[]) { return cmd_clothes(playerid, params); }
+//CMD:clothes(playerid, params[])
+//{
+//	if (IsPlayerConnected(playerid))
+//	{
+//		if (PlayerInfo[playerid][pMember] >= 1)
+//		{
+//			if (IsAtClothShop(playerid))
+//			{
+//				if (PlayerInfo[playerid][pMember] == 1) { ChosenSkin[playerid] = 280; SetPlayerSkin(playerid, 280); }
+//				else if (PlayerInfo[playerid][pMember] == 2) { ChosenSkin[playerid] = 286; SetPlayerSkin(playerid, 286); }
+//				else if (PlayerInfo[playerid][pMember] == 3) { ChosenSkin[playerid] = 287; SetPlayerSkin(playerid, 287); }
+//				else if (PlayerInfo[playerid][pMember] == 4) { ChosenSkin[playerid] = 70; SetPlayerSkin(playerid, 70); }
+//				else if (PlayerInfo[playerid][pMember] == 5) { ChosenSkin[playerid] = 117; SetPlayerSkin(playerid, 117); }
+//				//else if(PlayerInfo[playerid][pMember] == 6) { ChosenSkin[playerid] = 111; SetPlayerSkin(playerid, 111); }
+//				else if (PlayerInfo[playerid][pMember] == 8) { ChosenSkin[playerid] = 249; SetPlayerSkin(playerid, 249); }
+//				else if (PlayerInfo[playerid][pMember] == 9) { ChosenSkin[playerid] = 148; SetPlayerSkin(playerid, 148); }
+//				else if (PlayerInfo[playerid][pMember] == 10) { ChosenSkin[playerid] = 255; SetPlayerSkin(playerid, 255); }
+//				else if (PlayerInfo[playerid][pMember] == 11) { ChosenSkin[playerid] = 59; SetPlayerSkin(playerid, 59); }
+//				/*else if(PlayerInfo[playerid][pMember] == 14) { ChosenSkin[playerid] = 169; SetPlayerSkin(playerid, 169); }
+//				else if(PlayerInfo[playerid][pMember] == 15) { ChosenSkin[playerid] = 270; SetPlayerSkin(playerid, 270); }*/
+//				else if (PlayerInfo[playerid][pMember] == 16) { ChosenSkin[playerid] = 144; SetPlayerSkin(playerid, 144); }
+//				else { return 1; }
+//				GetPlayerPos(playerid, ChangePos[playerid][0], ChangePos[playerid][1], ChangePos[playerid][2]);
+//				ChangePos2[playerid][0] = GetPlayerInterior(playerid);
+//				ChangePos2[playerid][1] = 1;
+//				SetPlayerInterior(playerid, 0);
+//				new rand = random(sizeof(gInviteSpawns));
+//				SetPlayerPos(playerid, gInviteSpawns[rand][0], gInviteSpawns[rand][1], gInviteSpawns[rand][2]); // Warp the player
+//				SetPlayerFacingAngle(playerid, gInviteSpawns[rand][3]);
+//				SetPlayerCameraPos(playerid, gInviteSpawns[rand][0] + 3, gInviteSpawns[rand][1], gInviteSpawns[rand][2]);
+//				SetPlayerCameraLookAt(playerid, gInviteSpawns[rand][0], gInviteSpawns[rand][1], gInviteSpawns[rand][2]);
+//				TogglePlayerControllable(playerid, 0);
+//				SelectChar[playerid] = 255;
+//				SelectCharID[playerid] = PlayerInfo[playerid][pMember];
+//				SelectCharPlace[playerid] = 1;
+//				PlayerInfo[playerid][pModel] = ChosenSkin[playerid];
+//				PlayerInfo[playerid][pChar] = ChosenSkin[playerid];
+//				SendClientMessage(playerid, COLOR_LIGHTRED, "* Go 'next' de chon nhan vat ma ban muon su dung.");
+//				SendClientMessage(playerid, COLOR_LIGHTRED, "* Neu ban da tim duoc nhan vat ma ban muon su dung, go 'done'.");
+//			}
+//			else
+//			{
+//				SendClientMessage(playerid, COLOR_GRAD2, "   Ban khong o trong cua hang quan ao !");
+//				return 1;
+//			}
+//		}
+//		else
+//		{
+//			if (PlayerInfo[playerid][pLeader] != 0)
+//			{
+//				SendClientMessage(playerid, COLOR_GRAD2, "   Ban khong the thay doi skin khi ban dang la leader !");
+//				return 1;
+//			}
+//			if (IsAtClothShop(playerid))
+//			{
+//				if (PlayerInfo[playerid][pSex] == 1) { ChosenSkin[playerid] = 2; SetPlayerSkin(playerid, 2); PlayerInfo[playerid][pChar] = 2; }
+//				else if (PlayerInfo[playerid][pSex] == 2) { ChosenSkin[playerid] = 55; SetPlayerSkin(playerid, 55); PlayerInfo[playerid][pChar] = 55; }
+//				else { return 1; }
+//				GetPlayerPos(playerid, ChangePos[playerid][0], ChangePos[playerid][1], ChangePos[playerid][2]);
+//				ChangePos2[playerid][0] = GetPlayerInterior(playerid);
+//				ChangePos2[playerid][1] = 1;
+//				SetPlayerInterior(playerid, 0);
+//				new rand = random(sizeof(gInviteSpawns));
+//				SetPlayerPos(playerid, gInviteSpawns[rand][0], gInviteSpawns[rand][1], gInviteSpawns[rand][2]); // Warp the player
+//				SetPlayerFacingAngle(playerid, gInviteSpawns[rand][3]);
+//				SetPlayerCameraPos(playerid, gInviteSpawns[rand][0] + 3, gInviteSpawns[rand][1], gInviteSpawns[rand][2]);
+//				SetPlayerCameraLookAt(playerid, gInviteSpawns[rand][0], gInviteSpawns[rand][1], gInviteSpawns[rand][2]);
+//				TogglePlayerControllable(playerid, 0);
+//				SelectChar[playerid] = 255;
+//				if (PlayerInfo[playerid][pSex] == 1) { SelectCharID[playerid] = 20; }
+//				else if (PlayerInfo[playerid][pSex] == 2) { SelectCharID[playerid] = 30; }
+//				else { return 1; }
+//				SelectCharPlace[playerid] = 1;
+//				PlayerInfo[playerid][pModel] = ChosenSkin[playerid];
+//				PlayerInfo[playerid][pChar] = ChosenSkin[playerid];
+//				SendClientMessage(playerid, COLOR_LIGHTRED, "* Go 'next' de chon nhan vat ma ban muon su dung.");
+//				SendClientMessage(playerid, COLOR_LIGHTRED, "* Neu ban da tim duoc nhan vat ma ban muon su dung, go 'done'.");
+//			}
+//		}
+//	}
+//	return 1;
+//}
 CMD:lotto(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))

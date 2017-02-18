@@ -5,7 +5,8 @@ public OnPlayerModelSelection(playerid, response, listid, modelid)
         if(response)
         {
         	SetPlayerSkin(playerid, modelid);
-			SafeGivePlayerMoney(playerid, -SKINPRICE)
+			PlayerInfo[playerid][pModel] = modelid;
+			SafeGivePlayerMoney(playerid, -SKINPRICE);
 			PlayerPlaySound(playerid,5453,0.0,0.0,0.0);
    		}
         return 1;

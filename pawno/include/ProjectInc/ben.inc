@@ -618,7 +618,7 @@ stock IsTextLetter(cchar)
 stock GetRandomBiz()
 {
 	new rand = random(sizeof(BizzInfo));
-	while (BizzInfo[rand][bID] == -1 && IsBizFullProduct(rand) && !IsBizCanBuyProduct(rand))
+	while (BizzInfo[rand][bID] == -1 || IsBizFullProduct(rand) || !IsBizCanBuyProduct(rand))
 	{
 		rand = random(sizeof(BizzInfo));
 	}

@@ -36,7 +36,6 @@ new MySQL:conn;
 
 //DEFINE
 #include <ProjectInc\declare>
-#include <ProjectInc\reward>
 #include <ProjectInc\prize>
 
 #define DIALOG_REG 1
@@ -8961,7 +8960,7 @@ public CustomPickups()
 				{
 					if(IsATruck(tmpcar) && PlayerToPoint(10.0, i, BizzInfo[h][bEntranceX], BizzInfo[h][bEntranceY], BizzInfo[h][bEntranceZ]))
 					{
-						if (Trucking[tmpcar] == 1)
+						if (Trucking[tmpcar] == 1 && GetPlayerState(i) == PLAYER_STATE_DRIVER)
 						{
 							if (IsBizFullProduct(h))
 								format(string, sizeof(string), "~r~Cua hang da du san pham, khong can mua them!");
@@ -8969,12 +8968,9 @@ public CustomPickups()
 								format(string, sizeof(string), "~r~Ngan sach cua hang khong du de mua san pham!");
 							else 
 							{
-								if (GetPlayerState(i) == PLAYER_STATE_DRIVER)
-								{
-									GetVehiclePos(tmpcar, TruckPos[i][0], TruckPos[i][1], TruckPos[i][2]);
-									TruckBiz[i] = h;
-									return 1;
-								}
+								GetVehiclePos(tmpcar, TruckPos[i][0], TruckPos[i][1], TruckPos[i][2]);
+								TruckBiz[i] = h;
+								return 1;
 							}
 						}
 						else
