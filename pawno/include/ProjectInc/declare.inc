@@ -1,9 +1,15 @@
 #include <YSI\y_timers>
-#include <foreach>
+#include <YSI\y_iterate>
 #include <zones>
 #include <YSI\y_ini>
 #include <mSelection>
+#include <ProjectInc\map>
 //#include <jit>
+
+//TextDraw
+new Text:TDLoading;
+new Text:TDPBank[MAX_PLAYERS];
+new tdbank[50];
 
 #define PLANTMONEY 5000
 #define PLANTDRUG 2
@@ -177,6 +183,12 @@ new TruckBiz[MAX_PLAYERS];
 #define PIZZAVEH 12
 #define BUSVEH 13
 #define TOWVEH 14
+#define SCHOOLVEH 15
+#define RENTVEH 16
+#define KARTVEH 17
+#define NEWSVEH 18
+#define TAXIVEH 19
+#define HITMANVEH 20
 
 #define UPDLNOVEH 1
 #define UPDLVEH 2
@@ -184,3 +196,34 @@ new TruckBiz[MAX_PLAYERS];
 new mSkinList = mS_INVALID_LISTID;
 //Reward Type
 #define TRUCKREWARD 1
+
+stock CreateServerTextDraw()
+{
+	TDLoading = TextDrawCreate(328.500000, 183.155548, "Loading...~n~Dang_lay_thong_tin_tai_khoan...");
+	TextDrawLetterSize(TDLoading, 0.410500, 2.315554);
+	TextDrawTextSize(TDLoading, 0.000000, 306.000000);
+	TextDrawAlignment(TDLoading, 2);
+	TextDrawColor(TDLoading, -1);
+	TextDrawUseBox(TDLoading, 1);
+	TextDrawBoxColor(TDLoading, 102);
+	TextDrawSetShadow(TDLoading, 0);
+	TextDrawSetOutline(TDLoading, 1);
+	TextDrawBackgroundColor(TDLoading, 255);
+	TextDrawFont(TDLoading, 2);
+	TextDrawSetProportional(TDLoading, 1);
+	TextDrawSetShadow(TDLoading, 0);
+}
+
+stock CreateServerPlayerTextDraw(playerid)
+{
+	TDPBank[playerid] = TextDrawCreate(608.437072, 95.833282, "Bank$_100,000,000");
+	TextDrawLetterSize(TDPBank[playerid], 0.400000, 1.600000);
+	TextDrawAlignment(TDPBank[playerid], 3);
+	TextDrawColor(TDPBank[playerid], -2139094785);
+	TextDrawSetShadow(TDPBank[playerid], 0);
+	TextDrawSetOutline(TDPBank[playerid], 1);
+	TextDrawBackgroundColor(TDPBank[playerid], 255);
+	TextDrawFont(TDPBank[playerid], 1);
+	TextDrawSetProportional(TDPBank[playerid], 1);
+	TextDrawSetShadow(TDPBank[playerid], 0);
+}

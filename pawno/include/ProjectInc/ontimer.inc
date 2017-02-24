@@ -1,8 +1,12 @@
 task ServerBeat[1000]()
 {
-	foreach(Player, playerid)
+	foreach(new playerid : Player)
 	{
-		if (Trucking[GetPlayerVehicleID(playerid)] != 0 && TruckPos[playerid][0] != 0)
+		format(tdbank, sizeof(tdbank), "Bank$ %s", AddCommas(PlayerInfo[playerid][pAccount]));
+		TextDrawSetString(TDPBank[playerid], tdbank);
+		TextDrawShowForPlayer(playerid, TDPBank[playerid]);
+
+		if (Trucking[GetPlayerVehicleID(playerid)] == 1 && TruckPos[playerid][0] != 0)
 		{
 			if (!IsPlayerInRangeOfPoint(playerid, 5, TruckPos[playerid][0], TruckPos[playerid][1], TruckPos[playerid][2]))
 				TruckTime[playerid] = 6;
@@ -16,19 +20,9 @@ task ServerBeat[1000]()
 					GameTextForPlayer(playerid, str, 1000, 4);
 					if (TruckTime[playerid] == 0)
 					{
-						SCM(playerid, COLOR_GREEN, "Giao hang thanh cong!");
-						GiveJobReward(playerid, TRUCKREWARD, BizzInfo[TruckBiz[playerid]][bPriceProd]*10);
-						BizzInfo[TruckBiz[playerid]][bTill] -= BizzInfo[TruckBiz[playerid]][bPriceProd] * 10;
-						BizzInfo[TruckBiz[playerid]][bProducts] += 10;
-						if (BizzInfo[TruckBiz[playerid]][bProducts] > BizzInfo[TruckBiz[playerid]][bMaxProducts])
-							BizzInfo[TruckBiz[playerid]][bProducts] = BizzInfo[TruckBiz[playerid]][bMaxProducts];
-						Trucking[GetPlayerVehicleID(playerid)] = 0;
-						TruckBiz[playerid] = -1;
-						PlayerInfo[playerid][pTruckSkill]++;
-						TruckPos[playerid][0] = 0;
-						TruckPos[playerid][1] = 0;
-						TruckPos[playerid][2] = 0;
-						OnPropUpdate();
+						Trucking[GetPlayerVehicleID(playerid)] = 2;
+						SetCheckpoint(playerid, 2458.2568, -2077.1592, 13.5469, 5);
+						GameTextForPlayer(playerid, "Quay ve de nhan tien!", 4000, 4);
 					}
 				}
 			}
@@ -84,6 +78,7 @@ task ServerBeat[1000]()
 				TogglePlayerControllable(playerid, 1);
 				RemovePlayerFromVehicle(playerid);
 				PlayerInfo[playerid][pBleeding] = 1;
+				PlayerInfo[playerid][pHospital] = 0;
 			}
 		}
 		if (OnDuty[playerid] == 1 && (PlayerInfo[playerid][pMember] == 1 || PlayerInfo[playerid][pLeader] == 1) && WearTazer[playerid] != 1)
@@ -160,7 +155,7 @@ task ServerBeat[1000]()
 			format(str, sizeof(str), "** [Duong day buon lau]: %s cung cac doi tuong ", GN(playerid));
 			if (CheckDrugDealerInVehicle(vid, 2) > 1)
 			{
-				foreach(Player, ddid)
+				foreach(new ddid : Player)
 				{
 					if (IsPlayerDrugDealingCooperate(ddid, playerid, 2))
 					{
@@ -189,7 +184,7 @@ task ServerBeat[1000]()
 			new vid = GetPlayerVehicleID(playerid);
 			if (CheckDrugDealerInVehicle(vid, 2) > 1)
 			{
-				foreach(Player, ddid)
+				foreach(new ddid : Player)
 				{
 					if (IsPlayerDrugDealingCooperate(ddid, playerid, 2))
 					{
@@ -231,7 +226,7 @@ task VehicleLastShot[10000]()
 
 task DyingTime[5000]()
 {
-	foreach(Player, playerid)
+	foreach(new playerid : Player)
 	{
 		if (Dying[playerid] == 1 && !IsOnSavePosAmbulance(playerid))
 		{
@@ -244,7 +239,7 @@ task DyingTime[5000]()
 
 task Bleeding[10000]()
 {
-	foreach(Player, playerid)
+	foreach(new playerid : Player)
 	{
 		if (PlayerInfo[playerid][pBleeding] == 1)
 		{

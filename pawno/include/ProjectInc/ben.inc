@@ -758,7 +758,7 @@ stock ClearSaving(playerid)
 
 stock GetPatientAmbulance(vid)
 {
-	foreach(Player, playerid)
+	foreach(new playerid : Player)
 	{
 		if (IsPlayerInVehicle(playerid, vid))
 		{
@@ -800,7 +800,7 @@ stock IsOnSavePosAmbulance(playerid)
 stock countFaction(idfac)
 {
 	new count = 0;
-	foreach(Player, playerid)
+	foreach(new playerid : Player)
 	{
 		if ((PlayerInfo[playerid][pMember] == idfac || PlayerInfo[playerid][pLeader] == idfac) && (OnDuty[playerid] == 1 || JobDuty[playerid] == 1))
 			count++;
@@ -815,7 +815,7 @@ public ChangeDrugDealer(playerid, rand)
 	SCM(playerid, COLOR_YELLOW, "Dia diem giao dich da duoc doi, hay toi cham do moi de giao dich.");
 	SetCheckpoint(playerid, BuonLauGiveCP[rand][0], BuonLauGiveCP[rand][1], BuonLauGiveCP[rand][2], 5);
 
-	foreach(Player, ddid)
+	foreach(new ddid : Player)
 	{
 		if (CoopDD[ddid] == playerid)
 		{
@@ -828,7 +828,7 @@ public ChangeDrugDealer(playerid, rand)
 
 stock GetDriverVehicle(vid)
 {
-	foreach(Player, playerid)
+	foreach(new playerid : Player)
 	{
 		if (IsPlayerInVehicle(playerid, vid) && GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
 			return playerid;
@@ -839,7 +839,7 @@ stock GetDriverVehicle(vid)
 stock CheckDrugDealerInVehicle(vid, ddcase)
 {
 	new count = 0;
-	foreach(Player, playerid)
+	foreach(new playerid : Player)
 	{
 		if (DrugDealing[playerid] == ddcase && IsPlayerInVehicle(playerid, vid))
 			count++;
