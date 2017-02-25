@@ -94,6 +94,62 @@ new Float:BuonLauGiveCP[4][3] =
 	{ 2795.4939, -1619.3204, 10.9219 }
 };
 
+new Float:DocArrestOut[23][3] =
+{
+	{ 2578.0896, -1516.9482, -48.9141 },
+	{ 2577.9795, -1513.4364, -48.9141 },
+	{ 2578.0840, -1509.5540, -48.9141 },
+	{ 2578.0181, -1506.0131, -48.9141 },
+	{ 2577.8655, -1502.2213, -48.9141 },
+	{ 2588.4314, -1517.9393, -48.9141 },
+	{ 2588.4795, -1514.1781, -48.9141 },
+	{ 2588.3044, -1510.4994, -48.9141 },
+	{ 2588.3792, -1506.9188, -48.9141 },
+	{ 2588.5024, -1503.1636, -48.9141 },
+	{ 2587.7209, -1522.0472, -48.9141 },
+	{ 2584.2358, -1522.2797, -48.9141 },
+	{ 2580.5249, -1522.2711, -48.9141 },
+	{ 2587.7322, -1529.3362, -45.2369 },
+	{ 2583.9592, -1529.5356, -45.2369 },
+	{ 2580.3674, -1529.3932, -45.2369 },
+	{ 2570.6887, -1502.3342, -45.2369 },
+	{ 2570.8069, -1506.0854, -45.2369 },
+	{ 2570.8640, -1509.4326, -45.2369 },
+	{ 2570.8611, -1513.0879, -45.2373 },
+	{ 2570.8345, -1516.7938, -45.2373 },
+	{ 2588.1208, -1534.7250, -48.9141 },
+	{ 2581.8005, -1534.7117, -48.9141 },
+};
+
+new Float:DocArrestIn[23][3] =
+{
+	{ 2575.9727, -1516.8209, -48.9141 },
+	{ 2575.9553, -1513.3483, -48.9141 },
+	{ 2575.6096, -1509.6593, -48.9141 },
+	{ 2575.6218, -1505.9529, -48.9141 },
+	{ 2575.7466, -1502.1635, -48.9141 },
+	{ 2590.3359, -1518.0035, -48.9141 },
+	{ 2590.8240, -1514.3561, -48.9141 },
+	{ 2590.0112, -1510.6479, -48.9141 },
+	{ 2590.6521, -1507.0378, -48.9141 },
+	{ 2590.5320, -1503.5839, -48.9141 },
+	{ 2587.8455, -1524.3763, -48.9141 },
+	{ 2584.2048, -1524.4270, -48.9141 },
+	{ 2580.4438, -1525.7611, -48.9141 },
+	{ 2587.5615, -1526.2703, -45.2369 },
+	{ 2583.8953, -1526.2755, -45.2369 },
+	{ 2580.4639, -1527.3052, -45.2369 },
+	{ 2573.2329, -1502.3574, -45.2369 },
+	{ 2573.6370, -1505.9093, -45.2369 },
+	{ 2572.9968, -1509.9520, -45.2369 },
+	{ 2573.7371, -1513.3970, -45.2373 },
+	{ 2573.6582, -1517.1709, -45.2373 },
+	{ 2589.3845, -1537.9642, -48.9141 },
+	{ 2583.0762, -1538.5919, -48.9141 }
+};
+
+
+
 new VehicleNames[][] =
 {
 	"Landstalker", "Bravura", "Buffalo", "Linerunner", "Perrenial", "Sentinel",
@@ -189,9 +245,13 @@ new TruckBiz[MAX_PLAYERS];
 #define NEWSVEH 18
 #define TAXIVEH 19
 #define HITMANVEH 20
+#define DOCVEH 21
 
 #define UPDLNOVEH 1
 #define UPDLVEH 2
+
+#define GATE 1
+#define DOOR 2
 
 new mSkinList = mS_INVALID_LISTID;
 //Reward Type
@@ -227,3 +287,103 @@ stock CreateServerPlayerTextDraw(playerid)
 	TextDrawSetProportional(TDPBank[playerid], 1);
 	TextDrawSetShadow(TDPBank[playerid], 0);
 }
+
+stock GetClosestCell(playerid)
+{
+	for (new i = 0; i < 21; i++)
+	{
+		if (IsPlayerNearArrestOut(playerid, i))
+			return i;
+	}
+	return -1;
+}
+
+stock IsPlayerNearArrestOut(playerid, id)
+{
+	if (IsPlayerInRangeOfPoint(playerid, 2, DocArrestOut[id][0], DocArrestOut[id][1], DocArrestOut[id][2]))
+		return 1;
+	return 0;
+}
+
+stock CreateGate(model, Float:startx, Float:starty, Float:startz, Float:endx, Float:endy, Float:endz, 
+						Float:rotatex, Float:roratey, Float:roratez, type = GATE, autotime = 0, time = 5, Float:health = -1)
+{
+	new objid = CreateDynamicObject(model, startx, starty, startz, srotatex, srotatey, srotatez);
+	new idgate = -1;
+	for (new i = 0; i < MAX_GATES; i++)
+	{
+		if (Object == -1)
+			idgate = i;
+	}
+	GateInfo[idgate][Model] = model;
+	GateInfo[idgate][Object] = objid;
+	GateInfo[idgate][StartX] = startx;
+	GateInfo[idgate][StartY] = starty;
+	GateInfo[idgate][StartZ] = startz;
+	GateInfo[idgate][EndX] = endx;
+	GateInfo[idgate][EndY] = endy;
+	GateInfo[idgate][EndZ] = endz;
+	GateInfo[idgate][RotateX] = rotatex;
+	GateInfo[idgate][RotateY] = rotatey;
+	GateInfo[idgate][RotateZ] = rotatez;
+	GateInfo[idgate][Health] = health;
+	GateInfo[idgate][Type] = type;
+	GateInfo[idgate][Time] = time * 1000;
+	GateInfo[idgate][AutoTime] = time;
+	return 1;
+}
+
+stock GetClosestGate(playerid)
+{
+	for (new i = 0; i < MAX_GATES; i++)
+	{
+		if (GateInfo[i][Object] != -1 && GateInfo[i][Type] == GATE &&
+			IsPlayerInRangeOfPoint(playerid, 3, GateInfo[i][StartX], GateInfo[i][StartY], GateInfo[i][StartZ]))
+			return i;
+	}
+	return -1;
+}
+
+stock GetClosestDoor(playerid)
+{
+	for (new i = 0; i < MAX_GATES; i++)
+	{
+		if (GateInfo[i][Object] != -1 && GateInfo[i][Type] == DOOR &&
+			IsPlayerInRangeOfPoint(playerid, 3, GateInfo[i][StartX], GateInfo[i][StartY], GateInfo[i][StartZ]))
+			return i;
+	}
+	return -1;
+}
+
+stock CreateServerGate()
+{
+	return 1;
+}
+
+stock MoveGate(gateid, type = -1)
+{
+	// 1 OPEN 2 CLOSED
+	if (type != -1)
+	{
+		if (GateInfo[gateid][Moved] == 0)
+		{
+			MoveOjbect(GateInfo[gateid][Object], GateInfo[gateid][EndX], GateInfo[gateid][EndY], GateInfo[gateid]][EndZ], GateInfo[gateid][Time]);
+			if (GateInfo[gateid][AutoTime] > 0)
+				GateTime[gateid] = GateInfo[gateid][AutoTime];
+		}
+		else MoveOjbect(GateInfo[gateid][Object], GateInfo[gateid][StartX], GateInfo[gateid][StartY], GateInfo[gateid]][StartZ], GateInfo[gateid][Time]);
+	}
+	else
+	{
+		if (type == 1)
+		{
+			MoveOjbect(GateInfo[gateid][Object], GateInfo[gateid][EndX], GateInfo[gateid][EndY], GateInfo[gateid]][EndZ], GateInfo[gateid][Time]);
+			if (GateInfo[gateid][AutoTime] > 0)
+				GateTime[gateid] = GateInfo[gateid][AutoTime];
+		}
+		else MoveOjbect(GateInfo[gateid][Object], GateInfo[gateid][StartX], GateInfo[gateid][StartY], GateInfo[gateid]][StartZ], GateInfo[gateid][Time]);
+	}
+	return 1;
+}
+
+new GateTime[MAX_GATES];

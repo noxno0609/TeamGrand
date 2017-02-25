@@ -1,11 +1,24 @@
 task ServerBeat[1000]()
 {
+	for (new gateid = 0; gateid < MAX_GATES; gateid++)
+	{
+		if (GateTime[gateid] > 0 && --GateTime[gateid] == 0)
+			MoveGate(gateid);
+	}
 	foreach(new playerid : Player)
 	{
-		format(tdbank, sizeof(tdbank), "Bank$ %s", AddCommas(PlayerInfo[playerid][pAccount]));
-		TextDrawSetString(TDPBank[playerid], tdbank);
-		TextDrawShowForPlayer(playerid, TDPBank[playerid]);
+		if (gPlayerLogged[playerid] == 1)
+		{
+			format(tdbank, sizeof(tdbank), "Bank$ %s", AddCommas(PlayerInfo[playerid][pAccount]));
+			TextDrawSetString(TDPBank[playerid], tdbank);
+			TextDrawShowForPlayer(playerid, TDPBank[playerid]);
+		}
 
+		if (GetPVarInt(playerid, "DelayWalkingTeleportTime") > 0)
+		{
+			new time = GetPVarInt(playerid, "DelayWalkingTeleportTime");
+			SetPVarInt(playerid, "DelayWalkingTeleportTime", --time);
+		}
 		if (Trucking[GetPlayerVehicleID(playerid)] == 1 && TruckPos[playerid][0] != 0)
 		{
 			if (!IsPlayerInRangeOfPoint(playerid, 5, TruckPos[playerid][0], TruckPos[playerid][1], TruckPos[playerid][2]))
@@ -81,13 +94,15 @@ task ServerBeat[1000]()
 				PlayerInfo[playerid][pHospital] = 0;
 			}
 		}
-		if (OnDuty[playerid] == 1 && (PlayerInfo[playerid][pMember] == 1 || PlayerInfo[playerid][pLeader] == 1) && WearTazer[playerid] != 1)
+		if (OnDuty[playerid] == 1 && (PlayerInfo[playerid][pMember] == 1 || PlayerInfo[playerid][pLeader] == 1 ||  
+			PlayerInfo[playerid][pMember] == 17 || PlayerInfo[playerid][pLeader] == 17) && WearTazer[playerid] != 1)
 		{
 			Tazering[playerid] = 0;
 			SetPlayerAttachedObject(playerid, 5, 18642, 1, -0.197000, -0.071000, -0.109999, 2.399994, 80.400001, 18.399993, 1.000000, 1.000000, 1.000000, 0, 0);
 			WearTazer[playerid] = 1;
 		}
-		else if (OnDuty[playerid] == 0 && PlayerInfo[playerid][pMember] != 1 && PlayerInfo[playerid][pLeader] != 1 && WearTazer[playerid] == 1)
+		else if (OnDuty[playerid] == 0 || (PlayerInfo[playerid][pMember] != 1 && PlayerInfo[playerid][pLeader] != 1 &&
+			PlayerInfo[playerid][pMember] != 17 && PlayerInfo[playerid][pLeader] != 17) && WearTazer[playerid] == 1)
 		{
 			Tazering[playerid] = 0;
 			RemovePlayerAttachedObject(playerid, 5);

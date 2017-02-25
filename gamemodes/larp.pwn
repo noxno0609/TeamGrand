@@ -67,6 +67,7 @@ new MySQL:conn;
 #define MAX_VEHICLE_MODELS	(70)
 #define MAX_PLYVEH_RATIO	(20) // per player.
 #define MAX_VEHICLE_PLATE	(7)
+#define MAX_GATES 40
 //==============================
 #undef MAX_PLAYERS
 #define MAX_PLAYERS SCRIPT_MAXPLAYERS
@@ -292,7 +293,7 @@ forward ShowStats(playerid,targetid);
 forward SetPlayerToTeamColor(playerid);
 forward GameModeInitExitFunc();
 forward split(const strsrc[], strdest[][], delimiter);
-forward OnPlayerLogin(playerid,password[]);
+forward OnPlayerLogin(playerid);
 forward SavePlayer(playerid);
 forward OnPlayerRegister(playerid, password[]);
 forward BroadCast(color,const string[]);
@@ -439,7 +440,7 @@ new license_pu5;*/
 new Security = 0;
 //new gPlayerUsingLoopingAnim[MAX_PLAYERS];
 //new Text:txtAnimHelper;
-new CreatedCars[100];
+//new CreatedCars[100];
 //new CreatedCar = 0;
 new Tax = 0;
 new TaxValue = 0;
@@ -630,7 +631,7 @@ new togOOC = 0;
 new adds = 1;
 new addtimer = 60000;
 new Float:rx, Float:ry, Float:rz;
-new carselect[15];
+//new carselect[15];
 new objstore[128];
 new cbjstore[128];
 new motd[256];
@@ -875,18 +876,18 @@ new Float:gSweeperPoints[16][3] = {
 	{ 1527.9438, -1663.3240, 13.1080 },
 	{ 2083.6062, -1843.3563, 13.1080 }
 };
-new RandCars[20][1] = {
-	{ 496 }, { 542 }, { 507 }, { 585 },
-	{ 466 }, { 492 }, { 579 }, { 559 },
-	{ 400 }, { 551 }, { 516 }, { 475 },
-	{ 561 }, { 550 }, { 566 }, { 558 },
-	{ 562 }, { 562 }, { 603 }, { 560 }
-};
-
-
-new RandLCars[1][1] = {
-	{ 431 }// coach
-};
+//new RandCars[20][1] = {
+//	{ 496 }, { 542 }, { 507 }, { 585 },
+//	{ 466 }, { 492 }, { 579 }, { 559 },
+//	{ 400 }, { 551 }, { 516 }, { 475 },
+//	{ 561 }, { 550 }, { 566 }, { 558 },
+//	{ 562 }, { 562 }, { 603 }, { 560 }
+//};
+//
+//
+//new RandLCars[1][1] = {
+//	{ 431 }// coach
+//};
 
 
 new GunPrice[30][1] = {
@@ -1088,36 +1089,36 @@ new CivFemalePeds[33][1] = {
 };
 
 
-new Peds[200][1] = {
-	{ 7 },
-	/*{288},//TEAM_ADMIN
-	{286},{287},{228},{113},{120},{147},{294},{227},{61},{171},*/
-	{ 247 },//CIVILIANS DOWN HERE
-	{ 248 }, { 100 }, { 256 }, { 263 }, { 262 }, { 261 }, { 260 }, { 259 }, { 258 }, { 257 }, { 256 }, { 255 },
-	{ 253 }, { 252 }, { 251 }, { 246 }, { 245 }, { 244 }, { 243 }, { 242 }, { 241 }, { 239 },
-	{ 238 }, { 237 }, { 236 }, { 235 }, { 234 }, { 233 }, { 232 }, { 231 }, { 230 }, { 229 },
-	{ 226 }, { 225 }, { 224 }, { 223 }, { 222 }, { 221 }, { 220 }, { 219 }, { 218 },
-	{ 217 }, { 216 }, { 215 }, { 214 }, { 213 }, { 212 }, { 211 }, { 210 }, { 209 },
-	{ 207 }, { 206 }, { 205 }, { 204 }, { 203 }, { 202 }, { 201 }, { 200 }, { 199 }, { 198 }, { 197 }, { 196 },
-	{ 195 }, { 194 }, { 193 }, { 192 }, { 191 }, { 190 }, { 189 }, { 185 }, { 184 }, { 183 },
-	{ 182 }, { 181 }, { 180 }, { 179 }, { 178 }, { 176 }, { 172 }, { 170 }, { 168 }, { 167 }, { 162 },
-	{ 161 }, { 160 }, { 159 }, { 158 }, { 157 }, { 156 }, { 155 }, { 154 }, { 153 }, { 152 }, { 151 },
-	{ 146 }, { 145 }, { 144 }, { 143 }, { 142 }, { 141 }, { 140 }, { 139 }, { 138 }, { 137 }, { 136 }, { 135 },
-	{ 134 }, { 133 }, { 132 }, { 131 }, { 130 }, { 129 }, { 128 }, { 254 }, { 99 }, { 97 }, { 96 }, { 95 }, { 94 },
-	{ 92 }, { 90 }, { 89 }, { 88 }, { 87 }, { 85 }, { 84 }, { 83 }, { 82 }, { 81 }, { 80 }, { 79 }, { 78 }, { 77 }, { 76 },
-	{ 75 }, { 73 }, { 72 }, { 69 }, { 68 }, { 67 }, { 66 }, { 64 }, { 63 }, { 62 }, { 58 }, { 57 }, { 56 }, { 55 },
-	{ 54 }, { 53 }, { 52 }, { 51 }, { 50 }, { 49 }, { 45 }, { 44 }, { 43 }, { 41 }, { 39 }, { 38 }, { 37 }, { 36 }, { 35 },
-	{ 34 }, { 33 }, { 32 }, { 31 }, { 30 }, { 29 }, { 28 }, { 27 }, { 26 }, { 25 }, { 24 }, { 23 }, { 22 }, { 21 }, { 20 },
-	{ 19 }, { 18 }, { 17 }, { 16 }, { 15 }, { 14 }, { 13 }, { 12 }, { 11 }, { 10 }, { 1 }, { 2 },
-	{ 290 },//ROSE
-	{ 291 },//PAUL
-	{ 293 },//OGLOC
-	{ 187 },
-	{ 296 },//JIZZY
-	{ 297 },//MADDOGG
-	{ 298 },//CAT
-	{ 299 }//ZERO
-};
+//new Peds[200][1] = {
+//	{ 7 },
+//	/*{288},//TEAM_ADMIN
+//	{286},{287},{228},{113},{120},{147},{294},{227},{61},{171},*/
+//	{ 247 },//CIVILIANS DOWN HERE
+//	{ 248 }, { 100 }, { 256 }, { 263 }, { 262 }, { 261 }, { 260 }, { 259 }, { 258 }, { 257 }, { 256 }, { 255 },
+//	{ 253 }, { 252 }, { 251 }, { 246 }, { 245 }, { 244 }, { 243 }, { 242 }, { 241 }, { 239 },
+//	{ 238 }, { 237 }, { 236 }, { 235 }, { 234 }, { 233 }, { 232 }, { 231 }, { 230 }, { 229 },
+//	{ 226 }, { 225 }, { 224 }, { 223 }, { 222 }, { 221 }, { 220 }, { 219 }, { 218 },
+//	{ 217 }, { 216 }, { 215 }, { 214 }, { 213 }, { 212 }, { 211 }, { 210 }, { 209 },
+//	{ 207 }, { 206 }, { 205 }, { 204 }, { 203 }, { 202 }, { 201 }, { 200 }, { 199 }, { 198 }, { 197 }, { 196 },
+//	{ 195 }, { 194 }, { 193 }, { 192 }, { 191 }, { 190 }, { 189 }, { 185 }, { 184 }, { 183 },
+//	{ 182 }, { 181 }, { 180 }, { 179 }, { 178 }, { 176 }, { 172 }, { 170 }, { 168 }, { 167 }, { 162 },
+//	{ 161 }, { 160 }, { 159 }, { 158 }, { 157 }, { 156 }, { 155 }, { 154 }, { 153 }, { 152 }, { 151 },
+//	{ 146 }, { 145 }, { 144 }, { 143 }, { 142 }, { 141 }, { 140 }, { 139 }, { 138 }, { 137 }, { 136 }, { 135 },
+//	{ 134 }, { 133 }, { 132 }, { 131 }, { 130 }, { 129 }, { 128 }, { 254 }, { 99 }, { 97 }, { 96 }, { 95 }, { 94 },
+//	{ 92 }, { 90 }, { 89 }, { 88 }, { 87 }, { 85 }, { 84 }, { 83 }, { 82 }, { 81 }, { 80 }, { 79 }, { 78 }, { 77 }, { 76 },
+//	{ 75 }, { 73 }, { 72 }, { 69 }, { 68 }, { 67 }, { 66 }, { 64 }, { 63 }, { 62 }, { 58 }, { 57 }, { 56 }, { 55 },
+//	{ 54 }, { 53 }, { 52 }, { 51 }, { 50 }, { 49 }, { 45 }, { 44 }, { 43 }, { 41 }, { 39 }, { 38 }, { 37 }, { 36 }, { 35 },
+//	{ 34 }, { 33 }, { 32 }, { 31 }, { 30 }, { 29 }, { 28 }, { 27 }, { 26 }, { 25 }, { 24 }, { 23 }, { 22 }, { 21 }, { 20 },
+//	{ 19 }, { 18 }, { 17 }, { 16 }, { 15 }, { 14 }, { 13 }, { 12 }, { 11 }, { 10 }, { 1 }, { 2 },
+//	{ 290 },//ROSE
+//	{ 291 },//PAUL
+//	{ 293 },//OGLOC
+//	{ 187 },
+//	{ 296 },//JIZZY
+//	{ 297 },//MADDOGG
+//	{ 298 },//CAT
+//	{ 299 }//ZERO
+//};
 
 /*new Float:HouseCarSpawns[34][4] = {
 {-2637.2544,165.0454,4.2919,179.9976},//House 2
@@ -1155,7 +1156,6 @@ new Peds[200][1] = {
 {-2529.4817,-142.6608,19.7107,4.2929}, //House 32
 {-2616.1897,-108.4479,4.1693,269.8246}//House 33
 };*/
-
 
 /*new CarSpawns[186][eCars] = {
 {405,2205.2,-1177.0,25.7,270.8},//carid 90
@@ -1348,6 +1348,26 @@ new Peds[200][1] = {
 */
 
 //ENUM
+enum gInfo
+{
+	Model,
+	Moved,	
+	Float:StartX,
+	Float:StartY,
+	Float:StartZ,
+	Float:EndX,
+	Float:EndY,
+	Float:EndZ,
+	Float:RotateX,
+	Float:RotateY,
+	Float:RotateZ,
+	Health,
+	Type,
+	Time,
+	AutoTime
+};
+new GateInfo[MAX_GATES][gInfo];
+
 enum SavePlayerPosEnum
 {
 	Float:LastX,
@@ -1634,7 +1654,8 @@ enum pInfo
 	pHideNumber,
 	pSpeaker,
 	pLocked,
-	pBleeding
+	pBleeding,
+	pJailRoom
 	//pSQLID,
 };
 new PlayerInfo[MAX_PLAYERS][pInfo];
@@ -2003,6 +2024,7 @@ public SavePlayer(playerid)
 				Paycheck=%d,\
 				HeadValue=%d,\
 				Jailed=%d,\
+				JailRoom=%d,\
 				JailTime=%d,\
 				Materials=%d,\
 				Drugs=%d,\
@@ -2021,6 +2043,7 @@ public SavePlayer(playerid)
 				PlayerInfo[playerid][pPayCheck],
 				PlayerInfo[playerid][pHeadValue],
 				PlayerInfo[playerid][pJailed],
+				PlayerInfo[playerid][pJailRoom],
 				PlayerInfo[playerid][pJailTime],
 				PlayerInfo[playerid][pMats],
 				PlayerInfo[playerid][pDrugs],
@@ -4034,11 +4057,11 @@ public IsACop(playerid)
 	{
 	    new leader = PlayerInfo[playerid][pLeader];
 	    new member = PlayerInfo[playerid][pMember];
-	    if(member==1 || member==2 || member==3)
+	    if(member==1 || member==2 || member==3 || member==17)
 		{
 		    return 1;
 		}
-		else if(leader==1 || leader==2 || leader==3)
+		else if(leader==1 || leader==2 || leader==3 || leader==17)
 		{
 		    return 1;
 		}
@@ -4492,7 +4515,15 @@ public IsACopCar(carid)
 	}
 	return 0;
 }
-
+forward IsADoCCar(carid);
+public IsADoCCar(carid)
+{
+	if (CarInfo[carid][cType] == DOCVEH)
+	{
+		return 1;
+	}
+	return 0;
+}
 public IsAnFbiCar(carid)
 {
 	if (CarInfo[carid][cType] == FBIVEH)
@@ -5435,10 +5466,10 @@ public SetPlayerSpawn(playerid)
 	}
 	else if(PlayerInfo[playerid][pJailed] == 1)
 	{
-		SetPlayerSkin(playerid, 50);
+		//SetPlayerSkin(playerid, 50);
 		SetPlayerInterior(playerid, 6);
 		PlayerInfo[playerid][pInt] = 6;
-		SetPlayerPos(playerid,264.6288,77.5742,1001.0391);
+		SetPlayerPos(playerid,264.6288,77.5742,1001.0391+1);
 		SendClientMessage(playerid, COLOR_LIGHTRED, "Chua hoan thanh an phat, tro ve nha tu.");
 		return 1;
 	}
@@ -5449,6 +5480,16 @@ public SetPlayerSpawn(playerid)
 		PlayerInfo[playerid][pInt] = 0;
 		SetPlayerPos(playerid,268.5777,1857.9351,9.8133);
 		SetPlayerWorldBounds(playerid, 337.5694,101.5826,1940.9759,1798.7453); //285.3481,96.9720,1940.9755,1799.0811
+		return 1;
+	}
+	else if (PlayerInfo[playerid][pJailed] == 3)
+	{
+		SetPlayerSkin(playerid, 50);
+		SetPlayerInterior(playerid, 6);
+		PlayerInfo[playerid][pInt] = 6;
+		new docroom = PlayerInfo[playerid][pJailRoom];
+		SetPlayerPos(playerid, DocArrestIn[docroom][0], DocArrestIn[docroom][1], DocArrestIn[docroom][2]+1.0);
+		SendClientMessage(playerid, COLOR_LIGHTRED, "Chua hoan thanh an phat, tro ve nha tu.");
 		return 1;
 	}
 	else if (PlayerInfo[playerid][pHospital] == 1 && PlayerInfo[playerid][pJailed] == 0 && PlayerPaintballing[playerid] == 0)
@@ -6083,8 +6124,8 @@ public SetPlayerCriminalEx(playerid,declare,reason[])
 {//example: SetPlayerCriminal(playerid,255, "Stealing A Police Vehicle");
 	if(IsPlayerConnected(playerid))
 	{
-	    PlayerInfo[playerid][pCrimes] += 1;
-	    new points = WantedPoints[playerid];
+	   PlayerInfo[playerid][pCrimes] += 1;
+	   new points = WantedPoints[playerid];
 		new turned[MAX_PLAYER_NAME];
 		new turner[MAX_PLAYER_NAME];
 		new turnmes[128];
@@ -6122,7 +6163,7 @@ public SetPlayerCriminalEx(playerid,declare,reason[])
 			if(WantedLevel[playerid] >= 1) { if(gTeam[playerid] == 3) { gTeam[playerid] = 4; } }
 			if(yesno)
 			{
-				format(wantedmes, sizeof(wantedmes), "Current Wanted Level: %d", wlevel);
+				format(wantedmes, sizeof(wantedmes), "Muc Do Pham Toi: %d", wlevel);
 				SendClientMessage(playerid, COLOR_YELLOW, wantedmes);
 				for(new i = 0; i < MAX_PLAYERS; i++)
 				{
@@ -6376,7 +6417,7 @@ public OtherTimer()
 	{
 	    if(IsPlayerConnected(i))
 	    {
-	        if (GetPlayerState(i) == 1) CheckForWalkingTeleport(i); // IF THE PLAYER IS IN A TELEPORT ZONE, TELEPORT THEM
+			 if (GetPlayerState(i) == PLAYER_STATE_ONFOOT) CheckForWalkingTeleport(i); // IF THE PLAYER IS IN A TELEPORT ZONE, TELEPORT THEM
 	        new vehicleid = GetPlayerVehicleID(i);
             if(SafeTime[i] > 0)
 			{
@@ -6620,12 +6661,11 @@ public SetPlayerUnjail()
 		    if(PlayerInfo[i][pJailed] > 0)
 		    {
 				if(PlayerInfo[i][pJailTime] > 0 && WantLawyer[i] == 0)
-				{
 					PlayerInfo[i][pJailTime]--;
-				}
+
 				if(PlayerInfo[i][pJailTime] <= 0 && WantLawyer[i] == 0)
 				{
-				    PlayerInfo[i][pJailTime] = 0;
+				   PlayerInfo[i][pJailTime] = 0;
 					if(PlayerInfo[i][pJailed] == 1)
 					{
 						SetPlayerInterior(i, 6);
@@ -6634,10 +6674,16 @@ public SetPlayerUnjail()
 					}
 					else if(PlayerInfo[i][pJailed] == 2)
 					{
-					    SetPlayerWorldBounds(i,20000.0000,-20000.0000,20000.0000,-20000.0000); //Reset world to player
-					    SetPlayerInterior(i, 0);
-					    PlayerInfo[i][pInt] = 0;
-					    SetPlayerPos(i, 90.2101,1920.4854,17.9422);
+					   SetPlayerWorldBounds(i,20000.0000,-20000.0000,20000.0000,-20000.0000); //Reset world to player
+					   SetPlayerInterior(i, 0);
+					   PlayerInfo[i][pInt] = 0;
+					   SetPlayerPos(i, 90.2101,1920.4854,17.9422);
+					}
+					else if (PlayerInfo[i][pJailed] == 3)
+					{
+						SetPlayerInterior(i, 0);
+						PlayerInfo[i][pInt] = 0;
+						SetPlayerPos(i, 774.9041, -1335.3381, 13.5386);
 					}
 					PlayerInfo[i][pJailed] = 0;
 					SendClientMessage(i, COLOR_GRAD1,"Warden: Ban da duoc tra tu do.");
@@ -7545,7 +7591,7 @@ public SetPlayerWeapons(playerid)
 				SafeGivePlayerWeapon(playerid, 41, 500); //spray
 				if(OnDuty[playerid] == 1 || PlayerInfo[playerid][pMember] == 2)//Cops & FBI/ATF
 				{
-				    SafeGivePlayerWeapon(playerid, 41, 500); //spray
+				   SafeGivePlayerWeapon(playerid, 41, 500); //spray
 					SafeGivePlayerWeapon(playerid, 24);
 					SafeGivePlayerWeapon(playerid, 3, 1);
 					if(PlayerInfo[playerid][pChar] == 285)//SWAT
@@ -8133,17 +8179,15 @@ public Production()
 
 public DateProp(playerid)
 {
-	new playername[MAX_PLAYER_NAME];
-	GetPlayerName(playerid, playername, sizeof(playername));
 	new curdate = getdate();
 	for(new h = 0; h < MAX_HOUSES; h++)
 	{
-		if (strcmp(playername, HouseInfo[h][hOwner], true) == 0)
+		if (strcmp(GLN(playerid), HouseInfo[h][hOwner], true) == 0)
 		{
 			HouseInfo[h][hDate] = curdate;
-			OnPropUpdate();
 		}
 	}
+	OnPropUpdate();
 	return 1;
 }
 
@@ -9675,7 +9719,7 @@ public IdleKick()
 					new plname[64];
 					new string[128];
 					GetPlayerName(i, plname, sizeof(plname));
-					format(string, sizeof(string), "AdmCmd: %s da bi kick boi Nick_Dep_Trai, Ly do: AFK", plname);
+					format(string, sizeof(string), "AdmCmd: %s da bi kick boi Server, Ly do: AFK", plname);
 					BroadCast(COLOR_LIGHTRED, string);
 					KickEx(i);
 				}
@@ -9866,6 +9910,9 @@ public BusrouteEnd(playerid, vehicleid)
 
 public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use another function for vehicle ones - luk0r
 {
+	if (GetPlayerState(playerid) != PLAYER_STATE_ONFOOT) return 1;
+	if (GetPVarInt(playerid, "DelayWalkingTeleportTime") > 0) return 1;
+	SetPVarInt(playerid, "DelayWalkingTeleportTime", 3);
 	/*
 	 *  HOW TO USE THIS FUNCTION:
 	 *
@@ -9883,12 +9930,57 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerPos(playerid,246.7079,66.2239,1003.6406);
 		PlayerInfo[playerid][pInt] = 6;
 	}
-	else if(PlayerToPointStripped(1, playerid,246.5325,62.4251,1003.6406, cx,cy,cz))
+	else if (PlayerToPointStripped(1, playerid, 246.5325, 62.4251, 1003.6406, cx, cy, cz))
 	{//LSPD Exit
 		GameTextForPlayer(playerid, "~w~Los Angeles", 5000, 1);
 		SetPlayerInterior(playerid, 0);
-		SetPlayerPos(playerid,1552.3231,-1674.6780,16.1953);
+		SetPlayerPos(playerid, 1552.3231, -1674.6780, 16.1953);
 		PlayerInfo[playerid][pInt] = 0;
+	}
+	else if (PlayerToPointStripped(1, playerid, 2574.7378, -1475.0773, -48.8995, cx, cy, cz))
+	{//DoC Entrance Exit
+		GameTextForPlayer(playerid, "~w~Department of Corrections", 5000, 1);
+		SetPlayerInterior(playerid, 0);
+		SetPlayerPos(playerid, 648.8242, -1360.7623, 13.5873);
+		PlayerInfo[playerid][pInt] = 0;
+	}
+	else if (PlayerToPointStripped(1, playerid, 648.8242, -1360.7623, 13.5873, cx, cy, cz))
+	{//DoC Entrance
+		Streamer_UpdateEx(playerid, 2574.7378, -1475.0773, -48.899);
+		GameTextForPlayer(playerid, "~w~Los Angeles", 5000, 1);
+		SetPlayerInterior(playerid, 6);
+		SetPlayerPos(playerid, 2574.7378, -1475.0773, -48.8995);
+		PlayerInfo[playerid][pInt] = 6;
+	}
+	else if (PlayerToPointStripped(1, playerid, 2594.6277, -1540.4736, -48.9141, cx, cy, cz))
+	{//DoC Back Entrance Exit
+		GameTextForPlayer(playerid, "~w~Department of Corrections", 5000, 1);
+		SetPlayerInterior(playerid, 0);
+		SetPlayerPos(playerid, 732.9749, -1342.1331, 13.5236);
+		PlayerInfo[playerid][pInt] = 0;
+	}
+	else if (PlayerToPointStripped(1, playerid, 732.9749, -1342.1331, 13.5236, cx, cy, cz))
+	{//DoC Back Entrance
+		Streamer_UpdateEx(playerid, 2594.6277, -1540.4736, -48.9141);
+		GameTextForPlayer(playerid, "~w~Los Angeles", 5000, 1);
+		SetPlayerInterior(playerid, 6);
+		SetPlayerPos(playerid, 2594.6277, -1540.4736, -48.9141);
+		PlayerInfo[playerid][pInt] = 6;
+	}
+	else if (PlayerToPointStripped(1, playerid, 2594.4473, -1540.8096, -45.2373, cx, cy, cz))
+	{//DoC Little Entrance Exit
+		GameTextForPlayer(playerid, "~w~Department of Corrections", 5000, 1);
+		SetPlayerInterior(playerid, 0);
+		SetPlayerPos(playerid, 741.4783, -1358.7620, 21.6406);
+		PlayerInfo[playerid][pInt] = 0;
+	}
+	else if (PlayerToPointStripped(1, playerid, 741.4783, -1358.7620, 21.6406, cx, cy, cz))
+	{//DoC Little Entrance
+		Streamer_UpdateEx(playerid, 2594.4473, -1540.8096, -45.2373);
+		GameTextForPlayer(playerid, "~w~Los Angeles", 5000, 1);
+		SetPlayerInterior(playerid, 6);
+		SetPlayerPos(playerid, 2594.4473, -1540.8096, -45.2373);
+		PlayerInfo[playerid][pInt] = 6;
 	}
 	else if (PlayerToPointStripped(1.0, playerid,488.2531,-82.7632,998.7578, cx,cy,cz))
 	{

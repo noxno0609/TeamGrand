@@ -6,7 +6,8 @@ public TazerKeyStateChange(playerid, newkeys, oldkeys)
 		ApplyAnimation(playerid, "KNIFE", "knife_3", 4.1, 0, 1, 1, 0, 0, 1);
 		for (new i = 0; i<MAX_PLAYERS; i++)
 		{
-			if (PlayerInfo[i][pMember] == 1 || PlayerInfo[i][pLeader] == 1) continue;
+			if (PlayerInfo[i][pMember] == 1 || PlayerInfo[i][pLeader] == 1 
+				|| PlayerInfo[i][pMember] == 17 || PlayerInfo[i][pLeader] == 17) continue;
 			if (IsPlayerNearPlayer(playerid, i, 2) && i != playerid && Tazered[i] == 0 && !IsPlayerInAnyVehicle(i))
 			{
 				Tazered[i] = 15;
