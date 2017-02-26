@@ -194,13 +194,28 @@ CMD:goto(playerid, params[])
 	{
 		SendClientMessage(playerid, COLOR_WHITE, "Su dung: /goto [Dia diem/PlayerId]");
 		SendClientMessage(playerid, COLOR_GREY, "Dia diem: LS | LV | SF");
-		SendClientMessage(playerid, COLOR_GREY, "Dia diem: Truck | Congnhan | Dongo | Nongdan");
+		SendClientMessage(playerid, COLOR_GREY, "Dia diem: XuongVuKhi | Truck | Dongo | Nongdan");
 		SendClientMessage(playerid, COLOR_GREY, "Dia diem: Tosser | Nhamay | Binco | 247");
 		SendClientMessage(playerid, COLOR_GREY, "Dia diem: AllSaints | County | Wangcar");
+		SendClientMessage(playerid, COLOR_GREY, "Dia diem: DoC | TrongTrot");
 		return 1;
 	}
 	new xe = GetPlayerVehicleID(playerid), str[255];
-	if (!strcmp(params, "ls", true))
+	if (!strcmp(params, "doc", true))
+	{
+		if (IsPlayerInAnyVehicle(playerid)) return SetVehiclePos(xe, 777.9285, -1385.0005, 13.7251);
+		SetPlayerInterior(playerid, 0);
+		SetPlayerVirtualWorld(playerid, 0);
+		SetPlayerPos(playerid, 777.9285, -1385.0005, 13.7251);
+	}
+	if (!strcmp(params, "trongtrot", true))
+	{
+		if (IsPlayerInAnyVehicle(playerid)) return SetVehiclePos(xe, -1092.1846, -1650.5377, 76.3739);
+		SetPlayerInterior(playerid, 0);
+		SetPlayerVirtualWorld(playerid, 0);
+		SetPlayerPos(playerid, -1092.1846, -1650.5377, 76.3739);
+	}
+	else if (!strcmp(params, "ls", true))
 	{
 		if (IsPlayerInAnyVehicle(playerid)) return SetVehiclePos(xe, 1529.6, -1691.2, 13.3);
 		SetPlayerInterior(playerid, 0);
@@ -226,14 +241,14 @@ CMD:goto(playerid, params[])
 	//	if (IsPlayerInAnyVehicle(playerid)) return SetVehiclePos(xe, DiemDenPos[playerid][0], DiemDenPos[playerid][1], DiemDenPos[playerid][2] + 3);
 	//	SetPlayerPos(playerid, DiemDenPos[playerid][0], DiemDenPos[playerid][1], DiemDenPos[playerid][2] + 3);
 	//}
-	else if (!strcmp(params, "truck", true))
+	else if (!strcmp(params, "xuongvukhi", true))
 	{
 		if (IsPlayerInAnyVehicle(playerid)) return SetVehiclePos(xe, 2187.2886, -2265.1406, 13.4754);
 		SetPlayerInterior(playerid, 0);
 		SetPlayerVirtualWorld(playerid, 0);
 		SetPlayerPos(playerid, 2187.2886, -2265.1406, 13.4754);
 	}
-	else if (!strcmp(params, "congnhan", true))
+	else if (!strcmp(params, "truck", true))
 	{
 		if (IsPlayerInAnyVehicle(playerid)) return SetVehiclePos(xe, 2461.0278, -2115.2649, 13.5469);
 		SetPlayerInterior(playerid, 0);

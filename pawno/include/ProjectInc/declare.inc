@@ -3,7 +3,6 @@
 #include <zones>
 #include <YSI\y_ini>
 #include <mSelection>
-#include <ProjectInc\map>
 //#include <jit>
 
 //TextDraw
@@ -117,8 +116,8 @@ new Float:DocArrestOut[23][3] =
 	{ 2570.8640, -1509.4326, -45.2369 },
 	{ 2570.8611, -1513.0879, -45.2373 },
 	{ 2570.8345, -1516.7938, -45.2373 },
-	{ 2588.1208, -1534.7250, -48.9141 },
-	{ 2581.8005, -1534.7117, -48.9141 },
+	{ 2587.2979, -1535.0804, -47.3400 },
+	{ 2580.8687, -1535.0698, -47.3400 }
 };
 
 new Float:DocArrestIn[23][3] =
@@ -144,11 +143,9 @@ new Float:DocArrestIn[23][3] =
 	{ 2572.9968, -1509.9520, -45.2369 },
 	{ 2573.7371, -1513.3970, -45.2373 },
 	{ 2573.6582, -1517.1709, -45.2373 },
-	{ 2589.3845, -1537.9642, -48.9141 },
-	{ 2583.0762, -1538.5919, -48.9141 }
+	{ 2589.1501, -1538.0702, -48.9141 },
+	{ 2583.6245, -1539.0674, -48.9141 }
 };
-
-
 
 new VehicleNames[][] =
 {
@@ -206,11 +203,21 @@ new LSArea;
 new Float:LSZone[] = {
 	48.0, -1531.0, 324.0, -2083.0, 1324.0, -2739.0, 2916.0, -2735.0, 2896.0, -919.0, 1220.0, -771.0, 476.0, -1023.0, 48.0, -1531.0
 };
+new DOCArea;
+new Float:DOCZone[] = {
+	649.8716, -1383.8660, 650.1193, -1330.2158, 773.1381, -1331.3358, 773.2067, -1383.9464
+};
+new DOCCheck[MAX_PLAYERS];
+new DOCDelay[MAX_PLAYERS];
+new DOCAlarm = 0;
+#define DOCAIR 40.0
 
 new gPlayerUsingLoopingAnim[MAX_PLAYERS];
 new gPlayerAnimLibsPreloaded[MAX_PLAYERS];
 
 new Text:TDAnimHelp;
+
+new Float:LastEntrance[MAX_PLAYERS][3];
 
 //Spec
 new SpecPlayer[MAX_PLAYERS],
@@ -252,6 +259,7 @@ new TruckBiz[MAX_PLAYERS];
 
 #define GATE 1
 #define DOOR 2
+#define DOCCELL 3
 
 new mSkinList = mS_INVALID_LISTID;
 //Reward Type
@@ -287,103 +295,3 @@ stock CreateServerPlayerTextDraw(playerid)
 	TextDrawSetProportional(TDPBank[playerid], 1);
 	TextDrawSetShadow(TDPBank[playerid], 0);
 }
-
-stock GetClosestCell(playerid)
-{
-	for (new i = 0; i < 21; i++)
-	{
-		if (IsPlayerNearArrestOut(playerid, i))
-			return i;
-	}
-	return -1;
-}
-
-stock IsPlayerNearArrestOut(playerid, id)
-{
-	if (IsPlayerInRangeOfPoint(playerid, 2, DocArrestOut[id][0], DocArrestOut[id][1], DocArrestOut[id][2]))
-		return 1;
-	return 0;
-}
-
-stock CreateGate(model, Float:startx, Float:starty, Float:startz, Float:endx, Float:endy, Float:endz, 
-						Float:rotatex, Float:roratey, Float:roratez, type = GATE, autotime = 0, time = 5, Float:health = -1)
-{
-	new objid = CreateDynamicObject(model, startx, starty, startz, srotatex, srotatey, srotatez);
-	new idgate = -1;
-	for (new i = 0; i < MAX_GATES; i++)
-	{
-		if (Object == -1)
-			idgate = i;
-	}
-	GateInfo[idgate][Model] = model;
-	GateInfo[idgate][Object] = objid;
-	GateInfo[idgate][StartX] = startx;
-	GateInfo[idgate][StartY] = starty;
-	GateInfo[idgate][StartZ] = startz;
-	GateInfo[idgate][EndX] = endx;
-	GateInfo[idgate][EndY] = endy;
-	GateInfo[idgate][EndZ] = endz;
-	GateInfo[idgate][RotateX] = rotatex;
-	GateInfo[idgate][RotateY] = rotatey;
-	GateInfo[idgate][RotateZ] = rotatez;
-	GateInfo[idgate][Health] = health;
-	GateInfo[idgate][Type] = type;
-	GateInfo[idgate][Time] = time * 1000;
-	GateInfo[idgate][AutoTime] = time;
-	return 1;
-}
-
-stock GetClosestGate(playerid)
-{
-	for (new i = 0; i < MAX_GATES; i++)
-	{
-		if (GateInfo[i][Object] != -1 && GateInfo[i][Type] == GATE &&
-			IsPlayerInRangeOfPoint(playerid, 3, GateInfo[i][StartX], GateInfo[i][StartY], GateInfo[i][StartZ]))
-			return i;
-	}
-	return -1;
-}
-
-stock GetClosestDoor(playerid)
-{
-	for (new i = 0; i < MAX_GATES; i++)
-	{
-		if (GateInfo[i][Object] != -1 && GateInfo[i][Type] == DOOR &&
-			IsPlayerInRangeOfPoint(playerid, 3, GateInfo[i][StartX], GateInfo[i][StartY], GateInfo[i][StartZ]))
-			return i;
-	}
-	return -1;
-}
-
-stock CreateServerGate()
-{
-	return 1;
-}
-
-stock MoveGate(gateid, type = -1)
-{
-	// 1 OPEN 2 CLOSED
-	if (type != -1)
-	{
-		if (GateInfo[gateid][Moved] == 0)
-		{
-			MoveOjbect(GateInfo[gateid][Object], GateInfo[gateid][EndX], GateInfo[gateid][EndY], GateInfo[gateid]][EndZ], GateInfo[gateid][Time]);
-			if (GateInfo[gateid][AutoTime] > 0)
-				GateTime[gateid] = GateInfo[gateid][AutoTime];
-		}
-		else MoveOjbect(GateInfo[gateid][Object], GateInfo[gateid][StartX], GateInfo[gateid][StartY], GateInfo[gateid]][StartZ], GateInfo[gateid][Time]);
-	}
-	else
-	{
-		if (type == 1)
-		{
-			MoveOjbect(GateInfo[gateid][Object], GateInfo[gateid][EndX], GateInfo[gateid][EndY], GateInfo[gateid]][EndZ], GateInfo[gateid][Time]);
-			if (GateInfo[gateid][AutoTime] > 0)
-				GateTime[gateid] = GateInfo[gateid][AutoTime];
-		}
-		else MoveOjbect(GateInfo[gateid][Object], GateInfo[gateid][StartX], GateInfo[gateid][StartY], GateInfo[gateid]][StartZ], GateInfo[gateid][Time]);
-	}
-	return 1;
-}
-
-new GateTime[MAX_GATES];

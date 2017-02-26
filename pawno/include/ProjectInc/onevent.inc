@@ -2,8 +2,10 @@ public OnGameModeInit()
 {
 	CreateMap();
 	CreateServerTextDraw();
+	CreateServerGate();
 	ConnectMySQL();
 	LSArea = CreateDynamicPolygon(LSZone);
+	DOCArea = CreateDynamicPolygon(DOCZone);
 	new string[MAX_PLAYER_NAME];
 	new string1[MAX_PLAYER_NAME];
 	for (new c = 0; c<CAR_AMOUNT; c++)
@@ -50,8 +52,10 @@ public OnGameModeInit()
 	PlayerHaul[109][pCapasity] = 100;
 	PlayerHaul[110][pCapasity] = 50;
 	PlayerHaul[111][pCapasity] = 50;*/
-	SetGameModeText("LA-RP v1.0");
-	Streamer_CellDistance(1200.0);
+	SetGameModeText("Grand Mode v1.0");
+	Streamer_SetCellDistance(800);
+	Streamer_SetCellSize(800);
+	Streamer_SetVisibleItems(STREAMER_TYPE_OBJECT, 1000);
 	/*SendRconCommand("mapname Los Angeles");
 	SendRconCommand("weburl");*/
 	format(objstore, sizeof(objstore), "MOLE: I got nothing, check back with me later.");
@@ -90,135 +94,6 @@ public OnGameModeInit()
 	armygate2 = CreateObject(969, 2720.3772, -2508.3069, 12.6, 0, 0.0000, 90);
 	fbigate = CreateObject(980, 1534.9020, -1451.5979, 14.4882, 0, 0.0000, 0);
 	hspdgate = CreateObject(971, 1643.3379, -1714.9338, 15.3067, 0, 0.0000, 90);
-
-	CreateDynamicObject(971, 2644.4778, -2038.8990, 13.5500, 0, 0.0000, 0.0000);
-	CreateDynamicObject(971, 1972.8408, -1622.1426, 15.9688, 0, 0.0000, 90);
-	CreateDynamicObject(980, 2774.4670, -2494.5842, 14.2665, 0, 0.0000, 90);
-	CreateDynamicObject(971, 2796.7512, -2481.5188, 12.5143, 0, 0.0000, 0);
-	CreateDynamicObject(971, 2796.7512, -2506.3359, 12.5143, 0, 0.0000, 0);
-	CreateDynamicObject(980, 2625.6016, -2347.2651, 13.6328, 0, 0.0000, 90);
-	CreateDynamicObject(980, 2625.6016, -2336.8651, 13.6328, 0, 0.0000, 90);
-	CreateDynamicObject(971, 1643.22240000, -1696.45610000, 15.40130000, 0.00000000, 0.00000000, 90.00000000); //
-	CreateDynamicObject(1215, 1544.43981900, -1623.94665500, 12.81510000, 0.00000000, 0.00000000, 264.43505800); //
-	CreateDynamicObject(1215, 1544.21948200, -1630.79406700, 12.83241100, 0.00000000, 0.00000000, 241.32073900); //
-	CreateDynamicObject(1215, 1584.37329100, -1637.75146400, 12.90435100, 0.00000000, 0.00000000, 164.79415800); //
-	CreateDynamicObject(1215, 1592.68176200, -1637.68530200, 12.97956200, 0.00000000, 0.00000000, 184.22105400); //
-	CreateDynamicObject(1215, 1546.05383300, -1672.45275800, 12.98466900, 0.00000000, 0.00000000, 308.63958700); //
-	CreateDynamicObject(1215, 1546.10009700, -1678.70324700, 13.09776200, 0.00000000, 0.00000000, 211.86653100); //
-	CreateDynamicObject(2008, 256.91271900, 86.26664700, 1001.38043200, 0.00000000, 0.00000000, 89.63777100); //
-	CreateDynamicObject(2008, 256.89572100, 84.36031300, 1001.38714500, 0.00000000, 0.00000000, 90.26439600); //
-	CreateDynamicObject(1708, 258.06747400, 87.68148800, 1001.34387200, 0.00000000, 0.00000000, 270.07254000); //
-	CreateDynamicObject(1708, 258.01110800, 85.87433600, 1001.30187900, 0.00000000, 0.00000000, 268.48245200); //
-	CreateDynamicObject(1500, 1582.62050000, -1638.05870000, 12.37760000, 0.00000000, -1.00000000, 0.00000000); //
-	CreateDynamicObject(1500, 2278.85990000, -1140.48960000, 1049.78840000, 0.00000000, 0.00000000, 90.00000000); //toilet door
-	CreateDynamicObject(14819, 2278.55990000, -1138.88960000, 1050.99840000, 0.00000000, 0.00000000, 90.00000000); //toilet door
-	CreateDynamicObject(3968, -1827.92456000, 5.41173000, 1061.14355400, 0.00000000, 0.00000000, 179.35473600); //inside sfpd 5
-	CreateDynamicObject(7927, 354.06550000, 168.79280000, 1019.98440000, 0.00000000, 0.00000000, 90.00000000); //hospital gate
-	CreateDynamicObject(7927, 1240.60160000, -833.60310000, 1084.26780000, 0.00000000, 0.00000000, 0.00000000); //surrenos hq
-	CreateDynamicObject(7927, 1280.45070000, -789.16810000, 1084.25780000, 0.00000000, 0.00000000, 0.00000000); //madd dog crib
-	CreateDynamicObject(7927, 1251.80770000, -789.19340000, 1084.25780000, 0.00000000, 0.00000000, 180.00000000); //madd dog crib
-	CreateDynamicObject(982, 1306.96280000, -1698.15490000, 13.26160000, 0.00000000, 0.00000000, 0.00000000); //
-	CreateDynamicObject(982, 1306.96280000, -1723.65490000, 13.26160000, 0.00000000, 0.00000000, 0.00000000); //
-	CreateDynamicObject(982, 1306.96280000, -1749.15490000, 13.26160000, 0.00000000, 0.00000000, 0.00000000); //
-	CreateDynamicObject(982, 1306.96280000, -1774.65490000, 13.26160000, 0.00000000, 0.00000000, 0.00000000); //
-	CreateDynamicObject(982, 1306.96280000, -1800.15490000, 13.26160000, 0.00000000, 0.00000000, 0.00000000); //
-	CreateDynamicObject(982, 1306.96280000, -1825.65490000, 13.26160000, 0.00000000, 0.00000000, 0.00000000); //
-	CreateDynamicObject(982, 1302.96280000, -1698.15490000, 13.26160000, 0.00000000, 0.00000000, 0.00000000); //
-	CreateDynamicObject(982, 1302.96280000, -1723.65490000, 13.26160000, 0.00000000, 0.00000000, 0.00000000); //
-	CreateDynamicObject(982, 1302.96280000, -1749.15490000, 13.26160000, 0.00000000, 0.00000000, 0.00000000); //
-	CreateDynamicObject(982, 1302.96280000, -1774.65490000, 13.26160000, 0.00000000, 0.00000000, 0.00000000); //
-	CreateDynamicObject(982, 1302.96280000, -1800.15490000, 13.26160000, 0.00000000, 0.00000000, 0.00000000); //
-	CreateDynamicObject(982, 1302.96280000, -1825.65490000, 13.26160000, 0.00000000, 0.00000000, 0.00000000); //
-	CreateDynamicObject(982, 1843.79870000, -1060.06090000, 24.62330000, 0.00000000, 0.00000000, 0.00000000); //
-	CreateDynamicObject(982, 1843.79870000, -1034.56090000, 24.62330000, 0.00000000, 0.00000000, 0.00000000); //
-	CreateDynamicObject(982, 1843.79870000, -1060.06090000, 25.92330000, 0.00000000, 0.00000000, 0.00000000); //
-	CreateDynamicObject(982, 1843.79870000, -1034.56090000, 25.92330000, 0.00000000, 0.00000000, 0.00000000); //
-	CreateDynamicObject(982, 2195.16380000, -1675.15870000, 14.12810000, -2.40000000, 0.00000000, 167.20000000); //
-	CreateDynamicObject(982, 2191.32890000, -1700.50390000, 13.35200000, -0.80000000, 0.00000000, 175.20000000); //
-	CreateDynamicObject(982, 2218.16380000, -1675.15870000, 14.32810000, -2.60000000, 0.00000000, 167.20000000); //
-	CreateDynamicObject(982, 2213.57890000, -1700.00390000, 13.55200000, -0.80000000, 0.00000000, 172.30000000); //
-	CreateDynamicObject(7927, 366.49870000, 189.72340000, 1008.61030000, 0.00000000, 0.00000000, 90.00000000); // abc studio
-	CreateDynamicObject(7927, 371.64720000, 179.13610000, 1014.40750000, 0.00000000, 0.00000000, 270.00000000); // la yellow cab co.
-	CreateDynamicObject(994, 1544.43850000, -1617.59250000, 12.50460000, 0.00000000, 0.00000000, 270.00000000); //
-	CreateDynamicObject(994, 1544.43850000, -1632.75250000, 12.50460000, 0.00000000, 0.00000000, 270.00000000); //
-	CreateDynamicObject(982, 2390.91430000, -1742.13710000, 13.04690000, 0.00000000, 0.00000000, 90.00000000); //
-	CreateDynamicObject(982, 2365.41430000, -1742.13710000, 13.04690000, 0.00000000, 0.00000000, 90.00000000); //
-	CreateDynamicObject(982, 2339.91430000, -1742.13710000, 13.04690000, 0.00000000, 0.00000000, 90.00000000); //
-	CreateDynamicObject(1798, 346.73440000, 165.51530000, 1013.18750000, 0.00000000, 0.00000000, 270.00000000); // bed
-	CreateDynamicObject(1798, 346.73440000, 163.01530000, 1013.18750000, 0.00000000, 0.00000000, 270.00000000); // bed
-	CreateDynamicObject(1798, 346.73440000, 160.51530000, 1013.18750000, 0.00000000, 0.00000000, 270.00000000); // bed
-	CreateDynamicObject(7927, 345.70730000, 157.30660000, 1014.40750000, 0.00000000, 0.00000000, 90.00000000); // wound hospital
-	CreateDynamicObject(971, -1935.99300000, 239.12910000, 34.32100000, 0.00000000, 0.00000000, 0.00000000); //
-	CreateDynamicObject(971, -2716.04800000, 217.94180000, 4.34940000, 0.00000000, 0.00000000, 90.00000000); //
-	CreateDynamicObject(971, 2386.67800000, 1043.55660000, 10.82030000, 0.00000000, 0.00000000, 0.00000000); //
-	CreateDynamicObject(971, 1843.26670000, -1854.58950000, 12.08280000, 0.00000000, 0.00000000, 270.00000000); //
-	CreateDynamicObject(971, 1025.27950000, -1029.22990000, 32.10160000, 0.00000000, 0.00000000, 0.00000000); // pay & spray
-	CreateDynamicObject(971, 488.23410000, -1735.45910000, 11.14160000, 0.00000000, 0.00000000, 174.00000000); // pay & spray
-	CreateDynamicObject(971, 2071.54100000, -1831.41430000, 13.54690000, 0.00000000, 0.00000000, 90.00000000); // pay & spray
-	CreateDynamicObject(971, 719.81990000, -462.47680000, 16.33590000, 0.00000000, 0.00000000, 0.00000000); // pay & spray
-	CreateDynamicObject(971, -1904.45610000, 277.85780000, 41.04690000, 0.00000000, 0.00000000, 0.00000000); // pay & spray
-	CreateDynamicObject(14668, 1172.08140000, -1323.23990000, 1005.40280000, 0.00000000, 0.00000000, 0.00000000); // 24/7
-	CreateDynamicObject(3395, 1184.06910000, -1317.06040000, 1005.40280000, 0.00000000, 0.00000000, 0.00000000); // operation pc
-	CreateDynamicObject(3391, 1184.06910000, -1321.06040000, 1005.40280000, 0.00000000, 0.00000000, 0.00000000); // operation pc
-	CreateDynamicObject(3383, 1180.76100000, -1318.17240000, 1005.20280000, 0.00000000, 0.00000000, 90.00000000); // operation bed
-	CreateDynamicObject(2604, 1180.45030000, -1330.66520000, 1005.87280000, 0.00000000, 0.00000000, 360.00000000); // registration pc
-	CreateDynamicObject(2610, 1176.92220000, -1332.31210000, 1006.15280000, 0.00000000, 0.00000000, 180.00000000); // registration files
-	CreateDynamicObject(2202, 1183.72350000, -1332.20640000, 1005.40280000, 0.00000000, 0.00000000, 180.00000000); // printer
-	CreateDynamicObject(1797, 1162.22660000, -1317.70130000, 1005.40280000, 0.00000000, 0.00000000, 0.00000000); // bed
-	CreateDynamicObject(1797, 1165.22660000, -1317.70130000, 1005.40280000, 0.00000000, 0.00000000, 0.00000000); // bed
-	CreateDynamicObject(1797, 1168.22660000, -1317.70130000, 1005.40280000, 0.00000000, 0.00000000, 0.00000000); // bed
-	CreateDynamicObject(1797, 1171.22660000, -1317.70130000, 1005.40280000, 0.00000000, 0.00000000, 0.00000000); // bed
-	CreateDynamicObject(1797, 1162.22660000, -1317.70130000, 1005.40280000, 0.00000000, 0.00000000, 180.00000000); // bed
-	CreateDynamicObject(1797, 1165.22660000, -1317.70130000, 1005.40280000, 0.00000000, 0.00000000, 180.00000000); // bed
-	CreateDynamicObject(1797, 1168.22660000, -1317.70130000, 1005.40280000, 0.00000000, 0.00000000, 180.00000000); // bed
-	CreateDynamicObject(1797, 1171.22660000, -1317.70130000, 1005.40280000, 0.00000000, 0.00000000, 180.00000000); // bed
-	CreateDynamicObject(1726, 1163.54140000, -1327.95950000, 1005.40280000, 0.00000000, 0.00000000, 90.00000000); // sofa
-	CreateDynamicObject(1726, 1167.54140000, -1327.95950000, 1005.40280000, 0.00000000, 0.00000000, 270.00000000); // sofa
-	CreateDynamicObject(1726, 1165.62340000, -1325.64870000, 1005.40280000, 0.00000000, 0.00000000, 0.00000000); // sofa
-	CreateDynamicObject(1676, 1007.33360000, -936.41270000, 42.75810000, 0.00000000, 0.00000000, 5.00000000); // gas tank in vinewood
-	CreateDynamicObject(1676, 1000.64060000, -937.10270000, 42.75810000, 0.00000000, 0.00000000, 5.00000000); // gas tank in vinewood
-	CreateDynamicObject(868, 2129.98974600, -1874.79541000, 13.03090200, 0.00000000, 0.00000000, 441.56753500); //
-	CreateDynamicObject(2913, 2137.46337800, -1871.32067800, 12.66707800, 0.00000000, -90.00000000, 178.30253600); //
-	CreateDynamicObject(2628, 2135.05053700, -1871.42468200, 12.60901200, 0.00000000, 0.00000000, 179.39443900); //
-	CreateDynamicObject(2629, 2137.53125000, -1868.60363700, 12.55558300, 0.00000000, 0.00000000, 268.79595900); //
-	CreateDynamicObject(2915, 2133.90112300, -1868.33837800, 12.62577500, 0.00000000, 0.00000000, 267.21060100); //
-	CreateDynamicObject(2916, 2137.31665000, -1867.19970700, 12.62609400, 0.00000000, 0.00000000, 235.60694800); //
-	CreateDynamicObject(1462, 2108.08056600, -1869.76867600, 12.51977800, 0.00000000, 0.00000000, 89.77522200); //
-	CreateDynamicObject(1433, 2145.34008700, -1871.20214800, 12.73119600, 0.00000000, 0.00000000, 178.47007700); //
-	CreateDynamicObject(2804, 2145.51977500, -1871.18896400, 13.29692800, 0.00000000, 0.00000000, 157.18295200); //
-	CreateDynamicObject(1484, 2145.07885700, -1871.11547800, 13.40539200, -12.00000000, 29.00000000, 177.65742400); //
-	CreateDynamicObject(1486, 2145.22045800, -1871.40539500, 13.38108500, 0.00000000, 0.00000000, 195.86706500); //
-	CreateDynamicObject(1546, 2145.00756800, -1871.34924300, 13.31301800, 0.00000000, 0.00000000, 200.08616600); //
-	CreateDynamicObject(1334, 2125.28198200, -1874.19628900, 13.36744900, 0.00000000, 0.00000000, 361.17449900); //
-	CreateDynamicObject(955, 2142.30371000, -1863.81945800, 13.05880500, 0.00000000, -90.00000000, 0.95052700); //
-	CreateDynamicObject(1302, 2143.30029200, -1863.50585900, 12.48657700, -15.00000000, 0.00000000, 357.52993700); //
-	CreateDynamicObject(923, 2107.99096600, -1872.67663500, 13.42584800, 0.00000000, 0.00000000, 89.75312000); //
-	CreateDynamicObject(933, 2115.85156200, -1869.43725500, 12.52377300, 0.00000000, 0.00000000, 77.71019700); //
-	CreateDynamicObject(933, 2122.39746000, -1869.41113200, 12.53230400, 0.00000000, 0.00000000, 186.31358300); //
-	CreateDynamicObject(944, 2159.27099600, -1864.64758300, 13.41929900, 0.00000000, 0.00000000, 269.43975800); //
-	CreateDynamicObject(944, 2159.23559500, -1867.67578100, 13.41929900, 0.00000000, 0.00000000, 269.43975800); //
-	CreateDynamicObject(944, 2159.19262600, -1870.77233800, 13.41929900, 0.00000000, 0.00000000, 269.43975800); //
-	CreateDynamicObject(1372, 2100.13354400, -1867.96423300, 12.66138900, 0.00000000, 0.00000000, 180.35742100); //
-	CreateDynamicObject(1315, 2119.26660100, -1874.09399400, 15.62769600, 0.00000000, 0.00000000, 271.77136200); //
-	CreateDynamicObject(1315, 2103.99047800, -1868.73046800, 16.09560300, 0.00000000, 0.00000000, 6.73446600); //
-	CreateDynamicObject(1303, 2151.11254800, -1865.05493100, 13.55389000, 0.00000000, 0.00000000, 95.63800800); //
-	CreateDynamicObject(1451, 2129.07080000, -1863.24841300, 13.37556000, 0.00000000, 0.00000000, 0.25471400); //
-	CreateDynamicObject(2114, 2141.25073200, -1863.69494600, 13.78794500, 0.00000000, 0.00000000, 52.14162800); //
-	CreateDynamicObject(1460, 2129.52539000, -1876.66845700, 16.32402600, -55.00000000, -91.00000000, 269.03491200); //
-	CreateDynamicObject(5269, 2112.05224600, -1866.30187900, 13.54687500, 0.00000000, 0.00000000, 2.50896400); //
-	CreateDynamicObject(5269, 2112.48535100, -1876.40661600, 13.54687500, 0.00000000, 0.00000000, 2.50896400); //
-	CreateDynamicObject(3265, 2091.54321200, -1868.91333000, 12.46601600, 0.00000000, 0.00000000, 265.75683500); //
-	CreateDynamicObject(1473, 2095.45776300, -1863.86608800, 13.42572400, 36.00000000, 0.00000000, 0.87903100); //
-	CreateDynamicObject(1497, 2110.98413000, -1864.98083400, 13.91426400, -22.00000000, 90.00000000, 269.52188100); //
-	CreateDynamicObject(1295, 2141.17480400, -1872.53674300, 13.55389000, 0.00000000, 0.00000000, 48.96246300); //
-	CreateDynamicObject(1492, 2091.81201100, -1863.63647400, 12.48870500, 0.00000000, 0.00000000, 267.74984700); //
-	CreateDynamicObject(969, 2091.74560500, -1873.95410100, 11.83589400, 0.00000000, 0.00000000, 89.18146500); //
-	CreateDynamicObject(2781, 1346.39050000, -1759.60390000, 13.51560000, 90.00000000, 0.00000000, 180.00000000); //
-	CreateDynamicObject(2781, 1592.46550000, -2335.94080000, 13.54010000, 90.00000000, 0.00000000, 180.00000000); //
-	CreateDynamicObject(2781, 2308.87170000, -1634.44620000, 14.82700000, 90.00000000, 0.00000000, 270.00000000); //
-	CreateDynamicObject(2781, 2865.31700000, -1415.34290000, 11.00100000, 90.00000000, 0.00000000, 90.00000000); //
-	CreateDynamicObject(2781, 2403.98790000, -1229.84410000, 23.82880000, 90.00000000, 0.00000000, 90.00000000); //
-	CreateDynamicObject(2781, 1172.48880000, -1328.96830000, 15.40480000, 90.00000000, 0.00000000, 180.00000000); //
 
 	// CreatedCars check
 	/*for (new i = 0; i < sizeof(CreatedCars); i++)
@@ -538,6 +413,7 @@ public OnGameModeInit()
 	AddStaticPickup(1239, 23, 648.8242, -1360.7623, 13.5873); //DoC Entrance
 	AddStaticPickup(1239, 23, 741.4783, -1358.7620, 21.6406); //DoC Back Entrance
 	AddStaticPickup(1239, 23, 732.9749, -1342.1331, 13.5236); //DoC Little Entrance
+	AddStaticPickup(1239, 23, 2584.6189, -1494.7810, -45.2369); //DoC Control Room
 	/*AddStaticPickup(1239, 2, 359.5408,206.7693,1008.3828); //Detective Registration*/
 	AddStaticPickup(1239, 23, 347.7374, 193.7241, 1014.1875); //Lawyer Registration
 	AddStaticPickup(1239, 23, 1215.1304, -11.8431, 1000.9219); //Whore Registration
@@ -1043,6 +919,13 @@ public OnPlayerInteriorChange(playerid, newinteriorid, oldinteriorid)
 			}
 		}
 	}
+	if (AntiCheckpoint[playerid] == 1)
+	{
+		AntiCheckpoint[playerid] = 0;
+		AntiCPDistance[playerid] = 0;
+		AntiCPTime[playerid] = 0;
+	}
+	PlayerInfo[playerid][pInt] = newinteriorid;
 	return 1;
 }
 public OnPlayerEnterVehicle(playerid, vehicleid, ispassenger)
@@ -1177,15 +1060,15 @@ public OnPlayerDeath(playerid, killerid, reason)
 	{
 		Dying[playerid] = 1;
 		DyingTimeOut[playerid] = 30;
-		new Float:x, Float:y, Float:z, Float:ang, interior, vw;
+		new Float:x, Float:y, Float:z, Float:ang;
 		GetPlayerPos(playerid, x, y, z);
 		GetPlayerFacingAngle(playerid, ang);
 		SetPVarFloat(playerid, "DeathX", x);
 		SetPVarFloat(playerid, "DeathY", y);
 		SetPVarFloat(playerid, "DeathZ", z);
 		SetPVarFloat(playerid, "DeathAngle", ang);
-		SetPVarInt(playerid, "DeathInt", interior);
-		SetPVarInt(playerid, "DeathVW", vw);
+		SetPVarInt(playerid, "DeathInt", GetPlayerInterior(playerid));
+		SetPVarInt(playerid, "DeathVW", GetPlayerVirtualWorld(playerid));
 		PlayerInfo[playerid][pHospital] = 1;
 		//printf("Death Work");
 	}
@@ -1224,7 +1107,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 						return 1;
 					}
 					SetPlayerCriminal(killerid, 255, "Manslaughter");
-					SetPlayerWantedLevel(killerid, GetPlayerWantedLevel(killerid) + 1);
+					//SetPlayerWantedLevel(killerid, GetPlayerWantedLevel(killerid) + 1);
 					return 1;
 				}
 			}
@@ -1644,7 +1527,7 @@ public OnPlayerDeath(playerid, killerid, reason)
 	SetPlayerColor(playerid, COLOR_GRAD2);
 	return 1;
 }
-stock TogglePlayerSpawn(playerid, bool:type)
+stock TogglePlayerSpawn(playerid, bool:type, time = 0)
 {
 	if (type == true)
 	{
@@ -1660,9 +1543,16 @@ stock TogglePlayerSpawn(playerid, bool:type)
 		SetCameraBehindPlayer(playerid);
 		SetPlayerInterior(playerid, 0);
 		SetPlayerVirtualWorld(playerid, 0);
-		TogglePlayerControllable(playerid, 1);
+		if (time > 0 && PlayerInfo[playerid][pHospital] == 0)
+			SetTimerEx("InteriorFreeze", 2000, 0, "i", playerid);
+		else TogglePlayerControllable(playerid, 1);
 	}
 	return 1;
+}
+forward InteriorFreeze(playerid);
+public InteriorFreeze(playerid)
+{
+	TogglePlayerControllable(playerid, 1);
 }
 public OnPlayerSpawn(playerid)
 {
@@ -6549,7 +6439,8 @@ public OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid, bodypart)
 	if (weaponid == 0)
 	{
 		new knockpercantage = random(20);
-		if (knockpercantage == 1 && KnockedDown[damagedid] != 1)
+		if (knockpercantage == 1 && KnockedDown[damagedid] != 1 && PlayerCuffed[playerid] == 0
+			&& Escorted[playerid] == 0)
 		{
 			new str[128];
 			TogglePlayerControllable(damagedid, 0);
@@ -6560,6 +6451,68 @@ public OnPlayerGiveDamage(playerid, damagedid, Float:amount, weaponid, bodypart)
 			ProxDetector(30.0, playerid, str, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 		}
 	}
+}
+public OnPlayerEnterDynamicArea(playerid, areaid)
+{
+	if (areaid == DOCArea)
+	{
+		//printf("Check");
+		new Float:flypos[3];
+		GetPlayerPos(playerid, flypos[0], flypos[1], flypos[2]);
+		new docerid = GetClosestDoCPlayer(playerid);
+		//printf("Z: %f, SC: %d, IsACop: %d, NearDoc: %d, Member: %d, Leader: %d",
+		//flypos[2], GetPVarInt(playerid, "SpecialCase"), IsACop(playerid), IsPlayerNearDoCPlayer(playerid), PlayerInfo[playerid][pMember], PlayerInfo[playerid][pLeader]);
+		if (DOCDelay[playerid] == 0 && GetPVarInt(playerid, "SpecialCase") == 0 && !IsACop(playerid) && PlayerInfo[playerid][pMember] != 4 && PlayerInfo[playerid][pLeader] != 4 && docerid == -1)
+		{
+			DOCDelay[playerid] = 30;
+			if (flypos[2] >= DOCAIR)
+			{
+				if (DOCCheck[playerid] == 0)
+				{
+					new str[128];
+					format(str, sizeof(str), "[DoC Camera] Co mot vat the xuat hien tren khong cua DoC, hay chu y.");
+					SendRadioMessage(17, COLOR_LIGHTRED, str);
+					DOCCheck[playerid] = 1;
+					if (IsPlayerInAnyVehicle(playerid))
+					{
+						new vid = GetPlayerVehicleID(playerid);
+						foreach(new pid : Player)
+						{
+							if (pid != playerid && IsPlayerInVehicle(pid, vid))
+								DOCCheck[pid] = 1;
+						}
+					}
+				}
+			}
+			else
+			{
+				new str[128];
+				format(str, sizeof(str), "[DoC Camera] Doi tuong %s vua dot nhap vao DoC, cac nhan vien hay mau bat giu doi tuong.", GN(playerid));
+				SendRadioMessage(17, COLOR_LIGHTRED, str);
+				if (WantedPoints[playerid] == 0) { WantedPoints[playerid] = 3; }
+				else { WantedPoints[playerid] += 2; }
+				SetPlayerCriminalEx(playerid, 255, "Dot Nhap DoC.");
+				DOCAlarm = 30;
+			}
+		}
+		else if (docerid != -1)
+		{
+			new str[128];
+			format(str, sizeof(str), "[DoC Camera] Doi tuong %s di cung nhan vien %s tien vao trai giam, xin hay chu y hanh dong cua han ta.", GN(playerid), GN(docerid));
+			SendRadioMessage(17, COLOR_LIGHTRED, str);
+		}
+		SetPVarInt(playerid, "SpecialCase", 0);
+	}
+	return 1;
+}
+public OnPlayerLeaveDynamicArea(playerid, areaid)
+{
+	if (areaid == DOCArea)
+	{
+		if (DOCCheck[playerid] == 1)
+			DOCCheck[playerid] = 0;
+	}
+	return 1;
 }
 CMD:baocao(playerid, params[]) { return cmd_report(playerid, params); }
 CMD:report(playerid, params[])
@@ -6608,7 +6561,6 @@ CMD:askq(playerid, params[])
 	}
 	return 1;
 }
-
 CMD:engine(playerid, params[])
 {
 	new idcar;
@@ -10917,6 +10869,7 @@ CMD:buymats(playerid, params[])
 	}
 	return 1;
 }
+CMD:mogate(playerid, params[]) { return cmd_gateopen(playerid, params); }
 CMD:gateopen(playerid, params[])
 {
 	new string[256];
@@ -10980,7 +10933,18 @@ CMD:gateopen(playerid, params[])
 			format(string, sizeof(string), "* %s takes his/her remote and opens hspd gate.", GN(playerid));
 			ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 		}
-		else if (gateid != -1) MoveGate(gateid, 1);
+		else if (gateid != -1)
+		{
+			MoveGate(gateid, 1);
+			format(string, sizeof(string), "* %s lay remote ra, bam nut de mo cua.", GN(playerid));
+			ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+			if (GateInfo[gateid][gAutoTime] > 0)
+			{
+				new str[128];
+				format(str, sizeof(str), "Gate se tu dong dong sau %d giay.", GateInfo[gateid][gAutoTime]);
+				SendClientMessage(playerid, COLOR_LIGHTBLUE, str);
+			}
+		}
 		else { SendClientMessage(playerid, COLOR_GREY, "Destination is too far."); }
 	}
 	else if (PlayerInfo[playerid][pMember] == 6 || PlayerInfo[playerid][pLeader] == 6)
@@ -11046,6 +11010,7 @@ CMD:tuningclose(playerid, params[])
 	else return SendClientMessage(playerid, COLOR_GREY, "Ban khong co remote de mo.");
 	return 1;
 }
+CMD:mocua(playerid, params[]) { return cmd_dooropen(playerid, params); }
 CMD:dooropen(playerid, params[])
 {
 	new string[256];
@@ -11065,14 +11030,22 @@ CMD:dooropen(playerid, params[])
 		else if (closestdoor != -1)
 		{
 			MoveGate(closestdoor, 1);
-			format(string, sizeof(string), "* %s lay remote de mo cua.", GN(playerid));
+			format(string, sizeof(string), "* %s lay remote ra, bam nut de mo cua.", GN(playerid));
 			ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+
+			if (GateInfo[closestdoor][gAutoTime] > 0)
+			{
+				new str[128];
+				format(str, sizeof(str), "Cua se tu dong dong sau %d giay.", GateInfo[closestdoor][gAutoTime]);
+				SendClientMessage(playerid, COLOR_LIGHTBLUE, str);
+			}
 		}
 		else { SendClientMessage(playerid, COLOR_GREY, "Diem den la qua xa."); }
 	}
 	else return SendClientMessage(playerid, COLOR_GREY, "Ban khong co remote de mo.");
 	return 1;
 }
+CMD:dongcua(playerid, params[]) { return cmd_doorclose(playerid, params); }
 CMD:doorclose(playerid, params[])
 {
 	new string[256];
@@ -11086,13 +11059,13 @@ CMD:doorclose(playerid, params[])
 			MoveObject(lspddoor2, 245.9478, 72.4314, 1002.5406, 3.5000);
 			SendClientMessage(playerid, COLOR_BLUE, "Cua LSPD da dong, cam on!");
 			
-			format(string, sizeof(string), "* %s lay remote de mo cua.", GN(playerid));
+			format(string, sizeof(string), "* %s lay remote de dong cua.", GN(playerid));
 			ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 		}
 		else if (closestdoor != -1)
 		{
-			MoveGate(closestdoor, 1);
-			format(string, sizeof(string), "* %s lay remote de mo cua.", GN(playerid));
+			MoveGate(closestdoor, 2);
+			format(string, sizeof(string), "* %s lay remote de dong cua.", GN(playerid));
 			ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 		}
 		else { SendClientMessage(playerid, COLOR_GREY, "Diem den la qua xa."); }
@@ -14401,18 +14374,18 @@ SendClientMessage(playerid, COLOR_GRAD2, "   You dont have a Vehicle !");
 }
 return 1;
 }*/
-CMD:pme(playerid, params[])
+CMD:pm(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
 	{
 		if (gPlayerLogged[playerid] == 0)
 		{
-			SendClientMessage(playerid, COLOR_GREY, "   You havent logged in yet!");
+			SendClientMessage(playerid, COLOR_GREY, "   Ban chua vao game!");
 			return 1;
 		}
 		new giveplayerid, giveplayer[50], result[50], string[256];
 		if (sscanf(params, "us[50]", giveplayerid, result))
-			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/p)me [playerid/PartOfName] [text]");
+			return SendClientMessage(playerid, COLOR_GRAD2, "Su dung: (/p)m [playerid/PartOfName] [text]");
 			
 		if (IsPlayerConnected(giveplayerid))
 		{
@@ -14427,7 +14400,7 @@ CMD:pme(playerid, params[])
 				GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
 				if (giveplayerid == playerid)
 				{
-					format(string, sizeof(string), "* %s mutters something to himself.", GN(playerid));
+					format(string, sizeof(string), "* %s dang tu thi tham gi do.", GN(playerid));
 					ProxDetector(5.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
 				}
 				format(string, sizeof(string), "[ID:%d] %s pm: %s", playerid, GN(playerid), (result));
@@ -14437,11 +14410,7 @@ CMD:pme(playerid, params[])
 				return 1;
 			}
 		}
-		else
-		{
-			format(string, sizeof(string), "   %d is not an active player.", giveplayerid);
-			SendClientMessage(playerid, COLOR_GRAD1, string);
-		}
+		else SendClientMessage(playerid, COLOR_GRAD1, "Nguoi choi khong tin tai.");
 	}
 	return 1;
 }
@@ -17878,11 +17847,11 @@ CMD:enter(playerid, params[])
 	}
 	return 1;
 }
-CMD:mocua(playerid, params[])
-{
-	if (GetPlayerState(playerid) == 1) CheckForWalkingTeleport(playerid);
-	return 1;
-}
+//CMD:mocua(playerid, params[])
+//{
+//	if (GetPlayerState(playerid) == 1) CheckForWalkingTeleport(playerid);
+//	return 1;
+//}
 CMD:home(playerid, params[])
 {
 	if (IsPlayerConnected(playerid))
@@ -24435,7 +24404,6 @@ CMD:deliver(playerid, params[])
 						if (gTeam[giveplayerid] == 2 || PlayerInfo[giveplayerid][pLeader] == 6 || PlayerInfo[giveplayerid][pLeader] == 10) { return 1; }
 						if (ProxDetectorS(8.0, playerid, giveplayerid))
 						{
-
 							format(string, sizeof(string), "* Ban tong giam %s vao Fort DeMorgan.", GN(giveplayerid));
 							SendClientMessage(playerid, COLOR_WHITE, string);
 							format(string, sizeof(string), "* %s tong giam ban vao Fort DeMorgan.", GN(playerid));
@@ -27754,6 +27722,7 @@ CMD:frisk(playerid, params[])
 		if (sscanf(params, "u", giveplayerid))
 			return SendClientMessage(playerid, COLOR_WHITE, "Su dung: /frisk [playerid/Ten]");
 
+		if (GetPlayerSpecialAction(giveplayerid) != 10 && PlayerCuffed[giveplayerid] != 1) return SCM(playerid, COLOR_GREY, "Nguoi choi kia phai bi cong tay hoac dau hang. (/handsup)");
 		if (IsPlayerConnected(giveplayerid))
 		{
 			if (giveplayerid != INVALID_PLAYER_ID)
@@ -27764,39 +27733,51 @@ CMD:frisk(playerid, params[])
 					GetPlayerName(giveplayerid, giveplayer, sizeof(giveplayer));
 					
 					new text1[20], text2[20], text3[20], text4[20], text5[20], text6[20];
-					if (PlayerInfo[giveplayerid][pDrugs] > 0) { text1 = "| Drugs."; }
-					else { text1 = "| Empty Pocket."; }
-					if (PlayerInfo[giveplayerid][pMats] > 0) { text2 = "| Materials."; }
-					else { text2 = "| Empty Pocket."; }
-					if (Fishes[giveplayerid][pWeight1] > 0 || Fishes[giveplayerid][pWeight2] > 0 || Fishes[giveplayerid][pWeight3] > 0 || Fishes[giveplayerid][pWeight4] > 0 || Fishes[giveplayerid][pWeight5] > 0) { text3 = "| Fishes."; }
-					else { text3 = "| Empty Pocket."; }
-					if (PlayerInfo[giveplayerid][pPhoneBook] > 0) { text4 = "| Phone Book."; }
-					else { text4 = "| Empty Pocket."; }
-					if (PlayerInfo[giveplayerid][pWatch] > 0) { text5 = "| Watch."; }
-					else { text5 = "| Empty Pocket."; }
+					if (PlayerInfo[giveplayerid][pDrugs] > 0) format(text1, sizeof(text1), "| %d Thuoc.", PlayerInfo[giveplayerid][pDrugs]);
+					if (PlayerInfo[giveplayerid][pMats] > 0) format(text2, sizeof(text2), "| %d Vat Lieu.", PlayerInfo[giveplayerid][pMats]);
+					if (Fishes[giveplayerid][pWeight1] > 0 || Fishes[giveplayerid][pWeight2] > 0 || Fishes[giveplayerid][pWeight3] > 0 || Fishes[giveplayerid][pWeight4] > 0 || Fishes[giveplayerid][pWeight5] > 0) { text3 = "| Mot Vai Con Ca."; }
+					if (PlayerInfo[giveplayerid][pPhoneBook] > 0) { text4 = "| Danh Ba."; }
+					if (PlayerInfo[giveplayerid][pWatch] > 0) { text5 = "| Dong Ho."; }
 					new sweapon, sammo;
-					text6 = "| Empty Pocket.";
+					text6 = "| Vu Khi: ";
 					for (new i = 0; i<9; i++)
 					{
 						GetPlayerWeaponData(giveplayerid, i, sweapon, sammo);
 						if (sweapon != 0 && sammo != 0)
 						{
-							text6 = "| Weapon.";
+							new wname[26];
+							GetWeaponName(sweapon, wname, sizeof(wname));
+							format(text6, sizeof(text6), "%s - %s", text6, wname);
 						}
 					}
-					format(string, sizeof(string), "|__________ Items with %s __________|", giveplayer);
+					format(string, sizeof(string), "|__________ Do vat tren nguoi %s __________|", giveplayer);
 					SendClientMessage(playerid, COLOR_WHITE, string);
-					format(string, sizeof(string), "%s.", text1);
-					SendClientMessage(playerid, COLOR_GREY, string);
-					format(string, sizeof(string), "%s.", text2);
-					SendClientMessage(playerid, COLOR_GREY, string);
-					format(string, sizeof(string), "%s.", text3);
-					SendClientMessage(playerid, COLOR_GREY, string);
-					format(string, sizeof(string), "%s.", text4);
-					SendClientMessage(playerid, COLOR_GREY, string);
-					format(string, sizeof(string), "%s.", text5);
-					SendClientMessage(playerid, COLOR_GREY, string);
-					format(string, sizeof(string), "%s.", text6);
+					if (!isnull(text1))
+					{
+						format(string, sizeof(string), "%s", text1);
+						SendClientMessage(playerid, COLOR_GREY, string);
+					}
+					if (!isnull(text2))
+					{
+						format(string, sizeof(string), "%s", text2);
+						SendClientMessage(playerid, COLOR_GREY, string);
+					}
+					if (!isnull(text3))
+					{
+						format(string, sizeof(string), "%s", text3);
+						SendClientMessage(playerid, COLOR_GREY, string);
+					}
+					if (!isnull(text4))
+					{
+						format(string, sizeof(string), "%s", text4);
+						SendClientMessage(playerid, COLOR_GREY, string);
+					}
+					if (!isnull(text5))
+					{
+						format(string, sizeof(string), "%s", text5);
+						SendClientMessage(playerid, COLOR_GREY, string);
+					}
+					format(string, sizeof(string), "%s", text6);
 					SendClientMessage(playerid, COLOR_GREY, string);
 					if (PlayerInfo[giveplayerid][pSex] == 1) { format(string, sizeof(string), "* %s cham nhe %s khap co the anh ay va tim kiem gi do.", GN(playerid), giveplayer); }
 					else { format(string, sizeof(string), "* %s cham nhe %s khap co the co ay va tim kiem gi do.", GN(playerid), giveplayer); }
@@ -28883,12 +28864,15 @@ CMD:undercover(playerid, params[])
 }
 CMD:apgiai(playerid, params[])
 {
-		if (gTeam[playerid] != 2 && !IsACop(playerid)) return SCM(playerid, COLOR_GREY, "Khong phai nhan vien canh sat.");
+		if (gTeam[playerid] != 2 && !IsACop(playerid) &&
+			PlayerInfo[playerid][pMember] != 4 && PlayerInfo[playerid][pLeader] != 4) 
+			return SCM(playerid, COLOR_GREY, "Khong phai nhan vien canh sat hoac nhan vien cuu thuong.");
+
 		new nap;
 		if (sscanf(params, "u", nap)) return SCM(playerid, COLOR_GRAD2, "/apgiai [Ten/ID Nguoi Choi]");
 		if (!IsPlayerNearPlayer(playerid, nap, 4)) return SCM(playerid, COLOR_GREY, "Khong dung gan nguoi choi kia.");
 		if (IsPlayerInAnyVehicle(nap)) return SCM(playerid, COLOR_GREY, "Khong the ap giai nguoi tren xe.");
-		if (PlayerCuffed[nap] == 0) return SCM(playerid, COLOR_GREY, "Nguoi choi nay chua bi cong tay.");
+		if (PlayerCuffed[nap] == 0 && Dying[nap] == 0) return SCM(playerid, COLOR_GREY, "Nguoi choi nay chua bi cong tay.");
 		if (Escorting[playerid] == 1) return SCM(playerid, COLOR_GREY, "Ban dang ap giap mot nguoi choi khac.");
 		if (Escorted[nap] == 1) return SCM(playerid, COLOR_GREY, "Nguoi choi nay dang bi ap giai.");
 		Escorted[nap] = 1;
@@ -28903,7 +28887,10 @@ CMD:apgiai(playerid, params[])
 }
 CMD:dungapgiai(playerid, params[])
 {
-		 if (gTeam[playerid] != 2 && !IsACop(playerid)) return SCM(playerid, COLOR_GREY, "Khong phai nhan vien canh sat.");
+		 if (gTeam[playerid] != 2 && !IsACop(playerid)
+			 && PlayerInfo[playerid][pMember] != 4 && PlayerInfo[playerid][pLeader] != 4) 
+			 return SCM(playerid, COLOR_GREY, "Khong phai nhan vien canh sat.");
+
 		new nap = EscortedPlayer[playerid];
 		if (Escorted[playerid] == 1) return SCM(playerid, COLOR_GREY, "Ban dang bi ap giai.");
 		if (nap == -1 && Escorting[playerid] == 0) return SCM(playerid, COLOR_GREY, "Ban khong ai giai ai.");
@@ -32351,7 +32338,7 @@ CMD:wanted(playerid, params[])
 		if (gTeam[playerid] == 2 || IsACop(playerid))
 		{
 			new x;
-			SendClientMessage(playerid, COLOR_GREEN, "Current Wanted Suspects:");
+			SendClientMessage(playerid, COLOR_GREEN, "Toi Pham Hien Tai:");
 			for (new i = 0; i < MAX_PLAYERS; i++) {
 				if (IsPlayerConnected(i))
 				{
@@ -32794,20 +32781,49 @@ CMD:arrest(playerid, params[])
 	}//not connected
 	return 1;
 }
+CMD:doipg(playerid, params[]) { return cmd_doiphonggiam(playerid, params); }
 CMD:doiphonggiam(playerid, params[])
 {
-	if (PlayerInfo[playerid][pMember] != 17 && PlayerInfo[playeid][pLeader] != 17) return SCM(playerid, COLOR_GREY, "Ban khong phai nhan vien DoC.");
+	if (PlayerInfo[playerid][pMember] != 17 && PlayerInfo[playerid][pLeader] != 17) return SCM(playerid, COLOR_GREY, "Ban khong phai nhan vien DoC.");
 	new suspect = GetClosestPlayer(playerid);
-	if (PlayerInfo[playerid][pJailed] == 0 || suspect == INVALID_PLAYER_ID) return SCM(playerid, COLOR_GREY, "Khong co tu nhan ai dung gan ban.");
+	if (suspect == INVALID_PLAYER_ID || PlayerInfo[suspect][pJailed] == 0) return SCM(playerid, COLOR_GREY, "Khong co tu nhan nao dung gan ban.");
 	new idroom = GetClosestCell(playerid);
 	if (idroom == -1) return SCM(playerid, COLOR_GREY, "Ban khong dung gan phong giam nao.");
 	SetPlayerSkin(suspect, 50);
 	SetPlayerInterior(suspect, 6);
 	SetPlayerPos(suspect, DocArrestIn[idroom][0], DocArrestIn[idroom][1], DocArrestIn[idroom][2]);
-	PlayerInfo[suspect][pJailRoom] = id;
+	PlayerInfo[suspect][pJailRoom] = idroom;
 	PlayerInfo[suspect][pInt] = 6;
 	SCM(playerid, COLOR_LIGHTBLUE, "# Ban da chuyen tu nhan sang phong nay thanh cong.");
 	SCM(suspect, COLOR_LIGHTBLUE, "# Ban da bi chuyen sang phong tu nay.");
+	return 1;
+}
+CMD:mophonggiam(playerid, params[])
+{
+	if (PlayerInfo[playerid][pMember] != 17 && PlayerInfo[playerid][pLeader] != 17)
+		return SCM(playerid, COLOR_GREY, "Ban khong phai nhan vien DoC.");
+	if (!IsPlayerInRangeOfPoint(playerid, 4, 2584.6189, -1494.7810, -45.2369))
+		return SCM(playerid, COLOR_GREY, "Ban phai dung o phong dieu khien.");
+	for (new i = 0; i < MAX_GATES; i++)
+	{
+		if (GateInfo[i][gType] == DOCCELL)
+			MoveGate(i, 1);
+	}
+	SendTeamMessage(17, COLOR_LIGHTBLUE, "[Phong Dieu Khien] Tat ca cua phong giam da duoc mo.");
+	return 1;
+}
+CMD:dongphonggiam(playerid, params[])
+{
+	if (PlayerInfo[playerid][pMember] != 17 && PlayerInfo[playerid][pLeader] != 17)
+		return SCM(playerid, COLOR_GREY, "Ban khong phai nhan vien DoC.");
+	if (!IsPlayerInRangeOfPoint(playerid, 4, 2584.6189, -1494.7810, -45.2369))
+		return SCM(playerid, COLOR_GREY, "Ban phai dung o phong dieu khien.");
+	for (new i = 0; i < MAX_GATES; i++)
+	{
+		if (GateInfo[i][gType] == DOCCELL)
+			MoveGate(i, 2);
+	}
+	SendTeamMessage(17, COLOR_LIGHTBLUE, "[Phong Dieu Khien] Tat ca cua phong giam da duoc dong.");
 	return 1;
 }
 CMD:hopdong(playerid, params[]) { return cmd_contract(playerid, params); }

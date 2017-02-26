@@ -1,12 +1,63 @@
+task SoundZone[1000]()
+{
+	if (DOCAlarm > 0 && --DOCAlarm == 0)
+	{
+		foreach(new playerid : Player)
+		{
+			PlayerPlaySound(playerid, 0, 0.0, 0.0, 0.0);
+			SetPVarInt(playerid, "AlarmPlayed", 0);
+		}
+	}
+}
 task ServerBeat[1000]()
 {
 	for (new gateid = 0; gateid < MAX_GATES; gateid++)
 	{
-		if (GateTime[gateid] > 0 && --GateTime[gateid] == 0)
-			MoveGate(gateid);
+		if (GateWaitTime[gateid] > 0 && --GateWaitTime[gateid] == 0)
+		{
+			if(GateInfo[gateid][gMoved] == 1) MoveGate(gateid);
+		}
 	}
 	foreach(new playerid : Player)
 	{
+		if (DOCAlarm > 0)
+		{
+			if (GetPVarInt(playerid, "AlarmPlayed") == 0 && IsPlayerInRangeOfPoint(playerid, 100, 732.5316, -1359.1908, 18.8203))
+			{
+				PlayerPlaySound(playerid, 3401, 0, 0, 0);
+				SetPVarInt(playerid, "AlarmPlayed", 1);
+			}
+			else if (GetPVarInt(playerid, "AlarmPlayed") == 1 && !IsPlayerInRangeOfPoint(playerid, 100, 732.5316, -1359.1908, 18.8203))
+			{
+				PlayerPlaySound(playerid, 0, 0.0, 0.0, 0.0);
+				SetPVarInt(playerid, "AlarmPlayed", 0);
+			}
+		}
+
+		if (WantedLevel[playerid] > 0 && GetPlayerWantedLevel(playerid) != WantedLevel[playerid])
+			SetPlayerWantedLevel(playerid, WantedLevel[playerid]);
+		else if (WantedLevel[playerid] == 0 && GetPlayerWantedLevel(playerid) != 0)
+			SetPlayerWantedLevel(playerid, 0);
+
+		if (DOCDelay[playerid] > 0)
+			DOCDelay[playerid]--;
+
+		if (DOCCheck[playerid] == 1 && IsPlayerInDynamicArea(playerid, DOCArea))
+		{
+			new Float:pos[3];
+			GetPlayerPos(playerid, pos[0], pos[1], pos[2]);
+			if (pos[2] < DOCAIR)
+			{
+				new str[128];
+				format(str, sizeof(str), "[DoC Camera] Doi tuong %s vua dot nhap vao DoC, cac nhan vien hay mau bat giu doi tuong.", GN(playerid));
+				SendRadioMessage(17, COLOR_LIGHTRED, str);
+				if (WantedPoints[playerid] == 0) { WantedPoints[playerid] = 3; }
+				else { WantedPoints[playerid] += 2; }
+				SetPlayerCriminalEx(playerid, 255, "Dot Nhap DoC.");
+				DOCAlarm = 1;
+				DOCCheck[playerid] = 0;
+			}
+		}
 		if (gPlayerLogged[playerid] == 1)
 		{
 			format(tdbank, sizeof(tdbank), "Bank$ %s", AddCommas(PlayerInfo[playerid][pAccount]));
@@ -62,7 +113,8 @@ task ServerBeat[1000]()
 			//if (!IsPlayerInRangeOfPoint(playerid, 3, BTPos[playerid][0], BTPos[playerid][1], BTPos[playerid][2])) NamVien(playerid);
 			GetAnimationName(GetPlayerAnimationIndex(playerid), AnimLib, 32, AnimName, 32);
 			if (strcmp(AnimName, "KILL_Knife_Ped_Die", true) != 0) ApplyAnimation(playerid, "KNIFE", "KILL_Knife_Ped_Die", 4.0, 0, 1, 1, 1, 0, 1);
-			GameTextForPlayer(playerid, "~r~Ban da bi thuong ~n~~y~Go /dichvu capcuu de goi cuu thuong", 1000, 4);
+			if (DyingTimeOut[playerid] != 0) GameTextForPlayer(playerid, "~r~Ban da bi thuong ~n~~y~Go /dichvu capcuu de goi cuu thuong", 1000, 4);
+			else GameTextForPlayer(playerid, "~r~Ban da bi thuong ~n~~y~Go /dichvu capcuu de goi cuu thuong~n~~r~/chapnhan chet ~y~de tu sat", 1000, 4);
 		}
 		if (Dying[playerid] == 1 && Saving[playerid] > 0)
 		{
@@ -187,7 +239,7 @@ task ServerBeat[1000]()
 			TogglePlayerControllable(playerid, 1);
 			if (WantedPoints[playerid] == 0) { WantedPoints[playerid] = 3; }
 			else { WantedPoints[playerid] += 2; }
-			SetPlayerCriminalEx(playerid, 255, "Buon lau");
+			SetPlayerCriminalEx(playerid, 255, "Buon Lau");
 			new str[128];
 			format(str, sizeof(str), "Nhan hang da xong, bay gio hay toi diem do tren ban do de giao hang buon lau, hay can than voi canh sat.");
 			SCM(playerid, COLOR_YELLOW, str);

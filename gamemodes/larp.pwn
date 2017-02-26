@@ -48,12 +48,24 @@ new MySQL:conn;
 #undef MAX_PLAYERS 
 #endif 
 
+//#if defined STREAMER_OBJECT_SD 
+//#undef STREAMER_OBJECT_SD 
+//#endif 
+//
+//#if defined STREAMER_OBJECT_DD 
+//#undef STREAMER_OBJECT_DD 
+//#endif 
+
 #if defined MAX_VEHICLES 
 #undef MAX_VEHICLES 
 #endif 
 
 #define MAX_VEHICLES 1000
 #define MAX_PLAYERS 500
+
+//STREAMER RANGE
+//#define STREAMER_OBJECT_SD 1200
+//#define STREAMER_OBJECT_DD 1400
 
 #define SCRIPT_OWNCARS 500 //
 #define SCRIPT_MAXPLAYERS 50 //
@@ -67,7 +79,7 @@ new MySQL:conn;
 #define MAX_VEHICLE_MODELS	(70)
 #define MAX_PLYVEH_RATIO	(20) // per player.
 #define MAX_VEHICLE_PLATE	(7)
-#define MAX_GATES 40
+#define MAX_GATES 100
 //==============================
 #undef MAX_PLAYERS
 #define MAX_PLAYERS SCRIPT_MAXPLAYERS
@@ -1350,23 +1362,29 @@ new CivFemalePeds[33][1] = {
 //ENUM
 enum gInfo
 {
-	Model,
-	Moved,	
+	gObject,
+	gModel,
+	gMoved,	
 	Float:StartX,
 	Float:StartY,
 	Float:StartZ,
 	Float:EndX,
 	Float:EndY,
 	Float:EndZ,
-	Float:RotateX,
-	Float:RotateY,
-	Float:RotateZ,
-	Health,
-	Type,
-	Time,
-	AutoTime
+	Float:SRotateX,
+	Float:SRotateY,
+	Float:SRotateZ,
+	Float:ERotateX,
+	Float:ERotateY,
+	Float:ERotateZ,
+	Float:gHealth,
+	gType,
+	Float:gRange,
+	Float:gTime,
+	gAutoTime,
 };
 new GateInfo[MAX_GATES][gInfo];
+new GateWaitTime[MAX_GATES];
 
 enum SavePlayerPosEnum
 {
@@ -4772,6 +4790,13 @@ public JoinChannelNr(playerid, number)
 }
 stock ClearPlayer(playerid)
 {
+	DOCDelay[playerid] = 0;
+	DOCCheck[playerid] = 0;
+
+	LastEntrance[playerid][0] = 0;
+	LastEntrance[playerid][1] = 0;
+	LastEntrance[playerid][2] = 0;
+
 	Tazered[playerid] = 0;
 	Tazering[playerid] = 0;
 	WearTazer[playerid] = 0;
@@ -5402,7 +5427,12 @@ public elevator2(playerid)
       SetPlayerPos(playerid,1174.9100,-1361.7330,13.9876);
 	  return 1;
 }
-
+forward ClearFirstSpawn(playerid);
+public ClearFirstSpawn(playerid)
+{
+	SetPVarInt(playerid, "SpecialCase", 0);
+	return 1;
+}
 public SetPlayerSpawn(playerid)
 {
 	/*new Hour, Minute, Second;
@@ -5411,7 +5441,10 @@ public SetPlayerSpawn(playerid)
 
 	TextDrawHideForPlayer(playerid, TDLoading);
 	TextDrawShowForPlayer(playerid, TDPBank[playerid]);
-	TogglePlayerSpawn(playerid, false);
+	TogglePlayerSpawn(playerid, false, 5);
+	SetPlayerWantedLevel(playerid, WantedLevel[playerid]);
+	SetPVarInt(playerid, "SpecialCase", 1);
+	SetTimerEx("ClearFirstSpawn", 2000, 0, "i", playerid);
 
 	new rand;
 	new house = PlayerInfo[playerid][pPhousekey];
@@ -5683,6 +5716,14 @@ public SetPlayerSpawn(playerid)
 		SetPlayerInterior(playerid, 2);
 		SetPlayerPos(playerid, 455.8776,1413.6802,1084.3080);
 		PlayerInfo[playerid][pInt] = 2;
+		return 1;
+	}
+	else if (PlayerInfo[playerid][pMember] == 17 || PlayerInfo[playerid][pLeader] == 17)//East Beach Bloods spawn
+	{
+		SetPlayerToTeamColor(playerid);
+		SetPlayerInterior(playerid, 6);
+		SetPlayerPos(playerid, 2595.9663, -1477.9742, -48.9141);
+		PlayerInfo[playerid][pInt] = 6;
 		return 1;
 	}
 	else if(IsAnInstructor(playerid) || PlayerInfo[playerid][pMember] == 11 || PlayerInfo[playerid][pLeader] == 11) //Driving/Flying School spawn
@@ -6100,7 +6141,7 @@ public SetPlayerCriminal(playerid,declare,reason[])
 			if(WantedLevel[playerid] >= 1) { if(gTeam[playerid] == 3) { gTeam[playerid] = 4; } }
 			if(yesno)
 			{
-				format(wantedmes, sizeof(wantedmes), "Current Wanted Level: %d", wlevel);
+				format(wantedmes, sizeof(wantedmes), "Muc Do Truy Na: %d", wlevel);
 				SendClientMessage(playerid, COLOR_YELLOW, wantedmes);
 				for(new i = 0; i < MAX_PLAYERS; i++)
 				{
@@ -6163,7 +6204,7 @@ public SetPlayerCriminalEx(playerid,declare,reason[])
 			if(WantedLevel[playerid] >= 1) { if(gTeam[playerid] == 3) { gTeam[playerid] = 4; } }
 			if(yesno)
 			{
-				format(wantedmes, sizeof(wantedmes), "Muc Do Pham Toi: %d", wlevel);
+				format(wantedmes, sizeof(wantedmes), "Muc Do Truy Na: %d", wlevel);
 				SendClientMessage(playerid, COLOR_YELLOW, wantedmes);
 				for(new i = 0; i < MAX_PLAYERS; i++)
 				{
@@ -8166,7 +8207,7 @@ public Production()
 							else if(points <= 0) { if(WantedLevel[i] != 0) { ClearCrime(i); WantedLevel[i] = 0; wlevel = 0; yesno = 1;} }
 							if(yesno)
 							{
-								format(string, sizeof(string), "Current Wanted Level: %d", wlevel);
+								format(string, sizeof(string), "Muc Do Truy Na: %d", wlevel);
 								SendClientMessage(i, COLOR_YELLOW, string);
 							}
 						}
@@ -9297,21 +9338,25 @@ public CustomPickups()
 					}
 				}
 			}//custompickups end
+			if (PlayerToPoint(2.0, i, 2584.6189, -1494.7810, -45.2369))
+			{// Hospital near speedway
+				GameTextForPlayer(i, "~w~/mophonggiam /dongphonggiam", 5000, 5);
+			}
 			if (PlayerToPoint(2.0, i, 20.5627,-103.7291,1005.2578))
 			{// Hospital near speedway
 				GameTextForPlayer(i, "~w~/muaquanao de thay doi trang phuc", 5000, 5);
 			}
 			if (PlayerToPoint(2.0, i, 203.9068,-41.0728,1001.8047))
 			{// Hospital near speedway
-				GameTextForPlayer(i, "~w~/buonlau de thay doi trang phuc", 5000, 5);
+				GameTextForPlayer(i, "~w~/muaquanao de thay doi trang phuc", 5000, 5);
 			}
 			if (PlayerToPoint(2.0, i, 161.3765,-83.8416,1001.8047))
 			{// Hospital near speedway
-				GameTextForPlayer(i, "~w~/buonlau de thay doi trang phuc", 5000, 5);
+				GameTextForPlayer(i, "~w~/muaquanao de thay doi trang phuc", 5000, 5);
 			}
 			if (PlayerToPoint(2.0, i, 214.4470,-7.6471,1001.2109))
 			{// Hospital near speedway
-				GameTextForPlayer(i, "~w~/buonlau de thay doi trang phuc", 5000, 5);
+				GameTextForPlayer(i, "~w~/muaquanao de thay doi trang phuc", 5000, 5);
 			}
 			if (PlayerToPoint(2.0, i, -1111.4635, -1681.5151, 76.3739))
 			{// Hospital near speedway
@@ -9922,6 +9967,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 	 */
 	new Float:cx, Float:cy, Float:cz;
 	GetPlayerPos(playerid, cx, cy, cz);
+	new enter = 0;
 
 	if(PlayerToPointStripped(1, playerid,1554.9537,-1675.6584,16.1953, cx,cy,cz))
 	{//LSPD Entrance
@@ -9929,6 +9975,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid, 6);
 		SetPlayerPos(playerid,246.7079,66.2239,1003.6406);
 		PlayerInfo[playerid][pInt] = 6;
+		enter = 1;
 	}
 	else if (PlayerToPointStripped(1, playerid, 246.5325, 62.4251, 1003.6406, cx, cy, cz))
 	{//LSPD Exit
@@ -9939,48 +9986,51 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 	}
 	else if (PlayerToPointStripped(1, playerid, 2574.7378, -1475.0773, -48.8995, cx, cy, cz))
 	{//DoC Entrance Exit
-		GameTextForPlayer(playerid, "~w~Department of Corrections", 5000, 1);
+		GameTextForPlayer(playerid, "~w~Los Angeles", 5000, 1);
 		SetPlayerInterior(playerid, 0);
 		SetPlayerPos(playerid, 648.8242, -1360.7623, 13.5873);
 		PlayerInfo[playerid][pInt] = 0;
+		SetPVarInt(playerid, "SpecialCase", 1);
 	}
 	else if (PlayerToPointStripped(1, playerid, 648.8242, -1360.7623, 13.5873, cx, cy, cz))
 	{//DoC Entrance
-		Streamer_UpdateEx(playerid, 2574.7378, -1475.0773, -48.899);
-		GameTextForPlayer(playerid, "~w~Los Angeles", 5000, 1);
-		SetPlayerInterior(playerid, 6);
+		GameTextForPlayer(playerid, "~w~Department of Corrections", 5000, 1);
 		SetPlayerPos(playerid, 2574.7378, -1475.0773, -48.8995);
+		SetPlayerInterior(playerid, 6);
 		PlayerInfo[playerid][pInt] = 6;
+		enter = 1;
 	}
 	else if (PlayerToPointStripped(1, playerid, 2594.6277, -1540.4736, -48.9141, cx, cy, cz))
 	{//DoC Back Entrance Exit
-		GameTextForPlayer(playerid, "~w~Department of Corrections", 5000, 1);
-		SetPlayerInterior(playerid, 0);
+		GameTextForPlayer(playerid, "~w~Los Angeles", 5000, 1);
 		SetPlayerPos(playerid, 732.9749, -1342.1331, 13.5236);
+		SetPlayerInterior(playerid, 0);
 		PlayerInfo[playerid][pInt] = 0;
+		SetPVarInt(playerid, "SpecialCase", 1);
 	}
 	else if (PlayerToPointStripped(1, playerid, 732.9749, -1342.1331, 13.5236, cx, cy, cz))
 	{//DoC Back Entrance
-		Streamer_UpdateEx(playerid, 2594.6277, -1540.4736, -48.9141);
-		GameTextForPlayer(playerid, "~w~Los Angeles", 5000, 1);
-		SetPlayerInterior(playerid, 6);
+		GameTextForPlayer(playerid, "~w~Department of Corrections", 5000, 1);
 		SetPlayerPos(playerid, 2594.6277, -1540.4736, -48.9141);
+		SetPlayerInterior(playerid, 6);
 		PlayerInfo[playerid][pInt] = 6;
+		enter = 1;
 	}
 	else if (PlayerToPointStripped(1, playerid, 2594.4473, -1540.8096, -45.2373, cx, cy, cz))
 	{//DoC Little Entrance Exit
-		GameTextForPlayer(playerid, "~w~Department of Corrections", 5000, 1);
-		SetPlayerInterior(playerid, 0);
+		GameTextForPlayer(playerid, "~w~Los Angeles", 5000, 1);
 		SetPlayerPos(playerid, 741.4783, -1358.7620, 21.6406);
+		SetPlayerInterior(playerid, 0);
 		PlayerInfo[playerid][pInt] = 0;
+		SetPVarInt(playerid, "SpecialCase", 1);
 	}
 	else if (PlayerToPointStripped(1, playerid, 741.4783, -1358.7620, 21.6406, cx, cy, cz))
 	{//DoC Little Entrance
-		Streamer_UpdateEx(playerid, 2594.4473, -1540.8096, -45.2373);
-		GameTextForPlayer(playerid, "~w~Los Angeles", 5000, 1);
-		SetPlayerInterior(playerid, 6);
+		GameTextForPlayer(playerid, "~w~Department of Corrections", 5000, 1);
 		SetPlayerPos(playerid, 2594.4473, -1540.8096, -45.2373);
+		SetPlayerInterior(playerid, 6);
 		PlayerInfo[playerid][pInt] = 6;
+		enter = 1;
 	}
 	else if (PlayerToPointStripped(1.0, playerid,488.2531,-82.7632,998.7578, cx,cy,cz))
 	{
@@ -9989,6 +10039,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		GameTextForPlayer(playerid, "~w~Restroom", 5000, 3);
 		SetPlayerInterior(playerid,11);
 		PlayerInfo[playerid][pInt] = 11;
+		enter = 1;
 	}
 	else if (PlayerToPointStripped(2.0, playerid,2280.0476,-1139.5413,1050.8984, cx,cy,cz))
 	{
@@ -9997,6 +10048,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		GameTextForPlayer(playerid, "~w~Ten Green Bottles", 5000, 3);
 		SetPlayerInterior(playerid,11);
 		PlayerInfo[playerid][pInt] = 11;
+		enter = 1;
 	}
 	else if(PlayerToPointStripped(1, playerid,1352.1194,-1759.2534,13.5078, cx,cy,cz))
 	{//24/7 near PD Entrance
@@ -10004,6 +10056,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid, 6);
 		SetPlayerPos(playerid,-26.6916,-55.7149,1003.5469);
 		PlayerInfo[playerid][pInt] = 6;
+		enter = 1;
 	}
 	else if(PlayerToPointStripped(1, playerid,-27.3919,-58.2529,1003.5469, cx,cy,cz))
 	{//24/7 near PD Exit
@@ -10018,6 +10071,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid, 18);
 		SetPlayerPos(playerid,-30.9467,-89.6096,1003.5469);
 		PlayerInfo[playerid][pInt] = 18;
+		enter = 1;
 	}
 	else if(PlayerToPointStripped(1, playerid,-30.9299,-92.0114,1003.5469, cx,cy,cz))
 	{//24/7 near 8-ball exit
@@ -10046,6 +10100,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid, 18);
 		SetPlayerPos(playerid,-30.9467,-89.6096,1003.5469);
 		PlayerInfo[playerid][pInt] = 18;
+		enter = 1;
 	}
 	else if(PlayerToPointStripped(1, playerid,1836.4064,-1682.4403,13.3493, cx,cy,cz))
 	{//Alhambra Entrance
@@ -10053,6 +10108,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid, 17);
 		SetPlayerPos(playerid,493.3891,-22.7212,1000.6797);
 		PlayerInfo[playerid][pInt] = 17;
+		enter = 1;
 	}
 	else if(PlayerToPointStripped(1, playerid,493.4393,-24.9169,1000.6719, cx,cy,cz))
 	{//Alhambra Exit
@@ -10067,6 +10123,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid, 11);
 		SetPlayerPos(playerid,502.0531,-70.2137,998.7578);
 		PlayerInfo[playerid][pInt] = 11;
+		enter = 1;
 	}
 	else if(PlayerToPointStripped(1, playerid,501.8708,-67.5820,998.7578, cx,cy,cz))
 	{//Some teleports are fucked up but they are working
@@ -10083,6 +10140,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid, 15);
 		SetPlayerPos(playerid,207.7336,-108.6231,1005.1328);
 		PlayerInfo[playerid][pInt] = 15;
+		enter = 1;
 	}
 	else if(PlayerToPointStripped(1, playerid,207.7662,-111.2663,1005.1328, cx,cy,cz))
 	{//Some teleports are fucked up but they are working
@@ -10098,6 +10156,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid, 5);
 		SetPlayerPos(playerid,771.9399,-2.2574,1000.7292);
 		PlayerInfo[playerid][pInt] = 5;
+		enter = 1;
 	}
 	else if(PlayerToPointStripped(1, playerid,772.3594,-5.5157,1000.7286, cx,cy,cz))
 	{//Some teleports are fucked up but they are working
@@ -10113,6 +10172,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid, 2);
 		SetPlayerPos(playerid,1205.0803,-9.9519,1000.9219);
 		PlayerInfo[playerid][pInt] = 2;
+		enter = 1;
 	}
 	else if(PlayerToPointStripped(1, playerid,1204.8462,-13.8521,1000.9219, cx,cy,cz))
 	{//Some teleports are fucked up but they are working
@@ -10205,6 +10265,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid, 4);
 		SetPlayerPos(playerid,-28.2619,-26.2015,1003.5573);
 		PlayerInfo[playerid][pInt] = 4;
+		enter = 1;
 	}
 	else if(PlayerToPointStripped(1, playerid,-28.0241,-31.7674,1003.5573, cx,cy,cz))
 	{//Some teleports are fucked up but they are working
@@ -10266,6 +10327,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		GameTextForPlayer(playerid, "~w~Welcome to the ~r~24-7",5000,3);
 		SetPlayerInterior(playerid,16);
 		PlayerInfo[playerid][pInt] = 16;
+		enter = 1;
 	}
 	else if (PlayerToPointStripped(2.0, playerid,-25.1326,-141.0670,1003.5469, cx,cy,cz))
 	{
@@ -10282,6 +10344,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		GameTextForPlayer(playerid, "~w~La Famiglia Sinatra HQ",5000,1);
 		SetPlayerInterior(playerid,5);
 		PlayerInfo[playerid][pInt] = 5;
+		enter = 1;
 	}
 	else if (PlayerToPointStripped(1, playerid,1252.5208,-789.2282,1084.0078, cx,cy,cz))
 	{
@@ -10299,6 +10362,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid,3);
 		SetPlayerFacingAngle(playerid, 0);
 		PlayerInfo[playerid][pInt] = 3;
+		enter = 1;
 	}
 	else if (PlayerToPointStripped(1, playerid,288.7287,167.0377,1007.1719, cx,cy,cz))
 	{
@@ -10326,6 +10390,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid,6);
 		SetPlayerFacingAngle(playerid, 0);
 		PlayerInfo[playerid][pInt] = 6;
+		enter = 1;
 	}
 	else if (PlayerToPointStripped(1, playerid,1172.1730,-1333.9272,1006.4965, cx,cy,cz))
 	{
@@ -10379,6 +10444,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 			SetPlayerInterior(playerid,3);
 			SetPlayerFacingAngle(playerid, 181);
 			PlayerInfo[playerid][pInt] = 3;
+			enter = 1;
 		}
 		else if(hqlock[iolock] == 0)
 		{
@@ -10387,6 +10453,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 			SetPlayerInterior(playerid,3);
 			SetPlayerFacingAngle(playerid, 181);
 			PlayerInfo[playerid][pInt] = 3;
+			enter = 1;
 		}
 		else
 		{
@@ -10412,6 +10479,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 			SetPlayerInterior(playerid,2);
 			SetPlayerFacingAngle(playerid, 1);
 			PlayerInfo[playerid][pInt] = 2;
+			enter = 1;
 		}
 		else if(hqlock[iolock] == 0)
 		{
@@ -10420,6 +10488,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 			SetPlayerInterior(playerid,2);
 			SetPlayerFacingAngle(playerid, 0);
 			PlayerInfo[playerid][pInt] = 2;
+			enter = 1;
 		}
 		else
 		{
@@ -10445,6 +10514,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 			SetPlayerInterior(playerid,5);
 			SetPlayerFacingAngle(playerid, 90);
 			PlayerInfo[playerid][pInt] = 5;
+			enter = 1;
 		}
 		else if(hqlock[surlock] == 0)
 		{
@@ -10453,6 +10523,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 			SetPlayerInterior(playerid,5);
 			SetPlayerFacingAngle(playerid, 90);
 			PlayerInfo[playerid][pInt] = 5;
+			enter = 1;
 		}
 		else
 		{
@@ -10476,6 +10547,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid,3);
 		SetPlayerFacingAngle(playerid, 0);
 		PlayerInfo[playerid][pInt] = 3;
+		enter = 1;
 	}
 	else if (PlayerToPointStripped(1, playerid,390.0630,173.5741,1008.3828, cx,cy,cz))
 	{
@@ -10494,6 +10566,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid,3);
 		SetPlayerFacingAngle(playerid, 0);
 		PlayerInfo[playerid][pInt] = 3;
+		enter = 1;
 	}
 	else if (PlayerToPointStripped(1, playerid,366.3892,190.9860,1008.3828, cx,cy,cz))
 	{
@@ -10512,6 +10585,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid,3);
 		SetPlayerFacingAngle(playerid, 0);
 		PlayerInfo[playerid][pInt] = 3;
+		enter = 1;
 	}
 	else if (PlayerToPointStripped(1, playerid,371.4523,180.2195,1014.1875, cx,cy,cz))
 	{
@@ -10563,6 +10637,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid,3);
 		SetPlayerFacingAngle(playerid, 0);
 		PlayerInfo[playerid][pInt] = 3;
+		enter = 1;
 	}
 	else if (PlayerToPointStripped(1, playerid,1494.2778,1303.7288,1093.2891, cx,cy,cz))
 	{
@@ -10581,6 +10656,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 	    SetPlayerInterior(playerid,6);
 	    SetPlayerFacingAngle(playerid, 270);
 		PlayerInfo[playerid][pInt] = 6;
+		enter = 1;
 	}
 	else if (PlayerToPointStripped(1, playerid,1557.7257,-1675.2711,28.3955, cx,cy,cz))
 	{
@@ -10590,6 +10666,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 	    SetPlayerInterior(playerid,6);
 	    SetPlayerFacingAngle(playerid, 270);
 		PlayerInfo[playerid][pInt] = 6;
+		enter = 1;
 	}
 	else if (PlayerToPointStripped(1.5, playerid,1570.3828,-1333.8882,16.4844, cx,cy,cz))
 	{
@@ -10607,9 +10684,20 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 	    SetPlayerInterior(playerid,0);
 		PlayerInfo[playerid][pInt] = 0;
 	}
+
+	if (enter == 1)
+		UpdateLastEntrance(playerid, cx, cy, cz);
+	else if(GetPlayerInterior(playerid) == 0)
+		UpdateLastEntrance(playerid, 0, 0, 0);
+
 	return 1;
 }
-
+stock UpdateLastEntrance(playerid, Float:x, Float:y, Float:z)
+{
+	LastEntrance[playerid][0] = x;
+	LastEntrance[playerid][1] = y;
+	LastEntrance[playerid][2] = z;
+}
 public CreateFoodMenus() // by Luk0r (Donut part by Ellis)
 {
 	// Burger Shot
@@ -11208,9 +11296,13 @@ stock IsContainChar(const string[], cchar)
 
 public ClearKnock(playerid)
 {
-	TogglePlayerControllable(playerid, 1);
-	ClearAnimations(playerid);
+	if (PlayerCuffed[playerid] == 0 && Escorted[playerid] == 0)
+	{
+		TogglePlayerControllable(playerid, 1);
+		ClearAnimations(playerid);
+	}
 	KnockedDown[playerid] = 0;
+	return 1;
 }
 
 public DrugEffectGone(playerid)
@@ -11520,6 +11612,6 @@ public SendAdminMessage(color, string[])
 #include <ProjectInc\geek>
 #include <ProjectInc\anims>
 #include <ProjectInc\reward>
-
 #include <ProjectInc\ontimer>
+#include <ProjectInc\map>
 

@@ -518,6 +518,7 @@ CMD:dichvu(playerid, params[])
 			BroadCast(COLOR_LIGHTRED, str);
 			Dying[phs] = 0;
 			DyingTimeOut[phs] = 0;
+			PlayerInfo[phs][pHospital] = 0;
 			SetPlayerHealth(phs, 100);
 			TogglePlayerControllable(phs, 1);
 			ClearAnimations(phs);
@@ -534,12 +535,49 @@ CMD:dichvu(playerid, params[])
 		if (MedicCaller[playerid] != -1) return SCM(playerid, COLOR_GREY, "Ban da nhan mot dot cap cuu, xin hay giai quyet.");
 		format(str, sizeof(str), "** [Tong Dai]: %s da nhan cuoc goi cap cuu cua %s (%d)", GN(playerid), GN(pncc), pncc);
 		SendRadioMessage(4, TEAM_RADIO_COLOR, str);
-		SCM(pncc, COLOR_YELLOW, "** [Tong Dai]: Benh vien dang dua xe toi vi tri cua ban, xin hay co chiu dung.");
-		GetPlayerPos(pncc, MedicPos[pncc][0], MedicPos[pncc][1], MedicPos[pncc][2]);
-		SetPlayerCheckpoint(playerid, MedicPos[pncc][0], MedicPos[pncc][1], MedicPos[pncc][2], 4);
+		SCM(pncc, COLOR_YELLOW, "** [Tong Dai]: Benh vien dang cu nhan vien toi vi tri cua ban, xin hay co chiu dung.");
 		MedicCaller[playerid] = pncc;
+		new inter = GetPlayerInterior(pncc);
+		if (inter == 0)
+		{
+			GetPlayerPos(pncc, MedicPos[pncc][0], MedicPos[pncc][1], MedicPos[pncc][2]);
+			SetCheckpoint(playerid, MedicPos[pncc][0], MedicPos[pncc][1], MedicPos[pncc][2], 4);
+		}
+		else
+		{
+			if (LastEntrance[pncc][0] == 0)
+			{
+				SCM(playerid, COLOR_GREY, "Khong the lay duoc vi tri cua nguoi choi.");
+				SCM(playerid, COLOR_YELLOW, "Hay /pm nguoi choi kia de tim vi tri.");
+			}
+			else
+			{
+				SCM(playerid, COLOR_GREY, "Nguoi choi kia hien tai dang trong mot noi that.");
+				SCM(playerid, COLOR_GREY, "Hay vao do de tim nan nhan.");
+				MedicPos[pncc][0] = LastEntrance[pncc][0];
+				MedicPos[pncc][1] = LastEntrance[pncc][1];
+				MedicPos[pncc][2] = LastEntrance[pncc][2];
+				SetCheckpoint(playerid, MedicPos[pncc][0], MedicPos[pncc][1], MedicPos[pncc][2], 4);
+			}
+		}
 		return 1;
  }
+CMD:pint(playerid, params[])
+{
+	new str[128];
+	format(str, sizeof(str), "Interior: %d", GetPlayerInterior(playerid));
+	SCM(playerid, COLOR_WHITE, str);
+	format(str, sizeof(str), "VWorld: %d", GetPlayerVirtualWorld(playerid));
+	SCM(playerid, COLOR_WHITE, str);
+	format(str, sizeof(str), "Last Entrance X: %f | Y: %f | Z: %f", LastEntrance[playerid][0],
+		LastEntrance[playerid][1], LastEntrance[playerid][2]);
+	SCM(playerid, COLOR_WHITE, str);
+	new Float:pos[3];
+	GetPlayerPos(playerid, pos[0], pos[1], pos[2]);
+	format(str, sizeof(str), "Now Position X: %f | Y: %f | Z: %f", pos[0], pos[1], pos[2]);
+	SCM(playerid, COLOR_WHITE, str);
+	return 1;
+}
 CMD:trithuong(playerid, params[])
 {
 	if (PlayerInfo[playerid][pBleeding] != 1) return SCM(playerid, COLOR_GREY, "Ban khong can tri thuong.");
@@ -575,7 +613,7 @@ CMD:dieutri(playerid, params[])
 	TogglePlayerControllable(patient, 0);
 	return 1;
 }
- CMD:pdfind(playerid, params[])
+CMD:pdfind(playerid, params[])
  {
 		if (!IsACop(playerid)) return SCM(playerid, COLOR_GREY, "Ban khong phai nhan vien canh sat.");
 		new pfind;
@@ -884,64 +922,120 @@ public KickTime(playerid)
 	return 1;
 }
 
-stock RemoveVendingMachine(playerid)
+stock GetClosestDoCPlayer(playerid)
 {
-	//Los Santos and Countryside
-	RemoveBuildingForPlayer(playerid, 956, 1634.1487, -2238.2810, 13.5077, 20.0); //Snack vender @ LS Airport
-	RemoveBuildingForPlayer(playerid, 956, 2480.9885, -1958.5117, 13.5831, 20.0); //Snack vender @ Sushi Shop in Willowfield
-	RemoveBuildingForPlayer(playerid, 955, 1729.7935, -1944.0087, 13.5682, 20.0); //Sprunk machine @ Unity Station
-	RemoveBuildingForPlayer(playerid, 955, 2060.1099, -1898.4543, 13.5538, 20.0); //Sprunk machine opposite Tony's Liqour in Willowfield
-	RemoveBuildingForPlayer(playerid, 955, 2325.8708, -1645.9584, 14.8270, 20.0); //Sprunk machine @ Ten Green Bottles
-	RemoveBuildingForPlayer(playerid, 955, 1153.9130, -1460.8893, 15.7969, 20.0); //Sprunk machine @ Market
-	RemoveBuildingForPlayer(playerid, 955, 1788.3965, -1369.2336, 15.7578, 20.0); //Sprunk machine in Downtown Los Santos
-	RemoveBuildingForPlayer(playerid, 955, 2352.9939, -1357.1105, 24.3984, 20.0); //Sprunk machine @ Liquour shop in East Los Santos
-	RemoveBuildingForPlayer(playerid, 1775, 2224.3235, -1153.0692, 1025.7969, 20.0); //Sprunk machine @ Jefferson Motel
-	RemoveBuildingForPlayer(playerid, 956, 2140.2566, -1161.7568, 23.9922, 20.0); //Snack machine @ pick'n'go market in Jefferson
-	RemoveBuildingForPlayer(playerid, 956, 2154.1199, -1015.7635, 62.8840, 20.0); //Snach machine @ Carniceria El Pueblo in Las Colinas
-	RemoveBuildingForPlayer(playerid, 956, 662.5665, -551.4142, 16.3359, 20.0); //Snack vender at Dillimore Gas Station
-	RemoveBuildingForPlayer(playerid, 955, 200.2010, -107.6401, 1.5513, 20.0); //Sprunk machine @ Blueberry Safe House
-	RemoveBuildingForPlayer(playerid, 956, 2271.4666, -77.2104, 26.5824, 20.0); //Snack machine @ Palomino Creek Library
-	RemoveBuildingForPlayer(playerid, 955, 1278.5421, 372.1057, 19.5547, 20.0); //Sprunk machine @ Papercuts in Montgomery
-	RemoveBuildingForPlayer(playerid, 955, 1929.5527, -1772.3136, 13.5469, 20.0); //Sprunk machine @ Idlewood Gas Station
+	foreach(new i : Player)
+	{
+		if ((PlayerInfo[i][pMember] == 17 || PlayerInfo[i][pLeader] == 17) &&
+			IsPlayerNearPlayer(playerid, i, 5) && i != playerid)
+			return i;
+	}
+	return -1;
+}
+stock GetClosestCell(playerid)
+{
+	for (new i = 0; i < 23; i++)
+	{
+		if (IsPlayerNearArrestOut(playerid, i))
+			return i;
+	}
+	return -1;
+}
 
-	//San Fierro
-	RemoveBuildingForPlayer(playerid, 1302, -2419.5835, 984.4185, 45.2969, 20.0); //Soda machine 1 @ Juniper Hollow Gas Station
-	RemoveBuildingForPlayer(playerid, 1209, -2419.5835, 984.4185, 45.2969, 20.0); //Soda machine 2 @ Juniper Hollow Gas Station
-	RemoveBuildingForPlayer(playerid, 956, -2229.2075, 287.2937, 35.3203, 20.0); //Snack vender @ King's Car Park
-	RemoveBuildingForPlayer(playerid, 955, -1349.3947, 493.1277, 11.1953, 20.0); //Sprunk machine @ SF Aircraft Carrier
-	RemoveBuildingForPlayer(playerid, 956, -1349.3947, 493.1277, 11.1953, 20.0); //Snack vender @ SF Aircraft Carrier
-	RemoveBuildingForPlayer(playerid, 955, -1981.6029, 142.7232, 27.6875, 20.0); //Sprunk machine @ Cranberry Station
-	RemoveBuildingForPlayer(playerid, 955, -2119.6245, -422.9411, 35.5313, 20.0); //Sprunk machine 1/2 @ SF Stadium
-	RemoveBuildingForPlayer(playerid, 955, -2097.3696, -397.5220, 35.5313, 20.0); //Sprunk machine 3 @ SF Stadium
-	RemoveBuildingForPlayer(playerid, 955, -2068.5593, -397.5223, 35.5313, 20.0); //Sprunk machine 3 @ SF Stadium
-	RemoveBuildingForPlayer(playerid, 955, -2039.8802, -397.5214, 35.5313, 20.0); //Sprunk machine 3 @ SF Stadium
-	RemoveBuildingForPlayer(playerid, 955, -2011.1403, -397.5225, 35.5313, 20.0); //Sprunk machine 3 @ SF Stadium
-	RemoveBuildingForPlayer(playerid, 955, -2005.7861, -490.8688, 35.5313, 20.0); //Sprunk machine 3 @ SF Stadium
-	RemoveBuildingForPlayer(playerid, 955, -2034.5267, -490.8681, 35.5313, 20.0); //Sprunk machine 3 @ SF Stadium
-	RemoveBuildingForPlayer(playerid, 955, -2063.1875, -490.8687, 35.5313, 20.0); //Sprunk machine 3 @ SF Stadium
-	RemoveBuildingForPlayer(playerid, 955, -2091.9780, -490.8684, 35.5313, 20.0); //Sprunk machine 3 @ SF Stadium
+stock IsPlayerNearArrestOut(playerid, id)
+{
+	if (IsPlayerInRangeOfPoint(playerid, 2, DocArrestOut[id][0], DocArrestOut[id][1], DocArrestOut[id][2]))
+		return 1;
+	return 0;
+}
 
-	//Las Venturas
-	RemoveBuildingForPlayer(playerid, 956, -1455.1298, 2592.4138, 55.8359, 20.0); //Snack vender @ El Quebrados GONE
-	RemoveBuildingForPlayer(playerid, 955, -252.9574, 2598.9048, 62.8582, 20.0); //Sprunk machine @ Las Payasadas GONE
-	RemoveBuildingForPlayer(playerid, 956, -252.9574, 2598.9048, 62.8582, 20.0); //Snack vender @ Las Payasadas GONE
-	RemoveBuildingForPlayer(playerid, 956, 1398.7617, 2223.3606, 11.0234, 20.0); //Snack vender @ Redsands West GONE
-	RemoveBuildingForPlayer(playerid, 955, -862.9229, 1537.4246, 22.5870, 20.0); //Sprunk machine @ The Smokin' Beef Grill in Las Barrancas GONE
-	RemoveBuildingForPlayer(playerid, 955, -14.6146, 1176.1738, 19.5634, 20.0); //Sprunk machine @ Fort Carson GONE
-	RemoveBuildingForPlayer(playerid, 956, -75.2839, 1227.5978, 19.7360, 20.0); //Snack vender @ Fort Carson GONE
-	RemoveBuildingForPlayer(playerid, 955, 1519.3328, 1055.2075, 10.8203, 20.0); //Sprunk machine @ LVA Freight Department GONE
-	RemoveBuildingForPlayer(playerid, 956, 1659.5096, 1722.1096, 10.8281, 20.0); //Snack vender near Binco @ LV Airport GONE
-	RemoveBuildingForPlayer(playerid, 955, 2086.5872, 2071.4958, 11.0579, 20.0); //Sprunk machine @ Sex Shop on The Strip
-	RemoveBuildingForPlayer(playerid, 955, 2319.9001, 2532.0376, 10.8203, 20.0); //Sprunk machine @ Pizza co by Julius Thruway (North)
-	RemoveBuildingForPlayer(playerid, 955, 2503.2061, 1244.5095, 10.8203, 20.0); //Sprunk machine @ Club in the Camels Toe
-	RemoveBuildingForPlayer(playerid, 956, 2845.9919, 1294.2975, 11.3906, 20.0); //Snack vender @ Linden Station
+stock CreateGate(model, Float:startx, Float:starty, Float:startz, Float:endx, Float:endy, Float:endz, Float:srotatex, Float:srotatey, Float:srotatez, Float:erotatex, Float:erotatey, Float:erotatez, type = GATE, autotime = 0, Float:time = 5.0, Float:objecthealth = -1.0, Float:range = 3.0)
+{
+	new idgate = -1;
+	for (new i = 0; i < MAX_GATES; i++)
+	{
+		if (GateInfo[i][gObject] == INVALID_OBJECT_ID)
+			idgate = i;
+	}
+	if (idgate == -1) return 1;
 
-	//Interiors: 24/7 and Clubs
-	RemoveBuildingForPlayer(playerid, 1775, 496.0843, -23.5310, 1000.6797, 20.0); //Sprunk machine 1 @ Club in Camels Toe
-	RemoveBuildingForPlayer(playerid, 1775, 501.1219, -2.1968, 1000.6797, 20.0); //Sprunk machine 2 @ Club in Camels Toe
-	RemoveBuildingForPlayer(playerid, 1776, 501.1219, -2.1968, 1000.6797, 20.0); //Snack vender @ Club in Camels Toe
-	RemoveBuildingForPlayer(playerid, 1775, -19.2299, -57.0460, 1003.5469, 20.0); //Sprunk machine @ Roboi's type 24/7 stores
-	RemoveBuildingForPlayer(playerid, 1776, -35.9012, -57.1345, 1003.5469, 20.0); //Snack vender @ Roboi's type 24/7 stores
-	RemoveBuildingForPlayer(playerid, 1775, -17.0036, -90.9709, 1003.5469, 20.0); //Sprunk machine @ Other 24/7 stores
-	RemoveBuildingForPlayer(playerid, 1776, -17.0036, -90.9709, 1003.5469, 20.0); //Snach vender @ Others 24/7 stores
+	new objid = CreateDynamicObject(model, startx, starty, startz, srotatex, srotatey, srotatez);
+	GateInfo[idgate][gModel] = model;
+	GateInfo[idgate][gObject] = objid;
+	GateInfo[idgate][StartX] = startx;
+	GateInfo[idgate][StartY] = starty;
+	GateInfo[idgate][StartZ] = startz;
+	GateInfo[idgate][EndX] = endx;
+	GateInfo[idgate][EndY] = endy;
+	GateInfo[idgate][EndZ] = endz;
+	GateInfo[idgate][SRotateX] = srotatex;
+	GateInfo[idgate][SRotateY] = srotatey;
+	GateInfo[idgate][SRotateZ] = srotatez;
+	GateInfo[idgate][ERotateX] = erotatex;
+	GateInfo[idgate][ERotateY] = erotatey;
+	GateInfo[idgate][ERotateZ] = erotatez;
+	GateInfo[idgate][gHealth] = objecthealth;
+	GateInfo[idgate][gType] = type;
+	GateInfo[idgate][gTime] = time;
+	GateInfo[idgate][gAutoTime] = autotime;
+	GateInfo[idgate][gRange] = range;
+	return 1;
+}
+
+stock GetClosestGate(playerid)
+{
+	for (new i = 0; i < MAX_GATES; i++)
+	{
+		if (GateInfo[i][gObject] != -1 && GateInfo[i][gType] == GATE &&
+			IsPlayerInRangeOfPoint(playerid, GateInfo[i][gRange], GateInfo[i][StartX], GateInfo[i][StartY], GateInfo[i][StartZ]))
+			return i;
+	}
+	return -1;
+}
+
+stock GetClosestDoor(playerid)
+{
+	for (new i = 0; i < MAX_GATES; i++)
+	{
+		if (GateInfo[i][gObject] != -1 && (GateInfo[i][gType] == DOOR || GateInfo[i][gType] == DOCCELL) &&
+			IsPlayerInRangeOfPoint(playerid, GateInfo[i][gRange], GateInfo[i][StartX], GateInfo[i][StartY], GateInfo[i][StartZ]))
+			return i;
+	}
+	return -1;
+}
+
+stock MoveGate(gateid, type = -1)
+{
+	// 1 OPEN 2 CLOSED
+	if (type == -1)
+	{
+		if (GateInfo[gateid][gMoved] == 0)
+		{
+			MoveDynamicObject(GateInfo[gateid][gObject], GateInfo[gateid][EndX], GateInfo[gateid][EndY], GateInfo[gateid][EndZ], GateInfo[gateid][gTime], GateInfo[gateid][ERotateX], GateInfo[gateid][ERotateY], GateInfo[gateid][ERotateZ]);
+			if (GateInfo[gateid][gAutoTime] > 0)
+				GateWaitTime[gateid] = GateInfo[gateid][gAutoTime];
+			GateInfo[gateid][gMoved] = 1;
+		}
+		else
+		{
+			MoveDynamicObject(GateInfo[gateid][gObject], GateInfo[gateid][StartX], GateInfo[gateid][StartY], GateInfo[gateid][StartZ], GateInfo[gateid][gTime], GateInfo[gateid][SRotateX], GateInfo[gateid][SRotateY], GateInfo[gateid][SRotateZ]);
+			GateInfo[gateid][gMoved] = 0;
+		}
+	}
+	else
+	{
+		if (type == 1)
+		{
+			MoveDynamicObject(GateInfo[gateid][gObject], GateInfo[gateid][EndX], GateInfo[gateid][EndY], GateInfo[gateid][EndZ], GateInfo[gateid][gTime], GateInfo[gateid][ERotateX], GateInfo[gateid][ERotateY], GateInfo[gateid][ERotateZ]);
+			if (GateInfo[gateid][gAutoTime] > 0)
+				GateWaitTime[gateid] = GateInfo[gateid][gAutoTime];
+			GateInfo[gateid][gMoved] = 1;
+		}
+		else if (type == 2)
+		{
+			MoveDynamicObject(GateInfo[gateid][gObject], GateInfo[gateid][StartX], GateInfo[gateid][StartY], GateInfo[gateid][StartZ], GateInfo[gateid][gTime], GateInfo[gateid][SRotateX], GateInfo[gateid][SRotateY], GateInfo[gateid][SRotateZ]);
+			GateInfo[gateid][gMoved] = 0;
+		}
+	}
+	return 1;
 }
