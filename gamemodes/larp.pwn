@@ -31,12 +31,12 @@
 #include <streamer>
 #include <zcmd>
 #include <sscanf2>
+#include <crashdetect>
 //MYSQLDEFINE
 new MySQL:conn;
 
 //DEFINE
 #include <ProjectInc\declare>
-#include <ProjectInc\reward>
 #include <ProjectInc\prize>
 
 #define DIALOG_REG 1
@@ -48,12 +48,24 @@ new MySQL:conn;
 #undef MAX_PLAYERS 
 #endif 
 
+//#if defined STREAMER_OBJECT_SD 
+//#undef STREAMER_OBJECT_SD 
+//#endif 
+//
+//#if defined STREAMER_OBJECT_DD 
+//#undef STREAMER_OBJECT_DD 
+//#endif 
+
 #if defined MAX_VEHICLES 
 #undef MAX_VEHICLES 
 #endif 
 
 #define MAX_VEHICLES 1000
 #define MAX_PLAYERS 500
+
+//STREAMER RANGE
+//#define STREAMER_OBJECT_SD 1200
+//#define STREAMER_OBJECT_DD 1400
 
 #define SCRIPT_OWNCARS 500 //
 #define SCRIPT_MAXPLAYERS 50 //
@@ -63,11 +75,11 @@ new MySQL:conn;
 //==============================
 //#define strcpy(%1,%2,%3) strmid(%1,%2,0,%3,strlen(%2)+1)
 #define dcmd(%1,%2,%3) if ((strcmp((%3)[1], #%1, true, (%2)) == 0) && ((((%3)[(%2) + 1] == 0) && (dcmd_%1(playerid, "")))||(((%3)[(%2) + 1] == 32) && (dcmd_%1(playerid, (%3)[(%2) + 2]))))) return 1
-#pragma semicolon 0
 #define MAX_TRUNK_SLOTS		(5) // Is actually 4.
 #define MAX_VEHICLE_MODELS	(70)
 #define MAX_PLYVEH_RATIO	(20) // per player.
 #define MAX_VEHICLE_PLATE	(7)
+#define MAX_GATES 100
 //==============================
 #undef MAX_PLAYERS
 #define MAX_PLAYERS SCRIPT_MAXPLAYERS
@@ -206,7 +218,7 @@ forward LoadPapers();
 forward SavePapers();
 forward DeleteDealership(id);
 forward UpdateDealership();
-forward AddCar(model, Float:x, Float:y, Float:z, Float:a, color1, color2, respawntime, owner[], owned, price);
+//forward AddCar(model, Float:x, Float:y, Float:z, Float:a, color1, color2, respawntime, owner[], owned, price);
 forward AddDealership(model, Float:x, Float:y, Float:z, Float:a, color1, color2, respawntime, price, amount);
 forward LoadCar();
 //forward SaveCarCoords();
@@ -293,7 +305,7 @@ forward ShowStats(playerid,targetid);
 forward SetPlayerToTeamColor(playerid);
 forward GameModeInitExitFunc();
 forward split(const strsrc[], strdest[][], delimiter);
-forward OnPlayerLogin(playerid,password[]);
+forward OnPlayerLogin(playerid);
 forward SavePlayer(playerid);
 forward OnPlayerRegister(playerid, password[]);
 forward BroadCast(color,const string[]);
@@ -379,7 +391,7 @@ forward SafeResetPlayerWeapons(plyid);
 forward UpdateWeaponSlots(plyid);
 forward GlobalHackCheck();
 forward BanAdd(bantype, sqlplayerid, ip[], hackamount);
-forward UnsetFirstSpawn(playerid);
+//forward UnsetFirstSpawn(playerid);
 forward LoadHQLocks();
 forward SaveHQLocks();
 forward ClearKnock(playerid);
@@ -440,7 +452,7 @@ new license_pu5;*/
 new Security = 0;
 //new gPlayerUsingLoopingAnim[MAX_PLAYERS];
 //new Text:txtAnimHelper;
-new CreatedCars[100];
+//new CreatedCars[100];
 //new CreatedCar = 0;
 new Tax = 0;
 new TaxValue = 0;
@@ -467,7 +479,7 @@ new Boxer2 = 255;
 new TBoxer = 255;
 new PlayerBoxing[MAX_PLAYERS];
 new hitfound = 0;
-new hitid = 999;
+new hitidz = 999;
 new Medics = 0;
 new MedicCall = 999;
 new MedicCallTime[MAX_PLAYERS];
@@ -549,7 +561,6 @@ new OrderReady[MAX_PLAYERS];
 new ConnectedToPC[MAX_PLAYERS];
 new MedicTime[MAX_PLAYERS];
 new NeedMedicTime[MAX_PLAYERS];
-new MedicBill[MAX_PLAYERS];
 new PlayerTied[MAX_PLAYERS];
 new PlayerCuffed[MAX_PLAYERS];
 new PlayerCuffedTime[MAX_PLAYERS];
@@ -625,14 +636,14 @@ new BusrouteWest[MAX_PLAYERS][2];
 new Float:BusShowLocation[MAX_PLAYERS][4];
 new BusShowLocationC[MAX_PLAYERS];
 new InAFoodPlace[MAX_PLAYERS];
-new gLastDriver[302];
-new gCarLock[265];
+new gLastDriver[MAX_VEHICLES];
+new gCarLock[MAX_VEHICLES];
 new MissionPlayable = 0;
 new togOOC = 0;
 new adds = 1;
 new addtimer = 60000;
 new Float:rx, Float:ry, Float:rz;
-new carselect[15];
+//new carselect[15];
 new objstore[128];
 new cbjstore[128];
 new motd[256];
@@ -877,18 +888,18 @@ new Float:gSweeperPoints[16][3] = {
 	{ 1527.9438, -1663.3240, 13.1080 },
 	{ 2083.6062, -1843.3563, 13.1080 }
 };
-new RandCars[20][1] = {
-	{ 496 }, { 542 }, { 507 }, { 585 },
-	{ 466 }, { 492 }, { 579 }, { 559 },
-	{ 400 }, { 551 }, { 516 }, { 475 },
-	{ 561 }, { 550 }, { 566 }, { 558 },
-	{ 562 }, { 562 }, { 603 }, { 560 }
-};
-
-
-new RandLCars[1][1] = {
-	{ 431 }// coach
-};
+//new RandCars[20][1] = {
+//	{ 496 }, { 542 }, { 507 }, { 585 },
+//	{ 466 }, { 492 }, { 579 }, { 559 },
+//	{ 400 }, { 551 }, { 516 }, { 475 },
+//	{ 561 }, { 550 }, { 566 }, { 558 },
+//	{ 562 }, { 562 }, { 603 }, { 560 }
+//};
+//
+//
+//new RandLCars[1][1] = {
+//	{ 431 }// coach
+//};
 
 
 new GunPrice[30][1] = {
@@ -1090,36 +1101,36 @@ new CivFemalePeds[33][1] = {
 };
 
 
-new Peds[200][1] = {
-	{ 7 },
-	/*{288},//TEAM_ADMIN
-	{286},{287},{228},{113},{120},{147},{294},{227},{61},{171},*/
-	{ 247 },//CIVILIANS DOWN HERE
-	{ 248 }, { 100 }, { 256 }, { 263 }, { 262 }, { 261 }, { 260 }, { 259 }, { 258 }, { 257 }, { 256 }, { 255 },
-	{ 253 }, { 252 }, { 251 }, { 246 }, { 245 }, { 244 }, { 243 }, { 242 }, { 241 }, { 239 },
-	{ 238 }, { 237 }, { 236 }, { 235 }, { 234 }, { 233 }, { 232 }, { 231 }, { 230 }, { 229 },
-	{ 226 }, { 225 }, { 224 }, { 223 }, { 222 }, { 221 }, { 220 }, { 219 }, { 218 },
-	{ 217 }, { 216 }, { 215 }, { 214 }, { 213 }, { 212 }, { 211 }, { 210 }, { 209 },
-	{ 207 }, { 206 }, { 205 }, { 204 }, { 203 }, { 202 }, { 201 }, { 200 }, { 199 }, { 198 }, { 197 }, { 196 },
-	{ 195 }, { 194 }, { 193 }, { 192 }, { 191 }, { 190 }, { 189 }, { 185 }, { 184 }, { 183 },
-	{ 182 }, { 181 }, { 180 }, { 179 }, { 178 }, { 176 }, { 172 }, { 170 }, { 168 }, { 167 }, { 162 },
-	{ 161 }, { 160 }, { 159 }, { 158 }, { 157 }, { 156 }, { 155 }, { 154 }, { 153 }, { 152 }, { 151 },
-	{ 146 }, { 145 }, { 144 }, { 143 }, { 142 }, { 141 }, { 140 }, { 139 }, { 138 }, { 137 }, { 136 }, { 135 },
-	{ 134 }, { 133 }, { 132 }, { 131 }, { 130 }, { 129 }, { 128 }, { 254 }, { 99 }, { 97 }, { 96 }, { 95 }, { 94 },
-	{ 92 }, { 90 }, { 89 }, { 88 }, { 87 }, { 85 }, { 84 }, { 83 }, { 82 }, { 81 }, { 80 }, { 79 }, { 78 }, { 77 }, { 76 },
-	{ 75 }, { 73 }, { 72 }, { 69 }, { 68 }, { 67 }, { 66 }, { 64 }, { 63 }, { 62 }, { 58 }, { 57 }, { 56 }, { 55 },
-	{ 54 }, { 53 }, { 52 }, { 51 }, { 50 }, { 49 }, { 45 }, { 44 }, { 43 }, { 41 }, { 39 }, { 38 }, { 37 }, { 36 }, { 35 },
-	{ 34 }, { 33 }, { 32 }, { 31 }, { 30 }, { 29 }, { 28 }, { 27 }, { 26 }, { 25 }, { 24 }, { 23 }, { 22 }, { 21 }, { 20 },
-	{ 19 }, { 18 }, { 17 }, { 16 }, { 15 }, { 14 }, { 13 }, { 12 }, { 11 }, { 10 }, { 1 }, { 2 },
-	{ 290 },//ROSE
-	{ 291 },//PAUL
-	{ 293 },//OGLOC
-	{ 187 },
-	{ 296 },//JIZZY
-	{ 297 },//MADDOGG
-	{ 298 },//CAT
-	{ 299 }//ZERO
-};
+//new Peds[200][1] = {
+//	{ 7 },
+//	/*{288},//TEAM_ADMIN
+//	{286},{287},{228},{113},{120},{147},{294},{227},{61},{171},*/
+//	{ 247 },//CIVILIANS DOWN HERE
+//	{ 248 }, { 100 }, { 256 }, { 263 }, { 262 }, { 261 }, { 260 }, { 259 }, { 258 }, { 257 }, { 256 }, { 255 },
+//	{ 253 }, { 252 }, { 251 }, { 246 }, { 245 }, { 244 }, { 243 }, { 242 }, { 241 }, { 239 },
+//	{ 238 }, { 237 }, { 236 }, { 235 }, { 234 }, { 233 }, { 232 }, { 231 }, { 230 }, { 229 },
+//	{ 226 }, { 225 }, { 224 }, { 223 }, { 222 }, { 221 }, { 220 }, { 219 }, { 218 },
+//	{ 217 }, { 216 }, { 215 }, { 214 }, { 213 }, { 212 }, { 211 }, { 210 }, { 209 },
+//	{ 207 }, { 206 }, { 205 }, { 204 }, { 203 }, { 202 }, { 201 }, { 200 }, { 199 }, { 198 }, { 197 }, { 196 },
+//	{ 195 }, { 194 }, { 193 }, { 192 }, { 191 }, { 190 }, { 189 }, { 185 }, { 184 }, { 183 },
+//	{ 182 }, { 181 }, { 180 }, { 179 }, { 178 }, { 176 }, { 172 }, { 170 }, { 168 }, { 167 }, { 162 },
+//	{ 161 }, { 160 }, { 159 }, { 158 }, { 157 }, { 156 }, { 155 }, { 154 }, { 153 }, { 152 }, { 151 },
+//	{ 146 }, { 145 }, { 144 }, { 143 }, { 142 }, { 141 }, { 140 }, { 139 }, { 138 }, { 137 }, { 136 }, { 135 },
+//	{ 134 }, { 133 }, { 132 }, { 131 }, { 130 }, { 129 }, { 128 }, { 254 }, { 99 }, { 97 }, { 96 }, { 95 }, { 94 },
+//	{ 92 }, { 90 }, { 89 }, { 88 }, { 87 }, { 85 }, { 84 }, { 83 }, { 82 }, { 81 }, { 80 }, { 79 }, { 78 }, { 77 }, { 76 },
+//	{ 75 }, { 73 }, { 72 }, { 69 }, { 68 }, { 67 }, { 66 }, { 64 }, { 63 }, { 62 }, { 58 }, { 57 }, { 56 }, { 55 },
+//	{ 54 }, { 53 }, { 52 }, { 51 }, { 50 }, { 49 }, { 45 }, { 44 }, { 43 }, { 41 }, { 39 }, { 38 }, { 37 }, { 36 }, { 35 },
+//	{ 34 }, { 33 }, { 32 }, { 31 }, { 30 }, { 29 }, { 28 }, { 27 }, { 26 }, { 25 }, { 24 }, { 23 }, { 22 }, { 21 }, { 20 },
+//	{ 19 }, { 18 }, { 17 }, { 16 }, { 15 }, { 14 }, { 13 }, { 12 }, { 11 }, { 10 }, { 1 }, { 2 },
+//	{ 290 },//ROSE
+//	{ 291 },//PAUL
+//	{ 293 },//OGLOC
+//	{ 187 },
+//	{ 296 },//JIZZY
+//	{ 297 },//MADDOGG
+//	{ 298 },//CAT
+//	{ 299 }//ZERO
+//};
 
 /*new Float:HouseCarSpawns[34][4] = {
 {-2637.2544,165.0454,4.2919,179.9976},//House 2
@@ -1157,7 +1168,6 @@ new Peds[200][1] = {
 {-2529.4817,-142.6608,19.7107,4.2929}, //House 32
 {-2616.1897,-108.4479,4.1693,269.8246}//House 33
 };*/
-
 
 /*new CarSpawns[186][eCars] = {
 {405,2205.2,-1177.0,25.7,270.8},//carid 90
@@ -1350,6 +1360,32 @@ new Peds[200][1] = {
 */
 
 //ENUM
+enum gInfo
+{
+	gObject,
+	gModel,
+	gMoved,	
+	Float:StartX,
+	Float:StartY,
+	Float:StartZ,
+	Float:EndX,
+	Float:EndY,
+	Float:EndZ,
+	Float:SRotateX,
+	Float:SRotateY,
+	Float:SRotateZ,
+	Float:ERotateX,
+	Float:ERotateY,
+	Float:ERotateZ,
+	Float:gHealth,
+	gType,
+	Float:gRange,
+	Float:gTime,
+	gAutoTime,
+};
+new GateInfo[MAX_GATES][gInfo];
+new GateWaitTime[MAX_GATES];
+
 enum SavePlayerPosEnum
 {
 	Float:LastX,
@@ -1607,6 +1643,7 @@ enum pInfo
 	pPayDayHad,
 	pWatch,
 	pCrashed,
+	pHospital,
 	pWins,
 	pLoses,
 	pAlcoholPerk,
@@ -1635,7 +1672,8 @@ enum pInfo
 	pHideNumber,
 	pSpeaker,
 	pLocked,
-	pBleeding
+	pBleeding,
+	pJailRoom
 	//pSQLID,
 };
 new PlayerInfo[MAX_PLAYERS][pInfo];
@@ -2004,6 +2042,7 @@ public SavePlayer(playerid)
 				Paycheck=%d,\
 				HeadValue=%d,\
 				Jailed=%d,\
+				JailRoom=%d,\
 				JailTime=%d,\
 				Materials=%d,\
 				Drugs=%d,\
@@ -2022,6 +2061,7 @@ public SavePlayer(playerid)
 				PlayerInfo[playerid][pPayCheck],
 				PlayerInfo[playerid][pHeadValue],
 				PlayerInfo[playerid][pJailed],
+				PlayerInfo[playerid][pJailRoom],
 				PlayerInfo[playerid][pJailTime],
 				PlayerInfo[playerid][pMats],
 				PlayerInfo[playerid][pDrugs],
@@ -2093,7 +2133,8 @@ public SavePlayer(playerid)
 				PayDay=%d,\
 				PayDayHad=%d,\
 				Watch=%d,\
-				Crashed=%d,",
+				Crashed=%d,\
+				Hospital=%d,",
 				sql,
 				PlayerInfo[playerid][pPcarkey][0],
 				PlayerInfo[playerid][pPcarkey][1],
@@ -2112,7 +2153,8 @@ public SavePlayer(playerid)
 				PlayerInfo[playerid][pPayDay],
 				PlayerInfo[playerid][pPayDayHad],
 				PlayerInfo[playerid][pWatch],
-				PlayerInfo[playerid][pCrashed]);
+				PlayerInfo[playerid][pCrashed],
+				PlayerInfo[playerid][pHospital]);
 
 			for (new i = 1; i < 6; i++)
 			{
@@ -2860,13 +2902,13 @@ public DeleteDealership(id)
 	mysql_query(conn, sql);
 	return 1;
 }
-public AddCar(model, Float:x, Float:y, Float:z, Float:a, color1, color2, respawntime, owner[], owned, price)
+stock AddCar(model, Float:x, Float:y, Float:z, Float:a, color1, color2, respawntime, owner[], owned, price, type = 0)
 {
 	new sql[500];
 	format(sql, sizeof(sql), "INSERT INTO car (Owner, Owned, `Model`, Locationx, Locationy,\
-															 Locationz, Angle, ColorOne, ColorTwo, `Value`) \
-									 					VALUES ('%s', %d, %d, %f, %f, %f, %f, %d, %d, %d)",
-														owner, owned, model, x,y,z,a,color1,color2,price);
+															 Locationz, Angle, ColorOne, ColorTwo, `Value`, `Type`) \
+									 					VALUES ('%s', %d, %d, %f, %f, %f, %f, %d, %d, %d, %d)",
+														owner, owned, model, x,y,z,a,color1,color2,price, type);
 	mysql_query(conn, sql);
 	new newId = cache_insert_id();
 
@@ -2881,14 +2923,23 @@ public AddCar(model, Float:x, Float:y, Float:z, Float:a, color1, color2, respawn
 	CarInfo[vid][cColorOne] = color1;
 	CarInfo[vid][cColorTwo] = color2;
 	CarInfo[vid][cValue] = price;
-	CarInfo[vid][cID] = newId;
 	CarInfo[vid][cLock] = 0;
+	CarInfo[vid][cType] = type;
+	CarInfo[vid][cID] = newId;
 
+	//if (CarInfo[vid][cType] > 0)
+	//	CarInfo[vid][cID] = -1;
+	//else CarInfo[vid][cID] = newId;
+
+	/*if (CarInfo[vid][cType] > 0)
+	{
+
+	}*/
 	format(sql, sizeof(sql), "INSERT INTO cartrunk (VehID) VALUES (%d)", newId);
 	mysql_query(conn, sql);
 	vehTrunk[vid][1] = 0;
 	vehTrunkAmmo[vid][1] = 0;
-	vehTrunk[vid][2] = 0; 
+	vehTrunk[vid][2] = 0;
 	vehTrunkAmmo[vid][2] = 0;
 	vehTrunk[vid][3] = 0;
 	vehTrunkAmmo[vid][3] = 0;
@@ -2938,8 +2989,8 @@ public LoadCar()
 		cache_get_value_name_int(idx, "Lock", tmp); CarInfo[vid][cLock] = tmp;
 		cache_get_value_name_int(idx, "Type", tmp); CarInfo[vid][cType] = tmp;
 
-		if (CarInfo[vid][cType] > 0)
-			CarInfo[vid][cID] = -1;
+		/*if (CarInfo[vid][cType] > 0)
+			CarInfo[vid][cID] = -1;*/
 		
 		printf("CarInfo: %d Owner:%s LicensePlate %s", vid, CarInfo[vid][cOwner], CarInfo[vid][cLicense]);
 	}
@@ -3503,7 +3554,7 @@ public SearchingHit(playerid)
 			        GetPlayerName(i, giveplayer, sizeof(giveplayer));
 			        searchhit = 1;
 			        hitfound = 1;
-			        hitid = i;
+			        hitidz = i;
 			        for(new k=0; k<MAX_PLAYERS; k++)
 					{
 						if(IsPlayerConnected(k))
@@ -3947,7 +3998,7 @@ public Spectator()
 				SetSpawnInfo(i, PlayerInfo[i][pTeam], PlayerInfo[i][pModel], Unspec[i][sPx],  Unspec[i][sPy], Unspec[i][sPz]-1.0, 1.0, -1, -1, -1, -1, -1, -1);
 				gTeam[i] = PlayerInfo[i][pTeam];
 				SetPlayerToTeamColor(i);
-				MedicBill[i] = 0;
+				PlayerInfo[i][pHospital] = 0;
 				if(PlayerInfo[i][pDonateRank] > 0)
 		        {
 		            SetSpawnInfo(i, PlayerInfo[i][pTeam], PlayerInfo[i][pModel], Unspec[i][Coords][0], Unspec[i][Coords][1], Unspec[i][Coords][2], 10.0, -1, -1, -1, -1, -1, -1);
@@ -4024,11 +4075,11 @@ public IsACop(playerid)
 	{
 	    new leader = PlayerInfo[playerid][pLeader];
 	    new member = PlayerInfo[playerid][pMember];
-	    if(member==1 || member==2 || member==3)
+	    if(member==1 || member==2 || member==3 || member==17)
 		{
 		    return 1;
 		}
-		else if(leader==1 || leader==2 || leader==3)
+		else if(leader==1 || leader==2 || leader==3 || leader==17)
 		{
 		    return 1;
 		}
@@ -4057,7 +4108,7 @@ public IsAPDMember(playerid)
 public IsAnOwnableCar(vehicleid)
 {
 	//if(vehicleid >= 184 && vehicleid <= 268) { return 1; }
-	if (CarInfo[vehicleid][cID] != -1)
+	if (CarInfo[vehicleid][cType] == 0)
 		return 1;
 	return 0;
 }
@@ -4482,7 +4533,15 @@ public IsACopCar(carid)
 	}
 	return 0;
 }
-
+forward IsADoCCar(carid);
+public IsADoCCar(carid)
+{
+	if (CarInfo[carid][cType] == DOCVEH)
+	{
+		return 1;
+	}
+	return 0;
+}
 public IsAnFbiCar(carid)
 {
 	if (CarInfo[carid][cType] == FBIVEH)
@@ -4571,7 +4630,48 @@ public IsATowcar(carid)
 	}
 	return 0;
 }
-
+forward IsANewsCar(carid);
+public IsANewsCar(carid)
+{
+	if (CarInfo[carid][cType] == NEWSVEH)
+		return 1;
+	return 0;
+}
+forward IsATaxiCar(carid);
+public IsATaxiCar(carid)
+{
+	if (CarInfo[carid][cType] == TAXIVEH)
+		return 1;
+	return 0;
+}
+forward IsAHitmanCar(carid);
+public IsAHitmanCar(carid)
+{
+	if (CarInfo[carid][cType] == HITMANVEH)
+		return 1;
+	return 0;
+}
+forward IsARentCar(carid);
+public IsARentCar(carid)
+{
+	if (CarInfo[carid][cType] == RENTVEH)
+		return 1;
+	return 0;
+}
+forward IsAKartCar(carid);
+public IsAKartCar(carid)
+{
+	if (CarInfo[carid][cType] == KARTVEH)
+		return 1;
+	return 0;
+}
+forward IsASchoolCar(carid);
+public IsASchoolCar(carid)
+{
+	if (CarInfo[carid][cType] == SCHOOLVEH)
+		return 1;
+	return 0;
+}
 /*public IsAGangCar(carid)
 {
 if(carid >= 160 && carid <= 163)
@@ -4688,7 +4788,239 @@ public JoinChannelNr(playerid, number)
 	}
 	return 1;
 }
+stock ClearPlayer(playerid)
+{
+	DOCDelay[playerid] = 0;
+	DOCCheck[playerid] = 0;
 
+	LastEntrance[playerid][0] = 0;
+	LastEntrance[playerid][1] = 0;
+	LastEntrance[playerid][2] = 0;
+
+	Tazered[playerid] = 0;
+	Tazering[playerid] = 0;
+	WearTazer[playerid] = 0;
+
+	PFind[playerid] = -1;
+
+	TruckPos[playerid][0] = 0;
+	TruckPos[playerid][1] = 0;
+	TruckPos[playerid][2] = 0;
+
+	TruckTime[playerid] = 0;
+
+	SpecPlayer[playerid] = -1;
+	Spectating[playerid] = 0;
+	Spectated[playerid] = 0;
+
+	CallMedic[playerid] = 0;
+	MedicCaller[playerid] = -1;
+	Dying[playerid] = 0;
+	SetPVarInt(playerid, "CantUseAnim", 0);
+	DyingTimeOut[playerid] = 0;
+	MedicPos[playerid][0] = 0;
+	MedicPos[playerid][1] = 0;
+	MedicPos[playerid][2] = 0;
+
+	DDTime[playerid] = 0;
+	DrugDealing[playerid] = 0;
+	DrugDealer[playerid] = 0;
+	CarDD[playerid] = -1;
+	OldDD[playerid] = -1;
+	ChangeDD[playerid] = 0;
+	CoopDD[playerid] = -1;
+
+	HitTimes[playerid] = 0;
+
+	Escorted[playerid] = 0;
+	EscortedPlayer[playerid] = -1;
+	Escorting[playerid] = 0;
+
+	SetPVarInt(playerid, "OfferBy", -1);
+	SetPVarInt(playerid, "OfferG", 0);
+	SetPVarInt(playerid, "OfferA", 0);
+	SetPVarInt(playerid, "OfferM", 0);
+	SetPVarInt(playerid, "OfferP", 0);
+	SetPVarInt(playerid, "OfferType", 0);
+
+	SelectChar[playerid] = 0; HidePM[playerid] = 0; PhoneOnline[playerid] = 0;
+	SelectCharID[playerid] = 0; SelectCharPlace[playerid] = 0; ChosenSkin[playerid] = 0;
+	GettingJob[playerid] = 0; GuardOffer[playerid] = 999; GuardPrice[playerid] = 0;
+	ApprovedLawyer[playerid] = 0; CallLawyer[playerid] = 0; WantLawyer[playerid] = 0;
+	KickPlayer[playerid] = 0; CurrentMoney[playerid] = 0; UsedFind[playerid] = 0;
+	CP[playerid] = 0; Robbed[playerid] = 0; SpawnChange[playerid] = 1;
+	CarOffer[playerid] = 999; CarPrice[playerid] = 0; CarID[playerid] = 0; CarCalls[playerid] = 0;
+	RobbedTime[playerid] = 0; MoneyMessage[playerid] = 0; Condom[playerid] = 0; Rope[playerid] = 0;
+	STDPlayer[playerid] = 0; SexOffer[playerid] = 999; SexPrice[playerid] = 0;
+	RepairOffer[playerid] = 999; RepairPrice[playerid] = 0; RepairCar[playerid] = 0;
+	TalkingLive[playerid] = 255; LiveOffer[playerid] = 999; TakingLesson[playerid] = 0;
+	RefillOffer[playerid] = 999; RefillPrice[playerid] = 0; MapIconsShown[playerid] = 0;
+	DrugOffer[playerid] = 999; PlayerCuffed[playerid] = 0; PlayerCuffedTime[playerid] = 0;
+	DrugPrice[playerid] = 0;
+	RegistrationStep[playerid] = 0;
+	OnCK[playerid] = 999; GettingCK[playerid] = 999;
+	DrugGram[playerid] = 0; ConnectedToPC[playerid] = 0; OrderReady[playerid] = 0;
+	JailPrice[playerid] = 0; MedicTime[playerid] = 0; NeedMedicTime[playerid] = 0; PlayerInfo[playerid][pHospital] = 0; GotHit[playerid] = 0;
+	WantedPoints[playerid] = 0; GoChase[playerid] = 999; GetChased[playerid] = 999; PlacedNews[playerid] = 0;
+	OnDuty[playerid] = 0; WantedLevel[playerid] = 0; togtactical[playerid] = 0; togswat[playerid] = 0; TestFishes[playerid] = 0;
+	BoxWaitTime[playerid] = 0; SchoolSpawn[playerid] = 0; ChangePos2[playerid][1] = 0;
+	SafeTime[playerid] = 60; TransportDuty[playerid] = 0; PlayerTied[playerid] = 0;
+	BusCallTime[playerid] = 0; TaxiCallTime[playerid] = 0; MedicCallTime[playerid] = 0; MechanicCallTime[playerid] = 0;
+	BusrouteEast[playerid][0] = 0; BusrouteWest[playerid][0] = 0; BusShowLocation[playerid][0] = 0; BusShowLocationC[playerid] = 0;
+	FindTimePoints[playerid] = 0; FindTime[playerid] = 0; JobDuty[playerid] = 0;
+	Mobile[playerid] = 255; Music[playerid] = 0; BoxOffer[playerid] = 999; PlayerBoxing[playerid] = 0;
+	Spectate[playerid] = 255; PlayerDrunk[playerid] = 0; PlayerDrunkTime[playerid] = 0;
+	Unspec[playerid][sLocal] = 255; FishCount[playerid] = 0;
+	WritingPaper[playerid] = 0; WritingPaperNumber[playerid] = 999; WritingLine[playerid] = 0; BringingPaper[playerid] = 0; GotPaper[playerid] = 0;
+	PaperOffer[playerid] = 999; /*ConsumingMoney[playerid] = 0;*/
+	ScriptMoney[playerid] = 0; ScriptMoneyUpdated[playerid] = 0;
+	for (new c = 0; c<13; c++) ScriptWeapons[playerid][c] = 0;
+	ScriptWeaponsUpdated[playerid] = 0;
+	gLastCar[playerid] = 0; FirstSpawn[playerid] = 1;
+	gOoc[playerid] = 0; gNews[playerid] = 0; BigEar[playerid] = 0; gDice[playerid] = 0; gFam[playerid] = 0;
+	gSpeedo[playerid] = 0; gGas[playerid] = 0;
+	gPlayerLogged[playerid] = 0; gPlayerLogTries[playerid] = 0; gPlayerAccount[playerid] = 0;
+	gPlayerSpawned[playerid] = 0; PlayerKarting[playerid] = 0; PlayerInKart[playerid] = 0;
+	PlayerTazeTime[playerid] = 0; PlayerStoned[playerid] = 0;
+	StartTime[playerid] = 0; TicketOffer[playerid] = 999; TicketMoney[playerid] = 0;
+	MatsHolding[playerid] = 0; TutTime[playerid] = 0;
+	gPlayerMission[playerid] = 0; TaxiAccepted[playerid] = 999; BusAccepted[playerid] = 999;
+	PlayerInfo[playerid][pCash] = dollah; NoFuel[playerid] = 0;
+	HireCar[playerid] = 299; GangCar[playerid] = 512; PlayersChannel[playerid] = 999;
+	TransportValue[playerid] = 0; TransportMoney[playerid] = 0; TransportTime[playerid] = 0; TransportCost[playerid] = 0; TransportDriver[playerid] = 999;
+	Locator[playerid] = 0; PlayerOnMission[playerid] = 0; MissionCheckpoint[playerid] = 0;
+	WatchingTV[playerid] = 0; PlayerPaintballing[playerid] = 0; PlayerPaintballKills[playerid] = 0;
+	Fishes[playerid][pLastFish] = 0; Fishes[playerid][pFishID] = 0;
+	ProposeOffer[playerid] = 999; MarryWitness[playerid] = 999; MarryWitnessOffer[playerid] = 999; MarriageCeremoney[playerid] = 0; ProposedTo[playerid] = 999; GotProposedBy[playerid] = 999; DivorceOffer[playerid] = 999;
+	SafeGivePlayerMoney(playerid, PlayerInfo[playerid][pCash]); togtactical[playerid] = 0; togswat[playerid] = 0; togauthorizeswat = 0; togauthorizetactical = 0;
+	PizzaCallTime[playerid] = 0; bPizza[playerid] = 0; sPizza[playerid] = 0; gEngine[playerid] = 0; FarmerVar[playerid] = 0; FarmerPickup[playerid][0] = 0; SmugglerWork[playerid] = 0; SmuggledDrugs[playerid] = 0; JustDied[playerid] = 0; KnockedDown[playerid] = 0; UnidentifedCall[playerid] = 0;
+	LicenseOffer[playerid] = 999; LicensePrice[playerid] = 0; LicenseType[playerid] = 0; UsingDrugs[playerid] = 0; AfterTutorial[playerid] = 0;
+	OwnableCarOffer[playerid] = 999; OwnableCarID[playerid] = 0; OwnableCarPrice[playerid] = 0; BlindFold[playerid] = 0; PlayerIsSweeping[playerid] = 0; AdminDuty[playerid] = 0; JustReported[playerid] = 0; PlayerNeedsHelp[playerid] = 0; AdminSpec[playerid] = 0; IsSmoking[playerid] = 0; UsingSmokeAnim[playerid] = 0; ReduceTime[playerid] = 0;
+	CreatingGun[playerid] = 0; CreatingGunAmmo[playerid] = 0; CreatingGunPrice[playerid] = 0; IsPuttingMaterials[playerid] = 0; IsTakingGun[playerid] = 0;
+	InAFoodPlace[playerid] = 0;
+	PlayerInfo2[HouseEntered][playerid] = 255;
+	PlayerInfo[playerid][pLevel] = 0;
+	PlayerInfo[playerid][pAdmin] = 0;
+	PlayerInfo[playerid][pDonateRank] = 0;
+	PlayerInfo[playerid][gPupgrade] = 0;
+	PlayerInfo[playerid][pConnectTime] = 0;
+	PlayerInfo[playerid][pReg] = 0;
+	PlayerInfo[playerid][pSex] = 0;
+	PlayerInfo[playerid][pAge] = 0;
+	PlayerInfo[playerid][pOrigin] = 0;
+	PlayerInfo[playerid][pExp] = 0;
+	PlayerInfo[playerid][pAccount] = 0;
+	PlayerInfo[playerid][pCrimes] = 0;
+	PlayerInfo[playerid][pDeaths] = 0;
+	PlayerInfo[playerid][pArrested] = 0;
+	PlayerInfo[playerid][pWantedDeaths] = 0;
+	PlayerInfo[playerid][pPhoneBook] = 0;
+	PlayerInfo[playerid][pLottoNr] = 0;
+	PlayerInfo[playerid][pFishes] = 0;
+	PlayerInfo[playerid][pBiggestFish] = 0;
+	PlayerInfo[playerid][pJob] = 0;
+	PlayerInfo[playerid][pPayCheck] = 0;
+	PlayerInfo[playerid][pHeadValue] = 0;
+	PlayerInfo[playerid][pJailed] = 0;
+	PlayerInfo[playerid][pJailTime] = 0;
+	PlayerInfo[playerid][pMats] = 0;
+	PlayerInfo[playerid][pDrugs] = 0;
+	PlayerInfo[playerid][pLeader] = 0;
+	PlayerInfo[playerid][pMember] = 0;
+	PlayerInfo[playerid][pFMember] = 255;
+	PlayerInfo[playerid][pRank] = 0;
+	PlayerInfo[playerid][pChar] = 0;
+	//PlayerInfo[playerid][pContractTime] = 0;
+	PlayerInfo[playerid][pDetSkill] = 0;
+	PlayerInfo[playerid][pSexSkill] = 0;
+	PlayerInfo[playerid][pBoxSkill] = 0;
+	PlayerInfo[playerid][pLawSkill] = 0;
+	PlayerInfo[playerid][pMechSkill] = 0;
+	PlayerInfo[playerid][pJackSkill] = 0;
+	PlayerInfo[playerid][pCarSkill] = 0;
+	PlayerInfo[playerid][pNewsSkill] = 0;
+	PlayerInfo[playerid][pDrugsSkill] = 0;
+	PlayerInfo[playerid][pCookSkill] = 0;
+	PlayerInfo[playerid][pFishSkill] = 0;
+	PlayerInfo[playerid][pPlantSkill] = 0;
+	PlayerInfo[playerid][pTruckSkill] = 0;
+	PlayerInfo[playerid][pSHealth] = 0.0;
+	PlayerInfo[playerid][pHealth] = 50.0;
+	PlayerInfo[playerid][pPos_x] = 1612.3240;
+	PlayerInfo[playerid][pPos_y] = -2330.1670;
+	PlayerInfo[playerid][pPos_z] = 13.5469;
+	PlayerInfo[playerid][pInt] = 0;
+	PlayerInfo[playerid][pLocal] = 255;
+	PlayerInfo[playerid][pTeam] = 3;
+	PlayerInfo[playerid][pModel] = 7;
+	new randphone = 100000 + random(899999);//minimum 1000  max 9999 //giving one at the start
+	PlayerInfo[playerid][pPnumber] = randphone;
+	PlayerInfo[playerid][pPcarkey][0] = -1;
+	PlayerInfo[playerid][pPcarkey][1] = -1;
+	PlayerInfo[playerid][pPcarkey][2] = -1;
+	PlayerInfo[playerid][pPhousekey] = 255;
+	PlayerInfo[playerid][pGangKey] = 255;
+	PlayerInfo[playerid][pPbiskey] = 255;
+	PlayerInfo[playerid][pCarLic] = 0;
+	PlayerInfo[playerid][pFlyLic] = 0;
+	PlayerInfo[playerid][pBoatLic] = 0;
+	PlayerInfo[playerid][pFishLic] = 0;
+	PlayerInfo[playerid][pGunLic] = 0;
+	PlayerInfo[playerid][pGun][0] = 0;
+	PlayerInfo[playerid][pGun][1] = 0;
+	PlayerInfo[playerid][pGun][2] = 0;
+	PlayerInfo[playerid][pGun][3] = 0;
+	PlayerInfo[playerid][pAmmo][0] = 0;
+	PlayerInfo[playerid][pAmmo][1] = 0;
+	PlayerInfo[playerid][pAmmo][2] = 0;
+	PlayerInfo[playerid][pAmmo][3] = 0;
+	PlayerInfo[playerid][pCarTime] = 0;
+	PlayerInfo[playerid][pPayDay] = 0;
+	PlayerInfo[playerid][pPayDayHad] = 0;
+	PlayerInfo[playerid][pWatch] = 0;
+	PlayerInfo[playerid][pCrashed] = 0;
+	PlayerInfo[playerid][pWins] = 0;
+	PlayerInfo[playerid][pLoses] = 0;
+	PlayerInfo[playerid][pAlcoholPerk] = 0;
+	PlayerInfo[playerid][pDrugPerk] = 0;
+	PlayerInfo[playerid][pMiserPerk] = 0;
+	PlayerInfo[playerid][pPainPerk] = 0;
+	PlayerInfo[playerid][pTraderPerk] = 0;
+	PlayerInfo[playerid][pTut] = 0;
+	PlayerInfo[playerid][pMissionNr] = 0;
+	PlayerInfo[playerid][pWarns] = 0;
+	PlayerInfo[playerid][pFuel] = 0;
+	PlayerInfo[playerid][pVirWorld] = 0;
+	PlayerInfo[playerid][pRequestingBackup] = 0;
+	PlayerInfo[playerid][pRoadblock] = 0;
+	PlayerInfo[playerid][pFishTool] = 0;
+	for (new i = 0; i < 5; i++)
+	{
+		strmid(PlayerInfo[playerid][pNote][i], "None", 0, strlen("None"), 255);
+		PlayerInfo[playerid][pNotes][i] = 0;
+	}
+	PlayerInfo[playerid][pInvWeapon] = 0;
+	PlayerInfo[playerid][pInvAmmo] = 0;
+	PlayerInfo[playerid][pLighter] = 0;
+	PlayerInfo[playerid][pCigarettes] = 0;
+	PlayerInfo[playerid][pMask] = 0;
+	PlayerInfo[playerid][pMaskuse] = 0;
+	PlayerInfo[playerid][pHideNumber] = 0;
+	PlayerInfo[playerid][pSpeaker] = 0;
+	PlayerInfo[playerid][pLocked] = 0;
+	//PlayerInfo[playerid][pSQLID] = 0;
+	ClearCrime(playerid);
+	ClearFishes(playerid);
+	ClearCooking(playerid);
+	ClearGroceries(playerid);
+	ClearMarriage(playerid);
+	PlayerInfo2[HouseEntered][playerid] = 255;
+	for (new h = 0; h < MAX_VEHICLES; h++)
+	{
+		SetVehicleParamsForPlayer(h, playerid, 0, CarInfo[h][cLock]);
+	}
+	return 1;
+}
 public ClearCK(ck)
 {
     new string[MAX_PLAYER_NAME];
@@ -5095,334 +5427,356 @@ public elevator2(playerid)
       SetPlayerPos(playerid,1174.9100,-1361.7330,13.9876);
 	  return 1;
 }
-
+forward ClearFirstSpawn(playerid);
+public ClearFirstSpawn(playerid)
+{
+	SetPVarInt(playerid, "SpecialCase", 0);
+	return 1;
+}
 public SetPlayerSpawn(playerid)
 {
-	if(IsPlayerConnected(playerid))
+	/*new Hour, Minute, Second;
+	gettime(Hour, Minute, Second);
+	printf("--S1-- Spawn %02d:%02d:%02d", Hour, Minute, Second);*/
+
+	TextDrawHideForPlayer(playerid, TDLoading);
+	TextDrawShowForPlayer(playerid, TDPBank[playerid]);
+	TogglePlayerSpawn(playerid, false, 5);
+	SetPlayerWantedLevel(playerid, WantedLevel[playerid]);
+	SetPVarInt(playerid, "SpecialCase", 1);
+	SetTimerEx("ClearFirstSpawn", 2000, 0, "i", playerid);
+
+	new rand;
+	new house = PlayerInfo[playerid][pPhousekey];
+	if (PlayerInfo[playerid][pChar] > 0) SetPlayerSkin(playerid, PlayerInfo[playerid][pChar]);
+	else SetPlayerSkin(playerid, PlayerInfo[playerid][pModel]);
+	if (Spectating[playerid] == 1)
 	{
-		if (PlayerInfo[playerid][pChar] > 0) SetPlayerSkin(playerid, PlayerInfo[playerid][pChar]);
-		else SetPlayerSkin(playerid, PlayerInfo[playerid][pModel]);
-		 if (Spectating[playerid] == 1)
-		 {
-			 SetPlayerPos(playerid, GetPVarFloat(playerid, "SX"), GetPVarFloat(playerid, "SY"), GetPVarFloat(playerid, "SZ"));
-			 SetPlayerInterior(playerid, GetPVarInt(playerid, "SInt"));
-			 SetPlayerVirtualWorld(playerid, GetPVarInt(playerid, "SWorld"));
-			 if (Spectated[SpecPlayer[playerid]] > 0) Spectated[SpecPlayer[playerid]]--;
-			 SpecPlayer[playerid] = -1;
-			 if (PlayerInfo[playerid][pChar] > 0) { SetPlayerSkin(playerid, PlayerInfo[playerid][pChar]); }
-			 else { SetPlayerSkin(playerid, PlayerInfo[playerid][pModel]); }
-			 Spectating[playerid] = 0;
-			 return 1;
-		 }
-		 if (Dying[playerid] == 1)
-		 {
-			 ClearAnimations(playerid);
-			 if (PlayerInfo[playerid][pChar] > 0) { SetPlayerSkin(playerid, PlayerInfo[playerid][pChar]); }
-			 else { SetPlayerSkin(playerid, PlayerInfo[playerid][pModel]); }
-			 TogglePlayerControllable(playerid, 0);
-			 ApplyAnimation(playerid, "KNIFE", "KILL_Knife_Ped_Die", 4.0, 0, 1, 1, 1, 0, 1);
-			 GameTextForPlayer(playerid, "~r~Bi thuong~n~~w~Go /dichvu capcuu de goi Cuu Thuong den", 5000, 3);
-			 SetPlayerPos(playerid, GetPVarFloat(playerid, "DeathX"), GetPVarFloat(playerid, "DeathY"), GetPVarFloat(playerid, "DeathZ"));
-			 SetPlayerFacingAngle(playerid, GetPVarFloat(playerid, "DeathAngle"));
-			 SetPlayerVirtualWorld(playerid, GetPVarInt(playerid, "DeathVW"));
-			 SetPlayerInterior(playerid, GetPVarInt(playerid, "DeathInt"));
-			 return 1;
-		 }
-	    if(PlayerInfo[playerid][pTut] == 0)
-	    {
-			gOoc[playerid] = 1; gNews[playerid] = 1; gFam[playerid] = 1;
+		SetPlayerPos(playerid, SpecPos[playerid][0], SpecPos[playerid][1], SpecPos[playerid][2]);
+		SetPlayerInterior(playerid, SpecInt[playerid]);
+		SetPlayerVirtualWorld(playerid, SpecVWorld[playerid]);
+		if (Spectated[SpecPlayer[playerid]] > 0) Spectated[SpecPlayer[playerid]]--;
+		SpecPlayer[playerid] = -1;
+		Spectating[playerid] = 0;
+		return 1;
+	}
+	else if (Dying[playerid] == 1)
+	{
+		ClearAnimations(playerid);
+		TogglePlayerControllable(playerid, 0);
+		ApplyAnimation(playerid, "KNIFE", "KILL_Knife_Ped_Die", 4.0, 0, 1, 1, 1, 0, 1);
+		GameTextForPlayer(playerid, "~r~Bi thuong~n~~w~Go /dichvu capcuu de goi Cuu Thuong den", 5000, 3);
+		SetPlayerPos(playerid, GetPVarFloat(playerid, "DeathX"), GetPVarFloat(playerid, "DeathY"), GetPVarFloat(playerid, "DeathZ"));
+		SetPlayerFacingAngle(playerid, GetPVarFloat(playerid, "DeathAngle"));
+		SetPlayerVirtualWorld(playerid, GetPVarInt(playerid, "DeathVW"));
+		SetPlayerInterior(playerid, GetPVarInt(playerid, "DeathInt"));
+		return 1;
+	}
+	else if(PlayerInfo[playerid][pTut] == 0)
+	{
+		gOoc[playerid] = 1; gNews[playerid] = 1; gFam[playerid] = 1;
+		SetPlayerInterior(playerid, 3);
+		PlayerInfo[playerid][pInt] = 3;
+		SetPlayerPos(playerid, 330.6825,163.6688,1014.1875);
+		SetPlayerFacingAngle(playerid, 280);
+		TogglePlayerControllable(playerid, 0);
+		RegistrationStep[playerid] = 1;
+		SendClientMessage(playerid, COLOR_YELLOW, "Chao mung ban den voi may chu Los Angeles Roleplay. Truoc tien ban can tra loi mot vai cau hoi");
+		SendClientMessage(playerid, COLOR_LIGHTRED, "Cau hoi dau tien: Ban la 'Nam' hay 'Nu'? (Go cau tra loi).");
+		return 1;
+	}
+	/*else if(AdminSpec[playerid] == 1)
+	{
+		   return 1;
+	}*/
+	else if(PlayerPaintballing[playerid] != 0)
+	{
+		SafeResetPlayerWeapons(playerid);
+      SafeGivePlayerWeapon(playerid, 29, 999);
+		rand = random(sizeof(PaintballSpawns));
+		SetPlayerPos(playerid, PaintballSpawns[rand][0], PaintballSpawns[rand][1], PaintballSpawns[rand][2]);
+		return 1;
+	}
+	else if(PlayerInfo[playerid][pJailed] == 1)
+	{
+		//SetPlayerSkin(playerid, 50);
+		SetPlayerInterior(playerid, 6);
+		PlayerInfo[playerid][pInt] = 6;
+		SetPlayerPos(playerid,264.6288,77.5742,1001.0391+1);
+		SendClientMessage(playerid, COLOR_LIGHTRED, "Chua hoan thanh an phat, tro ve nha tu.");
+		return 1;
+	}
+	else if(PlayerInfo[playerid][pJailed] == 2)
+	{
+		SetPlayerSkin(playerid, 50);
+		SetPlayerInterior(playerid, 0);
+		PlayerInfo[playerid][pInt] = 0;
+		SetPlayerPos(playerid,268.5777,1857.9351,9.8133);
+		SetPlayerWorldBounds(playerid, 337.5694,101.5826,1940.9759,1798.7453); //285.3481,96.9720,1940.9755,1799.0811
+		return 1;
+	}
+	else if (PlayerInfo[playerid][pJailed] == 3)
+	{
+		SetPlayerSkin(playerid, 50);
+		SetPlayerInterior(playerid, 6);
+		PlayerInfo[playerid][pInt] = 6;
+		new docroom = PlayerInfo[playerid][pJailRoom];
+		SetPlayerPos(playerid, DocArrestIn[docroom][0], DocArrestIn[docroom][1], DocArrestIn[docroom][2]+1.0);
+		SendClientMessage(playerid, COLOR_LIGHTRED, "Chua hoan thanh an phat, tro ve nha tu.");
+		return 1;
+	}
+	else if (PlayerInfo[playerid][pHospital] == 1 && PlayerInfo[playerid][pJailed] == 0 && PlayerPaintballing[playerid] == 0)
+	{
+		if(FirstSpawn[playerid] == 0)
+		{
+			DyingTimeOut[playerid] = 0;
+			Dying[playerid] = 0;
+			SetPVarInt(playerid, "CantUseAnim", 0);
+			PlayerInfo[playerid][pDeaths] += 1;
+			SetPlayerHealth(playerid, 25.0);
 			SetPlayerInterior(playerid, 3);
 			PlayerInfo[playerid][pInt] = 3;
-			SetPlayerPos(playerid, 330.6825,163.6688,1014.1875);
-			SetPlayerFacingAngle(playerid, 280);
-			TogglePlayerControllable(playerid, 0);
-			RegistrationStep[playerid] = 1;
-			SendClientMessage(playerid, COLOR_YELLOW, "Chao mung ban den voi may chu Los Angeles Roleplay. Truoc tien ban can tra loi mot vai cau hoi");
-			SendClientMessage(playerid, COLOR_LIGHTRED, "Cau hoi dau tien: Ban la 'Nam' hay 'Nu'? (Go cau tra loi).");
-			return 1;
-	    }
-	    if(AdminSpec[playerid] == 1)
-		{
-		    return 1;
-		}
-		new rand;
-		new house = PlayerInfo[playerid][pPhousekey];
-		if(PlayerPaintballing[playerid] != 0)
-		{
-		   SafeResetPlayerWeapons(playerid);
-      	SafeGivePlayerWeapon(playerid, 29, 999);
-		   rand = random(sizeof(PaintballSpawns));
-			SetPlayerPos(playerid, PaintballSpawns[rand][0], PaintballSpawns[rand][1], PaintballSpawns[rand][2]);
-		    return 1;
-		}
-		if(PlayerInfo[playerid][pJailed] == 1)
-		{
-			SetPlayerSkin(playerid, 50);
-		    SetPlayerInterior(playerid, 6);
-		    PlayerInfo[playerid][pInt] = 6;
-			SetPlayerPos(playerid,264.6288,77.5742,1001.0391);
-			SendClientMessage(playerid, COLOR_LIGHTRED, "Chua hoan thanh an phat, tro ve nha tu.");
-			return 1;
-		}
-		if(PlayerInfo[playerid][pJailed] == 2)
-		{
-			SetPlayerSkin(playerid, 50);
-		    SetPlayerInterior(playerid, 0);
-		    PlayerInfo[playerid][pInt] = 0;
-			SetPlayerPos(playerid,268.5777,1857.9351,9.8133);
-			SetPlayerWorldBounds(playerid, 337.5694,101.5826,1940.9759,1798.7453); //285.3481,96.9720,1940.9755,1799.0811
-			return 1;
-		}
-		if(MedicBill[playerid] == 1 && PlayerInfo[playerid][pJailed] == 0 && PlayerPaintballing[playerid] == 0)
-		{
-		    if(FirstSpawn[playerid] != 1)
-		    {
-		    	/*new string[256];
-		    	new cut = deathcost; //PlayerInfo[playerid][pLevel]*deathcost;
-				SafeGivePlayerMoney(playerid, -cut);
-				format(string, sizeof(string), "DOC: Your Medical Bill comes to $%d, Have a nice day.", cut);
-				SendClientMessage(playerid, TEAM_CYAN_COLOR, string);
-				MedicBill[playerid] = 0;
-				MedicTime[playerid] = 0;
-				NeedMedicTime[playerid] = 0;*/
-				DyingTimeOut[playerid] = 0;
-				Dying[playerid] = 0;
-				SetPVarInt(playerid, "CantUseAnim", 0);
-				PlayerInfo[playerid][pDeaths] += 1;
-				SetPlayerHealth(playerid, 25.0);
-		    	SetPlayerInterior(playerid, 3);
-		    	PlayerInfo[playerid][pInt] = 3;
-	        	rand = random(sizeof(gMedicSpawns));
-				SetPlayerPos(playerid, gMedicSpawns[rand][0], gMedicSpawns[rand][1], gMedicSpawns[rand][2]); // Warp the player
-				SetPlayerFacingAngle(playerid, 0);
-	        	TogglePlayerControllable(playerid, 0);
-	        	GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~n~~n~~n~~n~~w~Bay gio ban can nghi ngoi...", 30000, 3);
-	        	JustDied[playerid] = 1;
-	        	MedicTime[playerid] = 1;
-	        	ApplyAnimation(playerid, "CRACK", "crckdeth2", 4.0, 1, 0, 0, 0, 0);
-	        	if(PlayerInfo[playerid][pDonateRank] > 0)
-	        	{
-	            	NeedMedicTime[playerid] = 30;
-	        	}
-	        	else
-	        	{
-	        		NeedMedicTime[playerid] = 40;
-				}
-	        	PlayerPlaySound(playerid, 1062, 0.0, 0.0, 0.0);
-		    	return 1;
-			}
-		}
-		if(JustDied[playerid] == 1)
-		{
-		    if(GetPlayerVirtualWorld(playerid) != 0 || PlayerInfo[playerid][pVirWorld] != 0)
-		    {
-		        SetPlayerVirtualWorld(playerid, 0);
-		        PlayerInfo[playerid][pVirWorld] = 0;
-		    }
-		    SetPlayerPos(playerid, 1182.5638,-1323.5256,13.5790);
-		    SetPlayerFacingAngle(playerid, 270.0);
-		    SetPlayerInterior(playerid,0);
-		    PlayerInfo[playerid][pInt] = 0;
-		    return 1;
-		}
-		if(PlayerInfo[playerid][pCrashed] == 1)
-		{
-		    if(TutTime[playerid] == 0 && PlayerInfo[playerid][pTut] == 1 && RegistrationStep[playerid] == 0 && AfterTutorial[playerid] == 0 && FirstSpawn[playerid] == 1)
-		    {
-		        SetPlayerVirtualWorld(playerid,PlayerInfo[playerid][pVirWorld]);
-		        SetPlayerInterior(playerid,PlayerInfo[playerid][pInt]);
-		    	  SetPlayerPos(playerid, PlayerInfo[playerid][pPos_x], PlayerInfo[playerid][pPos_y], PlayerInfo[playerid][pPos_z] + 1);
-		    	//SendClientMessage(playerid, COLOR_WHITE, "Crashed, returning where you been.");
-		    	//GameTextForPlayer(playerid, "~p~Crashed~n~~w~returning where you been", 5000, 1);
-		    	return 1;
-			}
-		}
-		if(house !=255)
-		{
-		    if(SpawnChange[playerid]) //If 1, then you get to your house, else spawn somewhere else
-		    {
-				
-				//SetPlayerInterior(playerid,HouseInfo[house][hInt]);
-				//SetPlayerVirtualWorld(playerid,HouseInfo[house][hWorld]);
-				//SetPlayerPos(playerid, HouseInfo[house][hExitx], HouseInfo[house][hExity], HouseInfo[house][hExitz]);
-				//PlayerInfo[playerid][pLocal] = house;
-				//PlayerInfo2[HouseEntered][playerid] = house;
-				//PlayerInfo[playerid][pInt] = HouseInfo[house][hInt];
-
-				SetPlayerToTeamColor(playerid);
-				SetPlayerPos(playerid, HouseInfo[house][hEntrancex], HouseInfo[house][hEntrancey], HouseInfo[house][hEntrancez]); // Warp the player
-				SetPlayerVirtualWorld(playerid, 0);
-				PlayerInfo[playerid][pVirWorld] = 0;
-				SetPlayerInterior(playerid, 0);
-				PlayerInfo[playerid][pInt] = 0;
-				return 1;
-			}
-		}
-		if(PlayerInfo[playerid][pLeader] == 7)//Mayor spawn
-		{
-		    SetPlayerToTeamColor(playerid);
-		    SetPlayerInterior(playerid, 3);
-		    SetPlayerPos(playerid, 356.2998,151.9914,1025.7891);
-		    PlayerInfo[playerid][pInt] = 3;
-			PlayerInfo[playerid][pLocal] = 241;
-		    return 1;
-		}
-		if (PlayerInfo[playerid][pMember] == 1 || PlayerInfo[playerid][pLeader] == 1)//Police Force spawn
-		{
-			SetPlayerToTeamColor(playerid);
-			SetPlayerInterior(playerid,6);
-		    rand = random(sizeof(gCopPlayerSpawns));
-			SetPlayerPos(playerid, gCopPlayerSpawns[rand][0], gCopPlayerSpawns[rand][1], gCopPlayerSpawns[rand][2]); // Warp the player
-			SetPlayerFacingAngle(playerid, 270.0);
-			PlayerInfo[playerid][pInt] = 6;
-			return 1;
-	    }
-	    if (PlayerInfo[playerid][pMember] == 2 || PlayerInfo[playerid][pLeader] == 2)//FBI spawn
-		{
-			SetPlayerToTeamColor(playerid);
-			SetPlayerInterior(playerid,3);
-			SetPlayerPos(playerid, 299.7097,183.1322,1007.1719);
-			SetPlayerFacingAngle(playerid, 90);
-			PlayerInfo[playerid][pInt] = 3;
-			return 1;
-	    }
-		if (PlayerInfo[playerid][pMember] == 3 || PlayerInfo[playerid][pLeader] == 3)//National Guard spawn
-		{
-		    SetPlayerToTeamColor(playerid);
-		    SetPlayerInterior(playerid, 0);
-		    SetPlayerPos(playerid, 2731.5229,-2451.3643,17.5937);
-		    PlayerInfo[playerid][pInt] = 0;
-		    return 1;
-		}
-		if (PlayerInfo[playerid][pMember] == 4 || PlayerInfo[playerid][pLeader] == 4)//Fire/Ambulance spawn
-		{
-		    SetPlayerToTeamColor(playerid);
-		    SetPlayerPos(playerid, 1180.2388,-1331.6196,1006.4028);
-			SetPlayerInterior(playerid,6);
+			rand = random(sizeof(gMedicSpawns));
+			SetPlayerPos(playerid, gMedicSpawns[rand][0], gMedicSpawns[rand][1], gMedicSpawns[rand][2]); // Warp the player
 			SetPlayerFacingAngle(playerid, 0);
-			PlayerInfo[playerid][pInt] = 6;
-		    return 1;
-		}
-		if (PlayerInfo[playerid][pMember] == 5 || PlayerInfo[playerid][pLeader] == 5)//Surenos spawn
-		{
-		    SetPlayerToTeamColor(playerid);
-		    SetPlayerInterior(playerid, 5);
-		    SetPlayerPos(playerid, 2345.6570,-1185.5266,1027.9766);
-		    PlayerInfo[playerid][pInt] = 5;
-		    return 1;
-		}
-		if (PlayerInfo[playerid][pMember] == 6 || PlayerInfo[playerid][pLeader] == 6)//La Famiglia Sinatra spawn
-		{
-		    SetPlayerToTeamColor(playerid);
-		    SetPlayerInterior(playerid, 5);
-		    SetPlayerPos(playerid, 1265.4475,-794.9257,1084.0078);
-		    PlayerInfo[playerid][pInt] = 5;
-		    return 1;
-		}
-	    if (PlayerInfo[playerid][pMember] == 8 || PlayerInfo[playerid][pLeader] == 8) //Hitman spawn
-	    {
-	        SetPlayerToTeamColor(playerid);
-			SetPlayerPos(playerid, 1102.7017,-299.0774,73.9922);
-			SetPlayerInterior(playerid,0);
-			PlayerInfo[playerid][pInt] = 0;
-	        return 1;
-	    }
-	    if (PlayerInfo[playerid][pMember] == 9 || PlayerInfo[playerid][pLeader] == 9) //News spawn
-	    {
-	        SetPlayerToTeamColor(playerid);
-	        SetPlayerInterior(playerid,3);
-			SetPlayerPos(playerid, 355.7899,204.0173,1008.3828);
-			PlayerInfo[playerid][pInt] = 3;
-			SafeGivePlayerWeapon(playerid, 43, 20);
-	        return 1;
-	    }
-	    if (PlayerInfo[playerid][pMember] == 10 || PlayerInfo[playerid][pLeader] == 10) //Taxi Cab Company spawn
-	    {
-	        SetPlayerToTeamColor(playerid);
-			SetPlayerPos(playerid, 1754.99,-1894.19,13.55);
-			SetPlayerInterior(playerid,0);
-			PlayerInfo[playerid][pInt] = 0;
-	        return 1;
-	    }
-	    /*if (PlayerInfo[playerid][pMember] == 14 || PlayerInfo[playerid][pLeader] == 14)//Yamaguchi spawn
-		{
-		    SetPlayerToTeamColor(playerid);
-		    SetPlayerInterior(playerid, 1);
-		    SetPlayerPos(playerid, -779.6406,501.2036,1371.7422);
-		    PlayerInfo[playerid][pInt] = 1;
-		    return 1;
-		}
-		*/
-		if (PlayerInfo[playerid][pMember] == 15 || PlayerInfo[playerid][pLeader] == 15)//47th Street Saints Families spawn
-		{
-		    SetPlayerToTeamColor(playerid);
-		    SetPlayerInterior(playerid, 3);
-		    SetPlayerPos(playerid, 2495.2605,-1703.7449,1018.3438);
-		    PlayerInfo[playerid][pInt] = 3;
-		    return 1;
-		}
-		if (PlayerInfo[playerid][pMember] == 16 || PlayerInfo[playerid][pLeader] == 16)//East Beach Bloods spawn
-		{
-		    SetPlayerToTeamColor(playerid);
-		    SetPlayerInterior(playerid, 2);
-		    SetPlayerPos(playerid, 455.8776,1413.6802,1084.3080);
-		    PlayerInfo[playerid][pInt] = 2;
-		    return 1;
-		}
-	    if(IsAnInstructor(playerid) || PlayerInfo[playerid][pMember] == 11 || PlayerInfo[playerid][pLeader] == 11) //Driving/Flying School spawn
-	    {
-		    SetPlayerToTeamColor(playerid);
-		    SetPlayerInterior(playerid,3);
-			SetPlayerPos(playerid, 1494.4991,1308.9163,1093.2845);
-			SetPlayerFacingAngle(playerid, 180);
-			PlayerInfo[playerid][pInt] = 3;
-	        return 1;
-	    }
-	    if ((gTeam[playerid]) == 1)
-	    {
-			SetPlayerToTeamColor(playerid);
-			rand = random(sizeof(gMedPlayerSpawns));
-			SetPlayerPos(playerid, gMedPlayerSpawns[rand][0], gMedPlayerSpawns[rand][1], gMedPlayerSpawns[rand][2]); // Warp the player
-			SetPlayerFacingAngle(playerid, 270.0);
-			SetPlayerInterior(playerid,0);
-			PlayerInfo[playerid][pInt] = 0;
-			return 1;
-		}
-		/*if(PlayerInfo[playerid][pFMember] != 255)
-		{
-		    new family = PlayerInfo[playerid][pFMember];
-		    SetPlayerToTeamColor(playerid);
-		    SetPlayerInterior(playerid, FamilyInfo[family][FamilyInterior]);
-		    SetPlayerPos(playerid, FamilyInfo[family][FamilySpawn][0],FamilyInfo[family][FamilySpawn][1],FamilyInfo[family][FamilySpawn][2]);
-		    SetPlayerFacingAngle(playerid, FamilyInfo[family][FamilySpawn][3]);
-		    return 1;
-		}*/
-	    else
-	    {
-			SetPlayerToTeamColor(playerid);
+			TogglePlayerControllable(playerid, 0);
+			GameTextForPlayer(playerid, "~n~~n~~n~~n~~n~~n~~n~~n~~n~~w~Bay gio ban can nghi ngoi...", 30000, 3);
+			JustDied[playerid] = 1;
+			MedicTime[playerid] = 1;
+			ApplyAnimation(playerid, "CRACK", "crckdeth2", 4.0, 1, 0, 0, 0, 0);
 
-			if (GetPVarInt(playerid, "FirstSpawn") == 1)
-			{
-				SetPlayerPos(playerid, 1612.3240, -2330.1670, 13.5469);
-				SetPlayerFacingAngle(playerid, 0);
-				SetPlayerInterior(playerid,0);
-				PlayerInfo[playerid][pInt] = 0;
-				SetPlayerFacingAngle(playerid, 0);
-			}
-			else
-			{
-				SetPlayerVirtualWorld(playerid, PlayerInfo[playerid][pVirWorld]);
-				SetPlayerInterior(playerid, PlayerInfo[playerid][pInt]);
-				SetPlayerPos(playerid, PlayerInfo[playerid][pPos_x], PlayerInfo[playerid][pPos_y], PlayerInfo[playerid][pPos_z] + 1);
-				SetPlayerFacingAngle(playerid, 0);
-			}
-			//SetPlayerPos(playerid, 1612.3240, -2330.1670, 13.5469);
-			//SetPlayerFacingAngle(playerid, 0);
-			//SetPlayerInterior(playerid,0);
-			//PlayerInfo[playerid][pInt] = 0;
+			if (PlayerInfo[playerid][pDonateRank] > 0) NeedMedicTime[playerid] = 30;
+			else NeedMedicTime[playerid] = 40;
+
+			PlayerPlaySound(playerid, 1062, 0.0, 0.0, 0.0);
+			return 1;
+		   /*new string[256];
+		   new cut = deathcost; //PlayerInfo[playerid][pLevel]*deathcost;
+			SafeGivePlayerMoney(playerid, -cut);
+			format(string, sizeof(string), "DOC: Your Medical Bill comes to $%d, Have a nice day.", cut);
+			SendClientMessage(playerid, TEAM_CYAN_COLOR, string);
+			MedicBill[playerid] = 0;
+			MedicTime[playerid] = 0;
+			NeedMedicTime[playerid] = 0;*/
+		}
+	}
+	else if(JustDied[playerid] == 1)
+	{
+		if(GetPlayerVirtualWorld(playerid) != 0 || PlayerInfo[playerid][pVirWorld] != 0)
+		{
+		   SetPlayerVirtualWorld(playerid, 0);
+		   PlayerInfo[playerid][pVirWorld] = 0;
+		}
+		SetPlayerPos(playerid, 1182.5638,-1323.5256,13.5790);
+		SetPlayerFacingAngle(playerid, 270.0);
+		SetPlayerInterior(playerid,0);
+		PlayerInfo[playerid][pInt] = 0;
+		return 1;
+	}
+	//printf("Crash: %d Tut: %d pTut: %d Regis %d AT %d FirstSpawn %d", PlayerInfo[playerid][pCrashed], TutTime[playerid], PlayerInfo[playerid][pTut], RegistrationStep[playerid], AfterTutorial[playerid], FirstSpawn[playerid]);
+	else if(PlayerInfo[playerid][pCrashed] == 1)
+	{
+		if(TutTime[playerid] == 0 && PlayerInfo[playerid][pTut] == 1 && RegistrationStep[playerid] == 0 && AfterTutorial[playerid] == 0 && FirstSpawn[playerid] == 0)
+		{
+			SetPlayerToTeamColor(playerid);
+		   SetPlayerVirtualWorld(playerid,PlayerInfo[playerid][pVirWorld]);
+		   SetPlayerInterior(playerid,PlayerInfo[playerid][pInt]);
+		   SetPlayerPos(playerid, PlayerInfo[playerid][pPos_x], PlayerInfo[playerid][pPos_y], PlayerInfo[playerid][pPos_z] + 1);
+		   SendClientMessage(playerid, COLOR_WHITE, "Bi crashed, tro lai vi tri cu.");
+		   GameTextForPlayer(playerid, "~p~Crashed~n~~w~tro lai vi tri cu", 5000, 1);
+			PlayerInfo[playerid][pCrashed] = 0;
 			return 1;
 		}
 	}
+	else if(house != 255)
+	{
+		if(SpawnChange[playerid]) //If 1, then you get to your house, else spawn somewhere else
+		{
+			//SetPlayerInterior(playerid,HouseInfo[house][hInt]);
+			//SetPlayerVirtualWorld(playerid,HouseInfo[house][hWorld]);
+			//SetPlayerPos(playerid, HouseInfo[house][hExitx], HouseInfo[house][hExity], HouseInfo[house][hExitz]);
+			//PlayerInfo[playerid][pLocal] = house;
+			//PlayerInfo2[HouseEntered][playerid] = house;
+			//PlayerInfo[playerid][pInt] = HouseInfo[house][hInt];
+			SetPlayerToTeamColor(playerid);
+			SetPlayerPos(playerid, HouseInfo[house][hEntrancex], HouseInfo[house][hEntrancey], HouseInfo[house][hEntrancez]); // Warp the player
+			SetPlayerVirtualWorld(playerid, 0);
+			PlayerInfo[playerid][pVirWorld] = 0;
+			SetPlayerInterior(playerid, 0);
+			PlayerInfo[playerid][pInt] = 0;
+			return 1;
+		}
+	}
+	else if(PlayerInfo[playerid][pLeader] == 7)//Mayor spawn
+	{
+		SetPlayerToTeamColor(playerid);
+		SetPlayerInterior(playerid, 3);
+		SetPlayerPos(playerid, 356.2998,151.9914,1025.7891);
+		PlayerInfo[playerid][pInt] = 3;
+		PlayerInfo[playerid][pLocal] = 241;
+		return 1;
+	}
+	else if (PlayerInfo[playerid][pMember] == 1 || PlayerInfo[playerid][pLeader] == 1)//Police Force spawn
+	{
+		SetPlayerToTeamColor(playerid);
+		SetPlayerInterior(playerid,6);
+		rand = random(sizeof(gCopPlayerSpawns));
+		SetPlayerPos(playerid, gCopPlayerSpawns[rand][0], gCopPlayerSpawns[rand][1], gCopPlayerSpawns[rand][2]); // Warp the player
+		SetPlayerFacingAngle(playerid, 270.0);
+		PlayerInfo[playerid][pInt] = 6;
+		return 1;
+	}
+	else if (PlayerInfo[playerid][pMember] == 2 || PlayerInfo[playerid][pLeader] == 2)//FBI spawn
+	{
+		SetPlayerToTeamColor(playerid);
+		SetPlayerInterior(playerid,3);
+		SetPlayerPos(playerid, 299.7097,183.1322,1007.1719);
+		SetPlayerFacingAngle(playerid, 90);
+		PlayerInfo[playerid][pInt] = 3;
+		return 1;
+	}
+	else if (PlayerInfo[playerid][pMember] == 3 || PlayerInfo[playerid][pLeader] == 3)//National Guard spawn
+	{
+		SetPlayerToTeamColor(playerid);
+		SetPlayerInterior(playerid, 0);
+		SetPlayerPos(playerid, 2731.5229,-2451.3643,17.5937);
+		PlayerInfo[playerid][pInt] = 0;
+		return 1;
+	}
+	else if (PlayerInfo[playerid][pMember] == 4 || PlayerInfo[playerid][pLeader] == 4)//Fire/Ambulance spawn
+	{
+		SetPlayerToTeamColor(playerid);
+		SetPlayerPos(playerid, 1180.2388,-1331.6196,1006.4028);
+		SetPlayerInterior(playerid,6);
+		SetPlayerFacingAngle(playerid, 0);
+		PlayerInfo[playerid][pInt] = 6;
+		return 1;
+	}
+	else if (PlayerInfo[playerid][pMember] == 5 || PlayerInfo[playerid][pLeader] == 5)//Surenos spawn
+	{
+		SetPlayerToTeamColor(playerid);
+		SetPlayerInterior(playerid, 5);
+		SetPlayerPos(playerid, 2345.6570,-1185.5266,1027.9766);
+		PlayerInfo[playerid][pInt] = 5;
+		return 1;
+	}
+	else if (PlayerInfo[playerid][pMember] == 6 || PlayerInfo[playerid][pLeader] == 6)//La Famiglia Sinatra spawn
+	{
+		SetPlayerToTeamColor(playerid);
+		SetPlayerInterior(playerid, 5);
+		SetPlayerPos(playerid, 1265.4475,-794.9257,1084.0078);
+		PlayerInfo[playerid][pInt] = 5;
+		return 1;
+	}
+	else if (PlayerInfo[playerid][pMember] == 8 || PlayerInfo[playerid][pLeader] == 8) //Hitman spawn
+	{
+	   SetPlayerToTeamColor(playerid);
+		SetPlayerPos(playerid, 1102.7017,-299.0774,73.9922);
+		SetPlayerInterior(playerid,0);
+		PlayerInfo[playerid][pInt] = 0;
+	   return 1;
+	}
+	else if (PlayerInfo[playerid][pMember] == 9 || PlayerInfo[playerid][pLeader] == 9) //News spawn
+	{
+	   SetPlayerToTeamColor(playerid);
+	   SetPlayerInterior(playerid,3);
+		SetPlayerPos(playerid, 355.7899,204.0173,1008.3828);
+		PlayerInfo[playerid][pInt] = 3;
+		SafeGivePlayerWeapon(playerid, 43, 20);
+	   return 1;
+	}
+	else if (PlayerInfo[playerid][pMember] == 10 || PlayerInfo[playerid][pLeader] == 10) //Taxi Cab Company spawn
+	{
+	   SetPlayerToTeamColor(playerid);
+		SetPlayerPos(playerid, 1754.99,-1894.19,13.55);
+		SetPlayerInterior(playerid,0);
+		PlayerInfo[playerid][pInt] = 0;
+	   return 1;
+	}
+	/*if (PlayerInfo[playerid][pMember] == 14 || PlayerInfo[playerid][pLeader] == 14)//Yamaguchi spawn
+	{
+		SetPlayerToTeamColor(playerid);
+		SetPlayerInterior(playerid, 1);
+		SetPlayerPos(playerid, -779.6406,501.2036,1371.7422);
+		PlayerInfo[playerid][pInt] = 1;
+		return 1;
+	}
+	*/
+	else if (PlayerInfo[playerid][pMember] == 15 || PlayerInfo[playerid][pLeader] == 15)//47th Street Saints Families spawn
+	{
+		SetPlayerToTeamColor(playerid);
+		SetPlayerInterior(playerid, 3);
+		SetPlayerPos(playerid, 2495.2605,-1703.7449,1018.3438);
+		PlayerInfo[playerid][pInt] = 3;
+		return 1;
+	}
+	else if (PlayerInfo[playerid][pMember] == 16 || PlayerInfo[playerid][pLeader] == 16)//East Beach Bloods spawn
+	{
+		SetPlayerToTeamColor(playerid);
+		SetPlayerInterior(playerid, 2);
+		SetPlayerPos(playerid, 455.8776,1413.6802,1084.3080);
+		PlayerInfo[playerid][pInt] = 2;
+		return 1;
+	}
+	else if (PlayerInfo[playerid][pMember] == 17 || PlayerInfo[playerid][pLeader] == 17)//East Beach Bloods spawn
+	{
+		SetPlayerToTeamColor(playerid);
+		SetPlayerInterior(playerid, 6);
+		SetPlayerPos(playerid, 2595.9663, -1477.9742, -48.9141);
+		PlayerInfo[playerid][pInt] = 6;
+		return 1;
+	}
+	else if(IsAnInstructor(playerid) || PlayerInfo[playerid][pMember] == 11 || PlayerInfo[playerid][pLeader] == 11) //Driving/Flying School spawn
+	{
+		SetPlayerToTeamColor(playerid);
+		SetPlayerInterior(playerid,3);
+		SetPlayerPos(playerid, 1494.4991,1308.9163,1093.2845);
+		SetPlayerFacingAngle(playerid, 180);
+		PlayerInfo[playerid][pInt] = 3;
+	   return 1;
+	}
+	else if ((gTeam[playerid]) == 1)
+	{
+		SetPlayerToTeamColor(playerid);
+		rand = random(sizeof(gMedPlayerSpawns));
+		SetPlayerPos(playerid, gMedPlayerSpawns[rand][0], gMedPlayerSpawns[rand][1], gMedPlayerSpawns[rand][2]); // Warp the player
+		SetPlayerFacingAngle(playerid, 270.0);
+		SetPlayerInterior(playerid,0);
+		PlayerInfo[playerid][pInt] = 0;
+		return 1;
+	}
+	else
+	{
+		SetPlayerToTeamColor(playerid);
+		if (GetPVarInt(playerid, "FirstSpawn") == 1)
+		{
+			SetPlayerPos(playerid, 1612.3240, -2330.1670, 13.5469);
+			SetPlayerFacingAngle(playerid, 0);
+			SetPlayerInterior(playerid, 0);
+			PlayerInfo[playerid][pInt] = 0;
+			SetPlayerFacingAngle(playerid, 0);
+		}
+		else
+		{
+			SetPlayerVirtualWorld(playerid, PlayerInfo[playerid][pVirWorld]);
+			SetPlayerInterior(playerid, PlayerInfo[playerid][pInt]);
+			SetPlayerPos(playerid, PlayerInfo[playerid][pPos_x], PlayerInfo[playerid][pPos_y], PlayerInfo[playerid][pPos_z] + 1);
+			SetPlayerFacingAngle(playerid, 0);
+		}
+		//SetPlayerPos(playerid, 1612.3240, -2330.1670, 13.5469);
+		//SetPlayerFacingAngle(playerid, 0);
+		//SetPlayerInterior(playerid,0);
+		//PlayerInfo[playerid][pInt] = 0;
+	}
+	/*if(PlayerInfo[playerid][pFMember] != 255)
+	{
+		new family = PlayerInfo[playerid][pFMember];
+		SetPlayerToTeamColor(playerid);
+		SetPlayerInterior(playerid, FamilyInfo[family][FamilyInterior]);
+		SetPlayerPos(playerid, FamilyInfo[family][FamilySpawn][0],FamilyInfo[family][FamilySpawn][1],FamilyInfo[family][FamilySpawn][2]);
+		SetPlayerFacingAngle(playerid, FamilyInfo[family][FamilySpawn][3]);
+		return 1;
+	}*/
 	return 1;
 }
 
@@ -5589,7 +5943,7 @@ public CarCheck()
 			}
 		}
 	}
-	for(new c = 1; c < 254; c++)
+	for(new c = 0; c < MAX_VEHICLES; c++)
 	{
 		for(new i = 0; i < MAX_PLAYERS; i++)
 		{
@@ -5688,16 +6042,11 @@ public UnLockCar(carid)
 
 public InitLockDoors(playerid)
 {
-    if(IsPlayerConnected(playerid))
+	for (new i = 0; i < MAX_VEHICLES; i++)
 	{
-		new c;
-		while (c < 254)
+		if (gCarLock[i] == 1)
 		{
-			c++;
-			if (gCarLock[c] == 1)
-			{
-				SetVehicleParamsForPlayer(c,playerid,0,1);
-			}
+			SetVehicleParamsForPlayer(i, playerid, 0, 1);
 		}
 	}
 	return 1;
@@ -5792,7 +6141,7 @@ public SetPlayerCriminal(playerid,declare,reason[])
 			if(WantedLevel[playerid] >= 1) { if(gTeam[playerid] == 3) { gTeam[playerid] = 4; } }
 			if(yesno)
 			{
-				format(wantedmes, sizeof(wantedmes), "Current Wanted Level: %d", wlevel);
+				format(wantedmes, sizeof(wantedmes), "Muc Do Truy Na: %d", wlevel);
 				SendClientMessage(playerid, COLOR_YELLOW, wantedmes);
 				for(new i = 0; i < MAX_PLAYERS; i++)
 				{
@@ -5816,8 +6165,8 @@ public SetPlayerCriminalEx(playerid,declare,reason[])
 {//example: SetPlayerCriminal(playerid,255, "Stealing A Police Vehicle");
 	if(IsPlayerConnected(playerid))
 	{
-	    PlayerInfo[playerid][pCrimes] += 1;
-	    new points = WantedPoints[playerid];
+	   PlayerInfo[playerid][pCrimes] += 1;
+	   new points = WantedPoints[playerid];
 		new turned[MAX_PLAYER_NAME];
 		new turner[MAX_PLAYER_NAME];
 		new turnmes[128];
@@ -5855,7 +6204,7 @@ public SetPlayerCriminalEx(playerid,declare,reason[])
 			if(WantedLevel[playerid] >= 1) { if(gTeam[playerid] == 3) { gTeam[playerid] = 4; } }
 			if(yesno)
 			{
-				format(wantedmes, sizeof(wantedmes), "Current Wanted Level: %d", wlevel);
+				format(wantedmes, sizeof(wantedmes), "Muc Do Truy Na: %d", wlevel);
 				SendClientMessage(playerid, COLOR_YELLOW, wantedmes);
 				for(new i = 0; i < MAX_PLAYERS; i++)
 				{
@@ -6109,7 +6458,7 @@ public OtherTimer()
 	{
 	    if(IsPlayerConnected(i))
 	    {
-	        if (GetPlayerState(i) == 1) CheckForWalkingTeleport(i); // IF THE PLAYER IS IN A TELEPORT ZONE, TELEPORT THEM
+			 if (GetPlayerState(i) == PLAYER_STATE_ONFOOT) CheckForWalkingTeleport(i); // IF THE PLAYER IS IN A TELEPORT ZONE, TELEPORT THEM
 	        new vehicleid = GetPlayerVehicleID(i);
             if(SafeTime[i] > 0)
 			{
@@ -6353,12 +6702,11 @@ public SetPlayerUnjail()
 		    if(PlayerInfo[i][pJailed] > 0)
 		    {
 				if(PlayerInfo[i][pJailTime] > 0 && WantLawyer[i] == 0)
-				{
 					PlayerInfo[i][pJailTime]--;
-				}
+
 				if(PlayerInfo[i][pJailTime] <= 0 && WantLawyer[i] == 0)
 				{
-				    PlayerInfo[i][pJailTime] = 0;
+				   PlayerInfo[i][pJailTime] = 0;
 					if(PlayerInfo[i][pJailed] == 1)
 					{
 						SetPlayerInterior(i, 6);
@@ -6367,10 +6715,16 @@ public SetPlayerUnjail()
 					}
 					else if(PlayerInfo[i][pJailed] == 2)
 					{
-					    SetPlayerWorldBounds(i,20000.0000,-20000.0000,20000.0000,-20000.0000); //Reset world to player
-					    SetPlayerInterior(i, 0);
-					    PlayerInfo[i][pInt] = 0;
-					    SetPlayerPos(i, 90.2101,1920.4854,17.9422);
+					   SetPlayerWorldBounds(i,20000.0000,-20000.0000,20000.0000,-20000.0000); //Reset world to player
+					   SetPlayerInterior(i, 0);
+					   PlayerInfo[i][pInt] = 0;
+					   SetPlayerPos(i, 90.2101,1920.4854,17.9422);
+					}
+					else if (PlayerInfo[i][pJailed] == 3)
+					{
+						SetPlayerInterior(i, 0);
+						PlayerInfo[i][pInt] = 0;
+						SetPlayerPos(i, 774.9041, -1335.3381, 13.5386);
 					}
 					PlayerInfo[i][pJailed] = 0;
 					SendClientMessage(i, COLOR_GRAD1,"Warden: Ban da duoc tra tu do.");
@@ -6452,7 +6806,7 @@ public SetPlayerUnjail()
 					format(string, sizeof(string), "Bac si: Hoa don dieu tri cua ban la $%d, Chuc mot ngay tot lanh.", cut);
 					SendClientMessage(i, TEAM_CYAN_COLOR, string);
 					TogglePlayerControllable(i, 1);
-			        MedicBill[i] = 0;
+					PlayerInfo[i][pHospital] = 0;
 			        MedicTime[i] = 0;
 			        NeedMedicTime[i] = 0;
 			        PlayerInfo[i][pDeaths] += 1;
@@ -6592,11 +6946,11 @@ public SetPlayerUnjail()
 			        TutTime[i] = 0; PlayerInfo[i][pTut] = 1;
 					gOoc[i] = 0; gNews[i] = 0; gFam[i] = 0;
 					TogglePlayerControllable(i, 1);
-					MedicBill[i] = 0;
+					PlayerInfo[i][pHospital] = 0;
 					AfterTutorial[i] = 1;
 					SetPVarInt(i, "FirstSpawn", 1);
 					SetTimerEx("UnsetAfterTutorial", 2500, false, "i", i);
-					SetTimerEx("UnsetFirstSpawn", 5000, false, "i", i);
+					//SetTimerEx("UnsetFirstSpawn", 5000, false, "i", i);
 					SetPlayerSpawn(i);
 			    }
 			}
@@ -7278,7 +7632,7 @@ public SetPlayerWeapons(playerid)
 				SafeGivePlayerWeapon(playerid, 41, 500); //spray
 				if(OnDuty[playerid] == 1 || PlayerInfo[playerid][pMember] == 2)//Cops & FBI/ATF
 				{
-				    SafeGivePlayerWeapon(playerid, 41, 500); //spray
+				   SafeGivePlayerWeapon(playerid, 41, 500); //spray
 					SafeGivePlayerWeapon(playerid, 24);
 					SafeGivePlayerWeapon(playerid, 3, 1);
 					if(PlayerInfo[playerid][pChar] == 285)//SWAT
@@ -7853,7 +8207,7 @@ public Production()
 							else if(points <= 0) { if(WantedLevel[i] != 0) { ClearCrime(i); WantedLevel[i] = 0; wlevel = 0; yesno = 1;} }
 							if(yesno)
 							{
-								format(string, sizeof(string), "Current Wanted Level: %d", wlevel);
+								format(string, sizeof(string), "Muc Do Truy Na: %d", wlevel);
 								SendClientMessage(i, COLOR_YELLOW, string);
 							}
 						}
@@ -7866,17 +8220,15 @@ public Production()
 
 public DateProp(playerid)
 {
-	new playername[MAX_PLAYER_NAME];
-	GetPlayerName(playerid, playername, sizeof(playername));
 	new curdate = getdate();
-	for(new h = 0; h < sizeof(HouseInfo); h++)
+	for(new h = 0; h < MAX_HOUSES; h++)
 	{
-		if (strcmp(playername, HouseInfo[h][hOwner], true) == 0)
+		if (strcmp(GLN(playerid), HouseInfo[h][hOwner], true) == 0)
 		{
 			HouseInfo[h][hDate] = curdate;
-			OnPropUpdate();
 		}
 	}
+	OnPropUpdate();
 	return 1;
 }
 
@@ -8106,6 +8458,43 @@ stock ini_GetValue( line[] )
 	return valRes;
 }
 
+stock UpdateCar(idx)
+{
+	new sql[500];
+	format(sql, sizeof(sql), "UPDATE car SET \
+			Owner = '%s',\
+			Owned = %d,\
+			Model = %d,\
+			Locationx = %f,\
+			Locationy = %f,\
+			Locationz = %f,\
+			Angle = %f,\
+			ColorOne = %d,\
+			ColorTwo = %d,\
+			Description = '%s',\
+			`Value` = %d,\
+			License = %d,\
+			`Lock` = %d,\
+			Type = %d \
+			WHERE ID = %d",
+			CarInfo[idx][cOwner],
+			CarInfo[idx][cOwned],
+			CarInfo[idx][cModel],
+			CarInfo[idx][cLocationx],
+			CarInfo[idx][cLocationy],
+			CarInfo[idx][cLocationz],
+			CarInfo[idx][cAngle],
+			CarInfo[idx][cColorOne],
+			CarInfo[idx][cColorTwo],
+			CarInfo[idx][cDescription],
+			CarInfo[idx][cValue],
+			CarInfo[idx][cLicense],
+			CarInfo[idx][cLock],
+			CarInfo[idx][cType],
+			CarInfo[idx][cID]);
+	mysql_query(conn, sql);
+	return 1;
+}
 public OnPropUpdate()
 {
 	//new File: file2;
@@ -8379,7 +8768,7 @@ public OnPropUpdate()
 
 	for (new idx = 0; idx < MAX_VEHICLES; idx++)
 	{
-		if (CarInfo[idx][cID] == -1 || CarInfo[idx][cOwned] == -1) continue;
+		if (IsAnOwnableCar(idx)) continue;
 		format(sql, sizeof(sql), "UPDATE car SET \
 				Owner = '%s',\
 				Owned = %d,\
@@ -8915,7 +9304,7 @@ public CustomPickups()
 				{
 					if(IsATruck(tmpcar) && PlayerToPoint(10.0, i, BizzInfo[h][bEntranceX], BizzInfo[h][bEntranceY], BizzInfo[h][bEntranceZ]))
 					{
-						if (Trucking[tmpcar] == 1)
+						if (Trucking[tmpcar] == 1 && GetPlayerState(i) == PLAYER_STATE_DRIVER)
 						{
 							if (IsBizFullProduct(h))
 								format(string, sizeof(string), "~r~Cua hang da du san pham, khong can mua them!");
@@ -8923,12 +9312,9 @@ public CustomPickups()
 								format(string, sizeof(string), "~r~Ngan sach cua hang khong du de mua san pham!");
 							else 
 							{
-								if (GetPlayerState(i) == PLAYER_STATE_DRIVER)
-								{
-									GetVehiclePos(tmpcar, TruckPos[i][0], TruckPos[i][1], TruckPos[i][2]);
-									TruckBiz[i] = h;
-									return 1;
-								}
+								GetVehiclePos(tmpcar, TruckPos[i][0], TruckPos[i][1], TruckPos[i][2]);
+								TruckBiz[i] = h;
+								return 1;
 							}
 						}
 						else
@@ -8952,21 +9338,25 @@ public CustomPickups()
 					}
 				}
 			}//custompickups end
+			if (PlayerToPoint(2.0, i, 2584.6189, -1494.7810, -45.2369))
+			{// Hospital near speedway
+				GameTextForPlayer(i, "~w~/mophonggiam /dongphonggiam", 5000, 5);
+			}
 			if (PlayerToPoint(2.0, i, 20.5627,-103.7291,1005.2578))
 			{// Hospital near speedway
 				GameTextForPlayer(i, "~w~/muaquanao de thay doi trang phuc", 5000, 5);
 			}
 			if (PlayerToPoint(2.0, i, 203.9068,-41.0728,1001.8047))
 			{// Hospital near speedway
-				GameTextForPlayer(i, "~w~/buonlau de thay doi trang phuc", 5000, 5);
+				GameTextForPlayer(i, "~w~/muaquanao de thay doi trang phuc", 5000, 5);
 			}
 			if (PlayerToPoint(2.0, i, 161.3765,-83.8416,1001.8047))
 			{// Hospital near speedway
-				GameTextForPlayer(i, "~w~/buonlau de thay doi trang phuc", 5000, 5);
+				GameTextForPlayer(i, "~w~/muaquanao de thay doi trang phuc", 5000, 5);
 			}
 			if (PlayerToPoint(2.0, i, 214.4470,-7.6471,1001.2109))
 			{// Hospital near speedway
-				GameTextForPlayer(i, "~w~/buonlau de thay doi trang phuc", 5000, 5);
+				GameTextForPlayer(i, "~w~/muaquanao de thay doi trang phuc", 5000, 5);
 			}
 			if (PlayerToPoint(2.0, i, -1111.4635, -1681.5151, 76.3739))
 			{// Hospital near speedway
@@ -9374,7 +9764,7 @@ public IdleKick()
 					new plname[64];
 					new string[128];
 					GetPlayerName(i, plname, sizeof(plname));
-					format(string, sizeof(string), "AdmCmd: %s da bi kick boi Nick_Dep_Trai, Ly do: AFK", plname);
+					format(string, sizeof(string), "AdmCmd: %s da bi kick boi Server, Ly do: AFK", plname);
 					BroadCast(COLOR_LIGHTRED, string);
 					KickEx(i);
 				}
@@ -9565,6 +9955,9 @@ public BusrouteEnd(playerid, vehicleid)
 
 public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use another function for vehicle ones - luk0r
 {
+	if (GetPlayerState(playerid) != PLAYER_STATE_ONFOOT) return 1;
+	if (GetPVarInt(playerid, "DelayWalkingTeleportTime") > 0) return 1;
+	SetPVarInt(playerid, "DelayWalkingTeleportTime", 3);
 	/*
 	 *  HOW TO USE THIS FUNCTION:
 	 *
@@ -9574,6 +9967,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 	 */
 	new Float:cx, Float:cy, Float:cz;
 	GetPlayerPos(playerid, cx, cy, cz);
+	new enter = 0;
 
 	if(PlayerToPointStripped(1, playerid,1554.9537,-1675.6584,16.1953, cx,cy,cz))
 	{//LSPD Entrance
@@ -9581,13 +9975,62 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid, 6);
 		SetPlayerPos(playerid,246.7079,66.2239,1003.6406);
 		PlayerInfo[playerid][pInt] = 6;
+		enter = 1;
 	}
-	else if(PlayerToPointStripped(1, playerid,246.5325,62.4251,1003.6406, cx,cy,cz))
+	else if (PlayerToPointStripped(1, playerid, 246.5325, 62.4251, 1003.6406, cx, cy, cz))
 	{//LSPD Exit
 		GameTextForPlayer(playerid, "~w~Los Angeles", 5000, 1);
 		SetPlayerInterior(playerid, 0);
-		SetPlayerPos(playerid,1552.3231,-1674.6780,16.1953);
+		SetPlayerPos(playerid, 1552.3231, -1674.6780, 16.1953);
 		PlayerInfo[playerid][pInt] = 0;
+	}
+	else if (PlayerToPointStripped(1, playerid, 2574.7378, -1475.0773, -48.8995, cx, cy, cz))
+	{//DoC Entrance Exit
+		GameTextForPlayer(playerid, "~w~Los Angeles", 5000, 1);
+		SetPlayerInterior(playerid, 0);
+		SetPlayerPos(playerid, 648.8242, -1360.7623, 13.5873);
+		PlayerInfo[playerid][pInt] = 0;
+		SetPVarInt(playerid, "SpecialCase", 1);
+	}
+	else if (PlayerToPointStripped(1, playerid, 648.8242, -1360.7623, 13.5873, cx, cy, cz))
+	{//DoC Entrance
+		GameTextForPlayer(playerid, "~w~Department of Corrections", 5000, 1);
+		SetPlayerPos(playerid, 2574.7378, -1475.0773, -48.8995);
+		SetPlayerInterior(playerid, 6);
+		PlayerInfo[playerid][pInt] = 6;
+		enter = 1;
+	}
+	else if (PlayerToPointStripped(1, playerid, 2594.6277, -1540.4736, -48.9141, cx, cy, cz))
+	{//DoC Back Entrance Exit
+		GameTextForPlayer(playerid, "~w~Los Angeles", 5000, 1);
+		SetPlayerPos(playerid, 732.9749, -1342.1331, 13.5236);
+		SetPlayerInterior(playerid, 0);
+		PlayerInfo[playerid][pInt] = 0;
+		SetPVarInt(playerid, "SpecialCase", 1);
+	}
+	else if (PlayerToPointStripped(1, playerid, 732.9749, -1342.1331, 13.5236, cx, cy, cz))
+	{//DoC Back Entrance
+		GameTextForPlayer(playerid, "~w~Department of Corrections", 5000, 1);
+		SetPlayerPos(playerid, 2594.6277, -1540.4736, -48.9141);
+		SetPlayerInterior(playerid, 6);
+		PlayerInfo[playerid][pInt] = 6;
+		enter = 1;
+	}
+	else if (PlayerToPointStripped(1, playerid, 2594.4473, -1540.8096, -45.2373, cx, cy, cz))
+	{//DoC Little Entrance Exit
+		GameTextForPlayer(playerid, "~w~Los Angeles", 5000, 1);
+		SetPlayerPos(playerid, 741.4783, -1358.7620, 21.6406);
+		SetPlayerInterior(playerid, 0);
+		PlayerInfo[playerid][pInt] = 0;
+		SetPVarInt(playerid, "SpecialCase", 1);
+	}
+	else if (PlayerToPointStripped(1, playerid, 741.4783, -1358.7620, 21.6406, cx, cy, cz))
+	{//DoC Little Entrance
+		GameTextForPlayer(playerid, "~w~Department of Corrections", 5000, 1);
+		SetPlayerPos(playerid, 2594.4473, -1540.8096, -45.2373);
+		SetPlayerInterior(playerid, 6);
+		PlayerInfo[playerid][pInt] = 6;
+		enter = 1;
 	}
 	else if (PlayerToPointStripped(1.0, playerid,488.2531,-82.7632,998.7578, cx,cy,cz))
 	{
@@ -9596,6 +10039,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		GameTextForPlayer(playerid, "~w~Restroom", 5000, 3);
 		SetPlayerInterior(playerid,11);
 		PlayerInfo[playerid][pInt] = 11;
+		enter = 1;
 	}
 	else if (PlayerToPointStripped(2.0, playerid,2280.0476,-1139.5413,1050.8984, cx,cy,cz))
 	{
@@ -9604,6 +10048,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		GameTextForPlayer(playerid, "~w~Ten Green Bottles", 5000, 3);
 		SetPlayerInterior(playerid,11);
 		PlayerInfo[playerid][pInt] = 11;
+		enter = 1;
 	}
 	else if(PlayerToPointStripped(1, playerid,1352.1194,-1759.2534,13.5078, cx,cy,cz))
 	{//24/7 near PD Entrance
@@ -9611,6 +10056,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid, 6);
 		SetPlayerPos(playerid,-26.6916,-55.7149,1003.5469);
 		PlayerInfo[playerid][pInt] = 6;
+		enter = 1;
 	}
 	else if(PlayerToPointStripped(1, playerid,-27.3919,-58.2529,1003.5469, cx,cy,cz))
 	{//24/7 near PD Exit
@@ -9625,6 +10071,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid, 18);
 		SetPlayerPos(playerid,-30.9467,-89.6096,1003.5469);
 		PlayerInfo[playerid][pInt] = 18;
+		enter = 1;
 	}
 	else if(PlayerToPointStripped(1, playerid,-30.9299,-92.0114,1003.5469, cx,cy,cz))
 	{//24/7 near 8-ball exit
@@ -9653,6 +10100,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid, 18);
 		SetPlayerPos(playerid,-30.9467,-89.6096,1003.5469);
 		PlayerInfo[playerid][pInt] = 18;
+		enter = 1;
 	}
 	else if(PlayerToPointStripped(1, playerid,1836.4064,-1682.4403,13.3493, cx,cy,cz))
 	{//Alhambra Entrance
@@ -9660,6 +10108,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid, 17);
 		SetPlayerPos(playerid,493.3891,-22.7212,1000.6797);
 		PlayerInfo[playerid][pInt] = 17;
+		enter = 1;
 	}
 	else if(PlayerToPointStripped(1, playerid,493.4393,-24.9169,1000.6719, cx,cy,cz))
 	{//Alhambra Exit
@@ -9674,6 +10123,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid, 11);
 		SetPlayerPos(playerid,502.0531,-70.2137,998.7578);
 		PlayerInfo[playerid][pInt] = 11;
+		enter = 1;
 	}
 	else if(PlayerToPointStripped(1, playerid,501.8708,-67.5820,998.7578, cx,cy,cz))
 	{//Some teleports are fucked up but they are working
@@ -9690,6 +10140,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid, 15);
 		SetPlayerPos(playerid,207.7336,-108.6231,1005.1328);
 		PlayerInfo[playerid][pInt] = 15;
+		enter = 1;
 	}
 	else if(PlayerToPointStripped(1, playerid,207.7662,-111.2663,1005.1328, cx,cy,cz))
 	{//Some teleports are fucked up but they are working
@@ -9705,6 +10156,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid, 5);
 		SetPlayerPos(playerid,771.9399,-2.2574,1000.7292);
 		PlayerInfo[playerid][pInt] = 5;
+		enter = 1;
 	}
 	else if(PlayerToPointStripped(1, playerid,772.3594,-5.5157,1000.7286, cx,cy,cz))
 	{//Some teleports are fucked up but they are working
@@ -9720,6 +10172,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid, 2);
 		SetPlayerPos(playerid,1205.0803,-9.9519,1000.9219);
 		PlayerInfo[playerid][pInt] = 2;
+		enter = 1;
 	}
 	else if(PlayerToPointStripped(1, playerid,1204.8462,-13.8521,1000.9219, cx,cy,cz))
 	{//Some teleports are fucked up but they are working
@@ -9812,6 +10265,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid, 4);
 		SetPlayerPos(playerid,-28.2619,-26.2015,1003.5573);
 		PlayerInfo[playerid][pInt] = 4;
+		enter = 1;
 	}
 	else if(PlayerToPointStripped(1, playerid,-28.0241,-31.7674,1003.5573, cx,cy,cz))
 	{//Some teleports are fucked up but they are working
@@ -9873,6 +10327,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		GameTextForPlayer(playerid, "~w~Welcome to the ~r~24-7",5000,3);
 		SetPlayerInterior(playerid,16);
 		PlayerInfo[playerid][pInt] = 16;
+		enter = 1;
 	}
 	else if (PlayerToPointStripped(2.0, playerid,-25.1326,-141.0670,1003.5469, cx,cy,cz))
 	{
@@ -9889,6 +10344,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		GameTextForPlayer(playerid, "~w~La Famiglia Sinatra HQ",5000,1);
 		SetPlayerInterior(playerid,5);
 		PlayerInfo[playerid][pInt] = 5;
+		enter = 1;
 	}
 	else if (PlayerToPointStripped(1, playerid,1252.5208,-789.2282,1084.0078, cx,cy,cz))
 	{
@@ -9906,6 +10362,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid,3);
 		SetPlayerFacingAngle(playerid, 0);
 		PlayerInfo[playerid][pInt] = 3;
+		enter = 1;
 	}
 	else if (PlayerToPointStripped(1, playerid,288.7287,167.0377,1007.1719, cx,cy,cz))
 	{
@@ -9933,6 +10390,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid,6);
 		SetPlayerFacingAngle(playerid, 0);
 		PlayerInfo[playerid][pInt] = 6;
+		enter = 1;
 	}
 	else if (PlayerToPointStripped(1, playerid,1172.1730,-1333.9272,1006.4965, cx,cy,cz))
 	{
@@ -9986,6 +10444,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 			SetPlayerInterior(playerid,3);
 			SetPlayerFacingAngle(playerid, 181);
 			PlayerInfo[playerid][pInt] = 3;
+			enter = 1;
 		}
 		else if(hqlock[iolock] == 0)
 		{
@@ -9994,6 +10453,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 			SetPlayerInterior(playerid,3);
 			SetPlayerFacingAngle(playerid, 181);
 			PlayerInfo[playerid][pInt] = 3;
+			enter = 1;
 		}
 		else
 		{
@@ -10019,6 +10479,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 			SetPlayerInterior(playerid,2);
 			SetPlayerFacingAngle(playerid, 1);
 			PlayerInfo[playerid][pInt] = 2;
+			enter = 1;
 		}
 		else if(hqlock[iolock] == 0)
 		{
@@ -10027,6 +10488,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 			SetPlayerInterior(playerid,2);
 			SetPlayerFacingAngle(playerid, 0);
 			PlayerInfo[playerid][pInt] = 2;
+			enter = 1;
 		}
 		else
 		{
@@ -10052,6 +10514,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 			SetPlayerInterior(playerid,5);
 			SetPlayerFacingAngle(playerid, 90);
 			PlayerInfo[playerid][pInt] = 5;
+			enter = 1;
 		}
 		else if(hqlock[surlock] == 0)
 		{
@@ -10060,6 +10523,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 			SetPlayerInterior(playerid,5);
 			SetPlayerFacingAngle(playerid, 90);
 			PlayerInfo[playerid][pInt] = 5;
+			enter = 1;
 		}
 		else
 		{
@@ -10083,6 +10547,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid,3);
 		SetPlayerFacingAngle(playerid, 0);
 		PlayerInfo[playerid][pInt] = 3;
+		enter = 1;
 	}
 	else if (PlayerToPointStripped(1, playerid,390.0630,173.5741,1008.3828, cx,cy,cz))
 	{
@@ -10101,6 +10566,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid,3);
 		SetPlayerFacingAngle(playerid, 0);
 		PlayerInfo[playerid][pInt] = 3;
+		enter = 1;
 	}
 	else if (PlayerToPointStripped(1, playerid,366.3892,190.9860,1008.3828, cx,cy,cz))
 	{
@@ -10119,6 +10585,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid,3);
 		SetPlayerFacingAngle(playerid, 0);
 		PlayerInfo[playerid][pInt] = 3;
+		enter = 1;
 	}
 	else if (PlayerToPointStripped(1, playerid,371.4523,180.2195,1014.1875, cx,cy,cz))
 	{
@@ -10170,6 +10637,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		SetPlayerInterior(playerid,3);
 		SetPlayerFacingAngle(playerid, 0);
 		PlayerInfo[playerid][pInt] = 3;
+		enter = 1;
 	}
 	else if (PlayerToPointStripped(1, playerid,1494.2778,1303.7288,1093.2891, cx,cy,cz))
 	{
@@ -10188,6 +10656,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 	    SetPlayerInterior(playerid,6);
 	    SetPlayerFacingAngle(playerid, 270);
 		PlayerInfo[playerid][pInt] = 6;
+		enter = 1;
 	}
 	else if (PlayerToPointStripped(1, playerid,1557.7257,-1675.2711,28.3955, cx,cy,cz))
 	{
@@ -10197,6 +10666,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 	    SetPlayerInterior(playerid,6);
 	    SetPlayerFacingAngle(playerid, 270);
 		PlayerInfo[playerid][pInt] = 6;
+		enter = 1;
 	}
 	else if (PlayerToPointStripped(1.5, playerid,1570.3828,-1333.8882,16.4844, cx,cy,cz))
 	{
@@ -10214,9 +10684,20 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 	    SetPlayerInterior(playerid,0);
 		PlayerInfo[playerid][pInt] = 0;
 	}
+
+	if (enter == 1)
+		UpdateLastEntrance(playerid, cx, cy, cz);
+	else if(GetPlayerInterior(playerid) == 0)
+		UpdateLastEntrance(playerid, 0, 0, 0);
+
 	return 1;
 }
-
+stock UpdateLastEntrance(playerid, Float:x, Float:y, Float:z)
+{
+	LastEntrance[playerid][0] = x;
+	LastEntrance[playerid][1] = y;
+	LastEntrance[playerid][2] = z;
+}
 public CreateFoodMenus() // by Luk0r (Donut part by Ellis)
 {
 	// Burger Shot
@@ -10353,7 +10834,7 @@ public CreateGuideMenus()
 	Guide = CreateMenu("Huong dan", 1, 50.0, 180.0, 200.0, 200.0);
 	AddMenuItem(Guide, 0, "Luat RP");
 	AddMenuItem(Guide, 0, "Tim viec lam");
-	AddMenuItem(Guide, 0, "Dia diem")
+	AddMenuItem(Guide, 0, "Dia diem");
 	AddMenuItem(Guide, 0, "- Thoat -");
 
 	Place = CreateMenu("Dia diem", 1, 50.0, 180.0, 200.0, 200.0);
@@ -10808,16 +11289,20 @@ stock IsContainChar(const string[], cchar)
 	return 1;
 }*/
 
-public UnsetFirstSpawn(playerid)
-{
-	FirstSpawn[playerid] = 0;
-}
+//public UnsetFirstSpawn(playerid)
+//{
+//	FirstSpawn[playerid] = 0;
+//}
 
 public ClearKnock(playerid)
 {
-	TogglePlayerControllable(playerid, 1);
-	ClearAnimations(playerid);
+	if (PlayerCuffed[playerid] == 0 && Escorted[playerid] == 0)
+	{
+		TogglePlayerControllable(playerid, 1);
+		ClearAnimations(playerid);
+	}
 	KnockedDown[playerid] = 0;
+	return 1;
 }
 
 public DrugEffectGone(playerid)
@@ -10932,14 +11417,14 @@ public AfterSpray4(playerid)
 	return 1;
 }
 
-public UnsetCrash(playerid)
-{
-	if(IsPlayerConnected(playerid))
-	{
-	    PlayerInfo[playerid][pCrashed] = 0;
-	}
-	return 1;
-}
+//public UnsetCrash(playerid)
+//{
+//	if(IsPlayerConnected(playerid))
+//	{
+//	    PlayerInfo[playerid][pCrashed] = 0;
+//	}
+//	return 1;
+//}
 
 public backtoclothes(playerid)
 {
@@ -11127,6 +11612,6 @@ public SendAdminMessage(color, string[])
 #include <ProjectInc\geek>
 #include <ProjectInc\anims>
 #include <ProjectInc\reward>
-
 #include <ProjectInc\ontimer>
+#include <ProjectInc\map>
 

@@ -6,7 +6,8 @@ public TazerKeyStateChange(playerid, newkeys, oldkeys)
 		ApplyAnimation(playerid, "KNIFE", "knife_3", 4.1, 0, 1, 1, 0, 0, 1);
 		for (new i = 0; i<MAX_PLAYERS; i++)
 		{
-			if (PlayerInfo[i][pMember] == 1 || PlayerInfo[i][pLeader] == 1) continue;
+			if (PlayerInfo[i][pMember] == 1 || PlayerInfo[i][pLeader] == 1 
+				|| PlayerInfo[i][pMember] == 17 || PlayerInfo[i][pLeader] == 17) continue;
 			if (IsPlayerNearPlayer(playerid, i, 2) && i != playerid && Tazered[i] == 0 && !IsPlayerInAnyVehicle(i))
 			{
 				Tazered[i] = 15;
@@ -117,6 +118,7 @@ stock RespawnCar(vid)
 	CarInfo[newvid][cRegistration] = CarInfo[vid][cRegistration];
 	CarInfo[newvid][cOwned] = CarInfo[vid][cOwned];
 	CarInfo[newvid][cLock] = CarInfo[vid][cLock];
+	CarInfo[newvid][cType] = CarInfo[vid][cType];
 	DestroyCar(vid);
 	return 1;
 }
@@ -143,11 +145,12 @@ stock DestroyCar(vid)
 	CarInfo[vid][cColorTwo] = 0;
 	format(CarInfo[vid][cOwner], 128, "");
 	format(CarInfo[vid][cDescription], 128, "");
-	CarInfo[vid][cValue] = CarInfo[vid][cValue];
-	CarInfo[vid][cLicense] = CarInfo[vid][cLicense];
-	CarInfo[vid][cRegistration] = CarInfo[vid][cRegistration];
-	CarInfo[vid][cOwned] = CarInfo[vid][cOwned];
-	CarInfo[vid][cLock] = CarInfo[vid][cLock];
+	CarInfo[vid][cValue] = 0;
+	CarInfo[vid][cLicense] = 0;
+	CarInfo[vid][cRegistration] = 0;
+	CarInfo[vid][cOwned] = 0;
+	CarInfo[vid][cLock] = 0;
+	CarInfo[vid][cType] = 0;
 	DestroyVehicle(vid);
 	return 1;
 }
@@ -209,8 +212,9 @@ CMD:veh(playerid, params[])
 				 new str[128];
 				 format(str, sizeof(str), "Xe He Thong\nID Veh: %d", i);
 				 aVehLabel[i] = Create3DTextLabel(str, COLOR_YELLOW, 0, 0, 0, 30, 0, 0);
-
 				 Attach3DTextLabelToVehicle(aVehLabel[i], aVeh[i], 0, 0, 0);
+				 aColor[i][0] = col[0];
+				 aColor[i][1] = col[1];
 				 return 1;
 			 }
 		 }
@@ -273,13 +277,9 @@ CMD:spec(playerid, params[])
 			if (pspec == INVALID_PLAYER_ID) return SCM(playerid, COLOR_GREY, "Nguoi choi nay khong ton tai.");
 			if (Spectating[playerid] == 0)
 			{
-				new Float:Pos[3];
-				GetPlayerPos(playerid, Pos[0], Pos[1], Pos[2]);
-				SetPVarFloat(playerid, "SX", Pos[0]);
-				SetPVarFloat(playerid, "SY", Pos[1]);
-				SetPVarFloat(playerid, "SZ", Pos[2]);
-				SetPVarInt(playerid, "SInt", GetPlayerInterior(playerid));
-				SetPVarInt(playerid, "SWorld", GetPlayerVirtualWorld(playerid));
+				GetPlayerPos(playerid, SpecPos[playerid][0], SpecPos[playerid][1], SpecPos[playerid][2]);
+				SpecInt[playerid] = GetPlayerInterior(playerid);
+				SpecVWorld[playerid] = GetPlayerVirtualWorld(playerid);
 			}
 			TogglePlayerSpectating(playerid, 1);
 			PlayerSpectatePlayer(playerid, pspec, 0);
@@ -518,6 +518,7 @@ CMD:dichvu(playerid, params[])
 			BroadCast(COLOR_LIGHTRED, str);
 			Dying[phs] = 0;
 			DyingTimeOut[phs] = 0;
+			PlayerInfo[phs][pHospital] = 0;
 			SetPlayerHealth(phs, 100);
 			TogglePlayerControllable(phs, 1);
 			ClearAnimations(phs);
@@ -534,12 +535,49 @@ CMD:dichvu(playerid, params[])
 		if (MedicCaller[playerid] != -1) return SCM(playerid, COLOR_GREY, "Ban da nhan mot dot cap cuu, xin hay giai quyet.");
 		format(str, sizeof(str), "** [Tong Dai]: %s da nhan cuoc goi cap cuu cua %s (%d)", GN(playerid), GN(pncc), pncc);
 		SendRadioMessage(4, TEAM_RADIO_COLOR, str);
-		SCM(pncc, COLOR_YELLOW, "** [Tong Dai]: Benh vien dang dua xe toi vi tri cua ban, xin hay co chiu dung.");
-		GetPlayerPos(pncc, MedicPos[pncc][0], MedicPos[pncc][1], MedicPos[pncc][2]);
-		SetPlayerCheckpoint(playerid, MedicPos[pncc][0], MedicPos[pncc][1], MedicPos[pncc][2], 4);
+		SCM(pncc, COLOR_YELLOW, "** [Tong Dai]: Benh vien dang cu nhan vien toi vi tri cua ban, xin hay co chiu dung.");
 		MedicCaller[playerid] = pncc;
+		new inter = GetPlayerInterior(pncc);
+		if (inter == 0)
+		{
+			GetPlayerPos(pncc, MedicPos[pncc][0], MedicPos[pncc][1], MedicPos[pncc][2]);
+			SetCheckpoint(playerid, MedicPos[pncc][0], MedicPos[pncc][1], MedicPos[pncc][2], 4);
+		}
+		else
+		{
+			if (LastEntrance[pncc][0] == 0)
+			{
+				SCM(playerid, COLOR_GREY, "Khong the lay duoc vi tri cua nguoi choi.");
+				SCM(playerid, COLOR_YELLOW, "Hay /pm nguoi choi kia de tim vi tri.");
+			}
+			else
+			{
+				SCM(playerid, COLOR_GREY, "Nguoi choi kia hien tai dang trong mot noi that.");
+				SCM(playerid, COLOR_GREY, "Hay vao do de tim nan nhan.");
+				MedicPos[pncc][0] = LastEntrance[pncc][0];
+				MedicPos[pncc][1] = LastEntrance[pncc][1];
+				MedicPos[pncc][2] = LastEntrance[pncc][2];
+				SetCheckpoint(playerid, MedicPos[pncc][0], MedicPos[pncc][1], MedicPos[pncc][2], 4);
+			}
+		}
 		return 1;
  }
+CMD:pint(playerid, params[])
+{
+	new str[128];
+	format(str, sizeof(str), "Interior: %d", GetPlayerInterior(playerid));
+	SCM(playerid, COLOR_WHITE, str);
+	format(str, sizeof(str), "VWorld: %d", GetPlayerVirtualWorld(playerid));
+	SCM(playerid, COLOR_WHITE, str);
+	format(str, sizeof(str), "Last Entrance X: %f | Y: %f | Z: %f", LastEntrance[playerid][0],
+		LastEntrance[playerid][1], LastEntrance[playerid][2]);
+	SCM(playerid, COLOR_WHITE, str);
+	new Float:pos[3];
+	GetPlayerPos(playerid, pos[0], pos[1], pos[2]);
+	format(str, sizeof(str), "Now Position X: %f | Y: %f | Z: %f", pos[0], pos[1], pos[2]);
+	SCM(playerid, COLOR_WHITE, str);
+	return 1;
+}
 CMD:trithuong(playerid, params[])
 {
 	if (PlayerInfo[playerid][pBleeding] != 1) return SCM(playerid, COLOR_GREY, "Ban khong can tri thuong.");
@@ -575,7 +613,7 @@ CMD:dieutri(playerid, params[])
 	TogglePlayerControllable(patient, 0);
 	return 1;
 }
- CMD:pdfind(playerid, params[])
+CMD:pdfind(playerid, params[])
  {
 		if (!IsACop(playerid)) return SCM(playerid, COLOR_GREY, "Ban khong phai nhan vien canh sat.");
 		new pfind;
@@ -619,7 +657,7 @@ stock IsTextLetter(cchar)
 stock GetRandomBiz()
 {
 	new rand = random(sizeof(BizzInfo));
-	while (BizzInfo[rand][bID] == -1 && IsBizFullProduct(rand) && !IsBizCanBuyProduct(rand))
+	while (BizzInfo[rand][bID] == -1 || IsBizFullProduct(rand) || !IsBizCanBuyProduct(rand))
 	{
 		rand = random(sizeof(BizzInfo));
 	}
@@ -635,7 +673,7 @@ stock LoadTruck(playerid)
 	SafeGivePlayerMoney(playerid, -10000);
 	new vid = GetPlayerVehicleID(playerid);
 	Trucking[vid] = 1;
-	SCM(playerid, COLOR_YELLOW, "Dung lenh /timcuahang de tim cua hang de giao hang.");
+	SCM(playerid, COLOR_YELLOW, "Dung lenh /timgiaohang de tim cua hang de giao hang.");
 	SCM(playerid, COLOR_LIGHTGREEN, "Giao hang bang cach dung yen truoc cua hang trong 5 giay.");
 	//SetCheckpoint(playerid, BizzInfo[bizid][bEntranceX], BizzInfo[bizid][bEntranceY], BizzInfo[bizid][bEntranceZ], 5);
 	return 1;
@@ -759,7 +797,7 @@ stock ClearSaving(playerid)
 
 stock GetPatientAmbulance(vid)
 {
-	foreach(Player, playerid)
+	foreach(new playerid : Player)
 	{
 		if (IsPlayerInVehicle(playerid, vid))
 		{
@@ -801,7 +839,7 @@ stock IsOnSavePosAmbulance(playerid)
 stock countFaction(idfac)
 {
 	new count = 0;
-	foreach(Player, playerid)
+	foreach(new playerid : Player)
 	{
 		if ((PlayerInfo[playerid][pMember] == idfac || PlayerInfo[playerid][pLeader] == idfac) && (OnDuty[playerid] == 1 || JobDuty[playerid] == 1))
 			count++;
@@ -816,7 +854,7 @@ public ChangeDrugDealer(playerid, rand)
 	SCM(playerid, COLOR_YELLOW, "Dia diem giao dich da duoc doi, hay toi cham do moi de giao dich.");
 	SetCheckpoint(playerid, BuonLauGiveCP[rand][0], BuonLauGiveCP[rand][1], BuonLauGiveCP[rand][2], 5);
 
-	foreach(Player, ddid)
+	foreach(new ddid : Player)
 	{
 		if (CoopDD[ddid] == playerid)
 		{
@@ -829,7 +867,7 @@ public ChangeDrugDealer(playerid, rand)
 
 stock GetDriverVehicle(vid)
 {
-	foreach(Player, playerid)
+	foreach(new playerid : Player)
 	{
 		if (IsPlayerInVehicle(playerid, vid) && GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
 			return playerid;
@@ -840,7 +878,7 @@ stock GetDriverVehicle(vid)
 stock CheckDrugDealerInVehicle(vid, ddcase)
 {
 	new count = 0;
-	foreach(Player, playerid)
+	foreach(new playerid : Player)
 	{
 		if (DrugDealing[playerid] == ddcase && IsPlayerInVehicle(playerid, vid))
 			count++;
@@ -881,5 +919,123 @@ forward KickTime(playerid);
 public KickTime(playerid)
 {
 	Kick(playerid);
+	return 1;
+}
+
+stock GetClosestDoCPlayer(playerid)
+{
+	foreach(new i : Player)
+	{
+		if ((PlayerInfo[i][pMember] == 17 || PlayerInfo[i][pLeader] == 17) &&
+			IsPlayerNearPlayer(playerid, i, 5) && i != playerid)
+			return i;
+	}
+	return -1;
+}
+stock GetClosestCell(playerid)
+{
+	for (new i = 0; i < 23; i++)
+	{
+		if (IsPlayerNearArrestOut(playerid, i))
+			return i;
+	}
+	return -1;
+}
+
+stock IsPlayerNearArrestOut(playerid, id)
+{
+	if (IsPlayerInRangeOfPoint(playerid, 2, DocArrestOut[id][0], DocArrestOut[id][1], DocArrestOut[id][2]))
+		return 1;
+	return 0;
+}
+
+stock CreateGate(model, Float:startx, Float:starty, Float:startz, Float:endx, Float:endy, Float:endz, Float:srotatex, Float:srotatey, Float:srotatez, Float:erotatex, Float:erotatey, Float:erotatez, type = GATE, autotime = 0, Float:time = 5.0, Float:objecthealth = -1.0, Float:range = 3.0)
+{
+	new idgate = -1;
+	for (new i = 0; i < MAX_GATES; i++)
+	{
+		if (GateInfo[i][gObject] == INVALID_OBJECT_ID)
+			idgate = i;
+	}
+	if (idgate == -1) return 1;
+
+	new objid = CreateDynamicObject(model, startx, starty, startz, srotatex, srotatey, srotatez);
+	GateInfo[idgate][gModel] = model;
+	GateInfo[idgate][gObject] = objid;
+	GateInfo[idgate][StartX] = startx;
+	GateInfo[idgate][StartY] = starty;
+	GateInfo[idgate][StartZ] = startz;
+	GateInfo[idgate][EndX] = endx;
+	GateInfo[idgate][EndY] = endy;
+	GateInfo[idgate][EndZ] = endz;
+	GateInfo[idgate][SRotateX] = srotatex;
+	GateInfo[idgate][SRotateY] = srotatey;
+	GateInfo[idgate][SRotateZ] = srotatez;
+	GateInfo[idgate][ERotateX] = erotatex;
+	GateInfo[idgate][ERotateY] = erotatey;
+	GateInfo[idgate][ERotateZ] = erotatez;
+	GateInfo[idgate][gHealth] = objecthealth;
+	GateInfo[idgate][gType] = type;
+	GateInfo[idgate][gTime] = time;
+	GateInfo[idgate][gAutoTime] = autotime;
+	GateInfo[idgate][gRange] = range;
+	return 1;
+}
+
+stock GetClosestGate(playerid)
+{
+	for (new i = 0; i < MAX_GATES; i++)
+	{
+		if (GateInfo[i][gObject] != -1 && GateInfo[i][gType] == GATE &&
+			IsPlayerInRangeOfPoint(playerid, GateInfo[i][gRange], GateInfo[i][StartX], GateInfo[i][StartY], GateInfo[i][StartZ]))
+			return i;
+	}
+	return -1;
+}
+
+stock GetClosestDoor(playerid)
+{
+	for (new i = 0; i < MAX_GATES; i++)
+	{
+		if (GateInfo[i][gObject] != -1 && (GateInfo[i][gType] == DOOR || GateInfo[i][gType] == DOCCELL) &&
+			IsPlayerInRangeOfPoint(playerid, GateInfo[i][gRange], GateInfo[i][StartX], GateInfo[i][StartY], GateInfo[i][StartZ]))
+			return i;
+	}
+	return -1;
+}
+
+stock MoveGate(gateid, type = -1)
+{
+	// 1 OPEN 2 CLOSED
+	if (type == -1)
+	{
+		if (GateInfo[gateid][gMoved] == 0)
+		{
+			MoveDynamicObject(GateInfo[gateid][gObject], GateInfo[gateid][EndX], GateInfo[gateid][EndY], GateInfo[gateid][EndZ], GateInfo[gateid][gTime], GateInfo[gateid][ERotateX], GateInfo[gateid][ERotateY], GateInfo[gateid][ERotateZ]);
+			if (GateInfo[gateid][gAutoTime] > 0)
+				GateWaitTime[gateid] = GateInfo[gateid][gAutoTime];
+			GateInfo[gateid][gMoved] = 1;
+		}
+		else
+		{
+			MoveDynamicObject(GateInfo[gateid][gObject], GateInfo[gateid][StartX], GateInfo[gateid][StartY], GateInfo[gateid][StartZ], GateInfo[gateid][gTime], GateInfo[gateid][SRotateX], GateInfo[gateid][SRotateY], GateInfo[gateid][SRotateZ]);
+			GateInfo[gateid][gMoved] = 0;
+		}
+	}
+	else
+	{
+		if (type == 1)
+		{
+			MoveDynamicObject(GateInfo[gateid][gObject], GateInfo[gateid][EndX], GateInfo[gateid][EndY], GateInfo[gateid][EndZ], GateInfo[gateid][gTime], GateInfo[gateid][ERotateX], GateInfo[gateid][ERotateY], GateInfo[gateid][ERotateZ]);
+			if (GateInfo[gateid][gAutoTime] > 0)
+				GateWaitTime[gateid] = GateInfo[gateid][gAutoTime];
+			GateInfo[gateid][gMoved] = 1;
+		}
+		else if (type == 2)
+		{
+			MoveDynamicObject(GateInfo[gateid][gObject], GateInfo[gateid][StartX], GateInfo[gateid][StartY], GateInfo[gateid][StartZ], GateInfo[gateid][gTime], GateInfo[gateid][SRotateX], GateInfo[gateid][SRotateY], GateInfo[gateid][SRotateZ]);
+			GateInfo[gateid][gMoved] = 0;
+		}
+	}
 	return 1;
 }
