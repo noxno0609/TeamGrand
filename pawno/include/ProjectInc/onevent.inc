@@ -209,6 +209,7 @@ public OnGameModeInit()
 	CreateDynamicObject(2781, 2403.98790000, -1229.84410000, 23.82880000, 90.00000000, 0.00000000, 90.00000000); //
 	CreateDynamicObject(2781, 1172.48880000, -1328.96830000, 15.40480000, 90.00000000, 0.00000000, 180.00000000); //
 
+	DMVMapping();
 	// CreatedCars check
 	for (new i = 0; i < sizeof(CreatedCars); i++)
 	{
