@@ -9351,7 +9351,7 @@ public CustomPickups()
 					}
 				}
 			}//custompickups end
-			if (PlayerToPoint(2.0, i, -1102.0814,-1636.1648,76.3672))
+			if (PlayerToPoint(2.0, i, 2063.0376,-1914.9541,13.5469))
 			{// Hospital near speedway
 				new str[255];
 				format(str, sizeof(str), "~w~/thibanglai de bat dau bai thi~n~Le phi: ~r~$%d", DMVFEE);

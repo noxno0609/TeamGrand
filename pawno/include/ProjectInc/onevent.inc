@@ -768,7 +768,7 @@ public OnPlayerDisconnect(playerid, reason)
 		UnLockCar(HireCar[playerid]);
 		if (reason != 0)
 		{
-			SetVehicleToRespawn2(HireCar[playerid]);
+			SetVehicleToRespawn(HireCar[playerid]);
 		}
 	}
 	if (GangCar[playerid] != 512)
@@ -1738,7 +1738,7 @@ public OnPlayerEnterCheckpoint(playerid)
 		TruckPos[playerid][0] = 0;
 		TruckPos[playerid][1] = 0;
 		TruckPos[playerid][2] = 0;
-		SetVehicleToRespawn2(truckid);
+		SetVehicleToRespawn(truckid);
 		OnPropUpdate();
 	}
 	if(AntiCheckpoint[playerid] == 1)
@@ -1974,7 +1974,7 @@ public OnPlayerEnterCheckpoint(playerid)
 			GameTextForPlayer(playerid, "~y~Sold the car", 2500, 1);
 			CP[playerid] = 0;
 			DisableCheckpoint(playerid);
-			SetVehicleToRespawn2(GetPlayerVehicleID(playerid));
+			SetVehicleToRespawn(GetPlayerVehicleID(playerid));
 		}
 		else
 		{
@@ -3605,9 +3605,9 @@ public OnPlayerSelectedMenuRow(playerid, row)
 		{
 		case 0:
 		{
-					SendClientMessage(playerid, COLOR_GREEN, "Noi cap bang lai duoc danh dau do tren ban do.");
+					SendClientMessage(playerid, COLOR_GREEN, "Noi thi bang lai duoc danh dau do tren ban do.");
 					SendClientMessage(playerid, COLOR_WHITE, "TIP: Su dung /thibanlai Khi o trong noi cap bang lai");
-					SetPlayerCheckpoint(playerid, 20.5627,-103.7291,1005.2578, 5.0);
+					SetPlayerCheckpoint(playerid, 2063.0376,-1914.9541,13.5469, 5.0);
 					TogglePlayerControllable(playerid, 1);
 		}
 		case 1:
@@ -3889,7 +3889,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 		stop DriverLicenseLoop[playerid];
 		DisablePlayerRaceCheckpoint(playerid);
 		DisablePlayerCheckpoint(playerid);
-		DestroyVehicle2(DriverLicenseCar[playerid]);
+		SetVehicleToRespawn(DriverLicenseCar[playerid]);
 		DriverLicenseCar[playerid] = INVALID_VEHICLE_ID;
 		SendClientMessage(playerid, COLOR_GRAD1, "Bai sat hach lai xe cua ban da bi huy");
 		SafeGivePlayerMoney(playerid, DMVFEE/2);
@@ -4257,21 +4257,24 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 		}
 		if (IsASchoolCar(newcar))
 		{
-			if (TakingLesson[playerid] == 1) {}
-			else if (!IsAnInstructor(playerid))
-			{
-				SendClientMessage(playerid, COLOR_GREY, "  Ban khong co chia khoa phuong tien nay !");
-				RemovePlayerFromVehicle(playerid);
+			if(GetPVarInt(playerid, "DriverLicenseTest") == 1) {
+				SetPVarInt(playerid,"DriverLicenseTest", 0);
+				DriverLicenseCar[playerid] = newcar;
+				for(new i=0; i < MAX_PLAYERS; i++) {
+					if(i == playerid) continue;
+					SetVehicleParamsForPlayer(DriverLicenseCar[playerid],i,0,1);
+				}
+
+				SetPlayerRaceCheckpoint(playerid, 0, DriverLicensePos[0][0], DriverLicensePos[0][1], DriverLicensePos[0][2], DriverLicensePos[1][0], DriverLicensePos[1][1], DriverLicensePos[2][2], 5);
+
+				SendClientMessage(playerid, COLOR_WHITE, "Bat dau bai thi sat hach lai xe.");
+				SendClientMessage(playerid, COLOR_WHITE, "Chu y: Khong duoc roi khoi xe khi bai thi dang dien ra.");
 			}
-		}
-		if (IsASchoolCar(newcar))
-		{
-			if (TakingLesson[playerid] == 1) {}
-			else if (!IsAnInstructor(playerid))
-			{
-				SendClientMessage(playerid, COLOR_GREY, "  Ban khong co chia khoa may bay truc thang !");
+			else {
 				RemovePlayerFromVehicle(playerid);
+				SendClientMessage(playerid, COLOR_GREY, "Ban khong co chia khoa phuong tien nay.");
 			}
+			
 		}
 		/*if (newcar == 166)
 		{
@@ -4886,6 +4889,8 @@ public OnPlayerLogin(playerid)
 			}
 		}
 	}
+
+	DriverLicenseCar[playerid] = INVALID_VEHICLE_ID;
 	return 1;
 }
 public OnPlayerEnterFood(playerid, foodid)
@@ -5293,7 +5298,7 @@ public OnPlayerText(playerid, text[])
 		{
 			new idx;
 			tmp = strtok(text, idx);
-			if ((strcmp("bac", tmp, true, strlen(tmp)) == 0) && (strlen(tmp) == strlen("bac")))
+			if ((strcmp("usa", tmp, true, strlen(tmp)) == 0) && (strlen(tmp) == strlen("bac")))
 			{
 				PlayerInfo[playerid][pOrigin] = 1;
 				SendClientMessage(playerid, COLOR_YELLOW2, "Ban da khai bao minh den tu Mien Bac.");
@@ -6510,6 +6515,7 @@ public OnVehicleDamageStatusUpdate(vehicleid, playerid)
 		CheckHackRepairCar(vehicleid);
 	else if (CarRepairCheat[vehicleid][3] != 0 && carrcheat[3] != 0)
 		GetVehicleDamageStatus(vehicleid, CarRepairCheat[vehicleid][0], CarRepairCheat[vehicleid][1], CarRepairCheat[vehicleid][2], CarRepairCheat[vehicleid][3]);
+
 	return 1;
 }
 public OnVehicleRespray(playerid, vehicleid, color1, color2)
@@ -6848,7 +6854,7 @@ CMD:respawnthiscar(playerid, params[])
 			new string[256];
 			format(string, 256, "AdmWarning: %s has just respawned vehicle id %d.", GN(playerid), GetPlayerVehicleID(playerid));
 			ABroadCast(COLOR_YELLOW, string, 1);
-			SetVehicleToRespawn2(GetPlayerVehicleID(playerid));
+			SetVehicleToRespawn(GetPlayerVehicleID(playerid));
 			RemovePlayerFromVehicle(playerid);
 			SendClientMessage(playerid, COLOR_GREY, "   Vehicle Respawned !");
 		}
@@ -6872,7 +6878,7 @@ CMD:respawnallcars(playerid, params[])
 		}
 		for (new car = 1; car <= 268; car++)
 		{
-			if (!unwanted[car]) SetVehicleToRespawn2(car);
+			if (!unwanted[car]) SetVehicleToRespawn(car);
 		}
 		format(string, sizeof(string), "SERVER: Tat ca cac xe khong su dung duoc respawn boi %s", GN(playerid));
 		BroadCast(COLOR_WHITE, string);
@@ -6896,7 +6902,7 @@ CMD:respawnrentcars(playerid, params[])
 		}
 		for (new v = 135; v <= 154; v++)
 		{
-			if (!unwanted[v]) SetVehicleToRespawn2(v);
+			if (!unwanted[v]) SetVehicleToRespawn(v);
 		}
 		format(string, sizeof(string), "SERVER: All unused rent cars respawned by %s.", GN(playerid));
 		BroadCast(COLOR_WHITE, string);
@@ -6920,7 +6926,7 @@ CMD:respawnrentbikes(playerid, params[])
 		}
 		for (new v = 112; v <= 130; v++)
 		{
-			if (!unwanted[v]) SetVehicleToRespawn2(v);
+			if (!unwanted[v]) SetVehicleToRespawn(v);
 		}
 		format(string, sizeof(string), "SERVER: All unused rent bikes respawned by %s.", GN(playerid));
 		BroadCast(COLOR_WHITE, string);
@@ -15962,7 +15968,7 @@ CMD:unrentcar(playerid, params[])
 			{
 				RemovePlayerFromVehicle(playerid);
 			}
-			SetVehicleToRespawn2(HireCar[playerid]);
+			SetVehicleToRespawn(HireCar[playerid]);
 			gCarLock[HireCar[playerid]] = 0;
 			UnLockCar(HireCar[playerid]);
 			HireCar[playerid] = 299;
@@ -15982,7 +15988,7 @@ CMD:unrentbike(playerid, params[])
 			{
 				RemovePlayerFromVehicle(playerid);
 			}
-			SetVehicleToRespawn2(HireCar[playerid]);
+			SetVehicleToRespawn(HireCar[playerid]);
 			gCarLock[HireCar[playerid]] = 0;
 			UnLockCar(HireCar[playerid]);
 			HireCar[playerid] = 299;
@@ -21062,7 +21068,7 @@ CMD:healcar(playerid, params[])
 	{
 	if(i != 0)
 	{
-	DestroyVehicle2(i);
+	DestroyVehicle(i);
 	}
 	}
 	SendClientMessage(playerid, COLOR_GREY, "   Created Vehicles destroyed !");
@@ -21280,17 +21286,13 @@ CMD:learn(playerid, params[])
 			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /learn [playerid/PartOfName]");
 			return 1;
 		}
-		if (!strcmp(GLN(giveplayerid), "Ben_X", false))
-		{
-			SCM(playerid, -1, "Doi` /learn anh, mo di cu :))");
-			return 1;
-		}
 		if (PlayerInfo[playerid][pAdmin] >= 3)
 		{
 			if (IsPlayerConnected(giveplayerid))
 			{
 				if (giveplayerid != INVALID_PLAYER_ID)
 				{
+
 					new year, month, day;
 					getdate(year, month, day);
 					format(string, sizeof(string), "AdmCMD: %s was learned by %s (%d-%d-%d)", GN(playerid), GN(giveplayerid), day, month, year);
@@ -32898,7 +32900,7 @@ CMD:exit(playerid, params[])
 	else if(IsAHarvest(carid))
 	{
 		if (carid != 0)
-			SetVehicleToRespawn2(carid);
+			SetVehicleToRespawn(carid);
 		if (FarmerPickup[playerid][0] >= 1 && FarmerPickup[playerid][0] <= 22)
 			FarmerPickup[playerid][0]--;
 
@@ -32910,7 +32912,7 @@ CMD:exit(playerid, params[])
 	else if(IsADrugHarvest(carid))
 	{
 		if (carid != 0)
-			SetVehicleToRespawn2(carid);
+			SetVehicleToRespawn(carid);
 		
 		if (DrugFarmerPickup[playerid][0] >= 1 && DrugFarmerPickup[playerid][0] <= 37)
 			DrugFarmerPickup[playerid][0]--;
@@ -32923,7 +32925,7 @@ CMD:exit(playerid, params[])
 	else if(IsASmuggleCar(carid))
 	{
 		if (carid != 0)
-			SetVehicleToRespawn2(carid);
+			SetVehicleToRespawn(carid);
 		
 		TogglePlayerControllable(playerid, 1);
 		RemovePlayerFromVehicle(playerid);
