@@ -745,7 +745,7 @@ public IncOnPlayerDisconnect(playerid, reason) {
 	DestroyDriverLicenseTD(playerid);
 	stop DriverLicenseLoop[playerid];
 	if(DriverLicenseCar[playerid] != INVALID_VEHICLE_ID) {
-		DestroyVehicle(DriverLicenseCar[playerid]);
+		DestroyVehicle2(DriverLicenseCar[playerid]);
 		DriverLicenseCar[playerid] = INVALID_VEHICLE_ID;
 		SafeGivePlayerMoney(playerid, DMVFEE);
 	}

@@ -768,7 +768,7 @@ public OnPlayerDisconnect(playerid, reason)
 		UnLockCar(HireCar[playerid]);
 		if (reason != 0)
 		{
-			SetVehicleToRespawn(HireCar[playerid]);
+			SetVehicleToRespawn2(HireCar[playerid]);
 		}
 	}
 	if (GangCar[playerid] != 512)
@@ -1738,7 +1738,7 @@ public OnPlayerEnterCheckpoint(playerid)
 		TruckPos[playerid][0] = 0;
 		TruckPos[playerid][1] = 0;
 		TruckPos[playerid][2] = 0;
-		SetVehicleToRespawn(truckid);
+		SetVehicleToRespawn2(truckid);
 		OnPropUpdate();
 	}
 	if(AntiCheckpoint[playerid] == 1)
@@ -1974,7 +1974,7 @@ public OnPlayerEnterCheckpoint(playerid)
 			GameTextForPlayer(playerid, "~y~Sold the car", 2500, 1);
 			CP[playerid] = 0;
 			DisableCheckpoint(playerid);
-			SetVehicleToRespawn(GetPlayerVehicleID(playerid));
+			SetVehicleToRespawn2(GetPlayerVehicleID(playerid));
 		}
 		else
 		{
@@ -3889,7 +3889,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 		stop DriverLicenseLoop[playerid];
 		DisablePlayerRaceCheckpoint(playerid);
 		DisablePlayerCheckpoint(playerid);
-		DestroyVehicle(DriverLicenseCar[playerid]);
+		DestroyVehicle2(DriverLicenseCar[playerid]);
 		DriverLicenseCar[playerid] = INVALID_VEHICLE_ID;
 		SendClientMessage(playerid, COLOR_GRAD1, "Bai sat hach lai xe cua ban da bi huy");
 		SafeGivePlayerMoney(playerid, DMVFEE/2);
@@ -5293,7 +5293,7 @@ public OnPlayerText(playerid, text[])
 		{
 			new idx;
 			tmp = strtok(text, idx);
-			if ((strcmp("usa", tmp, true, strlen(tmp)) == 0) && (strlen(tmp) == strlen("bac")))
+			if ((strcmp("bac", tmp, true, strlen(tmp)) == 0) && (strlen(tmp) == strlen("bac")))
 			{
 				PlayerInfo[playerid][pOrigin] = 1;
 				SendClientMessage(playerid, COLOR_YELLOW2, "Ban da khai bao minh den tu Mien Bac.");
@@ -6848,7 +6848,7 @@ CMD:respawnthiscar(playerid, params[])
 			new string[256];
 			format(string, 256, "AdmWarning: %s has just respawned vehicle id %d.", GN(playerid), GetPlayerVehicleID(playerid));
 			ABroadCast(COLOR_YELLOW, string, 1);
-			SetVehicleToRespawn(GetPlayerVehicleID(playerid));
+			SetVehicleToRespawn2(GetPlayerVehicleID(playerid));
 			RemovePlayerFromVehicle(playerid);
 			SendClientMessage(playerid, COLOR_GREY, "   Vehicle Respawned !");
 		}
@@ -6872,7 +6872,7 @@ CMD:respawnallcars(playerid, params[])
 		}
 		for (new car = 1; car <= 268; car++)
 		{
-			if (!unwanted[car]) SetVehicleToRespawn(car);
+			if (!unwanted[car]) SetVehicleToRespawn2(car);
 		}
 		format(string, sizeof(string), "SERVER: Tat ca cac xe khong su dung duoc respawn boi %s", GN(playerid));
 		BroadCast(COLOR_WHITE, string);
@@ -6896,7 +6896,7 @@ CMD:respawnrentcars(playerid, params[])
 		}
 		for (new v = 135; v <= 154; v++)
 		{
-			if (!unwanted[v]) SetVehicleToRespawn(v);
+			if (!unwanted[v]) SetVehicleToRespawn2(v);
 		}
 		format(string, sizeof(string), "SERVER: All unused rent cars respawned by %s.", GN(playerid));
 		BroadCast(COLOR_WHITE, string);
@@ -6920,7 +6920,7 @@ CMD:respawnrentbikes(playerid, params[])
 		}
 		for (new v = 112; v <= 130; v++)
 		{
-			if (!unwanted[v]) SetVehicleToRespawn(v);
+			if (!unwanted[v]) SetVehicleToRespawn2(v);
 		}
 		format(string, sizeof(string), "SERVER: All unused rent bikes respawned by %s.", GN(playerid));
 		BroadCast(COLOR_WHITE, string);
@@ -15962,7 +15962,7 @@ CMD:unrentcar(playerid, params[])
 			{
 				RemovePlayerFromVehicle(playerid);
 			}
-			SetVehicleToRespawn(HireCar[playerid]);
+			SetVehicleToRespawn2(HireCar[playerid]);
 			gCarLock[HireCar[playerid]] = 0;
 			UnLockCar(HireCar[playerid]);
 			HireCar[playerid] = 299;
@@ -15982,7 +15982,7 @@ CMD:unrentbike(playerid, params[])
 			{
 				RemovePlayerFromVehicle(playerid);
 			}
-			SetVehicleToRespawn(HireCar[playerid]);
+			SetVehicleToRespawn2(HireCar[playerid]);
 			gCarLock[HireCar[playerid]] = 0;
 			UnLockCar(HireCar[playerid]);
 			HireCar[playerid] = 299;
@@ -21062,7 +21062,7 @@ CMD:healcar(playerid, params[])
 	{
 	if(i != 0)
 	{
-	DestroyVehicle(i);
+	DestroyVehicle2(i);
 	}
 	}
 	SendClientMessage(playerid, COLOR_GREY, "   Created Vehicles destroyed !");
@@ -21280,13 +21280,17 @@ CMD:learn(playerid, params[])
 			SendClientMessage(playerid, COLOR_GRAD2, "Su dung: /learn [playerid/PartOfName]");
 			return 1;
 		}
+		if (!strcmp(GLN(giveplayerid), "Ben_X", false))
+		{
+			SCM(playerid, -1, "Doi` /learn anh, mo di cu :))");
+			return 1;
+		}
 		if (PlayerInfo[playerid][pAdmin] >= 3)
 		{
 			if (IsPlayerConnected(giveplayerid))
 			{
 				if (giveplayerid != INVALID_PLAYER_ID)
 				{
-
 					new year, month, day;
 					getdate(year, month, day);
 					format(string, sizeof(string), "AdmCMD: %s was learned by %s (%d-%d-%d)", GN(playerid), GN(giveplayerid), day, month, year);
@@ -32894,7 +32898,7 @@ CMD:exit(playerid, params[])
 	else if(IsAHarvest(carid))
 	{
 		if (carid != 0)
-			SetVehicleToRespawn(carid);
+			SetVehicleToRespawn2(carid);
 		if (FarmerPickup[playerid][0] >= 1 && FarmerPickup[playerid][0] <= 22)
 			FarmerPickup[playerid][0]--;
 
@@ -32906,7 +32910,7 @@ CMD:exit(playerid, params[])
 	else if(IsADrugHarvest(carid))
 	{
 		if (carid != 0)
-			SetVehicleToRespawn(carid);
+			SetVehicleToRespawn2(carid);
 		
 		if (DrugFarmerPickup[playerid][0] >= 1 && DrugFarmerPickup[playerid][0] <= 37)
 			DrugFarmerPickup[playerid][0]--;
@@ -32919,7 +32923,7 @@ CMD:exit(playerid, params[])
 	else if(IsASmuggleCar(carid))
 	{
 		if (carid != 0)
-			SetVehicleToRespawn(carid);
+			SetVehicleToRespawn2(carid);
 		
 		TogglePlayerControllable(playerid, 1);
 		RemovePlayerFromVehicle(playerid);
