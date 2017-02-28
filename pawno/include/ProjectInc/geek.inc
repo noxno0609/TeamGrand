@@ -673,6 +673,8 @@ CMD:thibanglai(playerid, params[]){
 	format(str, sizeof(str), "Ban can co it nhat $%d dong le phi thi bang lai", DMVFEE);
 	if(GetPlayerMoney(playerid) < DMVFEE) return SendClientMessage(playerid, COLOR_GRAD1, str);
 	if(DriverLicenseCar[playerid] != INVALID_VEHICLE_ID) return SendClientMessage(playerid, COLOR_GRAD1, "Vui long tap trung vao bai thi hien tai cua ban");
+
+	SafeGivePlayerMoney(playerid, -DMVFEE);
 	DisablePlayerRaceCheckpoint(playerid);
 	DriverLicenseCar[playerid]  = CreateVehicle(411, 2065.6316,-1904.2428,13.2740,180.3586, 155, 1, 1);
 	for(new i=0; i < MAX_PLAYERS; i++) {
