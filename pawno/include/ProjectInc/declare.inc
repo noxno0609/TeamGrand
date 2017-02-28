@@ -295,3 +295,20 @@ stock CreateServerPlayerTextDraw(playerid)
 	TextDrawSetProportional(TDPBank[playerid], 1);
 	TextDrawSetShadow(TDPBank[playerid], 0);
 }
+
+new DriverLicenseCar[MAX_PLAYERS];
+new Float:DriverLicenseTime[MAX_PLAYERS];
+new Timer:DriverLicenseLoop[MAX_PLAYERS];
+new PlayerText:DriverLicenseTD[MAX_PLAYERS][5];
+new Float:DriverLicensePos[10][3] = {
+	{2054.9548,-1932.3621,13.3908}, //Start
+	{1961.6324,-1932.2354,13.3828},
+	{1961.6705,-2166.4866,13.3828},
+	{1964.2754,-2205.9233,13.5469}, //LS's Airport junp
+	{1879.9777,-2469.4734,13.6028}, //Start Driver License
+	{1856.8535,-2409.0413,13.6028},
+	{1849.5590,-2452.4497,13.6028},
+	{1829.0403,-2413.6301,13.6106},
+	{1834.8435,-2456.9551,13.6106}, // Finish Driver License Test
+	{2056.3091,-1904.6545,13.2496} // Get Driver License
+};

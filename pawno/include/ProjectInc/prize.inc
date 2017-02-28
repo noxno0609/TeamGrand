@@ -1,1 +1,2 @@
 #define SKINPRICE 5000
+#define DMVFEE 30000

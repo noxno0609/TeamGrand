@@ -43,6 +43,7 @@ new MySQL:conn;
 #define DIALOG_LOGIN 2
 #define DIALOG_FINDTRUCK 3
 #define DIALOG_SELECTTRUCK 4
+#define DIALOG_DRIVERLICENSE_RULE 5
 
 #if defined MAX_PLAYERS 
 #undef MAX_PLAYERS 
@@ -9338,24 +9339,30 @@ public CustomPickups()
 					}
 				}
 			}//custompickups end
+			if (PlayerToPoint(2.0, i, -1102.0814,-1636.1648,76.3672))
+			{// Hospital near speedway
+				new str[255];
+				format(str, sizeof(str), "~w~/thibanglai de bat dau bai thi~n~Le phi: ~r~$%d", DMVFEE);
+				GameTextForPlayer(i, str, 5000, 5);
+			}
 			if (PlayerToPoint(2.0, i, 2584.6189, -1494.7810, -45.2369))
 			{// Hospital near speedway
 				GameTextForPlayer(i, "~w~/mophonggiam /dongphonggiam", 5000, 5);
 			}
 			if (PlayerToPoint(2.0, i, 20.5627,-103.7291,1005.2578))
-			{// Hospital near speedway
+			{// Binco pickup
 				GameTextForPlayer(i, "~w~/muaquanao de thay doi trang phuc", 5000, 5);
 			}
 			if (PlayerToPoint(2.0, i, 203.9068,-41.0728,1001.8047))
-			{// Hospital near speedway
+			{// Binco pickup
 				GameTextForPlayer(i, "~w~/muaquanao de thay doi trang phuc", 5000, 5);
 			}
 			if (PlayerToPoint(2.0, i, 161.3765,-83.8416,1001.8047))
-			{// Hospital near speedway
+			{// Binco pickup
 				GameTextForPlayer(i, "~w~/muaquanao de thay doi trang phuc", 5000, 5);
 			}
 			if (PlayerToPoint(2.0, i, 214.4470,-7.6471,1001.2109))
-			{// Hospital near speedway
+			{// Binco pickup
 				GameTextForPlayer(i, "~w~/muaquanao de thay doi trang phuc", 5000, 5);
 			}
 			if (PlayerToPoint(2.0, i, -1111.4635, -1681.5151, 76.3739))
