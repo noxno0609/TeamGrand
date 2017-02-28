@@ -4886,6 +4886,8 @@ public OnPlayerLogin(playerid)
 			}
 		}
 	}
+
+	DriverLicenseCar[playerid] = INVALID_VEHICLE_ID;
 	return 1;
 }
 public OnPlayerEnterFood(playerid, foodid)
