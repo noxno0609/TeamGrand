@@ -737,7 +737,7 @@ public IncOnPlayerDisconnect(playerid, reason) {
 	DestroyDriverLicenseTD(playerid);
 	stop DriverLicenseLoop[playerid];
 	if(DriverLicenseCar[playerid] != INVALID_VEHICLE_ID) {
-		SetVehicleToRespawn(DriverLicenseCar[playerid]);
+		SetVehicleToRespawn2(DriverLicenseCar[playerid]);
 		DriverLicenseCar[playerid] = INVALID_VEHICLE_ID;
 		SafeGivePlayerMoney(playerid, DMVFEE);
 		for(new i=0; i < MAX_PLAYERS; i++) {
@@ -753,9 +753,12 @@ public DMVOnPlayerEnterRaceCP(playerid) {
 		if (DriverLicenseCar[playerid] != INVALID_VEHICLE_ID && IsPlayerInRangeOfPoint(playerid, 5, DriverLicensePos[i][0], DriverLicensePos[i][1], DriverLicensePos[i][2])) {
 			new raceType = 0;
 			if(i == 4) {
-				SetVehicleHealth(DriverLicenseCar[playerid], 1000);
+				SetVehicleVirtualWorld(DriverLicenseCar[playerid], playerid);
+				SetPlayerVirtualWorld(playerid, playerid);
+				PutPlayerInVehicle(playerid, DriverLicenseCar[playerid], 0);
+				FixVehicle(DriverLicenseCar[playerid]);
 				new str[500];
-				str = "Khong duoc dung xe\nHealth phai tren 900";
+				str = "Khong duoc dung xe\nHealth phai tren 980\nHoan thanh bai thi duoi 30s";
 				ShowPlayerDialog(playerid, DIALOG_DRIVERLICENSE_RULE, DIALOG_STYLE_MSGBOX, "Quy tac bai sat hach", str, "Bat dau", "");
 				ShowDriverLicenseTD(playerid);
 				DriverLicenseTime[playerid] = 0.0;
@@ -763,6 +766,7 @@ public DMVOnPlayerEnterRaceCP(playerid) {
 			if(i == 7) raceType = 1;
 			DisablePlayerRaceCheckpoint(playerid);
 			SetPlayerRaceCheckpoint(playerid, raceType, DriverLicensePos[i+1][0], DriverLicensePos[i+1][1], DriverLicensePos[i+1][2], DriverLicensePos[i+2][0], DriverLicensePos[i+2][1], DriverLicensePos[i+2][2], 5);
+			PlayerPlaySound(playerid, 1058, 0.0, 0.0, 0.0);
 		}
 
 	}
@@ -770,15 +774,27 @@ public DMVOnPlayerEnterRaceCP(playerid) {
 		stop DriverLicenseLoop[playerid];
 		new Float:health;
 		GetVehicleHealth(DriverLicenseCar[playerid], health);
-		if(health > 900) {
+		DisablePlayerRaceCheckpoint(playerid);
+		PlayerPlaySound(playerid, 1058, 0.0, 0.0, 0.0);
+		SetVehicleVirtualWorld(DriverLicenseCar[playerid], 0);
+		SetPlayerVirtualWorld(playerid, 0);
+		if(health >= 980) {	
+			PutPlayerInVehicle(playerid, DriverLicenseCar[playerid], 0);
 			GameTextForPlayer(playerid, "~w~Chuc mung ban hoan thanh bai sat hach lai xe~n~Tro lai DMV de nhan bang lai xe", 5000, 3);
 			SetPVarInt(playerid,"DMVSuccess", 1);
+			SetPlayerCheckpoint(playerid, DriverLicensePos[9][0], DriverLicensePos[9][1], DriverLicensePos[9][2], 5);
 		}
-		else {
-			GameTextForPlayer(playerid, "~w~Cam on ban da hoan thanh bai sat hach lai xe~n~Tro lai DMV de nhan ket qua", 5000, 3);
+		else if(health < 980 || DriverLicenseTime[playerid] > 30 ) {
+			SendClientMessage(playerid, COLOR_GRAD1, "Rat tiec nhung ban da rot trong bai thi sat hach lai xe");
 			SetPVarInt(playerid,"DMVSuccess", 0);
+			DisablePlayerRaceCheckpoint(playerid);
+			DisablePlayerCheckpoint(playerid);
+			SetVehicleToRespawn2(DriverLicenseCar[playerid]);
+			DriverLicenseCar[playerid] = INVALID_VEHICLE_ID;
+			SetPlayerPos(playerid, 2054.8250,-1919.2405,13.5469);
 		}
-		CreateDynamicCP(DriverLicensePos[9][0], DriverLicensePos[9][1], DriverLicensePos[9][2], 5);
+		
+		
 	}
 }
 
@@ -789,11 +805,8 @@ public DMVOnPlayerEnterCP(playerid) {
 			PlayerInfo[playerid][pCarLic] = 1;
 			GameTextForPlayer(playerid, "~w~Chuc mung ban da nhan duoc bang lai xe", 5000, 3);
 		}
-		else {
-			SendClientMessage(playerid, COLOR_GRAD1, "Rat tiec nhung ban da rot trong bai thi sat hach bang lai xe");
-		}
 		RemovePlayerFromVehicle(playerid);
-		SetVehicleToRespawn(DriverLicenseCar[playerid]);
+		SetVehicleToRespawn2(DriverLicenseCar[playerid]);
 		DriverLicenseCar[playerid] = INVALID_VEHICLE_ID;
 	}
 }
@@ -835,7 +848,7 @@ public InitDriverLicenseTD(playerid) {
 	PlayerTextDrawSetProportional(playerid, DriverLicenseTD[playerid][0], 1);
 	PlayerTextDrawSetShadow(playerid, DriverLicenseTD[playerid][0], 0);
 
-	DriverLicenseTD[playerid][1] = CreatePlayerTextDraw(playerid, 500.000000, 350.000000, "Health");
+	DriverLicenseTD[playerid][1] = CreatePlayerTextDraw(playerid, 500.000000, 350.000000, "Mau");
 	PlayerTextDrawLetterSize(playerid, DriverLicenseTD[playerid][1], 0.400000, 1.600000);
 	PlayerTextDrawAlignment(playerid, DriverLicenseTD[playerid][1], 1);
 	PlayerTextDrawColor(playerid, DriverLicenseTD[playerid][1], -1378294017);
@@ -846,7 +859,7 @@ public InitDriverLicenseTD(playerid) {
 	PlayerTextDrawSetProportional(playerid, DriverLicenseTD[playerid][1], 1);
 	PlayerTextDrawSetShadow(playerid, DriverLicenseTD[playerid][1], 0);
 
-	DriverLicenseTD[playerid][2] = CreatePlayerTextDraw(playerid, 500.000000, 375.000000, "Time");
+	DriverLicenseTD[playerid][2] = CreatePlayerTextDraw(playerid, 500.000000, 375.000000, "Thoi gian");
 	PlayerTextDrawLetterSize(playerid, DriverLicenseTD[playerid][2], 0.400000, 1.600000);
 	PlayerTextDrawAlignment(playerid, DriverLicenseTD[playerid][2], 1);
 	PlayerTextDrawColor(playerid, DriverLicenseTD[playerid][2], -1378294017);
@@ -857,7 +870,7 @@ public InitDriverLicenseTD(playerid) {
 	PlayerTextDrawSetProportional(playerid, DriverLicenseTD[playerid][2], 1);
 	PlayerTextDrawSetShadow(playerid, DriverLicenseTD[playerid][2], 0);
 
-	DriverLicenseTD[playerid][3] = CreatePlayerTextDraw(playerid, 550.000000, 350.000000, "1000");
+	DriverLicenseTD[playerid][3] = CreatePlayerTextDraw(playerid, 560.000000, 350.000000, "1000");
 	PlayerTextDrawLetterSize(playerid, DriverLicenseTD[playerid][3], 0.400000, 1.600000);
 	PlayerTextDrawAlignment(playerid, DriverLicenseTD[playerid][3], 1);
 	PlayerTextDrawColor(playerid, DriverLicenseTD[playerid][3], -2139062017);
@@ -868,7 +881,7 @@ public InitDriverLicenseTD(playerid) {
 	PlayerTextDrawSetProportional(playerid, DriverLicenseTD[playerid][3], 1);
 	PlayerTextDrawSetShadow(playerid, DriverLicenseTD[playerid][3], 0);
 
-	DriverLicenseTD[playerid][4] = CreatePlayerTextDraw(playerid, 550.000000, 375.000000, "0.0");
+	DriverLicenseTD[playerid][4] = CreatePlayerTextDraw(playerid, 560.000000, 375.000000, "0.0");
 	PlayerTextDrawLetterSize(playerid, DriverLicenseTD[playerid][4], 0.400000, 1.600000);
 	PlayerTextDrawAlignment(playerid, DriverLicenseTD[playerid][4], 1);
 	PlayerTextDrawColor(playerid, DriverLicenseTD[playerid][4], -2139062017);

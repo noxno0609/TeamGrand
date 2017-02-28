@@ -3889,7 +3889,9 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 		stop DriverLicenseLoop[playerid];
 		DisablePlayerRaceCheckpoint(playerid);
 		DisablePlayerCheckpoint(playerid);
-		SetVehicleToRespawn(DriverLicenseCar[playerid]);
+		SetVehicleVirtualWorld(DriverLicenseCar[playerid], 0);
+		SetPlayerVirtualWorld(playerid, 0);
+		SetVehicleToRespawn2(DriverLicenseCar[playerid]);
 		DriverLicenseCar[playerid] = INVALID_VEHICLE_ID;
 		SendClientMessage(playerid, COLOR_GRAD1, "Bai sat hach lai xe cua ban da bi huy");
 		SafeGivePlayerMoney(playerid, DMVFEE/2);
