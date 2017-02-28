@@ -778,6 +778,7 @@ public DMVOnPlayerEnterRaceCP(playerid) {
 		PlayerPlaySound(playerid, 1058, 0.0, 0.0, 0.0);
 		SetVehicleVirtualWorld(DriverLicenseCar[playerid], 0);
 		SetPlayerVirtualWorld(playerid, 0);
+		HideDriverLicenseTD(playerid);
 		if(health >= 980) {	
 			PutPlayerInVehicle(playerid, DriverLicenseCar[playerid], 0);
 			GameTextForPlayer(playerid, "~w~Chuc mung ban hoan thanh bai sat hach lai xe~n~Tro lai DMV de nhan bang lai xe", 5000, 3);
@@ -793,8 +794,6 @@ public DMVOnPlayerEnterRaceCP(playerid) {
 			DriverLicenseCar[playerid] = INVALID_VEHICLE_ID;
 			SetPlayerPos(playerid, 2054.8250,-1919.2405,13.5469);
 		}
-		
-		
 	}
 }
 

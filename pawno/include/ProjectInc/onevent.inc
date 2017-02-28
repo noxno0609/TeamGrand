@@ -3898,7 +3898,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 		new str[255];
 		format(str, sizeof(str), "Ban duoc nhan lai $%d do huy bai thi sat hach lai xe", DMVFEE/2);
 		SendClientMessage(playerid, COLOR_GRAD1, str);
-		
+		HideDriverLicenseTD(playerid)
 	}
 	if (newstate == PLAYER_STATE_ONFOOT)
 	{
