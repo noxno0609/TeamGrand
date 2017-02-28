@@ -667,7 +667,7 @@ CMD:muaquanao(playerid, params[])
 }
 
 CMD:thibanglai(playerid, params[]){
-	if(!PlayerToPoint(25.0,playerid,20.5627,-103.7291,1005.2578))
+	if(!PlayerToPoint(5,playerid,2063.0376,-1914.9541,13.5469))
 		return SendClientMessage(playerid, COLOR_GRAD1, "Ban khong dung tai dia diem thi bang lai");
 	new str[255];
 	format(str, sizeof(str), "Ban can co it nhat $%d dong le phi thi bang lai", DMVFEE);
@@ -676,17 +676,8 @@ CMD:thibanglai(playerid, params[]){
 
 	SafeGivePlayerMoney(playerid, -DMVFEE);
 	DisablePlayerRaceCheckpoint(playerid);
-	DriverLicenseCar[playerid]  = CreateVehicle(411, 2065.6316,-1904.2428,13.2740,180.3586, 155, 1, 1);
-	for(new i=0; i < MAX_PLAYERS; i++) {
-		if(i == playerid) continue;
-		SetVehicleParamsForPlayer(DriverLicenseCar[playerid],i,0,1);
-	}
-	PutPlayerInVehicle(playerid, DriverLicenseCar[playerid], 0);
-	SetPlayerRaceCheckpoint(playerid, 0, DriverLicensePos[0][0], DriverLicensePos[0][1], DriverLicensePos[0][2], DriverLicensePos[1][0], DriverLicensePos[1][1], DriverLicensePos[2][2], 5);
-
-	SendClientMessage(playerid, COLOR_WHITE, "Bat dau bai thi sat hach lai xe.");
-	SendClientMessage(playerid, COLOR_WHITE, "Chu y: Khong duoc roi khoi xe khi bai thi dang dien ra.");
-	
+	SetPVarInt(playerid,"DriverLicenseTest", 1);
+	SendClientMessage(playerid, COLOR_WHITE, "Len xe de bat dau bai thi bang lai.");
 	return 1;
 }
 
@@ -741,20 +732,21 @@ public mSkinOnGameModeInit() {
 forward IncOnPlayerDisconnect(playerid, reason);
 public IncOnPlayerDisconnect(playerid, reason) {
 	SetPVarInt(playerid,"DMVSuccess", 0);
+	SetPVarInt(playerid,"DriverLicenseTest", 0);
 	DisablePlayerRaceCheckpoint(playerid);
 	DestroyDriverLicenseTD(playerid);
 	stop DriverLicenseLoop[playerid];
 	if(DriverLicenseCar[playerid] != INVALID_VEHICLE_ID) {
-		DestroyVehicle(DriverLicenseCar[playerid]);
+		SetVehicleToRespawn(i);(DriverLicenseCar[playerid]);
 		DriverLicenseCar[playerid] = INVALID_VEHICLE_ID;
 		SafeGivePlayerMoney(playerid, DMVFEE);
+		for(new i=0; i < MAX_PLAYERS; i++) {
+			SetVehicleParamsForPlayer(DriverLicenseCar[playerid],i,0,0);
+		}
 	}
 
 }
-forward DMVOnDialogResponse(playerid, dialogid, response, listitem, inputtext[]);
-public DMVOnDialogResponse(playerid, dialogid, response, listitem, inputtext[]) {
 
-}
 forward DMVOnPlayerEnterRaceCP(playerid);
 public DMVOnPlayerEnterRaceCP(playerid) {
 	for	(new i = 0; i<8; ++i) {
@@ -800,6 +792,9 @@ public DMVOnPlayerEnterCP(playerid) {
 		else {
 			SendClientMessage(playerid, COLOR_GRAD1, "Rat tiec nhung ban da rot trong bai thi sat hach bang lai xe");
 		}
+		RemovePlayerFromVehicle(playerid);
+		SetVehicleToRespawn(DriverLicenseCar[playerid]);
+		DriverLicenseCar[playerid] = INVALID_VEHICLE_ID;
 	}
 }
 

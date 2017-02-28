@@ -3605,9 +3605,9 @@ public OnPlayerSelectedMenuRow(playerid, row)
 		{
 		case 0:
 		{
-					SendClientMessage(playerid, COLOR_GREEN, "Noi cap bang lai duoc danh dau do tren ban do.");
+					SendClientMessage(playerid, COLOR_GREEN, "Noi thi bang lai duoc danh dau do tren ban do.");
 					SendClientMessage(playerid, COLOR_WHITE, "TIP: Su dung /thibanlai Khi o trong noi cap bang lai");
-					SetPlayerCheckpoint(playerid, 20.5627,-103.7291,1005.2578, 5.0);
+					SetPlayerCheckpoint(playerid, 2063.0376,-1914.9541,13.5469, 5.0);
 					TogglePlayerControllable(playerid, 1);
 		}
 		case 1:
@@ -3889,7 +3889,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 		stop DriverLicenseLoop[playerid];
 		DisablePlayerRaceCheckpoint(playerid);
 		DisablePlayerCheckpoint(playerid);
-		DestroyVehicle(DriverLicenseCar[playerid]);
+		SetVehicleToRespawn(DriverLicenseCar[playerid]);
 		DriverLicenseCar[playerid] = INVALID_VEHICLE_ID;
 		SendClientMessage(playerid, COLOR_GRAD1, "Bai sat hach lai xe cua ban da bi huy");
 		SafeGivePlayerMoney(playerid, DMVFEE/2);
@@ -4255,23 +4255,26 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 				KartingPlayers++;
 			}
 		}
-		if (IsASchoolCar(newcar))
+		if (IsASchoolCar(newcar) && )
 		{
-			if (TakingLesson[playerid] == 1) {}
-			else if (!IsAnInstructor(playerid))
-			{
-				SendClientMessage(playerid, COLOR_GREY, "  Ban khong co chia khoa phuong tien nay !");
-				RemovePlayerFromVehicle(playerid);
+			if(GetPVarInt("DriverLicenseTest") == 1) {
+				SetPVarInt(playerid,"DriverLicenseTest", 0);
+				DriverLicenseCar[playerid] = newcar;
+				for(new i=0; i < MAX_PLAYERS; i++) {
+					if(i == playerid) continue;
+					SetVehicleParamsForPlayer(DriverLicenseCar[playerid],i,0,1);
+				}
+
+				SetPlayerRaceCheckpoint(playerid, 0, DriverLicensePos[0][0], DriverLicensePos[0][1], DriverLicensePos[0][2], DriverLicensePos[1][0], DriverLicensePos[1][1], DriverLicensePos[2][2], 5);
+
+				SendClientMessage(playerid, COLOR_WHITE, "Bat dau bai thi sat hach lai xe.");
+				SendClientMessage(playerid, COLOR_WHITE, "Chu y: Khong duoc roi khoi xe khi bai thi dang dien ra.");
 			}
-		}
-		if (IsASchoolCar(newcar))
-		{
-			if (TakingLesson[playerid] == 1) {}
-			else if (!IsAnInstructor(playerid))
-			{
-				SendClientMessage(playerid, COLOR_GREY, "  Ban khong co chia khoa may bay truc thang !");
+			else {
 				RemovePlayerFromVehicle(playerid);
+				SendClientMessage(playerid, COLOR_GREY, "Ban khong co chia khoa phuong tien nay.");
 			}
+			
 		}
 		/*if (newcar == 166)
 		{
@@ -6512,6 +6515,7 @@ public OnVehicleDamageStatusUpdate(vehicleid, playerid)
 		CheckHackRepairCar(vehicleid);
 	else if (CarRepairCheat[vehicleid][3] != 0 && carrcheat[3] != 0)
 		GetVehicleDamageStatus(vehicleid, CarRepairCheat[vehicleid][0], CarRepairCheat[vehicleid][1], CarRepairCheat[vehicleid][2], CarRepairCheat[vehicleid][3]);
+
 	return 1;
 }
 public OnVehicleRespray(playerid, vehicleid, color1, color2)
