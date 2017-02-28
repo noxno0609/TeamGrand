@@ -40,10 +40,6 @@
 
 #define MAX_STRING 255
 #define MAX_VEHICLES_MODELS 212
-
-#if defined MAX_PICKUPS 
-#undef MAX_PICKUPS 
-#endif 
 #define MAX_PICKUPS 999
 #define MAX_AREAS 500
 #define MAX_FREEZE 100
@@ -500,9 +496,9 @@ stock GameModeInit()
 {
 	TextDrawCreate(0.0,0.0," ");
 	SetTimer("ufctimer", 100, true);
-	//SetTimer("Counter", 10, true);
-	//SetTimerEx("Speeder", 10, true, "i", 1000);
-	//SetTimer("ClearOutOfRangeVehicles", 2000, true);
+	SetTimer("Counter", 10, true);
+	SetTimerEx("Speeder", 10, true, "i", 1000);
+	SetTimer("ClearOutOfRangeVehicles", 2000, true);
 }
 
 stock IsVehicleConnected(vehicleid) //By Sacky (edited by Gabriel "Larcius" Cordes)
@@ -877,17 +873,17 @@ stock parsecommand(cmdtext[], cmd[], text[], parcount) //By Alex "Y_Less" Cole
 	return 0;
 }
 
-//stock ReturnPlayerName(playerid) //By Alex "Y_Less" Cole
-//{
-//	new pname[MAX_PLAYER_NAME];
-//	pname="Invalid PlayerID";
-//	if(IsPlayerConnected(playerid))
-//	{
-//		new pname[MAX_PLAYER_NAME];
-//		GetPlayerName(playerid, pname, sizeof (pname));
-//	}
-//	return pname;
-//}
+stock ReturnPlayerName(playerid) //By Alex "Y_Less" Cole
+{
+	new pname[MAX_PLAYER_NAME];
+	pname="Invalid PlayerID";
+	if(IsPlayerConnected(playerid))
+	{
+		new pname[MAX_PLAYER_NAME];
+		GetPlayerName(playerid, pname, sizeof (pname));
+	}
+	return pname
+}
 
 stock minrand(min, max) //By Alex "Y_Less" Cole
 {
@@ -1043,22 +1039,22 @@ stock VehicleDriverID(vehicleid)
 	return GetVehicleDriverID(vehicleid);
 }
 
-//stock IsNumeric(const string[]) //By Jan "DracoBlue" Schütze (edited by Gabriel "Larcius" Cordes
-//{
-//	new length=strlen(string);
-//	if(length==0)
-//	{
-//		return 0;
-//	}
-//	for (new i=0; i<length; i++)
-//	{
-//		if (!((string[i] <= '9' && string[i] >= '0') || (i==0 && (string[i]=='-' || string[i]=='+'))))
-//		{
-//			return false;
-//		}
-//	}
-//	return 0;
-//}
+stock IsNumeric(const string[]) //By Jan "DracoBlue" Schütze (edited by Gabriel "Larcius" Cordes
+{
+	new length=strlen(string);
+	if(length==0)
+	{
+		return 0;
+	}
+	for (new i=0; i<length; i++)
+	{
+		if (!((string[i] <= '9' && string[i] >= '0') || (i==0 && (string[i]=='-' || string[i]=='+'))))
+		{
+			return false;
+		}
+	}
+	return 0;
+}
 
 stock SendClientMessageToAdmins(colour,const str[]) //By Mike (Edited by Sacky)
 {
@@ -1131,9 +1127,7 @@ stock GetClosestCar(playerid)
 	return GetClosestVehicle(playerid);
 }
 
-
-forward Float:GetDistanceBetweenPlayers(playerid,playerid2); //By Slick (Edited by Sacky and Gabriel "Larcius" Cordes)
-public Float:GetDistanceBetweenPlayers(playerid,playerid2) //By Slick (Edited by Sacky and Gabriel "Larcius" Cordes)
+stock Float:GetDistanceBetweenPlayers(playerid,playerid2) //By Slick (Edited by Sacky and Gabriel "Larcius" Cordes)
 {
 	if(IsPlayerConnected(playerid) && IsPlayerConnected(playerid2))
 	{
@@ -1946,11 +1940,11 @@ stock DestroyVehicle2(vehicleid)
 	return 0;
 }
 
-stock AddStaticVehicleEx2(modelid, Float:spawn_x, Float:spawn_y, Float:spawn_z, Float:z_anglez, color1, color2,respawn_delay) //By Sacky (edited by Gabriel "Larcius" Cordes)
+stock AddStaticVehicleEx2(modelid, Float:spawn_x, Float:spawn_y, Float:spawn_z, Float:z_angle, color1, color2,respawn_delay) //By Sacky (edited by Gabriel "Larcius" Cordes)
 {
 	if(GetVehicles()<MAX_VEHICLES)
 	{
-		new id=AddStaticVehicleEx(modelid, spawn_x, spawn_y, spawn_z, z_anglez, color1, color2,respawn_delay), Float:h;
+		new id=AddStaticVehicleEx(modelid, spawn_x, spawn_y, spawn_z, z_angle, color1, color2,respawn_delay), Float:h;
 		GetVehicleHealth(id, h);
 		Vehicles[id][X]=spawn_x;
 		Vehicles[id][Y]=spawn_y;
@@ -1963,10 +1957,10 @@ stock AddStaticVehicleEx2(modelid, Float:spawn_x, Float:spawn_y, Float:spawn_z, 
 		Vehicles[id][Last_Trailer]=-1;
 		Vehicles[id][Cur_Trailer]=-1;
 		Vehicles[id][Static]=1;
-		Vehicles[id][Angle]=z_anglez;
-		return id;
+		Vehicles[id][Angle]=z_angle;
+		return 1;
 	}
-	return -1;
+	return 0;
 }
 
 stock substr(const string[], const substr[] )
@@ -2148,7 +2142,7 @@ stock randomcolor() //By Gabriel "Larcius" Cordes
 	return random(126);
 }
 
-stock AddStaticVehicle2(modelid, Float:spawn_x, Float:spawn_y, Float:spawn_z, Float:z_anglez, color1, color2) //By Boss (edited by Gabriel "Larcius" Cordes)
+stock AddStaticVehicle2(modelid, Float:spawn_x, Float:spawn_y, Float:spawn_z, Float:z_angle, color1, color2) //By Boss (edited by Gabriel "Larcius" Cordes)
 {
 	if(GetVehicles()<MAX_VEHICLES)
 	{
@@ -2160,7 +2154,7 @@ stock AddStaticVehicle2(modelid, Float:spawn_x, Float:spawn_y, Float:spawn_z, Fl
 		{
 			color2=randomcolor();
 		}
-		new vehicleid=AddStaticVehicle(modelid, spawn_x, spawn_y, spawn_z, z_anglez, color1, color2), Float:h;
+		new vehicleid=AddStaticVehicle(modelid, spawn_x, spawn_y, spawn_z, z_angle, color1, color2), Float:h;
 		GetVehicleHealth(vehicleid, h);
 		Vehicles[vehicleid][X]=spawn_x;
 		Vehicles[vehicleid][Y]=spawn_y;
@@ -2173,13 +2167,13 @@ stock AddStaticVehicle2(modelid, Float:spawn_x, Float:spawn_y, Float:spawn_z, Fl
 		Vehicles[vehicleid][Cur_Trailer]=-1;
 		Vehicles[vehicleid][Static]=1;
 		Vehicles[vehicleid][Respawn]=0;
-		Vehicles[vehicleid][Angle]=z_anglez;
-		return vehicleid;
+		Vehicles[vehicleid][Angle]=z_angle;
+		return 1;
 	}
-	return -1;
+	return 0;
 }
 
-stock CreateVehicle2(modelid, Float:spawn_x, Float:spawn_y, Float:spawn_z, Float:z_anglez, color1, color2, respawn_delay) //By Boss (edited by Gabriel "Larcius" Cordes)
+stock CreateVehicle2(modelid, Float:spawn_x, Float:spawn_y, Float:spawn_z, Float:z_angle, color1, color2, respawn_delay) //By Boss (edited by Gabriel "Larcius" Cordes)
 {
 	if(GetVehicles()<MAX_VEHICLES)
 	{
@@ -2195,7 +2189,7 @@ stock CreateVehicle2(modelid, Float:spawn_x, Float:spawn_y, Float:spawn_z, Float
 		{
 			color2=randomcolor();
 		}
-		new id=CreateVehicle(modelid, spawn_x, spawn_y, spawn_z, z_anglez, color1, color2, respawn_delay), Float:h;
+		new id=CreateVehicle(modelid, spawn_x, spawn_y, spawn_z, z_angle, color1, color2, respawn_delay), Float:h;
 		GetVehicleHealth(id, h);
 		Vehicles[id][X]=spawn_x;
 		Vehicles[id][Y]=spawn_y;
@@ -2208,15 +2202,15 @@ stock CreateVehicle2(modelid, Float:spawn_x, Float:spawn_y, Float:spawn_z, Float
 		Vehicles[id][Last_Trailer]=-1;
 		Vehicles[id][Cur_Trailer]=-1;
 		Vehicles[id][Static]=-1;
-		Vehicles[id][Angle]=z_anglez;
-		return id;
+		Vehicles[id][Angle]=z_angle;
+		return 1;
 	}
-	return INVALID_VEHICLE_ID;
+	return 0;
 }
 
-stock AddStaticVehicleLine(modelid, Float:x1, Float:y1, Float:z1, Float:z_anglez, color1, color2, Float:distance, MaxAmount, type) //By Gabriel "Larcius" Cordes
+stock AddStaticVehicleLine(modelid, Float:x1, Float:y1, Float:z1, Float:Z_Angle, color1, color2, Float:distance, MaxAmount, type) //By Gabriel "Larcius" Cordes
 {
-	new ret=0, Float:xRate=floatmul(floatsin(z_anglez,degrees),distance), Float:yRate=floatmul(floatcos(z_anglez,degrees),distance), Float:tmp;
+	new ret=0, Float:xRate=floatmul(floatsin(Z_Angle,degrees),distance), Float:yRate=floatmul(floatcos(Z_Angle,degrees),distance), Float:tmp;
 	if(type==SIDELONG)
 	{
 		tmp=xRate;
@@ -2225,7 +2219,7 @@ stock AddStaticVehicleLine(modelid, Float:x1, Float:y1, Float:z1, Float:z_anglez
 	}
 	for(new i=0; i<MaxAmount; i++)
 	{
-		if(AddStaticVehicle2(modelid, x1, y1, z1, z_anglez, color1, color2))
+		if(AddStaticVehicle2(modelid, x1, y1, z1, Z_Angle, color1, color2))
 		{
 			x1+=xRate;
 			y1+=yRate;
@@ -2235,9 +2229,9 @@ stock AddStaticVehicleLine(modelid, Float:x1, Float:y1, Float:z1, Float:z_anglez
 	return ret;
 }
 
-stock CreateVehicleLine(modelid, Float:x1, Float:y1, Float:z1, Float:z_anglez, color1, color2, respawn_delay, Float:distance, MaxAmount, type) //By Gabriel "Larcius" Cordes
+stock CreateVehicleLine(modelid, Float:x1, Float:y1, Float:z1, Float:Z_Angle, color1, color2, respawn_delay, Float:distance, MaxAmount, type) //By Gabriel "Larcius" Cordes
 {
-	new ret=0, Float:xRate=floatmul(floatsin(z_anglez,degrees),distance), Float:yRate=floatmul(floatcos(z_anglez,degrees),distance), Float:tmp;
+	new ret=0, Float:xRate=floatmul(floatsin(Z_Angle,degrees),distance), Float:yRate=floatmul(floatcos(Z_Angle,degrees),distance), Float:tmp;
 	if(type==SIDELONG)
 	{
 		tmp=xRate;
@@ -2246,7 +2240,7 @@ stock CreateVehicleLine(modelid, Float:x1, Float:y1, Float:z1, Float:z_anglez, c
 	}
 	for(new i=0; i<MaxAmount; i++)
 	{
-		if(CreateVehicle2(modelid,x1,y1,z1,z_anglez,color1,color2,respawn_delay))
+		if(CreateVehicle2(modelid,x1,y1,z1,Z_Angle,color1,color2,respawn_delay))
 		{
 			x1+=xRate;
 			y1+=yRate;
@@ -3856,14 +3850,14 @@ stock strupper(txt[])
 
 public ufctimer()
 {
-	foreach(new i : Vehicle)
+	for (new i=0; i<MAX_VEHICLES; i++)
 	{
 		if(IsVehicleConnected(i))
 		{
 			CheckVehicle(i);
 		}
 	}
-	foreach(new i : Player)
+	for (new i=0; i<MAX_PLAYERS; i++)
 	{
 		if(IsPlayerConnected(i))
 		{

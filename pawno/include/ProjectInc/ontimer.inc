@@ -1,3 +1,23 @@
+task AntiCheat[100]()
+{
+	foreach(new vehid : Vehicle)
+	{
+		new Float:newhealth;
+		GetVehicleHealth(vehid, newhealth);
+		if (newhealth > CarHealthCheat[vehid])
+			SetVehicleHealth(vehid, CarHealthCheat[vehid]);
+		else if (newhealth < CarHealthCheat[vehid])
+		{
+			GetVehicleHealth(vehid, CarHealthCheat[vehid]);
+			GetVehicleDamageStatus(vehid, CarRepairCheat[vehid][0], CarRepairCheat[vehid][1], CarRepairCheat[vehid][2], CarRepairCheat[vehid][3]);
+		}
+
+		if (CarRepairCheat[vehid][0] != 0)
+			CheckHackRepairCar(vehid);
+	}
+	return 1;
+}
+
 task SoundZone[1000]()
 {
 	if (DOCAlarm > 0 && --DOCAlarm == 0)
@@ -11,6 +31,18 @@ task SoundZone[1000]()
 }
 task ServerBeat[1000]()
 {
+	foreach(new vehid : Vehicle)
+	{
+		if (IsAdminVehicle(vehid) == -1 && IsVehicleDamaged(vehid))
+		{
+			SetVehicleHealthEx(vehid, 390);
+			if (engineOn[vehid] != 0)
+			{
+				VehicleEngine(vehid, false);
+				engineOn[vehid] = 0;
+			}
+		}
+	}
 	for (new gateid = 0; gateid < MAX_GATES; gateid++)
 	{
 		if (GateWaitTime[gateid] > 0 && --GateWaitTime[gateid] == 0)
@@ -20,6 +52,17 @@ task ServerBeat[1000]()
 	}
 	foreach(new playerid : Player)
 	{
+		if (CarCheatAttemping[playerid] > 0 && --CarCheatAttemping[playerid])
+		{
+			if (CarCheatAttemping[playerid] >= 999)
+			{
+				new str[128];
+				format(str, sizeof(str), "[Hack/Cheat]: %s su dung hack fix xe va da bi kick.", GN(playerid));
+				SendAdminMessage(COLOR_RED, str);
+				SCM(playerid, COLOR_LIGHTRED, "Ban da bi kicked vi co tinh su dung hack fix car.");
+				KickEx(playerid);
+			}
+		}
 		if (DOCAlarm > 0)
 		{
 			if (GetPVarInt(playerid, "AlarmPlayed") == 0 && IsPlayerInRangeOfPoint(playerid, 100, 732.5316, -1359.1908, 18.8203))
@@ -64,7 +107,6 @@ task ServerBeat[1000]()
 			TextDrawSetString(TDPBank[playerid], tdbank);
 			TextDrawShowForPlayer(playerid, TDPBank[playerid]);
 		}
-
 		if (GetPVarInt(playerid, "DelayWalkingTeleportTime") > 0)
 		{
 			new time = GetPVarInt(playerid, "DelayWalkingTeleportTime");
@@ -284,7 +326,7 @@ task ServerBeat[1000]()
 
 task VehicleLastShot[10000]()
 {
-	for (new i = 0; i < MAX_VEHICLES; i++)
+	foreach(new i : Vehicle)
 	{
 		if (LastShot[i] != -1)
 			LastShot[i] = -1;

@@ -34,34 +34,34 @@ stock IsPlayerNearSeed(playerid)
 	}
 	return 0;
 }
-stock IsPlayerInRectangle(playerid, Float:x1, Float:y1, Float:x2, Float:y2)
-{
-	if (IsPlayerConnected(playerid))
-	{
-		new Float:xs, Float:ys, Float:zs;
-		GetPlayerPos(playerid, xs, ys, zs);
-		return IsPointInRectangle(xs, ys, x1, y1, x2, y2);
-	}
-	return 0;
-}
-stock IsPointInRectangle(Float:xs, Float:ys, Float:x1, Float:y1, Float:x2, Float:y2)
-{
-	if (IsBetweenFloats(xs, x1, x2) && IsBetweenFloats(ys, y1, y2))
-	{
-		return 1;
-	}
-	return 0;
-}
-stock IsBetweenFloats(Float:f, Float:f1, Float:f2)
-{
-	switch (floatcmp(f1, f2))
-	{
-	case 0: if (f == f1) { return 1; }
-	case 1: if (f <= f1 && f >= f2) { return 1; }
-	case -1: if (f >= f1 && f <= f2) { return 1; }
-	}
-	return 0;
-}
+//stock IsPlayerInRectangle(playerid, Float:x1, Float:y1, Float:x2, Float:y2)
+//{
+//	if (IsPlayerConnected(playerid))
+//	{
+//		new Float:xs, Float:ys, Float:zs;
+//		GetPlayerPos(playerid, xs, ys, zs);
+//		return IsPointInRectangle(xs, ys, x1, y1, x2, y2);
+//	}
+//	return 0;
+//}
+//stock IsPointInRectangle(Float:xs, Float:ys, Float:x1, Float:y1, Float:x2, Float:y2)
+//{
+//	if (IsBetweenFloats(xs, x1, x2) && IsBetweenFloats(ys, y1, y2))
+//	{
+//		return 1;
+//	}
+//	return 0;
+//}
+//stock IsBetweenFloats(Float:f, Float:f1, Float:f2)
+//{
+//	switch (floatcmp(f1, f2))
+//	{
+//	case 0: if (f == f1) { return 1; }
+//	case 1: if (f <= f1 && f >= f2) { return 1; }
+//	case -1: if (f >= f1 && f <= f2) { return 1; }
+//	}
+//	return 0;
+//}
 stock IsPlayerInRangeofFarmer(playerid)
 {
 	if (IsPlayerInRectangle(playerid, -1028.2699, -1575.5719, -949.1511, -1626.2856)) return 1;
@@ -208,7 +208,7 @@ CMD:goto(playerid, params[])
 		SetPlayerVirtualWorld(playerid, 0);
 		SetPlayerPos(playerid, 777.9285, -1385.0005, 13.7251);
 	}
-	if (!strcmp(params, "trongtrot", true))
+	else if (!strcmp(params, "trongtrot", true))
 	{
 		if (IsPlayerInAnyVehicle(playerid)) return SetVehiclePos(xe, -1092.1846, -1650.5377, 76.3739);
 		SetPlayerInterior(playerid, 0);

@@ -1,7 +1,3 @@
-#include <YSI\y_timers>
-#include <YSI\y_iterate>
-#include <zones>
-#include <YSI\y_ini>
 #include <mSelection>
 //#include <jit>
 
@@ -58,7 +54,7 @@ new
 	SeedOwner[MAX_OBJECTS][MAX_PLAYER_NAME + 1],
 	SeedTime[MAX_OBJECTS],
 	SeedTotal[MAX_OBJECTS],
-Text3D:SeedText[MAX_OBJECTS];
+	Text3D:SeedText[MAX_OBJECTS];
 
 //Medic
 new Float:MedicPos[MAX_PLAYERS][3];
@@ -147,48 +143,50 @@ new Float:DocArrestIn[23][3] =
 	{ 2583.6245, -1539.0674, -48.9141 }
 };
 
-new VehicleNames[][] =
+#define MAX_NAILS 38
+#define LIMIT_NAILS 20
+new NailObject[MAX_NAILS];
+new Float:NailPos[MAX_NAILS][3] =
 {
-	"Landstalker", "Bravura", "Buffalo", "Linerunner", "Perrenial", "Sentinel",
-	"Dumper", "Firetruck", "Trashmaster", "Stretch", "Manana", "Infernus",
-	"Voodoo", "Pony", "Mule", "Cheetah", "Ambulance", "Leviathan", "Moonbeam",
-	"Esperanto", "Taxi", "Washington", "Bobcat", "Whoopee", "BF Injection",
-	"Hunter", "Premier", "Enforcer", "Securicar", "Banshee", "Predator", "Bus",
-	"Rhino", "Barracks", "Hotknife", "Trailer", "Previon", "Coach", "Cabbie",
-	"Stallion", "Rumpo", "RC Bandit", "Romero", "Packer", "Monster", "Admiral",
-	"Squalo", "Seasparrow", "Pizzaboy", "Tram", "Trailer", "Turismo", "Speeder",
-	"Reefer", "Tropic", "Flatbed", "Yankee", "Caddy", "Solair", "Berkley's RC Van",
-	"Skimmer", "PCJ-600", "Faggio", "Freeway", "RC Baron", "RC Raider", "Glendale",
-	"Oceanic", "Sanchez", "Sparrow", "Patriot", "Quad", "Coastguard", "Dinghy",
-	"Hermes", "Sabre", "Rustler", "ZR-350", "Walton", "Regina", "Comet", "BMX",
-	"Burrito", "Camper", "Marquis", "Baggage", "Dozer", "Maverick", "News Chopper",
-	"Rancher", "FBI Rancher", "Virgo", "Greenwood", "Jetmax", "Hotring", "Sandking",
-	"Blista Compact", "Police Maverick", "Boxville", "Benson", "Mesa", "RC Goblin",
-	"Hotring Racer A", "Hotring Racer B", "Bloodring Banger", "Rancher", "Super GT",
-	"Elegant", "Journey", "Bike", "Mountain Bike", "Beagle", "Cropduster", "Stunt",
-	"Tanker", "Roadtrain", "Nebula", "Majestic", "Buccaneer", "Shamal", "Hydra",
-	"FCR-900", "NRG-500", "HPV1000", "Cement Truck", "Tow Truck", "Fortune",
-	"Cadrona", "FBI Truck", "Willard", "Forklift", "Tractor", "Combine", "Feltzer",
-	"Remington", "Slamvan", "Blade", "Freight", "Streak", "Vortex", "Vincent",
-	"Bullet", "Clover", "Sadler", "Firetruck", "Hustler", "Intruder", "Primo",
-	"Cargobob", "Tampa", "Sunrise", "Merit", "Utility", "Nevada", "Yosemite",
-	"Windsor", "Monster", "Monster", "Uranus", "Jester", "Sultan", "Stratium",
-	"Elegy", "Raindance", "RC Tiger", "Flash", "Tahoma", "Savanna", "Bandito",
-	"Freight Flat", "Streak Carriage", "Kart", "Mower", "Dune", "Sweeper",
-	"Broadway", "Tornado", "AT-400", "DFT-30", "Huntley", "Stafford", "BF-400",
-	"News Van", "Tug", "Trailer", "Emperor", "Wayfarer", "Euros", "Hotdog", "Club",
-	"Freight Box", "Trailer", "Andromada", "Dodo", "RC Cam", "Launch", "Police Car",
-	"Police Car", "Police Car", "Police Ranger", "Picador", "S.W.A.T", "Alpha",
-	"Phoenix", "Glendale", "Sadler", "Luggage", "Luggage", "Stairs", "Boxville",
-	"Tiller", "Utility Trailer"
+	{ 728.6450, -1320.7795, 13.3984 },
+	{799.9040, -1346.5721, 13.3828 },
+	{797.2269, -1422.2045, 13.3857},
+	{774.0714, -1588.1799, 13.3828},
+	{827.9992, -1616.8951, 13.3828},
+	{817.8740, -1770.9966, 13.3828},
+	{1007.0264, -1809.3763, 13.3828},
+	{1185.4883, -1853.8613, 13.3828},
+	{1520.8279, -1873.3431, 13.3828},
+	{1548.0623, -1869.7402, 13.3828},
+	{1682.1826, -1863.8546, 13.3828},
+	{1890.2144, -1754.3682, 13.3828},
+	{1940.4547, -1718.0732, 13.3828},
+	{1941.2813, -1678.9716, 13.3828},
+	{1945.6339, -1625.3254, 13.3828},
+	{2007.5431, -1616.3417, 13.3828},
+	{2092.4348, -1612.9803, 13.3828},
+	{2126.4800, -1614.9279, 13.3828},
+	{2288.6045, -1733.7295, 13.3828},
+	{2394.3254, -1751.5524, 13.3828},
+	{2409.3438, -1749.8817, 13.3828},
+	{2419.7471, -1936.7133, 13.3828},
+	{2487.7747, -1728.6785, 13.3828},
+	{2515.9705, -1818.2275, 13.3828},
+	{2072.2856, -1809.9269, 13.3828},
+	{1749.4846, -1647.5687, 13.3828},
+	{1697.6987, -1594.1803, 13.3828},
+	{1527.7019, -1634.5322, 13.3828},
+	{1534.1624, -1687.2218, 13.3828},
+	{1450.9537, -1733.2712, 13.3828},
+	{1312.5131, -1667.5985, 13.3828},
+	{797.2224, -1258.4231, 13.3828},
+	{671.3542, -1585.7765, 13.3828},
+	{196.6848, -1633.4841, 13.5829},
+	{359.8520, -1381.7119, 13.5829},
+	{1758.0686, -1496.5553, 13.5829},
+	{1753.4799, -1500.8778, 13.5829},
+	{1208.4205, -1323.8865, 13.5829}
 };
-
-stock GetVehicleName(vehicleid)
-{
-	new str[128];
-	format(str, sizeof(str), "%s", VehicleNames[GetVehicleModel(vehicleid) - 400]);
-	return str;
-}
 
 new LastShot[MAX_VEHICLES];
 
@@ -218,6 +216,9 @@ new gPlayerAnimLibsPreloaded[MAX_PLAYERS];
 new Text:TDAnimHelp;
 
 new Float:LastEntrance[MAX_PLAYERS][3];
+
+//Nail
+
 
 //Spec
 new SpecPlayer[MAX_PLAYERS],
@@ -295,3 +296,8 @@ stock CreateServerPlayerTextDraw(playerid)
 	TextDrawSetProportional(TDPBank[playerid], 1);
 	TextDrawSetShadow(TDPBank[playerid], 0);
 }
+
+//Anti Car Repair
+new CarRepairCheat[MAX_VEHICLES][4];
+new CarCheatAttemping[MAX_PLAYERS];
+new Float:CarHealthCheat[MAX_VEHICLES];

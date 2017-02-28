@@ -102,7 +102,7 @@ stock IsAnyAdminInVehicle(vid)
 }
 stock RespawnCar(vid)
 {
-	new newvid = CreateVehicle(CarInfo[vid][cModel], CarInfo[vid][cLocationx], CarInfo[vid][cLocationy], CarInfo[vid][cLocationz], CarInfo[vid][cAngle], CarInfo[vid][cColorOne], CarInfo[vid][cColorTwo], 60000);
+	new newvid = CreateVehicle2(CarInfo[vid][cModel], CarInfo[vid][cLocationx], CarInfo[vid][cLocationy], CarInfo[vid][cLocationz], CarInfo[vid][cAngle], CarInfo[vid][cColorOne], CarInfo[vid][cColorTwo], 60000);
 	CarInfo[newvid][cID] = CarInfo[vid][cID];
 	CarInfo[newvid][cModel] = CarInfo[vid][cModel];
 	CarInfo[newvid][cLocationx] = CarInfo[vid][cLocationx];
@@ -124,7 +124,7 @@ stock RespawnCar(vid)
 }
 stock GetVehicleByCarID(id)
 {
-	for (new i = 0; i < MAX_VEHICLES; i++)
+	foreach(new i : Vehicle)
 	{
 		if (CarInfo[i][cID] == id)
 		{
@@ -208,7 +208,7 @@ CMD:veh(playerid, params[])
 		 {
 			 if (!aVeh[i])
 			 {
-				 aVeh[i] = CreateVehicle(id, pos[0], pos[1], pos[2], pos[3], col[0], col[1], 1200);
+				 aVeh[i] = CreateVehicle2(id, pos[0], pos[1], pos[2], pos[3], col[0], col[1], 1200);
 				 new str[128];
 				 format(str, sizeof(str), "Xe He Thong\nID Veh: %d", i);
 				 aVehLabel[i] = Create3DTextLabel(str, COLOR_YELLOW, 0, 0, 0, 30, 0, 0);
@@ -240,7 +240,7 @@ CMD:xoaveh(playerid, params[])
 		 }
 		 if (!(strcmp(vidid, "all", true)))
 		 {
-			 for (new i = 0; i < MAX_VEHICLES; i++)
+			 foreach(new i : Vehicle)
 			 {
 				 new avid = IsAdminVehicle(i);
 				 if (avid != -1 && !IsAnyAdminInVehicle(i))
@@ -338,7 +338,10 @@ stock ClearAllVehicle()
 	{
 		CarInfo[i][cID] = -1;
 		Trucking[i] = 0;
+		CarRepairCheat[i][0] = 0;
+		CarHealthCheat[i] = 1000;
 	}
+	return 1;
 }
 stock ClearAllBiz()
 {
@@ -465,7 +468,7 @@ CMD:buonlau(playerid, params[])
 	return 1;
 }
 
- CMD:doibuonlau(playerid, params[])
+CMD:doibuonlau(playerid, params[])
  {
 		if (DrugDealing[playerid] != 3) return SCM(playerid, COLOR_GREY, "Ban hien tai khong buon lau hoac chua tien hanh buon lau.");
 		if (CoopDD[playerid] >= 0) return SCM(playerid, COLOR_GREY, "Chi co truong nhom buon lau moi co the doi noi giao dich.");
@@ -479,7 +482,130 @@ CMD:buonlau(playerid, params[])
 		SetTimerEx("ChangeDrugDealer", 5000, false, "ii", playerid, rand);
 		return 1;
  }
-
+CMD:tichthubuonlau(playerid, params[])
+{
+	return 1;
+}
+CMD:car(playerid, params[])
+{
+	//if (GetPlayerState(playerid) != PLAYER_STATE_DRIVER) return SCM(playerid, COLOR_GREY, "Ban khong ngoi tren xe.");
+	if (sscanf(params, "s[16]", params))
+	{
+		SCM(playerid, COLOR_GRAD2, "Su dung: /car [Lua Chon]");
+		SCM(playerid, COLOR_GRAD2, "light | trunk | hood");
+		return 1;
+	}
+	new vid = GetPlayerVehicleID(playerid);
+	if (IsABike(vid)) return SCM(playerid, COLOR_GREY, "Xe dap khong co nhung chuc nang nay.");
+	if (!strcmp(params, "light", true))
+	{
+		if (lightOn[vid] == 0)
+		{
+			VehicleLight(vid, true);
+			GameTextForPlayer(playerid, "~w~Den Xe ~g~Mo", 1000, 4);
+			lightOn[vid] = 1;
+			return 1;
+		}
+		else
+		{
+			VehicleLight(vid, false);
+			GameTextForPlayer(playerid, "~w~Den Xe ~r~Tat", 1000, 4);
+			lightOn[vid] = 0;
+			return 1;
+		}
+	}
+	// Geek 2
+	if (!strcmp(params, "hood", true)) 
+	{
+		if (IsPlayerInAnyVehicle(playerid) && GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
+		{
+			if (hoodOn[vid] == 0)
+			{
+				VehicleHood(vid, true);
+				GameTextForPlayer(playerid, "~w~Mui Xe ~g~Mo", 1000, 4);
+				hoodOn[vid] = 1;
+				return 1;
+			}
+			else
+			{
+				VehicleHood(vid, false);
+				GameTextForPlayer(playerid, "~w~Mui Xe ~r~Dong", 1000, 4);
+				hoodOn[vid] = 0;
+				return 1;
+			}
+		}
+		else
+		{
+			new newcar = GetClosestCar(playerid);
+			if (newcar == -1) return SCM(playerid, COLOR_GREY, "Ban khong dung gan chiec xe nao.");
+			if (hoodOn[newcar] == 0)
+			{
+				VehicleHood(newcar, true);
+				GameTextForPlayer(playerid, "~w~Mui Xe ~g~Mo", 1000, 4);
+				hoodOn[newcar] = 1;
+				return 1;
+			}
+			else
+			{
+				VehicleHood(newcar, false);
+				GameTextForPlayer(playerid, "~w~Mui Xe ~r~Dong", 1000, 4);
+				hoodOn[newcar] = 0;
+				return 1;
+			}
+		}
+	}
+	if (!strcmp(params, "trunk", true))
+	{
+		if (IsPlayerInAnyVehicle(playerid) && GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
+		{
+			if (trunkOn[vid] == 0)
+			{
+				VehicleTrunk(vid, true);
+				GameTextForPlayer(playerid, "~w~Thung Xe ~g~Mo", 1000, 4);
+				trunkOn[vid] = 1;
+				return 1;
+			}
+			else
+			{
+				VehicleTrunk(vid, false);
+				GameTextForPlayer(playerid, "~w~Thung Xe ~r~Dong", 1000, 4);
+				trunkOn[vid] = 0;
+				return 1;
+			}
+		}
+		else
+		{
+			new newcar = GetClosestCar(playerid);
+			if (newcar == -1) return SCM(playerid, COLOR_GREY, "Ban khong dung gan chiec xe nao.");
+			if (trunkOn[newcar] == 0)
+			{
+				VehicleTrunk(newcar, true);
+				GameTextForPlayer(playerid, "~w~Thung Xe ~g~Mo", 1000, 4);
+				trunkOn[newcar] = 1;
+				return 1;
+			}
+			else
+			{
+				VehicleTrunk(newcar, false);
+				GameTextForPlayer(playerid, "~w~Thung Xe ~r~Dong", 1000, 4);
+				trunkOn[newcar] = 0;
+				return 1;
+			}
+		}
+	}
+	// Geek 2
+	return 1;
+}
+forward Float:GetXYBehindCar(vid, &Float:q, &Float:w, Float:distance);
+Float:GetXYBehindCar(vid, &Float:q, &Float:w, Float:distance)
+{
+    new Float:a;
+    GetVehiclePos(vid, q, w, a);
+    GetVehicleZAngle(vid, a);
+    q += (distance * -floatsin(-a, degrees));
+    w += (distance * -floatcos(-a, degrees));
+    return a;
+}
 CMD:dichvu(playerid, params[])
 {
 	if (sscanf(params, "s[30]", params)) return SCM(playerid, COLOR_GRAD2, "Su dung: /dichvu [luachon]");
