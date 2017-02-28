@@ -6023,7 +6023,7 @@ public CarRespawn(carid)
 			}
 		}
 	}
-	SetVehicleToRespawn(carid);
+	SetVehicleToRespawn2(carid);
 	gLastDriver[carid] = 299;
 	return 1;
 }*/
@@ -6668,7 +6668,7 @@ public OtherTimer()
 			}
 			if (IsABus(vehicleid) && GetPlayerState(i) == 2 && PlayerInfo[i][pJob] != 14)
 			{
-				SetVehicleToRespawn(vehicleid);
+				SetVehicleToRespawn2(vehicleid);
 			}
 		}
 	}
@@ -9961,7 +9961,7 @@ public BusrouteEnd(playerid, vehicleid)
 		PlayerPlaySound(playerid, 1055, 0.0, 0.0, 0.0);
 	}
 	DisableCheckpoint(playerid);
-	if (vehicleid != 0) SetVehicleToRespawn(vehicleid);
+	if (vehicleid != 0) SetVehicleToRespawn2(vehicleid);
 	BusrouteEast[playerid][0] = 0;
 	BusrouteEast[playerid][1] = 0;
 	//BusrouteEast[playerid][2] = 0;

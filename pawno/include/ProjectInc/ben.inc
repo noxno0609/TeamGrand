@@ -93,7 +93,7 @@ stock IsAdminVehicle(vid)
 }
 stock IsAnyAdminInVehicle(vid)
 {
-	for (new i = 0; i < MAX_PLAYERS; i++)
+	foreach(new i : Player)
 	{
 		if (PlayerInfo[i][pAdmin] > 0 && IsPlayerInVehicle(i, vid))
 			return true;
@@ -151,7 +151,7 @@ stock DestroyCar(vid)
 	CarInfo[vid][cOwned] = 0;
 	CarInfo[vid][cLock] = 0;
 	CarInfo[vid][cType] = 0;
-	DestroyVehicle(vid);
+	DestroyVehicle2(vid);
 	return 1;
 }
 stock GetVehicleIDFromKey(keyid)
@@ -240,11 +240,10 @@ CMD:xoaveh(playerid, params[])
 		 }
 		 if (!(strcmp(vidid, "all", true)))
 		 {
-			 foreach(new i : Vehicle)
+			 for(new i=0;i<MAXCUSTOMVEH;i++)
 			 {
-				 new avid = IsAdminVehicle(i);
-				 if (avid != -1 && !IsAnyAdminInVehicle(i))
-					 DeleteAdminVeh(avid);
+				 if (aVeh[i] != INVALID_VEHICLE_ID && !IsAnyAdminInVehicle(aVeh[i]))
+					DeleteAdminVeh(i);
 			 }
 			 SendAdminMessage(COLOR_LIGHTRED, "AdmCMD: Da xoa tat ca Admin Vehicle!");
 			 return 1;
@@ -294,7 +293,7 @@ stock DeleteAdminVeh(avid)
 {
 	Delete3DTextLabel(aVehLabel[avid]);
 	new vid = aVeh[avid];
-	DestroyVehicle(vid);
+	DestroyVehicle2(vid);
 	aVeh[avid] = 0;
 }
 
