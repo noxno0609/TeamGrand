@@ -737,7 +737,7 @@ public IncOnPlayerDisconnect(playerid, reason) {
 	DestroyDriverLicenseTD(playerid);
 	stop DriverLicenseLoop[playerid];
 	if(DriverLicenseCar[playerid] != INVALID_VEHICLE_ID) {
-		SetVehicleToRespawn(i);(DriverLicenseCar[playerid]);
+		SetVehicleToRespawn(DriverLicenseCar[playerid]);
 		DriverLicenseCar[playerid] = INVALID_VEHICLE_ID;
 		SafeGivePlayerMoney(playerid, DMVFEE);
 		for(new i=0; i < MAX_PLAYERS; i++) {

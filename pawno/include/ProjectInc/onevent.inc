@@ -4255,9 +4255,9 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 				KartingPlayers++;
 			}
 		}
-		if (IsASchoolCar(newcar) && )
+		if (IsASchoolCar(newcar))
 		{
-			if(GetPVarInt("DriverLicenseTest") == 1) {
+			if(GetPVarInt(playerid, "DriverLicenseTest") == 1) {
 				SetPVarInt(playerid,"DriverLicenseTest", 0);
 				DriverLicenseCar[playerid] = newcar;
 				for(new i=0; i < MAX_PLAYERS; i++) {
