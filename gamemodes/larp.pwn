@@ -21,6 +21,10 @@
 
 //INCLUDE
 #include <a_samp>
+#include <crashdetect>
+#include <YSI\y_timers>
+#include <YSI\y_iterate>
+#include <YSI\y_ini>
 #include <a_mysql>
 #include <core>
 #include <float>
@@ -31,9 +35,21 @@
 #include <streamer>
 #include <zcmd>
 #include <sscanf2>
-#include <crashdetect>
+#include <zones>
+#include <paynspray>
 //MYSQLDEFINE
 new MySQL:conn;
+
+#if defined MAX_PLAYERS 
+#undef MAX_PLAYERS 
+#endif 
+
+#if defined MAX_VEHICLES 
+#undef MAX_VEHICLES 
+#endif 
+
+#define MAX_VEHICLES 1000
+#define MAX_PLAYERS 500
 
 //DEFINE
 #include <ProjectInc\declare>
@@ -44,10 +60,6 @@ new MySQL:conn;
 #define DIALOG_FINDTRUCK 3
 #define DIALOG_SELECTTRUCK 4
 
-#if defined MAX_PLAYERS 
-#undef MAX_PLAYERS 
-#endif 
-
 //#if defined STREAMER_OBJECT_SD 
 //#undef STREAMER_OBJECT_SD 
 //#endif 
@@ -55,13 +67,6 @@ new MySQL:conn;
 //#if defined STREAMER_OBJECT_DD 
 //#undef STREAMER_OBJECT_DD 
 //#endif 
-
-#if defined MAX_VEHICLES 
-#undef MAX_VEHICLES 
-#endif 
-
-#define MAX_VEHICLES 1000
-#define MAX_PLAYERS 500
 
 //STREAMER RANGE
 //#define STREAMER_OBJECT_SD 1200
@@ -247,7 +252,7 @@ forward SendTeamBeepMessage(team, color, string[]);
 forward ABroadCast(color,const string[],level);
 forward CBroadCast(color, const string[], level);
 forward DateProp(playerid);
-forward GetClosestPlayer(p1);
+//forward GetClosestPlayer(p1);
 forward IsPlayerInTurf(playerid, turfid);
 forward LoadMission(playerid,name[]);
 forward SaveMission(playerid,name[]);
@@ -293,7 +298,7 @@ forward PrepareKarting();
 forward PaintballEnded();
 forward StartPaintball();
 forward PreparePaintball();
-forward Float:GetDistanceBetweenPlayers(p1,p2);
+//forward Float:GetDistanceBetweenPlayers(p1,p2);
 forward GameModeExitFunc();
 forward SetAllPlayerCheckpoint(Float:allx, Float:ally, Float:allz, Float:radi, num);
 forward SetAllCopCheckpoint(Float:allx, Float:ally, Float:allz, Float:radi);
@@ -362,7 +367,7 @@ forward IdleKick();
 forward SetCamBack(playerid);
 forward FixHour(hour);
 forward AddsOn();
-forward IsPlayerInArea(playerid, Float:minx, Float:maxx, Float:miny, Float:maxy);
+forward IsPlayerInAreaRange(playerid, Float:minx, Float:maxx, Float:miny, Float:maxy);
 forward AdvertiseToPlayersAtBusStop(Float:stopX, Float:stopY, Float:stopZ, eastorwest);
 forward SendBusRoute(playerid, eastorwest);
 forward IsInBusrouteZone(playerid);
@@ -375,7 +380,7 @@ forward CreateGuideMenus();
 forward Startup(playerid, vehicleid);
 forward engine2(playerid);
 forward busroutestoptimer(playerid);
-forward CheckCarHealth();
+//forward CheckCarHealth();
 forward StartingTheVehicle(playerid);
 forward FarmerExit(playerid);
 forward DrugFarmerExit(playerid);
@@ -675,7 +680,7 @@ new SetWorld;
 new accountstimer;
 new checkgastimer;
 new stoppedvehtimer;
-new checkcarhealthtimer;
+//new checkcarhealthtimer;
 //new updateplayerpos;
 new cartimer;
 new intrate = 1;
@@ -707,7 +712,12 @@ new Float:PlayerPos[MAX_PLAYERS][6];
 new Float:TeleportDest[MAX_PLAYERS][3];
 new Float:TelePos[MAX_PLAYERS][6];
 new roadblocktimer = 0;
+
 new engineOn[MAX_VEHICLES];
+new hoodOn[MAX_VEHICLES];
+new trunkOn[MAX_VEHICLES];
+new lightOn[MAX_VEHICLES];
+
 new vehicleEntered[MAX_PLAYERS][MAX_VEHICLES];
 new gEngine[MAX_PLAYERS];
 new FarmerVar[MAX_PLAYERS];
@@ -2514,7 +2524,7 @@ public SaveHQLocks()
 public SaveTrunk()
 {
 	new sql[500];
-	for (new idx = 0; idx < MAX_VEHICLES; idx++)
+	foreach(new idx : Vehicle)
 	{
 		format(sql, sizeof(sql), "UPDATE cartrunk SET \
 					Trunk1 = %d,\
@@ -2912,7 +2922,7 @@ stock AddCar(model, Float:x, Float:y, Float:z, Float:a, color1, color2, respawnt
 	mysql_query(conn, sql);
 	new newId = cache_insert_id();
 
-	new vid = CreateVehicle(model, x, y, z, a, color1, color2, respawntime);
+	new vid = CreateVehicle2(model, x, y, z, a, color1, color2, respawntime);
 	format(CarInfo[vid][cOwner], 999, owner);
 	CarInfo[vid][cOwned] = 0;
 	CarInfo[vid][cModel] = model;
@@ -2970,7 +2980,7 @@ public LoadCar()
 		cache_get_value_name_float(idx, "Locationy", pos[1]);
 		cache_get_value_name_float(idx, "Locationz", pos[2]);
 		cache_get_value_name_float(idx, "Angle", pos[3]);
-		new vid = CreateVehicle(model, pos[0], pos[1], pos[2], pos[3], color[0], color[1], 60000);
+		new vid = CreateVehicle2(model, pos[0], pos[1], pos[2], pos[3], color[0], color[1], 60000);
 
 		CarInfo[vid][cModel] = model;
 		CarInfo[vid][cLocationx] = pos[0];
@@ -3465,7 +3475,7 @@ public LoadHQLocks()
 }
 stock GetVehicleIDFromSQLID(sqlid)
 {
-	for (new i = 0; i < MAX_VEHICLES; i++)
+	foreach(new i : Vehicle)
 	{
 		if (CarInfo[i][cID] == sqlid)
 			return i;
@@ -3526,17 +3536,17 @@ public LoadTrunk()
 }
 
 //FUNCTION+STOCK
-public Float:GetDistanceBetweenPlayers(p1, p2)
-{
-	new Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2;
-	if (!IsPlayerConnected(p1) || !IsPlayerConnected(p2))
-	{
-		return -1.00;
-	}
-	GetPlayerPos(p1, x1, y1, z1);
-	GetPlayerPos(p2, x2, y2, z2);
-	return floatsqroot(floatpower(floatabs(floatsub(x2, x1)), 2) + floatpower(floatabs(floatsub(y2, y1)), 2) + floatpower(floatabs(floatsub(z2, z1)), 2));
-}
+//public Float:GetDistanceBetweenPlayers(p1, p2)
+//{
+//	new Float:x1, Float:y1, Float:z1, Float:x2, Float:y2, Float:z2;
+//	if (!IsPlayerConnected(p1) || !IsPlayerConnected(p2))
+//	{
+//		return -1.00;
+//	}
+//	GetPlayerPos(p1, x1, y1, z1);
+//	GetPlayerPos(p2, x2, y2, z2);
+//	return floatsqroot(floatpower(floatabs(floatsub(x2, x1)), 2) + floatpower(floatabs(floatsub(y2, y1)), 2) + floatpower(floatabs(floatsub(z2, z1)), 2));
+//}
 
 public SearchingHit(playerid)
 {
@@ -3802,13 +3812,13 @@ public Encrypt(string[])
 	return 1;
 }
 
-stock right(source[], len)
-{
-	new retval[MAX_STRING], srclen;
-	srclen = strlen(source);
-	strmid(retval, source, srclen - len, srclen, MAX_STRING);
-	return retval;
-}
+//stock right(source[], len)
+//{
+//	new retval[MAX_STRING], srclen;
+//	srclen = strlen(source);
+//	strmid(retval, source, srclen - len, srclen, MAX_STRING);
+//	return retval;
+//}
 
 stock sscanf(string[], format[], {Float,_}:...)
 {
@@ -4790,6 +4800,8 @@ public JoinChannelNr(playerid, number)
 }
 stock ClearPlayer(playerid)
 {
+	CarCheatAttemping[playerid] = 0;
+
 	DOCDelay[playerid] = 0;
 	DOCCheck[playerid] = 0;
 
@@ -5015,7 +5027,7 @@ stock ClearPlayer(playerid)
 	ClearGroceries(playerid);
 	ClearMarriage(playerid);
 	PlayerInfo2[HouseEntered][playerid] = 255;
-	for (new h = 0; h < MAX_VEHICLES; h++)
+	foreach(new h : Vehicle)
 	{
 		SetVehicleParamsForPlayer(h, playerid, 0, CarInfo[h][cLock]);
 	}
@@ -5943,9 +5955,9 @@ public CarCheck()
 			}
 		}
 	}
-	for(new c = 0; c < MAX_VEHICLES; c++)
+	foreach(new c : Vehicle)
 	{
-		for(new i = 0; i < MAX_PLAYERS; i++)
+		foreach(new i : Player)
 		{
 			if(IsPlayerConnected(i))
 			{
@@ -6042,7 +6054,7 @@ public UnLockCar(carid)
 
 public InitLockDoors(playerid)
 {
-	for (new i = 0; i < MAX_VEHICLES; i++)
+	foreach(new i : Vehicle)
 	{
 		if (gCarLock[i] == 1)
 		{
@@ -6793,10 +6805,10 @@ public SetPlayerUnjail()
 			    {
 			        SetPlayerInterior(i, 3);
 			        PlayerInfo[i][pInt] = 3;
-			        new Float:X, Float:Y, Float:Z;
-			        GetPlayerPos(i, X,Y,Z);
-			        SetPlayerCameraPos(i, X - 3, Y, Z);
-			        SetPlayerCameraLookAt(i,X,Y,Z);
+			        new Float:x, Float:y, Float:z;
+			        GetPlayerPos(i, x, y, z);
+			        SetPlayerCameraPos(i, x - 3, y, z);
+			        SetPlayerCameraLookAt(i,x,y,z);
 			    }
 			    MedicTime[i] ++;
 			    if(MedicTime[i] >= NeedMedicTime[i])
@@ -7264,9 +7276,9 @@ public SetPlayerUnjail()
 			    {
 				    if(IsPlayerConnected(TaxiAccepted[i]))
 				    {
-				        new Float:X,Float:Y,Float:Z;
-						GetPlayerPos(TaxiAccepted[i], X, Y, Z);
-						SetPlayerCheckpoint(i, X, Y, Z, 5);
+				        new Float:x, Float:y, Float:z;
+						GetPlayerPos(TaxiAccepted[i], x, y, z);
+						SetPlayerCheckpoint(i, x, y, z, 5);
 				    }
 				}
 			}
@@ -7276,9 +7288,9 @@ public SetPlayerUnjail()
 			    {
 				    if(IsPlayerConnected(BusAccepted[i]))
 				    {
-				        new Float:X,Float:Y,Float:Z;
-						GetPlayerPos(BusAccepted[i], X, Y, Z);
-						SetPlayerCheckpoint(i, X, Y, Z, 5);
+				      new Float:x, Float:y, Float:z;
+						GetPlayerPos(BusAccepted[i], x, y, z);
+						SetPlayerCheckpoint(i, x, y, z, 5);
 				    }
 				}
 			}
@@ -8091,7 +8103,7 @@ public GameModeExitFunc()
 	KillTimer(spectatetimer);
 	KillTimer(stoppedvehtimer);
 	KillTimer(turftimer);
-	KillTimer(checkcarhealthtimer);
+	//KillTimer(checkcarhealthtimer);
 	KillTimer(burgertimer);
 	KillTimer(chickentimer);
 	KillTimer(tracetimer);
@@ -8148,28 +8160,28 @@ public IsPlayerInTurf(playerid, turfid)
 	return 0;
 }
 
-public GetClosestPlayer(p1)
-{
-	new x,Float:dis,Float:dis2,player;
-	player = -1;
-	dis = 99999.99;
-	for (x=0;x<MAX_PLAYERS;x++)
-	{
-		if(IsPlayerConnected(x))
-		{
-			if(x != p1)
-			{
-				dis2 = GetDistanceBetweenPlayers(x,p1);
-				if(dis2 < dis && dis2 != -1.00)
-				{
-					dis = dis2;
-					player = x;
-				}
-			}
-		}
-	}
-	return player;
-}
+//public GetClosestPlayer(p1)
+//{
+//	new x,Float:dis,Float:dis2,player;
+//	player = -1;
+//	dis = 99999.99;
+//	for (x=0;x<MAX_PLAYERS;x++)
+//	{
+//		if(IsPlayerConnected(x))
+//		{
+//			if(x != p1)
+//			{
+//				dis2 = GetDistanceBetweenPlayers(x,p1);
+//				if(dis2 < dis && dis2 != -1.00)
+//				{
+//					dis = dis2;
+//					player = x;
+//				}
+//			}
+//		}
+//	}
+//	return player;
+//}
 
 public Production()
 {
@@ -8766,7 +8778,7 @@ public OnPropUpdate()
 		fclose(file2);
 	}*/
 
-	for (new idx = 0; idx < MAX_VEHICLES; idx++)
+	foreach(new idx : Vehicle)
 	{
 		if (IsAnOwnableCar(idx)) continue;
 		format(sql, sizeof(sql), "UPDATE car SET \
@@ -9033,7 +9045,7 @@ public SendEnemyMessage(color, string[])
 	{
 		rccounter = 0;
 	}
-	AddStaticVehicleEx(carselect[rccounter], CarSpawns[carcoords][pos_x], CarSpawns[carcoords][pos_y], CarSpawns[carcoords][pos_z], CarSpawns[carcoords][z_angle], randcol, randcol2, 60000);
+	AddStaticVehicleEx2(carselect[rccounter], CarSpawns[carcoords][pos_x], CarSpawns[carcoords][pos_y], CarSpawns[carcoords][pos_z], CarSpawns[carcoords][z_angle], randcol, randcol2, 60000);
 	rccounter++;
 	return 1;
 }*/
@@ -9878,7 +9890,7 @@ public RemoveRoadblock(playerid)
 	return 1;
 }
 
-public IsPlayerInArea(playerid, Float:minx, Float:maxx, Float:miny, Float:maxy)
+public IsPlayerInAreaRange(playerid, Float:minx, Float:maxx, Float:miny, Float:maxy)
 {
     new Float:x, Float:y, Float:z;
     GetPlayerPos(playerid, x, y, z);
@@ -9929,11 +9941,10 @@ public SendBusRoute(playerid, eastorwest)
 
 public IsInBusrouteZone(playerid)
 {
-	if (IsPlayerInArea(playerid, 1722.3599, 2901.8652, -2694.5417, -904.3515)) return 0; // east
-	else if (IsPlayerInArea(playerid, 127.4722, 1722.3599, -2694.5417, -904.3515)) return 1; // west
+	if (IsPlayerInAreaRange(playerid, 1722.3599, 2901.8652, -2694.5417, -904.3515)) return 0; // east
+	else if (IsPlayerInAreaRange(playerid, 127.4722, 1722.3599, -2694.5417, -904.3515)) return 1; // west
 	return 1;
 }
-
 public BusrouteEnd(playerid, vehicleid)
 {
 	if (BusrouteEast[playerid][0] != 0 || BusrouteWest[playerid][0] != 0)
@@ -10883,14 +10894,14 @@ public Startup(playerid, vehicleid)
 	}
 	else if(IsPlayerInAnyVehicle(playerid) && !engineOn[vehicleid] && !vehicleEntered[playerid][vehicleid] && GetPlayerState(playerid) == PLAYER_STATE_DRIVER && pveh != 510 && pveh != 462 && newcar != 59 && newcar != 60 && !IsAPlane(newcar) && !IsAHarvest(newcar) && !IsADrugHarvest(newcar) && !IsASweeper(newcar))
 	{
-		SendClientMessage(playerid, COLOR_LIGHT_BLUE, "Chu y! go /engine hoac nhan SHIFT de khoi dong xe!");
-		TogglePlayerControllable(playerid, false);
+		SendClientMessage(playerid, COLOR_LIGHT_BLUE, "Go /engine hoac nhan 'N' de khoi dong xe!");
+		//TogglePlayerControllable(playerid, false);
 		vehicleEntered[playerid][vehicleid] = true;
 	}
 	else if(IsPlayerInAnyVehicle(playerid) && !engineOn[vehicleid] && vehicleEntered[playerid][vehicleid] && GetPlayerState(playerid) == PLAYER_STATE_DRIVER && pveh != 510 && pveh != 462 && newcar != 59 && newcar != 60 && !IsAPlane(newcar) && !IsAHarvest(newcar) && !IsADrugHarvest(newcar) && !IsASweeper(newcar))
 	{
-		SendClientMessage(playerid, COLOR_LIGHT_BLUE, "Chu y! go /engine hoac nhan SHIFT de khoi dong xe!");
-		TogglePlayerControllable(playerid, false);
+		SendClientMessage(playerid, COLOR_LIGHT_BLUE, "Go /engine hoac nhan 'N' de khoi dong xe!");
+		//TogglePlayerControllable(playerid, false);
 	}
 }
 
@@ -10960,72 +10971,132 @@ public NameTimer()
 	}
 }
 
-public CheckCarHealth()
+//public CheckCarHealth()
+//{
+//    new string[256];
+//    new sendername[MAX_PLAYER_NAME];
+//    for (new i=0; i < MAX_PLAYERS; i++)
+//    {
+//        if (IsPlayerConnected(i) && IsPlayerInAnyVehicle(i) && GetPlayerState(i) == PLAYER_STATE_DRIVER)
+//        {
+//             new Float:health;
+//             GetVehicleHealth(GetPlayerVehicleID(i),health);
+//             new newcar = GetPlayerVehicleID(i);
+//             if (health <= 500)
+//             {
+//                 if(engineOn[GetPlayerVehicleID(i)] == 1)
+//                 {
+//                    if(GetPlayerState(i) == PLAYER_STATE_DRIVER)
+//                    {
+//                    	TogglePlayerControllable(i, 0);
+//                 		SendClientMessage(i, COLOR_LIGHT_BLUE, "Xe cua ban da bi hong, khoi dong dong co len hoac goi tho sua xe! (/exit de ra khoi xe)");
+//                 		engineOn[GetPlayerVehicleID(i)] = false;
+//                 		GetPlayerName(i, sendername, sizeof(sendername));
+//                 		format(string, sizeof(string), "* Dong co xe bi hong (( %s ))", sendername);
+//							ProxDetector(30.0, i, string, COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE);
+//							}
+//						}
+//             }
+//         }
+//    }
+//}
+stock IsVehicleDamaged(vehid)
 {
-    new string[256];
-    new sendername[MAX_PLAYER_NAME];
-    for (new i=0; i < MAX_PLAYERS; i++)
-    {
-        if (IsPlayerConnected(i) && IsPlayerInAnyVehicle(i) && GetPlayerState(i) == PLAYER_STATE_DRIVER)
-        {
-             new Float:health;
-             GetVehicleHealth(GetPlayerVehicleID(i),health);
-             new newcar = GetPlayerVehicleID(i);
-             if (health <= 500 && !IsABoat(newcar) && !IsABike(newcar) && !IsAPlane(newcar) && !IsAHarvest(newcar) && !IsADrugHarvest(newcar) && !IsASweeper(newcar))
-             {
-                 if(engineOn[GetPlayerVehicleID(i)] == 1)
-                 {
-                    if(GetPlayerState(i) == PLAYER_STATE_DRIVER)
-                    {
-                    	TogglePlayerControllable(i, 0);
-                 		SendClientMessage(i, COLOR_LIGHT_BLUE, "Xe cua ban da bi hong, khoi dong dong co len hoac goi tho sua xe! (/exit de ra khoi xe)");
-                 		engineOn[GetPlayerVehicleID(i)] = false;
-                 		GetPlayerName(i, sendername, sizeof(sendername));
-                 		format(string, sizeof(string), "* Dong co xe bi hong (( %s ))", sendername);
-						ProxDetector(30.0, i, string, COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE);
-					}
-				 }
-             }
-         }
-    }
+	new Float:vhealth;
+	GetVehicleHealth(vehid, vhealth);
+	if (vhealth <= 390)
+		return 1;
+	return 0;
+}
+
+stock VehicleEngine(vehid, bool:type)
+{
+	new engine, lights, alarm, doors, bonnet, boot, objective;
+	GetVehicleParamsEx(vehid, engine, lights, alarm, doors, bonnet, boot, objective);
+	if (type == true)
+		SetVehicleParamsEx(vehid, VEHICLE_PARAMS_ON, lights, alarm, doors, bonnet, boot, objective);
+	else 
+		SetVehicleParamsEx(vehid, VEHICLE_PARAMS_OFF, lights, alarm, doors, bonnet, boot, objective);
+	return 1;
+}
+
+stock VehicleLight(vehid, bool:type)
+{
+	new engine, lights, alarm, doors, bonnet, boot, objective;
+	GetVehicleParamsEx(vehid, engine, lights, alarm, doors, bonnet, boot, objective);
+	if (type == true)
+		SetVehicleParamsEx(vehid, engine, 1, alarm, doors, bonnet, boot, objective);
+	else
+		SetVehicleParamsEx(vehid, engine, 0, alarm, doors, bonnet, boot, objective);
+	return 1;
+}
+
+stock VehicleHood(vehid, bool:type)
+{
+	new engine, lights, alarm, doors, bonnet, boot, objective;
+	GetVehicleParamsEx(vehid, engine, lights, alarm, doors, bonnet, boot, objective);
+	if (type == true)
+		SetVehicleParamsEx(vehid, engine, lights, alarm, doors, 1, boot, objective);
+	else
+		SetVehicleParamsEx(vehid, engine, lights, alarm, doors, 0, boot, objective);
+	return 1;
+}
+
+stock VehicleTrunk(vehid, bool:type)
+{
+	new engine, lights, alarm, doors, bonnet, boot, objective;
+	GetVehicleParamsEx(vehid, engine, lights, alarm, doors, bonnet, boot, objective);
+	if (type == true)
+		SetVehicleParamsEx(vehid, engine, lights, alarm, doors, bonnet, 1, objective);
+	else
+		SetVehicleParamsEx(vehid, engine, lights, alarm, doors, bonnet, 0, objective);
+	return 1;
 }
 
 public StartingTheVehicle(playerid)
 {
     if(IsPlayerConnected(playerid))
     {
+		 new vehid = GetPlayerVehicleID(playerid);
+		 if (IsVehicleDamaged(GetPlayerVehicleID(playerid)))
+		 {
+			 //VehicleEngine(GetPlayerVehicleID(playerid), 0);
+			 new str[128];
+			 format(str, sizeof(str), "* Dong co xe da hong (( %s )).", GN(playerid));
+			 ProxDetector(30.0, playerid, str, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+			 gEngine[playerid] = 0;
+			 return 1;
+		 }
         if(IsPlayerInAnyVehicle(playerid))
         {
-            new RandomStart;
-    		new string[256];
-    		new sendername[MAX_PLAYER_NAME];
-            RandomStart = random(4);
-            switch(RandomStart)
-            {
-                case 0,1,2:
-                {
-                    engineOn[GetPlayerVehicleID(playerid)] = true;
-                    TogglePlayerControllable(playerid, true);
-                    GetPlayerName(playerid, sendername, sizeof(sendername));
-                    format(string, sizeof(string), "* Dong co duoc khoi dong (( %s )).", sendername);
-                    ProxDetector(30.0, playerid, string, COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE);
-                    gEngine[playerid] = 0;
-                }
-                case 3:
-                {
-                    GetPlayerName(playerid, sendername, sizeof(sendername));
-                    format(string, sizeof(string), "* Dong co khong duoc khoi dong (( %s )).", sendername);
-					ProxDetector(30.0, playerid, string, COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE,COLOR_PURPLE);
-					gEngine[playerid] = 0;
-                }
-            }
+			  new string[256];
+			  if (!engineOn[vehid])
+			  {
+				  new RandomStart;
+				  RandomStart = random(4);
+				  switch (RandomStart)
+				  {
+					  case 0, 1, 2:
+					  {
+							VehicleEngine(vehid, true);
+							engineOn[vehid] = 1;
+							//TogglePlayerControllable(playerid, true);
+							//GetPlayerName(playerid, sendername, sizeof(sendername));
+							format(string, sizeof(string), "* Dong co da duoc khoi dong (( %s )).", GN(playerid));
+							ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+					  }
+					  case 3:
+					  {
+							//GetPlayerName(playerid, sendername, sizeof(sendername));
+							format(string, sizeof(string), "* Dong co khoi dong that bai (( %s )).", GN(playerid));
+							ProxDetector(30.0, playerid, string, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE, COLOR_PURPLE);
+					  }
+				  }
+			  }
         }
-		else
-		{
-		    gEngine[playerid] = 0;
-		}
     }
-    return 1;
+	gEngine[playerid] = 0;
+   return 1;
 }
 
 public FarmerExit(playerid)
@@ -11464,11 +11535,11 @@ stock CheckPlayerDistanceToVehicle(Float:radi, playerid, vehicleid)
 {
 	if(IsPlayerConnected(playerid))
 	{
-	    new Float:PX,Float:PY,Float:PZ,Float:X,Float:Y,Float:Z;
-	    GetPlayerPos(playerid,PX,PY,PZ);
-	    GetVehiclePos(vehicleid, X,Y,Z);
-	    new Float:Distance = (X-PX)*(X-PX)+(Y-PY)*(Y-PY)+(Z-PZ)*(Z-PZ);
-	    if(Distance <= radi*radi)
+	    new Float:px,Float:py,Float:pz,Float:x,Float:y,Float:z;
+	    GetPlayerPos(playerid,px,py,pz);
+	    GetVehiclePos(vehicleid, x,y,z);
+	    new Float:distance = (x-px)*(x-px)+(y-py)*(y-py)+(z-pz)*(z-pz);
+		 if (distance <= radi*radi)
 	    {
 	        return 1;
 	    }
@@ -11615,3 +11686,4 @@ public SendAdminMessage(color, string[])
 #include <ProjectInc\ontimer>
 #include <ProjectInc\map>
 
+#include <uf>
