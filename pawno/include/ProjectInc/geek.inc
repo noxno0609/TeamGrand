@@ -737,7 +737,7 @@ public IncOnPlayerDisconnect(playerid, reason) {
 	DestroyDriverLicenseTD(playerid);
 	stop DriverLicenseLoop[playerid];
 	if(DriverLicenseCar[playerid] != INVALID_VEHICLE_ID) {
-		SetVehicleToRespawn(DriverLicenseCar[playerid]);
+		SetVehicleToRespawn2(DriverLicenseCar[playerid]);
 		DriverLicenseCar[playerid] = INVALID_VEHICLE_ID;
 		SafeGivePlayerMoney(playerid, DMVFEE);
 		for(new i=0; i < MAX_PLAYERS; i++) {
@@ -793,7 +793,7 @@ public DMVOnPlayerEnterCP(playerid) {
 			SendClientMessage(playerid, COLOR_GRAD1, "Rat tiec nhung ban da rot trong bai thi sat hach bang lai xe");
 		}
 		RemovePlayerFromVehicle(playerid);
-		SetVehicleToRespawn(DriverLicenseCar[playerid]);
+		SetVehicleToRespawn2(DriverLicenseCar[playerid]);
 		DriverLicenseCar[playerid] = INVALID_VEHICLE_ID;
 	}
 }

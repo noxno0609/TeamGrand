@@ -240,8 +240,9 @@ CMD:xoaveh(playerid, params[])
 		 }
 		 if (!(strcmp(vidid, "all", true)))
 		 {
-			 for (new i = 0; i < MAXCUSTOMVEH; i++)
+			 for(new i=0;i<MAXCUSTOMVEH;i++)
 			 {
+				 if (aVeh[i] != INVALID_VEHICLE_ID && !IsAnyAdminInVehicle(aVeh[i]))
 					DeleteAdminVeh(i);
 			 }
 			 SendAdminMessage(COLOR_LIGHTRED, "AdmCMD: Da xoa tat ca Admin Vehicle!");
