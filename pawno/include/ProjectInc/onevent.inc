@@ -97,6 +97,7 @@ public OnGameModeInit()
 	fbigate = CreateObject(980, 1534.9020, -1451.5979, 14.4882, 0, 0.0000, 0);
 	hspdgate = CreateObject(971, 1643.3379, -1714.9338, 15.3067, 0, 0.0000, 90);
 
+	DMVMapping();
 	// CreatedCars check
 	/*for (new i = 0; i < sizeof(CreatedCars); i++)
 	{
@@ -499,10 +500,11 @@ public OnGameModeInit()
 	AddStaticPickup(1239, 23, 1557.7257, -1675.2711, 28.3955); // PD roof
 	AddStaticPickup(1239, 23, 248.4994, -33.1366, 1.5781); // Materials pickup
 	AddStaticPickup(1239, 23, 2660.3398, -1590.6552, 13.8936); // Materials bank
-	AddStaticPickup(1239, 23, 20.5627,-103.7291,1005.2578); // Materials bank
-	AddStaticPickup(1239, 23, 203.9068,-41.0728,1001.8047); // Materials bank
-	AddStaticPickup(1239, 23, 214.4470,-7.6471,1001.2109); // Materials bank
-	AddStaticPickup(1239, 23, 161.3765,-83.8416,1001.8047); // Materials bank
+	AddStaticPickup(1239, 23, 20.5627,-103.7291,1005.2578); // Binco pickup
+	AddStaticPickup(1239, 23, 203.9068,-41.0728,1001.8047); // Binco pickup
+	AddStaticPickup(1239, 23, 214.4470,-7.6471,1001.2109); // Binco pickup
+	AddStaticPickup(1239, 23, 161.3765,-83.8416,1001.8047); // Binco pickup
+	AddStaticPickup(1239, 23, -1102.0814,-1636.1648,76.3672); // DMV pickup
 	pickups = pickups + 71 + 3;
 	printf("Loading %d pickups... Loaded successfuly !", pickups);
 
@@ -571,7 +573,8 @@ public OnPlayerConnect(playerid)
 	RemoveBuilding(playerid);
 	RemoveVendingMachine(playerid);
 	CreateServerPlayerTextDraw(playerid);
-
+	InitDriverLicenseTD(playerid);
+	
 	new plname[MAX_PLAYER_NAME];
 	GetPlayerName(playerid, plname, sizeof(plname));
 	if (Security != 0)
@@ -849,6 +852,7 @@ public OnPlayerDisconnect(playerid, reason)
 	}
 	SetPVarInt(playerid, "CantUseAnim", 0);
 	ClearPlayer(playerid);
+	IncOnPlayerDisconnect(playerid, reason);
 }
 //dcmd_specplayer(playerid, params[])
 //{
@@ -3200,6 +3204,7 @@ public OnPlayerEnterCheckpoint(playerid)
 			SetPlayerSpecialAction(playerid, 0);
 		}
 	}
+	DMVOnPlayerEnterCP(playerid);
 	DisableCheckpoint(playerid);
 	return 1;
 }
@@ -3209,6 +3214,7 @@ public OnPlayerLeaveCheckpoint(playerid)
 }
 public OnPlayerEnterRaceCheckpoint(playerid)
 {
+	DMVOnPlayerEnterRaceCP(playerid);
 	return 1;
 }
 public OnPlayerLeaveRaceCheckpoint(playerid)
@@ -3600,8 +3606,8 @@ public OnPlayerSelectedMenuRow(playerid, row)
 		case 0:
 		{
 					SendClientMessage(playerid, COLOR_GREEN, "Noi cap bang lai duoc danh dau do tren ban do.");
-					SendClientMessage(playerid, COLOR_WHITE, "TIP: Su dung /licensers Khi o trong noi cap bang lai");
-					SetPlayerCheckpoint(playerid, 2048.352, -1900.153, 13.5538, 5.0);
+					SendClientMessage(playerid, COLOR_WHITE, "TIP: Su dung /thibanlai Khi o trong noi cap bang lai");
+					SetPlayerCheckpoint(playerid, 20.5627,-103.7291,1005.2578, 5.0);
 					TogglePlayerControllable(playerid, 1);
 		}
 		case 1:
@@ -3879,6 +3885,19 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 		SetTimerEx("Startup", 1, false, "ii", playerid, vehicle);
 		SetTimerEx("engine2", 2500, false, "ii", playerid);
 	}
+	if(DriverLicenseCar[playerid] != INVALID_VEHICLE_ID && newstate != PLAYER_STATE_DRIVER && oldstate == PLAYER_STATE_DRIVER) {
+		stop DriverLicenseLoop[playerid];
+		DisablePlayerRaceCheckpoint(playerid);
+		DisablePlayerCheckpoint(playerid);
+		DestroyVehicle(DriverLicenseCar[playerid]);
+		DriverLicenseCar[playerid] = INVALID_VEHICLE_ID;
+		SendClientMessage(playerid, COLOR_GRAD1, "Bai sat hach lai xe cua ban da bi huy");
+		SafeGivePlayerMoney(playerid, DMVFEE/2);
+		new str[255];
+		format(str, sizeof(str), "Ban duoc nhan lai $%d do huy bai thi sat hach lai xe", DMVFEE/2);
+		SendClientMessage(playerid, COLOR_GRAD1, str);
+		
+	}
 	if (newstate == PLAYER_STATE_ONFOOT)
 	{
 		if (PlayerKarting[playerid] > 0 && PlayerInKart[playerid] > 0)
@@ -4058,7 +4077,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 					WantedPoints[playerid] += 1;
 					SetPlayerCriminal(playerid,255, "Driving without License");
 					}*/
-					if (TakingLesson[playerid] == 1) {}
+					if ( DriverLicenseCar[playerid] != INVALID_VEHICLE_ID && newcar == DriverLicenseCar[playerid]) {}
 					else {
 						SendClientMessage(playerid, COLOR_YELLOW, "   Ban khong co giay phep lai xe, hay lai xe can than neu khong muon bi cops chu y.");
 					}
@@ -4783,7 +4802,7 @@ public OnPlayerLogin(playerid)
 	}
 	if (PlayerInfo[playerid][pLocked] == 1) // Auto-kick
 	{
-		SendClientMessage(playerid, COLOR_LIGHTRED, "Your account is locked. Make a unlock/unban request on forums; 'Wrongly Banned'.");
+		SendClientMessage(playerid, COLOR_LIGHTRED, "Tai khoan cua ban da bi khoa;");
 		KickEx(playerid);
 	}
 	if (PlayerInfo[playerid][pLevel] == -999) //autoban
@@ -4819,7 +4838,7 @@ public OnPlayerLogin(playerid)
 	SendClientMessage(playerid, COLOR_WHITE, str);
 	if (PlayerInfo[playerid][pDonateRank] > 0)
 	{
-		SendClientMessage(playerid, COLOR_WHITE, "People of LS: Thank you for donating so we can live & build further improvements!");
+		SendClientMessage(playerid, COLOR_WHITE, "Ban da dang nhap voi tai khoan VIP!");
 	}
 	if (PlayerInfo[playerid][pAdmin] > 0)
 	{
@@ -6375,6 +6394,11 @@ public OnDialogResponse(playerid, dialogid, response, listitem, inputtext[])
 		if (!response) return 1;
 		//LoadTruck(playerid, listitem);
 		SetCheckpoint(playerid, BizzInfo[listitem][bEntranceX], BizzInfo[listitem][bEntranceY], BizzInfo[listitem][bEntranceZ], 5);
+		return 1;
+	}
+	if(dialogid == DIALOG_DRIVERLICENSE_RULE)
+	{
+		DriverLicenseLoop[playerid] = repeat DriverLicenseTimer(playerid);
 		return 1;
 	}
 	return 0;
