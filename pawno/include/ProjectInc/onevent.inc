@@ -3606,7 +3606,7 @@ public OnPlayerSelectedMenuRow(playerid, row)
 		case 0:
 		{
 					SendClientMessage(playerid, COLOR_GREEN, "Noi thi bang lai duoc danh dau do tren ban do.");
-					SendClientMessage(playerid, COLOR_WHITE, "TIP: Su dung /thibanlai Khi o trong noi cap bang lai");
+					SendClientMessage(playerid, COLOR_WHITE, "TIP: Su dung /thibanglai Khi o trong noi cap bang lai");
 					SetPlayerCheckpoint(playerid, 2063.0376,-1914.9541,13.5469, 5.0);
 					TogglePlayerControllable(playerid, 1);
 		}
@@ -3619,7 +3619,7 @@ public OnPlayerSelectedMenuRow(playerid, row)
 		case 2:
 		{
 					SendClientMessage(playerid, COLOR_GREEN, "Cua hang quan ao duoc danh dau do tren ban do.");
-					SendClientMessage(playerid, COLOR_WHITE, "TIP: Su dung /clothes khi ban o trong cua hang.");
+					SendClientMessage(playerid, COLOR_WHITE, "TIP: Su dung /muaquanao khi ban o trong cua hang.");
 					SetPlayerCheckpoint(playerid, 2244.3423, -1665.5542, 15.4766, 5.0);
 					TogglePlayerControllable(playerid, 1);
 		}
