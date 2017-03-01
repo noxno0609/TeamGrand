@@ -869,7 +869,7 @@ public InitDriverLicenseTD(playerid) {
 	PlayerTextDrawSetProportional(playerid, DriverLicenseTD[playerid][2], 1);
 	PlayerTextDrawSetShadow(playerid, DriverLicenseTD[playerid][2], 0);
 
-	DriverLicenseTD[playerid][3] = CreatePlayerTextDraw(playerid, 560.000000, 350.000000, "1000");
+	DriverLicenseTD[playerid][3] = CreatePlayerTextDraw(playerid, 570.000000, 350.000000, "1000");
 	PlayerTextDrawLetterSize(playerid, DriverLicenseTD[playerid][3], 0.400000, 1.600000);
 	PlayerTextDrawAlignment(playerid, DriverLicenseTD[playerid][3], 1);
 	PlayerTextDrawColor(playerid, DriverLicenseTD[playerid][3], -2139062017);
@@ -880,7 +880,7 @@ public InitDriverLicenseTD(playerid) {
 	PlayerTextDrawSetProportional(playerid, DriverLicenseTD[playerid][3], 1);
 	PlayerTextDrawSetShadow(playerid, DriverLicenseTD[playerid][3], 0);
 
-	DriverLicenseTD[playerid][4] = CreatePlayerTextDraw(playerid, 560.000000, 375.000000, "0.0");
+	DriverLicenseTD[playerid][4] = CreatePlayerTextDraw(playerid, 570.000000, 375.000000, "0.0");
 	PlayerTextDrawLetterSize(playerid, DriverLicenseTD[playerid][4], 0.400000, 1.600000);
 	PlayerTextDrawAlignment(playerid, DriverLicenseTD[playerid][4], 1);
 	PlayerTextDrawColor(playerid, DriverLicenseTD[playerid][4], -2139062017);

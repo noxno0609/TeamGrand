@@ -504,7 +504,7 @@ public OnGameModeInit()
 	AddStaticPickup(1239, 23, 203.9068,-41.0728,1001.8047); // Binco pickup
 	AddStaticPickup(1239, 23, 214.4470,-7.6471,1001.2109); // Binco pickup
 	AddStaticPickup(1239, 23, 161.3765,-83.8416,1001.8047); // Binco pickup
-	AddStaticPickup(1239, 23, -1102.0814,-1636.1648,76.3672); // DMV pickup
+	AddStaticPickup(1239, 23, 2063.0376,-1914.9541,13.5469); // DMV pickup
 	pickups = pickups + 71 + 3;
 	printf("Loading %d pickups... Loaded successfuly !", pickups);
 
