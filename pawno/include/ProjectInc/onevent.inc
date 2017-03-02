@@ -504,7 +504,7 @@ public OnGameModeInit()
 	AddStaticPickup(1239, 23, 203.9068,-41.0728,1001.8047); // Binco pickup
 	AddStaticPickup(1239, 23, 214.4470,-7.6471,1001.2109); // Binco pickup
 	AddStaticPickup(1239, 23, 161.3765,-83.8416,1001.8047); // Binco pickup
-	AddStaticPickup(1239, 23, -1102.0814,-1636.1648,76.3672); // DMV pickup
+	AddStaticPickup(1239, 23, 2063.0376,-1914.9541,13.5469); // DMV pickup
 	pickups = pickups + 71 + 3;
 	printf("Loading %d pickups... Loaded successfuly !", pickups);
 
@@ -3619,7 +3619,7 @@ public OnPlayerSelectedMenuRow(playerid, row)
 		case 0:
 		{
 					SendClientMessage(playerid, COLOR_GREEN, "Noi thi bang lai duoc danh dau do tren ban do.");
-					SendClientMessage(playerid, COLOR_WHITE, "TIP: Su dung /thibanlai Khi o trong noi cap bang lai");
+					SendClientMessage(playerid, COLOR_WHITE, "TIP: Su dung /thibanglai Khi o trong noi cap bang lai");
 					SetPlayerCheckpoint(playerid, 2063.0376,-1914.9541,13.5469, 5.0);
 					TogglePlayerControllable(playerid, 1);
 		}
@@ -3632,7 +3632,7 @@ public OnPlayerSelectedMenuRow(playerid, row)
 		case 2:
 		{
 					SendClientMessage(playerid, COLOR_GREEN, "Cua hang quan ao duoc danh dau do tren ban do.");
-					SendClientMessage(playerid, COLOR_WHITE, "TIP: Su dung /clothes khi ban o trong cua hang.");
+					SendClientMessage(playerid, COLOR_WHITE, "TIP: Su dung /muaquanao khi ban o trong cua hang.");
 					SetPlayerCheckpoint(playerid, 2244.3423, -1665.5542, 15.4766, 5.0);
 					TogglePlayerControllable(playerid, 1);
 		}

@@ -672,7 +672,7 @@ CMD:thibanglai(playerid, params[]){
 	new str[255];
 	format(str, sizeof(str), "Ban can co it nhat $%d dong le phi thi bang lai", DMVFEE);
 	if(GetPlayerMoney(playerid) < DMVFEE) return SendClientMessage(playerid, COLOR_GRAD1, str);
-	if(DriverLicenseCar[playerid] != INVALID_VEHICLE_ID) return SendClientMessage(playerid, COLOR_GRAD1, "Vui long tap trung vao bai thi hien tai cua ban");
+	if(DriverLicenseCar[playerid] != INVALID_VEHICLE_ID || GetPVarInt(playerid, "DriverLicenseTest") == 1) return SendClientMessage(playerid, COLOR_GRAD1, "Vui long tap trung vao bai thi hien tai cua ban");
 
 	SafeGivePlayerMoney(playerid, -DMVFEE);
 	DisablePlayerRaceCheckpoint(playerid);
@@ -877,7 +877,7 @@ public InitDriverLicenseTD(playerid) {
 	PlayerTextDrawSetProportional(playerid, DriverLicenseTD[playerid][2], 1);
 	PlayerTextDrawSetShadow(playerid, DriverLicenseTD[playerid][2], 0);
 
-	DriverLicenseTD[playerid][3] = CreatePlayerTextDraw(playerid, 560.000000, 350.000000, "1000");
+	DriverLicenseTD[playerid][3] = CreatePlayerTextDraw(playerid, 570.000000, 350.000000, "1000");
 	PlayerTextDrawLetterSize(playerid, DriverLicenseTD[playerid][3], 0.400000, 1.600000);
 	PlayerTextDrawAlignment(playerid, DriverLicenseTD[playerid][3], 1);
 	PlayerTextDrawColor(playerid, DriverLicenseTD[playerid][3], -2139062017);
@@ -888,7 +888,7 @@ public InitDriverLicenseTD(playerid) {
 	PlayerTextDrawSetProportional(playerid, DriverLicenseTD[playerid][3], 1);
 	PlayerTextDrawSetShadow(playerid, DriverLicenseTD[playerid][3], 0);
 
-	DriverLicenseTD[playerid][4] = CreatePlayerTextDraw(playerid, 560.000000, 375.000000, "0.0");
+	DriverLicenseTD[playerid][4] = CreatePlayerTextDraw(playerid, 570.000000, 375.000000, "0.0");
 	PlayerTextDrawLetterSize(playerid, DriverLicenseTD[playerid][4], 0.400000, 1.600000);
 	PlayerTextDrawAlignment(playerid, DriverLicenseTD[playerid][4], 1);
 	PlayerTextDrawColor(playerid, DriverLicenseTD[playerid][4], -2139062017);
