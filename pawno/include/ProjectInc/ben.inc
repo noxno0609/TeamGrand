@@ -4,7 +4,7 @@ public TazerKeyStateChange(playerid, newkeys, oldkeys)
 	if (newkeys & KEY_FIRE && Tazering[playerid] == 1 && !IsPlayerInAnyVehicle(playerid))
 	{
 		ApplyAnimation(playerid, "KNIFE", "knife_3", 4.1, 0, 1, 1, 0, 0, 1);
-		for (new i = 0; i<MAX_PLAYERS; i++)
+		foreach(new i : Player)
 		{
 			if (PlayerInfo[i][pMember] == 1 || PlayerInfo[i][pLeader] == 1 
 				|| PlayerInfo[i][pMember] == 17 || PlayerInfo[i][pLeader] == 17) continue;
@@ -281,7 +281,12 @@ CMD:spec(playerid, params[])
 				SpecVWorld[playerid] = GetPlayerVirtualWorld(playerid);
 			}
 			TogglePlayerSpectating(playerid, 1);
-			PlayerSpectatePlayer(playerid, pspec, 0);
+			if (IsPlayerInAnyVehicle(pspec))
+			{
+				new carid = GetPlayerVehicleID(pspec);
+				PlayerSpectateVehicle(playerid, carid);
+			}
+			else PlayerSpectatePlayer(playerid, pspec, 0);
 			SpecPlayer[playerid] = pspec;
 			Spectating[playerid] = 1;
 			Spectated[SpecPlayer[playerid]]++;
@@ -365,7 +370,7 @@ stock ClearApGiai(playerid)
 	if (Escorted[playerid] == 1)
 	{
 		Escorted[playerid] = 0;
-		for (new i = 0; i<MAX_PLAYERS; i++)
+		foreach(new i : Player)
 		{
 			if (EscortedPlayer[i] == playerid)
 			{
@@ -891,7 +896,7 @@ stock IsBizCanBuyProduct(bizid)
 stock GetFreeSeatAmbulance(vid)
 {
 	new freeseat = 2;
-	for (new i = 0; i<MAX_PLAYERS; i++)
+	foreach(new i : Player)
 	{
 		if (IsPlayerInVehicle(i, vid))
 		{

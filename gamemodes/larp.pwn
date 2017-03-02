@@ -4801,6 +4801,9 @@ public JoinChannelNr(playerid, number)
 }
 stock ClearPlayer(playerid)
 {
+	DriverLicenseCar[playerid] = INVALID_VEHICLE_ID;
+	DriverLicenseTime[playerid] = 0.0;
+
 	CarCheatAttemping[playerid] = 0;
 
 	DOCDelay[playerid] = 0;
@@ -5467,7 +5470,7 @@ public SetPlayerSpawn(playerid)
 	{
 		SetPlayerPos(playerid, SpecPos[playerid][0], SpecPos[playerid][1], SpecPos[playerid][2]);
 		SetPlayerInterior(playerid, SpecInt[playerid]);
-		SetPlayerVirtualWorld(playerid, SpecVWorld[playerid]);
+		SetVirtualWorld(playerid, SpecVWorld[playerid]);
 		if (Spectated[SpecPlayer[playerid]] > 0) Spectated[SpecPlayer[playerid]]--;
 		SpecPlayer[playerid] = -1;
 		Spectating[playerid] = 0;
@@ -5481,7 +5484,7 @@ public SetPlayerSpawn(playerid)
 		GameTextForPlayer(playerid, "~r~Bi thuong~n~~w~Go /dichvu capcuu de goi Cuu Thuong den", 5000, 3);
 		SetPlayerPos(playerid, GetPVarFloat(playerid, "DeathX"), GetPVarFloat(playerid, "DeathY"), GetPVarFloat(playerid, "DeathZ"));
 		SetPlayerFacingAngle(playerid, GetPVarFloat(playerid, "DeathAngle"));
-		SetPlayerVirtualWorld(playerid, GetPVarInt(playerid, "DeathVW"));
+		SetVirtualWorld(playerid, GetPVarInt(playerid, "DeathVW"));
 		SetPlayerInterior(playerid, GetPVarInt(playerid, "DeathInt"));
 		return 1;
 	}
@@ -5577,7 +5580,7 @@ public SetPlayerSpawn(playerid)
 	{
 		if(GetPlayerVirtualWorld(playerid) != 0 || PlayerInfo[playerid][pVirWorld] != 0)
 		{
-		   SetPlayerVirtualWorld(playerid, 0);
+		   SetVirtualWorld(playerid, 0);
 		   PlayerInfo[playerid][pVirWorld] = 0;
 		}
 		SetPlayerPos(playerid, 1182.5638,-1323.5256,13.5790);
@@ -5592,7 +5595,7 @@ public SetPlayerSpawn(playerid)
 		if(TutTime[playerid] == 0 && PlayerInfo[playerid][pTut] == 1 && RegistrationStep[playerid] == 0 && AfterTutorial[playerid] == 0 && FirstSpawn[playerid] == 0)
 		{
 			SetPlayerToTeamColor(playerid);
-		   SetPlayerVirtualWorld(playerid,PlayerInfo[playerid][pVirWorld]);
+		   SetVirtualWorld(playerid,PlayerInfo[playerid][pVirWorld]);
 		   SetPlayerInterior(playerid,PlayerInfo[playerid][pInt]);
 		   SetPlayerPos(playerid, PlayerInfo[playerid][pPos_x], PlayerInfo[playerid][pPos_y], PlayerInfo[playerid][pPos_z] + 1);
 		   SendClientMessage(playerid, COLOR_WHITE, "Bi crashed, tro lai vi tri cu.");
@@ -5606,14 +5609,14 @@ public SetPlayerSpawn(playerid)
 		if(SpawnChange[playerid]) //If 1, then you get to your house, else spawn somewhere else
 		{
 			//SetPlayerInterior(playerid,HouseInfo[house][hInt]);
-			//SetPlayerVirtualWorld(playerid,HouseInfo[house][hWorld]);
+			//SetVirtualWorld(playerid,HouseInfo[house][hWorld]);
 			//SetPlayerPos(playerid, HouseInfo[house][hExitx], HouseInfo[house][hExity], HouseInfo[house][hExitz]);
 			//PlayerInfo[playerid][pLocal] = house;
 			//PlayerInfo2[HouseEntered][playerid] = house;
 			//PlayerInfo[playerid][pInt] = HouseInfo[house][hInt];
 			SetPlayerToTeamColor(playerid);
 			SetPlayerPos(playerid, HouseInfo[house][hEntrancex], HouseInfo[house][hEntrancey], HouseInfo[house][hEntrancez]); // Warp the player
-			SetPlayerVirtualWorld(playerid, 0);
+			SetVirtualWorld(playerid, 0);
 			PlayerInfo[playerid][pVirWorld] = 0;
 			SetPlayerInterior(playerid, 0);
 			PlayerInfo[playerid][pInt] = 0;
@@ -5771,7 +5774,7 @@ public SetPlayerSpawn(playerid)
 		}
 		else
 		{
-			SetPlayerVirtualWorld(playerid, PlayerInfo[playerid][pVirWorld]);
+			SetVirtualWorld(playerid, PlayerInfo[playerid][pVirWorld]);
 			SetPlayerInterior(playerid, PlayerInfo[playerid][pInt]);
 			SetPlayerPos(playerid, PlayerInfo[playerid][pPos_x], PlayerInfo[playerid][pPos_y], PlayerInfo[playerid][pPos_z] + 1);
 			SetPlayerFacingAngle(playerid, 0);
@@ -6865,7 +6868,7 @@ public SetPlayerUnjail()
 			        SetPlayerCameraPos(i, 2247.0215,-1655.0173,17.2856);
 					SetPlayerCameraLookAt(i, 2244.6536,-1663.9304,15.4766);
 					SetPlayerInterior(i, 0);
-					SetPlayerVirtualWorld(i, 99);
+					SetVirtualWorld(i, 99);
 					SetPlayerPos(i, 2256.3555,-1646.6377,15.4959);
 			        SendClientMessage(i, COLOR_YELLOW, ":: CUA HANG QUAN AO ::");
 			        SendClientMessage(i, COLOR_WHITE, " ");
@@ -6942,7 +6945,7 @@ public SetPlayerUnjail()
 			        SetPlayerInterior(i, 3);
 			        SetPlayerPos(i, 330.6825,163.6688,1014.1875);
 			        SetCameraBehindPlayer(i);
-			        SetPlayerVirtualWorld(i, 0);
+			        SetVirtualWorld(i, 0);
 			        SendClientMessage(i, COLOR_YELLOW, ":: KET THUC PHAN HUONG DAN ::");
 			        SendClientMessage(i, COLOR_WHITE, " ");
 			        SendClientMessage(i, COLOR_YELLOW2, "Con rat nhieu noi khac tai Los Angeles, nhung ban can phai tu minh kham pha.");
@@ -10102,7 +10105,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		}
 		else if(GetPlayerVirtualWorld(playerid) == 2)
 		{
-			SetPlayerVirtualWorld(playerid, 0);
+			SetVirtualWorld(playerid, 0);
 			PlayerInfo[playerid][pVirWorld] = 0;
 			GameTextForPlayer(playerid, "~w~Los Angeles", 5000, 1);
 			SetPlayerInterior(playerid, 0);
@@ -10112,7 +10115,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 	}
 	else if(PlayerToPointStripped(1, playerid,1315.4581,-897.6843,39.5781, cx,cy,cz))
 	{//24/7 vinewood
-		SetPlayerVirtualWorld(playerid, 2);
+		SetVirtualWorld(playerid, 2);
 		PlayerInfo[playerid][pVirWorld] = 2;
 		GameTextForPlayer(playerid, "~w~24/7", 5000, 1);
 		SetPlayerInterior(playerid, 18);
@@ -10218,13 +10221,13 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 			GameTextForPlayer(playerid, "~w~Los Angeles", 5000, 1);
 			SetPlayerInterior(playerid, 0);
 			SetPlayerPos(playerid,2398.5508,-1894.6324,13.3828);
-			SetPlayerVirtualWorld(playerid, 0);
+			SetVirtualWorld(playerid, 0);
 			PlayerInfo[playerid][pVirWorld] = 0;
 			PlayerInfo[playerid][pInt] = 0;
 		}//cluckin bell marina
 		else if(GetPlayerVirtualWorld(playerid) == 1)
 		{
-			SetPlayerVirtualWorld(playerid, 0);
+			SetVirtualWorld(playerid, 0);
 			PlayerInfo[playerid][pVirWorld] = 0;
 			GameTextForPlayer(playerid, "~w~Los Angeles", 5000, 1);
 			SetPlayerInterior(playerid, 0);
@@ -10236,7 +10239,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 	}
 	else if(PlayerToPointStripped(1, playerid,2398.6240,-1899.2014,13.5469, cx,cy,cz))
 	{//Cluckin Bell near 10 green
-		SetPlayerVirtualWorld(playerid, 2);
+		SetVirtualWorld(playerid, 2);
 		PlayerInfo[playerid][pVirWorld] = 2;
 		OnPlayerEnterFood(playerid, 1);
 	}
@@ -10255,7 +10258,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 		}
 		else if(GetPlayerVirtualWorld(playerid) == 1)// vinewood burger shot
 		{
-			SetPlayerVirtualWorld(playerid, 0);
+			SetVirtualWorld(playerid, 0);
 			PlayerInfo[playerid][pVirWorld] = 0;
 			GameTextForPlayer(playerid, "~w~Los Angeles", 5000, 1);
 			SetPlayerInterior(playerid, 0);
@@ -10267,13 +10270,13 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 	}
 	else if(PlayerToPointStripped(1, playerid,928.9110,-1352.9958,13.3438, cx,cy,cz))
 	{//Marina Cluckin bell
-		SetPlayerVirtualWorld(playerid, 1);
+		SetVirtualWorld(playerid, 1);
 		PlayerInfo[playerid][pVirWorld] = 1;
 		OnPlayerEnterFood(playerid, 1);
 	}
 	else if(PlayerToPointStripped(1, playerid,1199.2477,-918.1447,43.1233, cx,cy,cz))
 	{//Vinewood Burger shot
-		SetPlayerVirtualWorld(playerid, 1);
+		SetVirtualWorld(playerid, 1);
 		PlayerInfo[playerid][pVirWorld] = 1;
 		OnPlayerEnterFood(playerid, 2);
 	}
@@ -10295,7 +10298,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 	}
 	else if(PlayerToPointStripped(1, playerid,227.5614,-7.3146,1002.2109, cx,cy,cz))
 	{//Some teleports are fucked up but they are working
-		SetPlayerVirtualWorld(playerid, 0);
+		SetVirtualWorld(playerid, 0);
 		PlayerInfo[playerid][pVirWorld] = 0;
 		GameTextForPlayer(playerid, "~w~Los Angeles", 5000, 1);
 		SetPlayerInterior(playerid, 0);
@@ -10309,7 +10312,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 	}
 	else if(PlayerToPointStripped(1, playerid,203.5140,-202.2578,1.5781, cx,cy,cz))
 	{//Pizzaboy
-	    SetPlayerVirtualWorld(playerid, 2);
+	    SetVirtualWorld(playerid, 2);
 	    PlayerInfo[playerid][pVirWorld] = 2;
 		OnPlayerEnterFood(playerid, 3);
 	}
@@ -10322,7 +10325,7 @@ public CheckForWalkingTeleport(playerid) // only put teleports ON FOOT here, use
 	        SetPlayerPos(playerid,203.2209,-204.6613,1.5781);
 	        OnPlayerExitFood(playerid); // ?
 	        PlayerInfo[playerid][pInt] = 0;
-	        SetPlayerVirtualWorld(playerid, 0);
+	        SetVirtualWorld(playerid, 0);
 	        PlayerInfo[playerid][pVirWorld] = 0;
 	    }
 	    else

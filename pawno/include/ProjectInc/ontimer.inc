@@ -52,12 +52,19 @@ task ServerBeat[1000]()
 	}
 	foreach(new playerid : Player)
 	{
+		if (DriverLicenseCar[playerid] != INVALID_VEHICLE_ID && DriverLicenseTime[playerid] != 0)
+		{
+			new Float:health;
+			GetVehicleHealth(DriverLicenseCar[playerid], health);
+			if (health < 995 || DriverLicenseTime[playerid] > 30 || (GetVehicleSpeed(DriverLicenseCar[playerid], 0) < 5 && DriverLicenseTime[playerid] > 2))
+				FailDrivingTest(playerid);
+		}
 		if (CarCheatAttemping[playerid] > 0 && --CarCheatAttemping[playerid])
 		{
-			if (CarCheatAttemping[playerid] >= 999)
+			if (CarCheatAttemping[playerid] >= 3)
 			{
 				new str[128];
-				format(str, sizeof(str), "[Hack/Cheat]: %s su dung hack fix xe va da bi kick.", GN(playerid));
+				format(str, sizeof(str), "[Hack/Cheat]: %s co tinh su dung hack fix xe va da bi kick.", GN(playerid));
 				SendAdminMessage(COLOR_RED, str);
 				SCM(playerid, COLOR_LIGHTRED, "Ban da bi kicked vi co tinh su dung hack fix car.");
 				KickEx(playerid);
@@ -245,7 +252,7 @@ task ServerBeat[1000]()
 			PlayerInfo[EscortedPlayer[playerid]][pLocal] = PlayerInfo[playerid][pLocal];
 
 			SetPlayerInterior(EscortedPlayer[playerid], intid);
-			SetPlayerVirtualWorld(EscortedPlayer[playerid], vir);
+			SetVirtualWorld(EscortedPlayer[playerid], vir);
 		}
 		if (DDTime[playerid] > 0 && DrugDealing[playerid] == 2)
 		{

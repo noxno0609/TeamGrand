@@ -645,14 +645,14 @@ public OnPlayerDisconnect(playerid, reason)
 {
 	if (Spectated[playerid] > 1)
 	{
-		for (new i = 0; i<MAX_PLAYERS; i++)
+		foreach(new i : Player)
 		{
 			if (Spectating[i] == 1 && SpecPlayer[i] == playerid)
 			{
 				new str[128];
 				format(str, sizeof(str), "AdmWarns: %s, nguoi ban dang theo doi da thoat khoi game.", GN(playerid));
 				SCM(i, COLOR_LIGHTRED, str);
-				TogglePlayerSpectating(playerid, 0);
+				TogglePlayerSpectating(i, 0);
 				SpecPlayer[i] = INVALID_PLAYER_ID;
 				Spectating[i] = 0;
 			}
@@ -682,7 +682,7 @@ public OnPlayerDisconnect(playerid, reason)
 	{
 		DestroyDynamic3DTextLabel(DanhHieu[playerid]);
 		SetPlayerPos(playerid, GetPVarFloat(playerid, "AdvisorLastx"), GetPVarFloat(playerid, "AdvisorLasty"), GetPVarFloat(playerid, "AdvisorLastz"));
-		SetPlayerVirtualWorld(playerid, GetPVarInt(playerid, "AdvisorLastVW"));
+		SetVirtualWorld(playerid, GetPVarInt(playerid, "AdvisorLastVW"));
 		SetPlayerInterior(playerid, GetPVarInt(playerid, "AdvisorLastInt"));
 		PlayerInfo[playerid][pPos_x] = GetPVarFloat(playerid, "AdvisorLastx");
 		PlayerInfo[playerid][pPos_y] = GetPVarFloat(playerid, "AdvisorLasty");
@@ -880,7 +880,7 @@ public OnPlayerDisconnect(playerid, reason)
 //				TogglePlayerSpectating(playerid, 1);
 //				PlayerSpectatePlayer(playerid, Giveplayerid);
 //				SetPlayerInterior(playerid, GetPlayerInterior(Giveplayerid));
-//				SetPlayerVirtualWorld(playerid, GetPlayerVirtualWorld(Giveplayerid));
+//				SetVirtualWorld(playerid, GetPlayerVirtualWorld(Giveplayerid));
 //				return 1;
 //			}
 //			else
@@ -888,7 +888,7 @@ public OnPlayerDisconnect(playerid, reason)
 //				TogglePlayerSpectating(playerid, 1);
 //				PlayerSpectateVehicle(playerid, GetPlayerVehicleID(Giveplayerid));
 //				SetPlayerInterior(playerid, GetPlayerInterior(Giveplayerid));
-//				SetPlayerVirtualWorld(playerid, GetPlayerVirtualWorld(Giveplayerid));
+//				SetVirtualWorld(playerid, GetPlayerVirtualWorld(Giveplayerid));
 //				return 1;
 //			}
 //		}
@@ -913,11 +913,24 @@ public OnPlayerCommandPerformed(playerid, cmdtext[], success)
 	if (!success) SendClientMessage(playerid, -1, "SERVER: Cau lenh khong ton tai.");
 	return 1;
 }
+public OnPlayerVirtualWorldChange(playerid, oldvw, newvw)
+{
+	if (Spectated[playerid] > 1)
+	{
+		foreach(new i : Player)
+		{
+			if (Spectating[i] == 1 && SpecPlayer[i] == playerid)
+			{
+				SetVirtualWorld(playerid, newvw);
+			}
+		}
+	}
+}
 public OnPlayerInteriorChange(playerid, newinteriorid, oldinteriorid)
 {
 	if (Spectated[playerid] > 1)
 	{
-		for (new i = 0; i<MAX_PLAYERS; i++)
+		foreach(new i : Player)
 		{
 			if (Spectating[i] == 1 && SpecPlayer[i] == playerid)
 			{
@@ -1548,14 +1561,14 @@ stock TogglePlayerSpawn(playerid, bool:type, time = 0)
 		SetPlayerCameraLookAt(playerid, 1933.4393, -1196.2479, 18.8163);
 		SetPlayerPos(playerid, 1890.1014, -1194.7969, 25.8091);
 		//SetPlayerInterior(playerid, 99);
-		SetPlayerVirtualWorld(playerid, 999);
+		SetVirtualWorld(playerid, 999);
 		TogglePlayerControllable(playerid, 0);
 	}
 	else
 	{
 		SetCameraBehindPlayer(playerid);
 		SetPlayerInterior(playerid, 0);
-		SetPlayerVirtualWorld(playerid, 0);
+		SetVirtualWorld(playerid, 0);
 		if (time > 0 && PlayerInfo[playerid][pHospital] == 0)
 			SetTimerEx("InteriorFreeze", 2000, 0, "i", playerid);
 		else TogglePlayerControllable(playerid, 1);
@@ -3686,7 +3699,7 @@ public OnPlayerExitVehicle(playerid, vehicleid)
 {
 	if (Spectated[playerid] > 0)
 	{
-		for (new i = 0; i<MAX_PLAYERS; i++)
+		foreach(new i : Player)
 		{
 			if (Spectating[i] == 1 && SpecPlayer[i] == playerid)
 			{
@@ -3827,7 +3840,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 	}
 	if ((newstate == PLAYER_STATE_DRIVER || newstate == PLAYER_STATE_PASSENGER) && Spectated[playerid] > 0)
 	{
-		for (new i = 0; i<MAX_PLAYERS; i++)
+		foreach(new i : Player)
 		{
 			if (Spectating[i] == 1 && SpecPlayer[i] == playerid)
 			{
@@ -3890,7 +3903,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 		DisablePlayerRaceCheckpoint(playerid);
 		DisablePlayerCheckpoint(playerid);
 		SetVehicleVirtualWorld(DriverLicenseCar[playerid], 0);
-		SetPlayerVirtualWorld(playerid, 0);
+		SetVirtualWorld(playerid, 0);
 		SetVehicleToRespawn2(DriverLicenseCar[playerid]);
 		DriverLicenseCar[playerid] = INVALID_VEHICLE_ID;
 		SendClientMessage(playerid, COLOR_GRAD1, "Bai sat hach lai xe cua ban da bi huy");
@@ -3898,7 +3911,7 @@ public OnPlayerStateChange(playerid, newstate, oldstate)
 		new str[255];
 		format(str, sizeof(str), "Ban duoc nhan lai $%d do huy bai thi sat hach lai xe", DMVFEE/2);
 		SendClientMessage(playerid, COLOR_GRAD1, str);
-		HideDriverLicenseTD(playerid)
+		HideDriverLicenseTD(playerid);
 	}
 	if (newstate == PLAYER_STATE_ONFOOT)
 	{
@@ -5215,7 +5228,7 @@ public OnPlayerText(playerid, text[])
 			SelectCharPlace[playerid] = 0;
 			SelectCharID[playerid] = 0;
 			SelectChar[playerid] = 0;
-			SetPlayerVirtualWorld(playerid, 0);
+			SetVirtualWorld(playerid, 0);
 			
 			SetTimerEx("backtoclothes", 500, false, "i", playerid);
 			return 0;
@@ -6551,11 +6564,6 @@ stock CheckHackRepairCar(vehicleid, bool:nouse = false)
 {
 	new carrcheat[4];
 	GetVehicleDamageStatus(vehicleid, carrcheat[0], carrcheat[1], carrcheat[2], carrcheat[3]);
-	//new str[128];
-	//format(str, sizeof(str), "Now Status: [Panels] : %d - [Doors] : %d - [Lights] : %d - [Tires] : %d", carrcheat[0], carrcheat[1], carrcheat[2], carrcheat[3]);
-	//SendClientMessageToAll(-1, str);
-	//format(str, sizeof(str), "Check Status: [Panels] : %d - [Doors] : %d - [Lights] : %d - [Tires] : %d", CarRepairCheat[vehicleid][0], CarRepairCheat[vehicleid][1], CarRepairCheat[vehicleid][2], CarRepairCheat[vehicleid][3]);
-	//SendClientMessageToAll(-1, str);
 	if (carrcheat[0] != CarRepairCheat[vehicleid][0]
 		|| carrcheat[1] != CarRepairCheat[vehicleid][1]
 		|| carrcheat[2] != CarRepairCheat[vehicleid][2]
@@ -15736,7 +15744,7 @@ CMD:buyhouse(playerid, params[])
 					SafeGivePlayerMoney(playerid, -HouseInfo[h][hValue]);
 					PlayerPlayMusic(playerid);
 					SetPlayerInterior(playerid, HouseInfo[h][hInt]);
-					SetPlayerVirtualWorld(playerid, HouseInfo[h][hWorld]);
+					SetVirtualWorld(playerid, HouseInfo[h][hWorld]);
 					SetPlayerPos(playerid, HouseInfo[h][hExitx], HouseInfo[h][hExity], HouseInfo[h][hExitz]);
 					GameTextForPlayer(playerid, "~w~Welcome Home~n~Ban co the ra ngoai bang cach lai gan cua va dung lenh /exit", 5000, 3);
 					PlayerInfo[playerid][pInt] = HouseInfo[h][hInt];
@@ -15784,7 +15792,7 @@ CMD:rentroom(playerid, params[])
 					HouseInfo[h][hTakings] = HouseInfo[h][hTakings] + HouseInfo[h][hRent];
 					PlayerPlayMusic(playerid);
 					SetPlayerInterior(playerid, HouseInfo[h][hInt]);
-					SetPlayerVirtualWorld(playerid, HouseInfo[h][hWorld]);
+					SetVirtualWorld(playerid, HouseInfo[h][hWorld]);
 					SetPlayerPos(playerid, HouseInfo[h][hExitx], HouseInfo[h][hExity], HouseInfo[h][hExitz]);
 					GameTextForPlayer(playerid, "~w~Welcome Home~n~Ban co the ra ngoai bang cach lai gan cua va dung lenh /exit", 5000, 3);
 					PlayerInfo[playerid][pInt] = HouseInfo[h][hInt];
@@ -15828,7 +15836,7 @@ CMD:rentcar(playerid, params[])
 				SendClientMessage(playerid, COLOR_GREY, "You need unrent your current car/bike/boat first !");
 				return 1;
 			}
-			for (new i = 0; i<MAX_PLAYERS; i++)
+			foreach(new i : Player)
 			{
 				if (HireCar[i] == GetPlayerVehicleID(playerid))
 				{
@@ -15890,7 +15898,7 @@ CMD:rentbike(playerid, params[])
 				SendClientMessage(playerid, COLOR_GREY, "Ban hien dang thue mot phuong tien, /unrentbike (/unrentcar) de ngung thue xe !");
 				return 1;
 			}
-			for (new i = 0; i<MAX_PLAYERS; i++)
+			foreach(new i : Player)
 			{
 				if (HireCar[i] == GetPlayerVehicleID(playerid))
 				{
@@ -16221,7 +16229,7 @@ CMD:sellhouse(playerid, params[])
 			if (PlayerInfo[playerid][pLocal] == house)
 			{
 				SetPlayerInterior(playerid, 0);
-				SetPlayerVirtualWorld(playerid, 0);
+				SetVirtualWorld(playerid, 0);
 				SetPlayerPos(playerid, HouseInfo[house][hEntrancex], HouseInfo[house][hEntrancey], HouseInfo[house][hEntrancez]);
 				PlayerInfo[playerid][pInt] = 0;
 			}
@@ -16586,7 +16594,7 @@ CMD:call(playerid, params[])
 		if (phonenumb == 111)
 		{
 			new pizzaworkers = 0;
-			for (new i = 0; i<MAX_PLAYERS; i++)
+			foreach(new i : Player)
 			{
 				if (IsPlayerConnected(i))
 				{
@@ -16692,7 +16700,7 @@ CMD:call(playerid, params[])
 		if (phonenumb == 555)
 		{
 			new mechanicworkers = 0;
-			for (new i = 0; i<MAX_PLAYERS; i++)
+			foreach(new i : Player)
 			{
 				if (IsPlayerConnected(i))
 				{
@@ -17070,7 +17078,7 @@ CMD:house(playerid, params[])
 				return 1;
 			}
 			SetPlayerInterior(playerid, HouseInfo[housenum][hInt]);
-			SetPlayerVirtualWorld(playerid, HouseInfo[housenum][hWorld]);
+			SetVirtualWorld(playerid, HouseInfo[housenum][hWorld]);
 			SetPlayerPos(playerid, HouseInfo[housenum][hExitx], HouseInfo[housenum][hExity], HouseInfo[housenum][hExitz]);
 			GameTextForPlayer(playerid, "~w~Dich chuyen", 5000, 1);
 			PlayerInfo[playerid][pInt] = HouseInfo[housenum][hInt];
@@ -17553,7 +17561,7 @@ CMD:enter(playerid, params[])
 				if (PlayerInfo[playerid][pPhousekey] == i || HouseInfo[i][hLock] == 0)
 				{
 					SetPlayerInterior(playerid, HouseInfo[i][hInt]);
-					SetPlayerVirtualWorld(playerid, HouseInfo[i][hWorld]);
+					SetVirtualWorld(playerid, HouseInfo[i][hWorld]);
 					SetPlayerPos(playerid, HouseInfo[i][hExitx], HouseInfo[i][hExity], HouseInfo[i][hExitz]);
 					GameTextForPlayer(playerid, "~w~Welcome Home", 5000, 1);
 					PlayerInfo[playerid][pInt] = HouseInfo[i][hInt];
@@ -19071,7 +19079,7 @@ CMD:unprison(playerid, params[])
 				SetPlayerInterior(giveplayerid, 0);
 				PlayerInfo[giveplayerid][pInt] = 0;
 				PlayerInfo[giveplayerid][pVirWorld] = 0;
-				SetPlayerVirtualWorld(giveplayerid, 0);
+				SetVirtualWorld(giveplayerid, 0);
 				format(string, 256, "AdmCMD: %s has da duoc tha tu do boi Admin %s.", GN(giveplayerid), GN(playerid));
 				BroadCast(COLOR_LIGHTRED, string);
 				format(string, 256, "AdmWarning: %s da duoc tha tu do boi Admin %s.", GN(giveplayerid), GN(playerid));
@@ -19433,7 +19441,7 @@ CMD:setvw(playerid, params[])
 			{
 				if (playa != INVALID_PLAYER_ID)
 				{
-					SetPlayerVirtualWorld(playa, virid);
+					SetVirtualWorld(playa, virid);
 					format(string, sizeof(string), "   You have set %s virtual world to %d.", GN(playa), virid);
 					SendClientMessage(playerid, COLOR_GRAD1, string);
 					format(string, sizeof(string), "   %s have set your virtual world to %d.", GN(playerid), virid);
@@ -20729,7 +20737,7 @@ CMD:gotoid(playerid, params[])
 
 					SetPlayerPos(playerid, plocx, plocy, plocz + 0.5);
 					SetPlayerInterior(playerid, intid);
-					SetPlayerVirtualWorld(playerid, vir);
+					SetVirtualWorld(playerid, vir);
 
 					SendClientMessage(playerid, COLOR_GRAD1, "   Da duoc dich chuyen");
 				}
@@ -20778,7 +20786,7 @@ CMD:gethere(playerid, params[])
 
 					SetPlayerPos(plo, plocx, plocy, plocz + 0.5);
 					SetPlayerInterior(plo, intid);
-					SetPlayerVirtualWorld(plo, vir);
+					SetVirtualWorld(plo, vir);
 
 					SendClientMessage(plo, COLOR_GRAD1, "   Da duoc dich chuyen");
 				}
@@ -21620,7 +21628,7 @@ stock BanIP(IP[])
 	format(string, sizeof(string), "%s\r\n", IP);
 	fwrite(ban, string);
 	fclose(ban);
-	for (new i = 0; i<MAX_PLAYERS; i++)
+	foreach(new i : Player)
 	{
 		if (strcmp(IP, GetIp(i), true) == 0)
 		{
@@ -23585,7 +23593,7 @@ CMD:ram(playerid, params[])
 				if (PlayerToPoint(3, playerid, HouseInfo[i][hEntrancex], HouseInfo[i][hEntrancey], HouseInfo[i][hEntrancez]))
 				{
 					SetPlayerInterior(playerid, HouseInfo[i][hInt]);
-					SetPlayerVirtualWorld(playerid, HouseInfo[i][hWorld]);
+					SetVirtualWorld(playerid, HouseInfo[i][hWorld]);
 					SetPlayerPos(playerid, HouseInfo[i][hExitx], HouseInfo[i][hExity], HouseInfo[i][hExitz]);
 					GameTextForPlayer(playerid, "~r~Vi pham", 5000, 1);
 					PlayerInfo[playerid][pInt] = HouseInfo[i][hInt];
@@ -32846,7 +32854,7 @@ CMD:exit(playerid, params[])
 			if(PlayerInfo[playerid][pLocal] == house)
 			{
 			SetPlayerInterior(playerid,0);
-			SetPlayerVirtualWorld(playerid,0);
+			SetVirtualWorld(playerid,0);
 			SetPlayerPos(playerid,HouseInfo[house][hEntrancex],HouseInfo[house][hEntrancey],HouseInfo[house][hEntrancez]);
 			PlayerInfo[playerid][pInt] = 0;
 			PlayerInfo[playerid][pLocal] = 255;
@@ -32860,7 +32868,7 @@ CMD:exit(playerid, params[])
 				PlayerInfo[playerid][pInt] = 0;
 				PlayerInfo[playerid][pLocal] = 255;
 				SetCameraBehindPlayer(playerid);
-				SetPlayerVirtualWorld(playerid, 0);
+				SetVirtualWorld(playerid, 0);
 				PlayerInfo2[HouseEntered][playerid] = 255;
 				if (HouseInfo[i][hHel] == 1)
 				{

@@ -416,6 +416,7 @@ enum PlayersEnum
 	Float:Z,
 	Float:Health,
 	Float:Armour,
+	VWorld,
 	Last_Vehicle,
 	Cur_Vehicle,
 	Last_Team,
@@ -1923,6 +1924,13 @@ stock SetVehicleParamsForAll(vehicleid, objective, doorslocked, trailer=0) //By 
 		}
 	}
 	return ret;
+}
+
+stock SetVirtualWorld(playerid, vworld)
+{
+	Players[playerid][VWorld] = vworld;
+	SetPlayerVirtualWorld(playerid, vworld);
+	return 1;
 }
 
 stock DestroyVehicle2(vehicleid)
@@ -4395,7 +4403,7 @@ stock CheckVehicle(vehicleid) //By Gabriel "Larcius" Cordes
 
 stock CheckPlayer(playerid) //By Rafelder (edited by Gabriel "Larcius" Cordes)
 {
-	new Float:h, Float:a, m, t, s, w, sc, wl, keys, updown, leftright;
+	new Float:h, Float:a, m, t, s, w, sc, wl, keys, updown, leftright, vw;
 	GetPlayerHealth(playerid, h);
 	GetPlayerArmour(playerid, a);
 	t=GetPlayerTeam(playerid);
@@ -4404,7 +4412,14 @@ stock CheckPlayer(playerid) //By Rafelder (edited by Gabriel "Larcius" Cordes)
 	w=GetPlayerWeapon(playerid);
 	sc=GetPlayerScore(playerid);
 	wl=GetPlayerWantedLevel(playerid);
+	vw=GetPlayerVirtualWorld(playerid);
 	GetPlayerKeys(playerid, keys, updown, leftright);
+	#if defined OnPlayerVirtualWorldChange
+	if (vw != Players[playerid][VWorld])
+	{
+		OnPlayerVirtualWorldChange(playerid, vw, Players[playerid][VWorld]);
+	}
+	#endif
 	#if defined OnPlayerGetHealth
 	if (h!=Players[playerid][Health])
 	{
@@ -4569,7 +4584,9 @@ forward OnPlayerModVehicle(playerid,vehicleid,partid,cost);
 #if defined OnVehicleSpawn2
 forward OnVehicleSpawn2(vehicleid,dynamic);
 #endif
-
+#if defined OnPlayerVirtualWorldChange
+forward OnPlayerVirtualWorldChange(playerid, oldvw, newvw);
+#endif
 #if defined OnPlayerGetHealth
 forward OnPlayerGetHealth(playerid, Float:health);
 #endif

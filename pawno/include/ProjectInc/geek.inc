@@ -205,35 +205,35 @@ CMD:goto(playerid, params[])
 	{
 		if (IsPlayerInAnyVehicle(playerid)) return SetVehiclePos(xe, 777.9285, -1385.0005, 13.7251);
 		SetPlayerInterior(playerid, 0);
-		SetPlayerVirtualWorld(playerid, 0);
+		SetVirtualWorld(playerid, 0);
 		SetPlayerPos(playerid, 777.9285, -1385.0005, 13.7251);
 	}
 	else if (!strcmp(params, "trongtrot", true))
 	{
 		if (IsPlayerInAnyVehicle(playerid)) return SetVehiclePos(xe, -1092.1846, -1650.5377, 76.3739);
 		SetPlayerInterior(playerid, 0);
-		SetPlayerVirtualWorld(playerid, 0);
+		SetVirtualWorld(playerid, 0);
 		SetPlayerPos(playerid, -1092.1846, -1650.5377, 76.3739);
 	}
 	else if (!strcmp(params, "ls", true))
 	{
 		if (IsPlayerInAnyVehicle(playerid)) return SetVehiclePos(xe, 1529.6, -1691.2, 13.3);
 		SetPlayerInterior(playerid, 0);
-		SetPlayerVirtualWorld(playerid, 0);
+		SetVirtualWorld(playerid, 0);
 		SetPlayerPos(playerid, 1529.6, -1691.2, 13.3);
 	}
 	else if (!strcmp(params, "lv", true))
 	{
 		if (IsPlayerInAnyVehicle(playerid)) return SetVehiclePos(xe, 1699.2, 1435.1, 10.7);
 		SetPlayerInterior(playerid, 0);
-		SetPlayerVirtualWorld(playerid, 0);
+		SetVirtualWorld(playerid, 0);
 		SetPlayerPos(playerid, 1699.2, 1435.1, 10.7);
 	}
 	else if (!strcmp(params, "sf", true))
 	{
 		if (IsPlayerInAnyVehicle(playerid)) return SetVehiclePos(xe, -2015.261108, 154.379516, 27.687500);
 		SetPlayerInterior(playerid, 0);
-		SetPlayerVirtualWorld(playerid, 0);
+		SetVirtualWorld(playerid, 0);
 		SetPlayerPos(playerid, -2015.261108, 154.379516, 27.687500);
 	}
 	//else if (!strcmp(params, "dd", true))
@@ -245,77 +245,77 @@ CMD:goto(playerid, params[])
 	{
 		if (IsPlayerInAnyVehicle(playerid)) return SetVehiclePos(xe, 2187.2886, -2265.1406, 13.4754);
 		SetPlayerInterior(playerid, 0);
-		SetPlayerVirtualWorld(playerid, 0);
+		SetVirtualWorld(playerid, 0);
 		SetPlayerPos(playerid, 2187.2886, -2265.1406, 13.4754);
 	}
 	else if (!strcmp(params, "truck", true))
 	{
 		if (IsPlayerInAnyVehicle(playerid)) return SetVehiclePos(xe, 2461.0278, -2115.2649, 13.5469);
 		SetPlayerInterior(playerid, 0);
-		SetPlayerVirtualWorld(playerid, 0);
+		SetVirtualWorld(playerid, 0);
 		SetPlayerPos(playerid, 2461.0278, -2115.2649, 13.5469);
 	}
 	else if (!strcmp(params, "binco", true))
 	{
 		if (IsPlayerInAnyVehicle(playerid)) return SetVehiclePos(xe, 2245.4258, -1662.2477, 15.4690);
 		SetPlayerInterior(playerid, 0);
-		SetPlayerVirtualWorld(playerid, 0);
+		SetVirtualWorld(playerid, 0);
 		SetPlayerPos(playerid, 2245.4258, -1662.2477, 15.4690);
 	}
 	else if (!strcmp(params, "247", true))
 	{
 		if (IsPlayerInAnyVehicle(playerid)) return SetVehiclePos(xe, 1932.0830, -1776.4635, 13.3828);
 		SetPlayerInterior(playerid, 0);
-		SetPlayerVirtualWorld(playerid, 0);
+		SetVirtualWorld(playerid, 0);
 		SetPlayerPos(playerid, 1932.0830, -1776.4635, 13.3828);
 	}
 	else if (!strcmp(params, "wangcar", true))
 	{
 		if (IsPlayerInAnyVehicle(playerid)) return SetVehiclePos(xe, 1790.7096, -1739.4459, 13.5469);
 		SetPlayerInterior(playerid, 0);
-		SetPlayerVirtualWorld(playerid, 0);
+		SetVirtualWorld(playerid, 0);
 		SetPlayerPos(playerid, 1790.7096, -1739.4459, 13.5469);
 	}
 	else if (!strcmp(params, "county", true))
 	{
 		if (IsPlayerInAnyVehicle(playerid)) return SetVehiclePos(xe, 2026.7938, -1422.0918, 16.9922);
 		SetPlayerInterior(playerid, 0);
-		SetPlayerVirtualWorld(playerid, 0);
+		SetVirtualWorld(playerid, 0);
 		SetPlayerPos(playerid, 2026.7938, -1422.0918, 16.9922);
 	}
 	else if (!strcmp(params, "allsaints", true))
 	{
 		if (IsPlayerInAnyVehicle(playerid)) return SetVehiclePos(xe, 1177.5790, -1323.5640, 14.0777);
 		SetPlayerInterior(playerid, 0);
-		SetPlayerVirtualWorld(playerid, 0);
+		SetVirtualWorld(playerid, 0);
 		SetPlayerPos(playerid, 1177.5790, -1323.5640, 14.0777);
 	}
 	else if (!strcmp(params, "nongdan", true))
 	{
 		if (IsPlayerInAnyVehicle(playerid)) return SetVehiclePos(xe, -374.0205, -1439.1160, 25.7266);
 		SetPlayerInterior(playerid, 0);
-		SetPlayerVirtualWorld(playerid, 0);
+		SetVirtualWorld(playerid, 0);
 		SetPlayerPos(playerid, -374.0205, -1439.1160, 25.7266);
 	}
 	else if (!strcmp(params, "dongo", true))
 	{
 		if (IsPlayerInAnyVehicle(playerid)) return SetVehiclePos(xe, -534.1697, -83.0436, 62.8426);
 		SetPlayerInterior(playerid, 0);
-		SetPlayerVirtualWorld(playerid, 0);
+		SetVirtualWorld(playerid, 0);
 		SetPlayerPos(playerid, -534.1697, -83.0436, 62.8426);
 	}
 	else if (!strcmp(params, "nhamay", true))
 	{
 		if (IsPlayerInAnyVehicle(playerid)) return SetVehiclePos(xe, 39.5153, -287.3114, 2.0165);
 		SetPlayerInterior(playerid, 0);
-		SetPlayerVirtualWorld(playerid, 0);
+		SetVirtualWorld(playerid, 0);
 		SetPlayerPos(playerid, 39.5153, -287.3114, 2.0165);
 	}
 	else if (!strcmp(params, "tosser", true))
 	{
 		if (IsPlayerInAnyVehicle(playerid)) return SetVehiclePos(xe, 681.5443, -476.8310, 16.3359);
 		SetPlayerInterior(playerid, 0);
-		SetPlayerVirtualWorld(playerid, 0);
+		SetVirtualWorld(playerid, 0);
 		SetPlayerPos(playerid, 681.5443, -476.8310, 16.3359);
 	}
 	else if (IsNumeric(params))
@@ -358,7 +358,7 @@ CMD:goto(playerid, params[])
 			SetPlayerPos(playerid, plocx, plocy + 2, plocz);
 		}
 		PlayerInfo[playerid][pVirWorld] = GetPlayerVirtualWorld(plo);
-		SetPlayerVirtualWorld(playerid, PlayerInfo[playerid][pVirWorld]);
+		SetVirtualWorld(playerid, PlayerInfo[playerid][pVirWorld]);
 	}
 	else {
 		return SendClientMessage(playerid, COLOR_GRAD1, "   Sai [Dia diem] hoac [Playerid] !");
@@ -386,14 +386,14 @@ CMD:sendto(playerid, params[])
 	{
 		if (IsPlayerInAnyVehicle(nguoichoi)) return SetVehiclePos(xe, 1529.6, -1691.2, 13.3);
 		SetPlayerInterior(nguoichoi, 0);
-		SetPlayerVirtualWorld(nguoichoi, 0);
+		SetVirtualWorld(nguoichoi, 0);
 		SetPlayerPos(nguoichoi, 1529.6, -1691.2, 13.3);
 	}
 	else if (!strcmp(location, "lv", true))
 	{
 		if (IsPlayerInAnyVehicle(nguoichoi)) return SetVehiclePos(xe, 1699.2, 1435.1, 10.7);
 		SetPlayerInterior(nguoichoi, 0);
-		SetPlayerVirtualWorld(nguoichoi, 0);
+		SetVirtualWorld(nguoichoi, 0);
 		SetPlayerPos(nguoichoi, 1699.2, 1435.1, 10.7);
 		return 1;
 	}
@@ -401,84 +401,84 @@ CMD:sendto(playerid, params[])
 	{
 		if (IsPlayerInAnyVehicle(nguoichoi)) return SetVehiclePos(xe, -2015.261108, 154.379516, 27.687500);
 		SetPlayerInterior(nguoichoi, 0);
-		SetPlayerVirtualWorld(nguoichoi, 0);
+		SetVirtualWorld(nguoichoi, 0);
 		SetPlayerPos(nguoichoi, -2015.261108, 154.379516, 27.687500);
 	}
 	else if (!strcmp(location, "truck", true))
 	{
 		if (IsPlayerInAnyVehicle(nguoichoi)) return SetVehiclePos(xe, 2187.2886, -2265.1406, 13.4754);
 		SetPlayerInterior(nguoichoi, 0);
-		SetPlayerVirtualWorld(nguoichoi, 0);
+		SetVirtualWorld(nguoichoi, 0);
 		SetPlayerPos(nguoichoi, 2187.2886, -2265.1406, 13.4754);
 	}
 	else if (!strcmp(location, "congnhan", true))
 	{
 		if (IsPlayerInAnyVehicle(nguoichoi)) return SetVehiclePos(xe, 2461.0278, -2115.2649, 13.5469);
 		SetPlayerInterior(nguoichoi, 0);
-		SetPlayerVirtualWorld(nguoichoi, 0);
+		SetVirtualWorld(nguoichoi, 0);
 		SetPlayerPos(nguoichoi, 2461.0278, -2115.2649, 13.5469);
 	}
 	else if (!strcmp(location, "binco", true))
 	{
 		if (IsPlayerInAnyVehicle(nguoichoi)) return SetVehiclePos(xe, 2245.4258, -1662.2477, 15.4690);
 		SetPlayerInterior(nguoichoi, 0);
-		SetPlayerVirtualWorld(nguoichoi, 0);
+		SetVirtualWorld(nguoichoi, 0);
 		SetPlayerPos(nguoichoi, 2245.4258, -1662.2477, 15.4690);
 	}
 	else if (!strcmp(location, "247", true))
 	{
 		if (IsPlayerInAnyVehicle(nguoichoi)) return SetVehiclePos(xe, 1932.0830, -1776.4635, 13.3828);
 		SetPlayerInterior(nguoichoi, 0);
-		SetPlayerVirtualWorld(nguoichoi, 0);
+		SetVirtualWorld(nguoichoi, 0);
 		SetPlayerPos(nguoichoi, 1932.0830, -1776.4635, 13.3828);
 	}
 	else if (!strcmp(location, "wangcar", true))
 	{
 		if (IsPlayerInAnyVehicle(nguoichoi)) return SetVehiclePos(xe, 1790.7096, -1739.4459, 13.5469);
 		SetPlayerInterior(nguoichoi, 0);
-		SetPlayerVirtualWorld(nguoichoi, 0);
+		SetVirtualWorld(nguoichoi, 0);
 		SetPlayerPos(nguoichoi, 1790.7096, -1739.4459, 13.5469);
 	}
 	else if (!strcmp(location, "county", true))
 	{
 		if (IsPlayerInAnyVehicle(nguoichoi)) return SetVehiclePos(xe, 2026.7938, -1422.0918, 16.9922);
 		SetPlayerInterior(nguoichoi, 0);
-		SetPlayerVirtualWorld(nguoichoi, 0);
+		SetVirtualWorld(nguoichoi, 0);
 		SetPlayerPos(nguoichoi, 2026.7938, -1422.0918, 16.9922);
 	}
 	else if (!strcmp(location, "allsaints", true))
 	{
 		if (IsPlayerInAnyVehicle(nguoichoi)) return SetVehiclePos(xe, 1177.5790, -1323.5640, 14.0777);
 		SetPlayerInterior(nguoichoi, 0);
-		SetPlayerVirtualWorld(nguoichoi, 0);
+		SetVirtualWorld(nguoichoi, 0);
 		SetPlayerPos(nguoichoi, 1177.5790, -1323.5640, 14.0777);
 	}
 	else if (!strcmp(location, "nongdan", true))
 	{
 		if (IsPlayerInAnyVehicle(nguoichoi)) return SetVehiclePos(xe, -374.0205, -1439.1160, 25.7266);
 		SetPlayerInterior(nguoichoi, 0);
-		SetPlayerVirtualWorld(nguoichoi, 0);
+		SetVirtualWorld(nguoichoi, 0);
 		SetPlayerPos(nguoichoi, -374.0205, -1439.1160, 25.7266);
 	}
 	else if (!strcmp(location, "dongo", true))
 	{
 		if (IsPlayerInAnyVehicle(nguoichoi)) return SetVehiclePos(xe, -534.1697, -83.0436, 62.8426);
 		SetPlayerInterior(nguoichoi, 0);
-		SetPlayerVirtualWorld(nguoichoi, 0);
+		SetVirtualWorld(nguoichoi, 0);
 		SetPlayerPos(nguoichoi, -534.1697, -83.0436, 62.8426);
 	}
 	else if (!strcmp(location, "nhamay", true))
 	{
 		if (IsPlayerInAnyVehicle(nguoichoi)) return SetVehiclePos(xe, 39.5153, -287.3114, 2.0165);
 		SetPlayerInterior(nguoichoi, 0);
-		SetPlayerVirtualWorld(nguoichoi, 0);
+		SetVirtualWorld(nguoichoi, 0);
 		SetPlayerPos(nguoichoi, 39.5153, -287.3114, 2.0165);
 	}
 	else if (!strcmp(location, "tosser", true))
 	{
 		if (IsPlayerInAnyVehicle(nguoichoi)) return SetVehiclePos(xe, 681.5443, -476.8310, 16.3359);
 		SetPlayerInterior(nguoichoi, 0);
-		SetPlayerVirtualWorld(nguoichoi, 0);
+		SetVirtualWorld(nguoichoi, 0);
 		SetPlayerPos(nguoichoi, 681.5443, -476.8310, 16.3359);
 	}
 	else {
@@ -503,13 +503,13 @@ CMD:gotopos(playerid, params[])
 		SetVehicleVirtualWorld(vid, 0);
 		PutPlayerInVehicle(playerid, vid, 0);
 		SetPlayerInterior(playerid, interior);
-		SetPlayerVirtualWorld(playerid, 0);
+		SetVirtualWorld(playerid, 0);
 	}
 	else
 	{
 		SetPlayerPos(playerid, p[0], p[1], p[2] + 2);
 		SetPlayerInterior(playerid, interior);
-		SetPlayerVirtualWorld(playerid, 0);
+		SetVirtualWorld(playerid, 0);
 	}
 	SendClientMessage(playerid, COLOR_GRAD1, "Dich chuyen.");
 	return 1;
@@ -586,7 +586,7 @@ CMD:chapnhangiupdo(playerid, params[])
 	vw = GetPlayerVirtualWorld(pgd);
 	i = GetPlayerInterior(pgd);
 	SetPlayerPos(playerid, x, y + 2, z);
-	SetPlayerVirtualWorld(playerid, vw);
+	SetVirtualWorld(playerid, vw);
 	SetPlayerInterior(playerid, i);
 
 	DanhHieu[playerid] = CreateDynamic3DTextLabel("Nguoi Tro Giup", COLOR_LIGHTGREEN, x, y, z + 6.0, 15.0, playerid);
@@ -604,7 +604,7 @@ CMD:dagiup(playerid, params[])
 	ABroadCast(COLOR_LIGHTGREEN, string, 1);
 	DestroyDynamic3DTextLabel(DanhHieu[playerid]);
 	SetPlayerPos(playerid, GetPVarFloat(playerid, "AdvisorLastx"), GetPVarFloat(playerid, "AdvisorLasty"), GetPVarFloat(playerid, "AdvisorLastz"));
-	SetPlayerVirtualWorld(playerid, GetPVarInt(playerid, "AdvisorLastVW"));
+	SetVirtualWorld(playerid, GetPVarInt(playerid, "AdvisorLastVW"));
 	SetPlayerInterior(playerid, GetPVarInt(playerid, "AdvisorLastInt"));
 	DeletePVar(playerid, "DangHelp");
 	return 1;
@@ -754,12 +754,16 @@ public DMVOnPlayerEnterRaceCP(playerid) {
 			new raceType = 0;
 			if(i == 4) {
 				SetVehicleVirtualWorld(DriverLicenseCar[playerid], playerid);
-				SetPlayerVirtualWorld(playerid, playerid);
+				SetVirtualWorld(playerid, playerid);
+				SetVehiclePos(DriverLicenseCar[playerid], 1878.8151, -2482.3274, 13.6470);
+				SetVehicleZAngle(DriverLicenseCar[playerid], 0);
 				PutPlayerInVehicle(playerid, DriverLicenseCar[playerid], 0);
+				SetVehicleHealthEx(DriverLicenseCar[playerid], 1000);
+				SetCameraBehindPlayer(playerid);
 				FixVehicle(DriverLicenseCar[playerid]);
 				new str[500];
-				str = "Khong duoc dung xe\nHealth phai tren 980\nHoan thanh bai thi duoi 30s";
-				ShowPlayerDialog(playerid, DIALOG_DRIVERLICENSE_RULE, DIALOG_STYLE_MSGBOX, "Quy tac bai sat hach", str, "Bat dau", "");
+				str = "- Toc do khong duoc duoi 5 km/h.\n- Mau xe phai tren 995.\n- Hoan thanh bai thi duoi 30s.\n-------------------------------------------";
+				ShowPlayerDialog(playerid, DIALOG_DRIVERLICENSE_RULE, DIALOG_STYLE_MSGBOX, "----Quy Tac Sat Hach----", str, "Bat Dau", "");
 				ShowDriverLicenseTD(playerid);
 				DriverLicenseTime[playerid] = 0.0;
 			}
@@ -768,35 +772,39 @@ public DMVOnPlayerEnterRaceCP(playerid) {
 			SetPlayerRaceCheckpoint(playerid, raceType, DriverLicensePos[i+1][0], DriverLicensePos[i+1][1], DriverLicensePos[i+1][2], DriverLicensePos[i+2][0], DriverLicensePos[i+2][1], DriverLicensePos[i+2][2], 5);
 			PlayerPlaySound(playerid, 1058, 0.0, 0.0, 0.0);
 		}
-
 	}
-	if (DriverLicenseCar[playerid] != INVALID_VEHICLE_ID && IsPlayerInRangeOfPoint(playerid, 5, DriverLicensePos[8][0], DriverLicensePos[8][1], DriverLicensePos[8][2])) {
+	if (DriverLicenseCar[playerid] != INVALID_VEHICLE_ID && IsPlayerInRangeOfPoint(playerid, 5, DriverLicensePos[8][0], DriverLicensePos[8][1], DriverLicensePos[8][2])) 
+	{
 		stop DriverLicenseLoop[playerid];
-		new Float:health;
-		GetVehicleHealth(DriverLicenseCar[playerid], health);
 		DisablePlayerRaceCheckpoint(playerid);
 		PlayerPlaySound(playerid, 1058, 0.0, 0.0, 0.0);
 		SetVehicleVirtualWorld(DriverLicenseCar[playerid], 0);
-		SetPlayerVirtualWorld(playerid, 0);
+		SetVirtualWorld(playerid, 0);
 		HideDriverLicenseTD(playerid);
-		if(health >= 980) {	
-			PutPlayerInVehicle(playerid, DriverLicenseCar[playerid], 0);
-			GameTextForPlayer(playerid, "~w~Chuc mung ban hoan thanh bai sat hach lai xe~n~Tro lai DMV de nhan bang lai xe", 5000, 3);
-			SetPVarInt(playerid,"DMVSuccess", 1);
-			SetPlayerCheckpoint(playerid, DriverLicensePos[9][0], DriverLicensePos[9][1], DriverLicensePos[9][2], 5);
-		}
-		else if(health < 980 || DriverLicenseTime[playerid] > 30 ) {
-			SendClientMessage(playerid, COLOR_GRAD1, "Rat tiec nhung ban da rot trong bai thi sat hach lai xe");
-			SetPVarInt(playerid,"DMVSuccess", 0);
-			DisablePlayerRaceCheckpoint(playerid);
-			DisablePlayerCheckpoint(playerid);
-			SetVehicleToRespawn2(DriverLicenseCar[playerid]);
-			DriverLicenseCar[playerid] = INVALID_VEHICLE_ID;
-			SetPlayerPos(playerid, 2054.8250,-1919.2405,13.5469);
-		}
+		PutPlayerInVehicle(playerid, DriverLicenseCar[playerid], 0);
+		GameTextForPlayer(playerid, "~g~Chuc mung ban hoan thanh bai sat hach lai xe~n~~y~Tro lai DMV de nhan bang lai xe", 5000, 3);
+		SetPVarInt(playerid,"DMVSuccess", 1);
+		SetPlayerCheckpoint(playerid, DriverLicensePos[9][0], DriverLicensePos[9][1], DriverLicensePos[9][2], 5);
+		DriverLicenseTime[playerid] = 0.0;
 	}
 }
 
+stock FailDrivingTest(playerid)
+{
+	stop DriverLicenseLoop[playerid];
+	GameTextForPlayer(playerid, "~r~Ban da rot bai thi sat hach lai xe", 5000, 3);
+	SetPVarInt(playerid, "DMVSuccess", 0);
+	DisablePlayerRaceCheckpoint(playerid);
+	DisablePlayerCheckpoint(playerid);
+	SetVehicleVirtualWorld(DriverLicenseCar[playerid], 0);
+	SetVirtualWorld(playerid, 0);
+	SetVehicleToRespawn2(DriverLicenseCar[playerid]);
+	DriverLicenseCar[playerid] = INVALID_VEHICLE_ID;
+	SetPlayerPos(playerid, 2054.8250, -1919.2405, 13.5469);
+	DriverLicenseTime[playerid] = 0.0;
+	HideDriverLicenseTD(playerid);
+	return 1;
+}
 forward DMVOnPlayerEnterCP(playerid);
 public DMVOnPlayerEnterCP(playerid) {
 	if (DriverLicenseCar[playerid] != INVALID_VEHICLE_ID && IsPlayerInRangeOfPoint(playerid, 5, DriverLicensePos[9][0], DriverLicensePos[9][1], DriverLicensePos[9][2])) {
@@ -858,7 +866,7 @@ public InitDriverLicenseTD(playerid) {
 	PlayerTextDrawSetProportional(playerid, DriverLicenseTD[playerid][1], 1);
 	PlayerTextDrawSetShadow(playerid, DriverLicenseTD[playerid][1], 0);
 
-	DriverLicenseTD[playerid][2] = CreatePlayerTextDraw(playerid, 500.000000, 375.000000, "Thoi gian");
+	DriverLicenseTD[playerid][2] = CreatePlayerTextDraw(playerid, 500.000000, 375.000000, "Thoi Gian");
 	PlayerTextDrawLetterSize(playerid, DriverLicenseTD[playerid][2], 0.400000, 1.600000);
 	PlayerTextDrawAlignment(playerid, DriverLicenseTD[playerid][2], 1);
 	PlayerTextDrawColor(playerid, DriverLicenseTD[playerid][2], -1378294017);
