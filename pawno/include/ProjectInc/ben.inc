@@ -1,3 +1,173 @@
+stock ClearNails()
+{
+	for (new i = 0; i < MAX_NAILS; i++)
+	{
+		NailObject[i] = INVALID_OBJECT_ID;
+	}
+
+	for (new i = 0; i < MAX_VEHICLES; i++)
+	{
+		InNails[i] = -1;
+	}
+	return 1;
+}
+stock GetClosestBehindPrisoner(playerid, Float:distancet = 2.0)
+{
+	new Float:mindistance = distancet;
+	new ppri = -1;
+	foreach(new pp: Player)
+	{
+		if (PlayerCuffed[pp] != 0)
+		{
+			new Float:pos[3];
+			GetXYBehindPlayer(pp, pos[0], pos[1], pos[2]);
+			new Float:pzdistance;
+			pzdistance = GetDistanceToPointXY(playerid, pos[0], pos[1]);
+			if (pzdistance < mindistance)
+			{
+				mindistance = pzdistance;
+				ppri = pp;
+			}
+		}
+	}
+	return ppri;
+}
+stock CreateServerNails()
+{
+	ClearNails();
+	for (new i = 0; i < LIMIT_NAILS; i++)
+	{
+		new rand = random(MAX_NAILS - 1);
+		while (NailObject[rand] != INVALID_OBJECT_ID)
+		{
+			rand = random(MAX_NAILS - 1);
+		}
+		NailObject[rand] = CreateDynamicObject(19351, NailPos[rand][0], NailPos[rand][1], NailPos[rand][2] - 1.0025, -90, 0, NailPos[rand][3]);
+		printf("Load Nails ID: %d Object ID: %d", rand, NailObject[rand]);
+		CountNails++;
+	}
+	return 1;
+}
+stock CreateDailyNails()
+{
+	new countcreate = LIMIT_NAILS - CountNails;
+	if (countcreate > 10) countcreate = 5;
+	else if (countcreate <= 0) return 0;
+	for (new i = 0; i < countcreate; i++)
+	{
+		new rand = random(MAX_NAILS - 1);
+		while (NailObject[rand] != INVALID_OBJECT_ID)
+		{
+			rand = random(MAX_NAILS - 1);
+		}
+		NailObject[rand] = CreateDynamicObject(19351, NailPos[rand][0], NailPos[rand][1], NailPos[rand][2] - 1.0025, -90, 0, NailPos[rand][3]);
+		printf("Daily Nails ID: %d Object ID: %d", rand, NailObject[rand]);
+	}
+	return 1;
+}
+stock CheckVehicleInNails(vehid)
+{
+	for (new i = 0; i < MAX_NAILS; i++)
+	{
+		//if (!IsVehicleConnected(i)) continue;
+		if (NailObject[i] == INVALID_OBJECT_ID) continue;
+		new tire = GetClosestTire(vehid, i);
+		if (tire != -1 && i != InNails[vehid])
+		{
+			BreakTire(vehid, tire, i);
+		}
+	}
+	return 1;
+}
+stock BreakTire(vehid, idtire, nailid)
+{
+	new Panels, Doors, Lights, Tires;
+	GetVehicleDamageStatus(vehid, Panels, Doors, Lights, Tires);
+	new idbinary = InputTireBinary(Tires, idtire);
+	UpdateVehicleDamageStatus(vehid, Panels, Doors, Lights, idbinary);
+	PlayerPlaySound(GetVehicleDriverID(vehid), 1009, 0.0, 0.0, 0.0);
+	GetVehicleDamageStatus(vehid, CarRepairCheat[vehid][0], CarRepairCheat[vehid][1], CarRepairCheat[vehid][2], CarRepairCheat[vehid][3]);
+	InNails[vehid] = nailid;
+	return 1;
+}
+stock GetNearestNails(playerid, &Float:distance, &nailid)
+{
+	distance = 1000;
+	for (new i = 0; i < MAX_NAILS; i++)
+	{
+		if (NailObject[i] == INVALID_OBJECT_ID) continue;
+
+		new Float:objpos[3];
+		GetDynamicObjectPos(NailObject[i], objpos[0], objpos[1], objpos[2]);
+		new Float:distancez = GetDistanceToPoint(playerid, objpos[0], objpos[1], objpos[2]);
+		if (distancez < distance)
+		{
+			nailid = i;
+			distance = distancez;
+		}
+	}
+	return 1;
+}
+stock InputTireBinary(tireb, idtire)
+{
+	new str[64];
+	format(str, sizeof(str), "%s", TireBinary[tireb]);
+	if (str[idtire] == '0')
+		str[idtire] = '1';
+
+	for (new i = 0; i < sizeof(TireBinary); i++)
+	{
+		if (!strcmp(str, TireBinary[i], true))
+			return i;
+	}
+	return -1;
+}
+stock IsPointInRangeOfPoint(Float:x, Float:y, Float:z, Float:x2, Float:y2, Float:z2, Float:range)
+{
+	x2 -= x;
+	y2 -= y;
+	z2 -= z;
+	return ((x2 * x2) + (y2 * y2) + (z2 * z2)) < (range * range);
+}
+// Tire IDs: -1 (Not near a tire), 0 (Front-left), 1 (Back-left), 2 (Back-right), 3 (Front-right)
+stock GetClosestTire(car, nailid)
+{
+	new Float:p[3], Float:c[3], Float:ang, Float:dist[2], tire;
+
+	GetDynamicObjectPos(NailObject[nailid], p[0], p[1], p[2]);
+	GetVehiclePos(car, c[0], c[1], c[2]);
+
+	if (!IsPointInRangeOfPoint(c[0], c[1], c[2], p[0], p[1], p[2], 2)) return -1;
+
+	GetVehicleZAngle(car, ang);
+
+	tire = -1;
+	dist[0] = Float:0xFFFFFFFF;
+	ang += 45.0;
+	for (new t = 0; t < 4; t++, ang += 90.0)
+	{
+		dist[1] = floatsqroot(
+			((p[0] - (c[0] + floatsin(-ang, degrees))) * (p[0] - (c[0] + floatsin(-ang, degrees)))) +
+			((p[1] - (c[1] + floatcos(-ang, degrees))) * (p[1] - (c[1] + floatcos(-ang, degrees)))));
+
+		if (dist[1] < dist[0])
+		{
+			dist[0] = dist[1];
+			tire = t;
+		}
+	}
+	return tire;
+}
+stock DeleteNail(nailid)
+{
+	if (NailObject[nailid] != INVALID_OBJECT_ID)
+	{
+		DestroyDynamicObject(NailObject[nailid]);
+		NailObject[nailid] = INVALID_OBJECT_ID;
+		CountNails--;
+	}
+	return 1;
+}
 forward TazerKeyStateChange(playerid, newkeys, oldkeys);
 public TazerKeyStateChange(playerid, newkeys, oldkeys)
 {
@@ -34,14 +204,12 @@ public TazerKeyStateChange(playerid, newkeys, oldkeys)
 		}
 	}
 }
-
 forward TazeredCollapse(playerid);
 public TazeredCollapse(playerid)
 {
 	ApplyAnimation(playerid, "CRACK", "crckdeth2", 4.0, 1, 0, 0, 1, 0, 1);
 	return 1;
 }
-
 stock IsPlayerNearPlayer(playerid, targetid, Float:radius)
 {
 	new Float:x, Float:y, Float:z;
@@ -52,25 +220,21 @@ stock IsPlayerNearPlayer(playerid, targetid, Float:radius)
 	}
 	return 0;
 }
-
 forward OnPIDUpdate(playerid);
 public OnPIDUpdate(playerid)
 {
 	//SCM(playerid, COLOR_GREEN, "ABCDXYZ");
 }
-
 stock SCM(playerid, color, message[])
 {
 	return SendClientMessage(playerid, color, message);
 }
-
 stock GLN(playerid)
 {
     new name[40];
     GetPlayerName(playerid,name,sizeof(name));
     return name;
 }
-
 stock GN(playerid)
 {
     new name[MAX_PLAYER_NAME];
@@ -81,7 +245,6 @@ stock GN(playerid)
     }
     return name;
 }
-
 stock IsAdminVehicle(vid)
 {
 	for (new i = 0; i < MAXCUSTOMVEH; i++)
@@ -163,6 +326,55 @@ stock GetVehicleIDFromKey(keyid)
 			return i;
 	}
 	return -1;
+}
+
+stock GetWaitingTextDraw(playerid)
+{
+	for (new i = 0; i < sizeof(WaitGTString[]); i++)
+	{
+		if (isnull(WaitGTString[playerid][i]))
+			return i;
+	}
+	return -1;
+}
+
+stock GameTextPlayer(playerid, str[], time, type, bool:wait = false)
+{
+	new textslot = GetWaitingTextDraw(playerid);
+	if (textslot == -1) return 1;
+
+	new deftime = 0, trealtime = time;
+	switch (type)
+	{
+		case 0: deftime = 9000;
+		case 1: deftime = 8000;
+		case 5: deftime = 3000;
+	}
+	if (time < deftime)
+		trealtime = deftime;
+
+	if (NowGTTime[playerid] <= 0 || wait == false)
+		GameTextForPlayer(playerid, str, time, type);
+	else
+	{
+		format(WaitGTString[playerid][textslot], 128, "%s", str);
+		SetTimerEx("TimerGameText", NowGTTime[playerid], false, "iiii", playerid, time, type, textslot);
+	}
+	
+	NowGTTime[playerid] += trealtime;
+	return 1;
+}
+forward TimerGameText(playerid, time, type, textslot);
+public TimerGameText(playerid, time, type, textslot)
+{
+	GameTextForPlayer(playerid, WaitGTString[playerid][textslot], time, type);
+	WaitGTString[playerid][textslot][0] = EOS;
+	return 1;
+}
+CMD:testgt(playerid, params[])
+{
+		 GameTextPlayer(playerid, "TesT", 3000, 4);
+			 return 1;
 }
 stock GetFirstParams(const string[], result[], len)
 {
@@ -293,7 +505,6 @@ CMD:spec(playerid, params[])
 		}
 		return 1;
 }
-
 stock DeleteAdminVeh(avid)
 {
 	Delete3DTextLabel(aVehLabel[avid]);
@@ -301,7 +512,6 @@ stock DeleteAdminVeh(avid)
 	DestroyVehicle2(vid);
 	aVeh[avid] = 0;
 }
-
 stock ClearOffer(playerid)
 {
 	SetPVarInt(playerid, "OfferBy", 0);
@@ -311,7 +521,6 @@ stock ClearOffer(playerid)
 	SetPVarInt(playerid, "OfferM", 0);
 	SetPVarInt(playerid, "OfferType", 0);
 }
-
 stock IsPlayerInBike(playerid)
 {
 	new vmd = GetVehicleModel(GetPlayerVehicleID(playerid));
@@ -324,7 +533,6 @@ stock IsPlayerInBike(playerid)
 	}
 	return 0;
 }
-
 forward Float:GetVehicleSpeed(vehicleid, UseMPH);
 public Float:GetVehicleSpeed(vehicleid, UseMPH)
 {
@@ -335,7 +543,6 @@ public Float:GetVehicleSpeed(vehicleid, UseMPH)
     floatround(temp_speed,floatround_round);
 	return temp_speed;
 }
-
 stock ClearAllVehicle()
 {
 	for (new i = 0; i < MAX_VEHICLES; i++)
@@ -344,6 +551,7 @@ stock ClearAllVehicle()
 		Trucking[i] = 0;
 		CarRepairCheat[i][0] = 0;
 		CarHealthCheat[i] = 1000;
+		PizzaVehicle[i] = 0;
 	}
 	return 1;
 }
@@ -382,14 +590,12 @@ stock ClearApGiai(playerid)
 	}
 	return 1;
 }
-
 stock GetIp(playerid)
 {
 	new ip[30];
 	GetPlayerIp(playerid, ip, sizeof(ip));
 	return ip;
 }
-
 stock IsAtATM(playerid)
 {
 	if (PlayerToPoint(1.5, playerid, 1346.5016, -1758.7649, 13.5156)
@@ -401,57 +607,10 @@ stock IsAtATM(playerid)
 		return 1;
 	return 0;
 }
-stock Replace(string[], const search[], const replacement[], bool:ignorecase = false, pos = 0, limit = -1, maxlength = sizeof(string)) {
-	// No need to do anything if the limit is 0.
-	if (limit == 0)
-		return 0;
-
-	new
-		sublen = strlen(search),
-		replen = strlen(replacement),
-		bool:packed = ispacked(string),
-		maxlen = maxlength,
-		len = strlen(string),
-		count = 0
-		;
-
-
-	// "maxlen" holds the max string length (not to be confused with "maxlength", which holds the max. array size).
-	// Since packed strings hold 4 characters per array slot, we multiply "maxlen" by 4.
-	if (packed)
-		maxlen *= 4;
-
-	// If the length of the substring is 0, we have nothing to look for..
-	if (!sublen)
-		return 0;
-
-	// In this line we both assign the return value from "strfind" to "pos" then check if it's -1.
-	while (-1 != (pos = strfind(string, search, ignorecase, pos))) {
-		// Delete the string we found
-		strdel(string, pos, pos + sublen);
-
-		len -= sublen;
-
-		// If there's anything to put as replacement, insert it. Make sure there's enough room first.
-		if (replen && len + replen < maxlen) {
-			strins(string, replacement, pos, maxlength);
-
-			pos += replen;
-			len += replen;
-		}
-
-		// Is there a limit of number of replacements, if so, did we break it?
-		if (limit != -1 && ++count >= limit)
-			break;
-	}
-
-	return count;
-}
-
 CMD:buonlau(playerid, params[])
 {
-	if (countFaction(1) < 3) return SCM(playerid, COLOR_GREY, "Phai co it nhat 3 canh sat onduty trong server moi co the thuc hien.");
-	if (gTeam[playerid] == 2 || IsACop(playerid)) return SCM(playerid, COLOR_GREY, "Ban la nhan vien chinh phu, khong the di buon lau.");
+	if (countFaction(PD) < 3) return SCM(playerid, COLOR_GREY, "Phai co it nhat 3 canh sat onduty trong server moi co the thuc hien.");
+	if (gTeam[playerid] == TEAMGOV || IsACop(playerid)) return SCM(playerid, COLOR_GREY, "Ban la nhan vien chinh phu, khong the di buon lau.");
 	if (PlayerInfo[playerid][pLevel] < 5) return SCM(playerid, COLOR_GREY, "Ban phai dat cap 8 moi co the di buon.");
 	if (!IsPlayerInRangeOfPoint(playerid, 3, -1111.4635, -1681.5151, 76.3739)) return SCM(playerid, COLOR_GREY, "Ban khong dung o khu vuc thuong luong de buon lau (/huongdan tim O Buon Lau");
 	new drugs, str[128];
@@ -471,7 +630,6 @@ CMD:buonlau(playerid, params[])
 	OldDD[playerid] = rand;
 	return 1;
 }
-
 CMD:doibuonlau(playerid, params[])
  {
 		if (DrugDealing[playerid] != 3) return SCM(playerid, COLOR_GREY, "Ban hien tai khong buon lau hoac chua tien hanh buon lau.");
@@ -488,6 +646,42 @@ CMD:doibuonlau(playerid, params[])
  }
 CMD:tichthubuonlau(playerid, params[])
 {
+	if (PlayerInfo[playerid][pMember] != 1 && PlayerInfo[playerid][pLeader] != 1) return SCM(playerid, COLOR_GREY, "Ban khong phai canh sat.");
+	new vid = GetClosestVehicle(playerid);
+	if (vid == -1) return SCM(playerid, COLOR_GREY, "Ban khong dung gan chiec xe nao.");
+	new Float:x, Float:y;
+	GetXYBehindCar(vid, x, y, 4);
+	if (GetDistanceToPointXY(playerid, x, y) > 4) return SCM(playerid, COLOR_GREY, "Ban can o thung xe de thuc hien.");
+	if (trunkOn[vid] == 0) return SCM(playerid, COLOR_GREY, "Ban phai mo thung xe ra de thuc hien.");
+	new ddvehicle = 0, sohang = 0;
+	foreach(new pid : Player)
+	{
+		if (CarDD[pid] == vid)
+		{
+			sohang += DrugDealer[pid];
+
+			DDTime[pid] = 0;
+			DrugDealing[pid] = 0;
+			DrugDealer[pid] = 0;
+			CarDD[pid] = -1;
+			OldDD[pid] = -1;
+			ChangeDD[pid] = 0;
+			CoopDD[pid] = -1;
+			SCM(pid, COLOR_WHITE, "Hang tren xe buon da bi tich thu, phi vu buon lau that bai!");
+			ddvehicle = 1;
+			DisableCheckpoint(pid);
+		}
+	}
+	if (ddvehicle == 0) return SCM(playerid, COLOR_GREY, "Chiec xe nay khong co hang buon lau.");
+	else if (ddvehicle == 1)
+	{
+		new money = sohang * 7000;
+		SafeGivePlayerMoney(playerid, money);
+		new str[128];
+		format(str, sizeof(str), "** [Tong dai]: Dong chi %s da lap cong va tich thu toan bo so hang buon lau (So tien: %s$) tren chiec xe %s! **", GN(playerid), AddCommas(money), GetVehicleName(vid));
+		SendRadioMessage(1, TEAM_RADIO_COLOR, str);
+		SendRadioMessage(1, TEAM_RADIO_COLOR, "** [Tong dai]: Cac dong chi hay mau chong truy bat cac doi tuong buon lau con lai! **");
+	}
 	return 1;
 }
 CMD:car(playerid, params[])
@@ -500,20 +694,20 @@ CMD:car(playerid, params[])
 		return 1;
 	}
 	new vid = GetPlayerVehicleID(playerid);
-	if (IsABike(vid)) return SCM(playerid, COLOR_GREY, "Xe dap khong co nhung chuc nang nay.");
+	if (IsABicycle(vid)) return SCM(playerid, COLOR_GREY, "Xe dap khong co nhung chuc nang nay.");
 	if (!strcmp(params, "light", true))
 	{
 		if (lightOn[vid] == 0)
 		{
 			VehicleLight(vid, true);
-			GameTextForPlayer(playerid, "~w~Den Xe ~g~Mo", 1000, 4);
+			GameTextPlayer(playerid, "~w~Den Xe ~g~Mo", 1000, 4);
 			lightOn[vid] = 1;
 			return 1;
 		}
 		else
 		{
 			VehicleLight(vid, false);
-			GameTextForPlayer(playerid, "~w~Den Xe ~r~Tat", 1000, 4);
+			GameTextPlayer(playerid, "~w~Den Xe ~r~Tat", 1000, 4);
 			lightOn[vid] = 0;
 			return 1;
 		}
@@ -523,17 +717,18 @@ CMD:car(playerid, params[])
 	{
 		if (IsPlayerInAnyVehicle(playerid) && GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
 		{
+			if(IsABike(vid)) return SCM(playerid, COLOR_GREY, "Xe may khong co chuc nang nay.");
 			if (hoodOn[vid] == 0)
 			{
 				VehicleHood(vid, true);
-				GameTextForPlayer(playerid, "~w~Mui Xe ~g~Mo", 1000, 4);
+				GameTextPlayer(playerid, "~w~Mui Xe ~g~Mo", 1000, 4);
 				hoodOn[vid] = 1;
 				return 1;
 			}
 			else
 			{
 				VehicleHood(vid, false);
-				GameTextForPlayer(playerid, "~w~Mui Xe ~r~Dong", 1000, 4);
+				GameTextPlayer(playerid, "~w~Mui Xe ~r~Dong", 1000, 4);
 				hoodOn[vid] = 0;
 				return 1;
 			}
@@ -542,17 +737,21 @@ CMD:car(playerid, params[])
 		{
 			new newcar = GetClosestCar(playerid);
 			if (newcar == -1) return SCM(playerid, COLOR_GREY, "Ban khong dung gan chiec xe nao.");
+			if (IsABike(newcar)) return SCM(playerid, COLOR_GREY, "Xe may khong co chuc nang nay.");
+			new Float:x, Float:y;
+			GetXYFrontCar(newcar, x, y, 4);
+			if (GetDistanceToPointXY(playerid, x, y) > 4) return SCM(playerid, COLOR_GREY, "Ban can o mui xe de thuc hien.");
 			if (hoodOn[newcar] == 0)
 			{
 				VehicleHood(newcar, true);
-				GameTextForPlayer(playerid, "~w~Mui Xe ~g~Mo", 1000, 4);
+				GameTextPlayer(playerid, "~w~Mui Xe ~g~Mo", 1000, 4);
 				hoodOn[newcar] = 1;
 				return 1;
 			}
 			else
 			{
 				VehicleHood(newcar, false);
-				GameTextForPlayer(playerid, "~w~Mui Xe ~r~Dong", 1000, 4);
+				GameTextPlayer(playerid, "~w~Mui Xe ~r~Dong", 1000, 4);
 				hoodOn[newcar] = 0;
 				return 1;
 			}
@@ -562,17 +761,18 @@ CMD:car(playerid, params[])
 	{
 		if (IsPlayerInAnyVehicle(playerid) && GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
 		{
+			if (IsABike(vid)) return SCM(playerid, COLOR_GREY, "Xe may khong co chuc nang nay.");
 			if (trunkOn[vid] == 0)
 			{
 				VehicleTrunk(vid, true);
-				GameTextForPlayer(playerid, "~w~Thung Xe ~g~Mo", 1000, 4);
+				GameTextPlayer(playerid, "~w~Thung Xe ~g~Mo", 1000, 4);
 				trunkOn[vid] = 1;
 				return 1;
 			}
 			else
 			{
 				VehicleTrunk(vid, false);
-				GameTextForPlayer(playerid, "~w~Thung Xe ~r~Dong", 1000, 4);
+				GameTextPlayer(playerid, "~w~Thung Xe ~r~Dong", 1000, 4);
 				trunkOn[vid] = 0;
 				return 1;
 			}
@@ -581,17 +781,21 @@ CMD:car(playerid, params[])
 		{
 			new newcar = GetClosestCar(playerid);
 			if (newcar == -1) return SCM(playerid, COLOR_GREY, "Ban khong dung gan chiec xe nao.");
+			if (IsABike(newcar)) return SCM(playerid, COLOR_GREY, "Xe may khong co chuc nang nay.");
+			new Float:x, Float:y;
+			GetXYBehindCar(newcar, x, y, 4);
+			if (GetDistanceToPointXY(playerid, x, y) > 4) return SCM(playerid, COLOR_GREY, "Ban can o thung xe de thuc hien.");
 			if (trunkOn[newcar] == 0)
 			{
 				VehicleTrunk(newcar, true);
-				GameTextForPlayer(playerid, "~w~Thung Xe ~g~Mo", 1000, 4);
+				GameTextPlayer(playerid, "~w~Thung Xe ~g~Mo", 1000, 4);
 				trunkOn[newcar] = 1;
 				return 1;
 			}
 			else
 			{
 				VehicleTrunk(newcar, false);
-				GameTextForPlayer(playerid, "~w~Thung Xe ~r~Dong", 1000, 4);
+				GameTextPlayer(playerid, "~w~Thung Xe ~r~Dong", 1000, 4);
 				trunkOn[newcar] = 0;
 				return 1;
 			}
@@ -609,6 +813,15 @@ Float:GetXYBehindCar(vid, &Float:q, &Float:w, Float:distance)
     q += (distance * -floatsin(-a, degrees));
     w += (distance * -floatcos(-a, degrees));
     return a;
+}
+forward Float:GetXYFrontCar(vehicleid, &Float:q, &Float:w, Float:distance);
+Float:GetXYFrontCar(vehicleid, &Float:q, &Float:w, Float:distance)
+{
+	new Float:a;
+	GetVehiclePos(vehicleid, q, w, a);
+	GetVehicleZAngle(vehicleid, a);
+	q += (distance * floatsin(-a, degrees));
+	w += (distance * floatcos(-a, degrees));
 }
 CMD:dichvu(playerid, params[])
 {
@@ -640,7 +853,7 @@ CMD:dichvu(playerid, params[])
 		if (PlayerInfo[playerid][pAdmin] < 1) return SCM(playerid, COLOR_GREY, "Ban khong phai la Admin");
 		new phs, str[128];
 		if (sscanf(params, "u", phs)) return SCM(playerid, COLOR_GRAD2, "Su dung: /hoisinh [playerid]");
-		if (IsPlayerConnected(phs) && phs != INVALID_PLAYER_ID)
+		if (IsLogOn(phs) && phs != INVALID_PLAYER_ID)
 		{
 			if (Dying[phs] != 1) return SCM(playerid, COLOR_GREY, "Nguoi choi nay khong chet.");
 			printf("AdmCMD: %s hoi sinh %s", GN(playerid), GN(phs));
@@ -723,6 +936,21 @@ CMD:xoamuctieu(playerid, params[])
 	{
 		MedicCaller[playerid] = -1;
 		SCM(playerid, COLOR_WHITE, "Xoa nhan benh nhan thanh cong.");
+	}
+	if (PizzaDistance[playerid] != 0)
+	{
+		SafeGivePlayerMoney(playerid, -30000);
+		SCM(playerid, COLOR_GREY, "Ban bi tru 30,000$ vi khong giao banh cho nha.");
+		PizzaPos[playerid][0] = 0;
+		PizzaPos[playerid][1] = 0;
+		PizzaPos[playerid][2] = 0;
+		PizzaDistance[playerid] = 0;
+	}
+	if (PizzaGet[playerid] != 0)
+	{
+		PizzaGet[playerid] = 0;
+		ClearAnimations(playerid);
+		RemovePlayerAttachedObject(playerid, 0);
 	}
 	DisableCheckpoint(playerid);
 	return 1;
@@ -840,6 +1068,28 @@ stock AddCommas(so)
 	if (so<0) strins(tStr, "-", 0);
 	return tStr;
 }
+stock GetBizzDeliver(index, &type, &id)
+{
+	new idx = -1;
+	for (new i = 0; i < MAX_BIZ; i++)
+	{
+		if (BizzInfo[i][bID] == -1) continue;
+		if (++idx == index)
+		{
+			type = 1;
+			id = i;
+		}
+	}
+	for (new i = 0; i < MAX_SBIZ; i++)
+	{
+		if (SBizzInfo[i][sbID] == -1) continue;
+		if (++idx == index)
+		{
+			type = 2;
+			id = i;
+		}
+	}
+}
 stock CheckAllBizTruck()
 {
 	new havebiz = 0;
@@ -849,12 +1099,18 @@ stock CheckAllBizTruck()
 		if (!IsBizFullProduct(i) && IsBizCanBuyProduct(i))
 			havebiz = 1;
 	}
+	for (new i = 0; i < MAX_SBIZ; i++)
+	{
+		if (SBizzInfo[i][sbID] == -1) continue;
+		if (!IsSBizFullProduct(i) && IsSBizCanBuyProduct(i))
+			havebiz = 1;
+	}
 	return havebiz;
 }
 stock GetBizLoadTruck()
 {
 	new str[500];
-	format(str, sizeof(str), "Cua Hang\tTien Thuong Them\n");
+	format(str, sizeof(str), "Cua Hang\tTien\n");
 	for (new i = 0; i < MAX_BIZ; i++)
 	{
 		if (BizzInfo[i][bID] == -1) continue;
@@ -866,9 +1122,25 @@ stock GetBizLoadTruck()
 		else
 		{
 			if (IsBizFullProduct(i))
-				format(str, sizeof(str), "%s%s (Full Hang)\t%d$\n", str, title, BizzInfo[i][bPriceProd]*10);
+				format(str, sizeof(str), "%s%s (Day Hang)\t%d$\n", str, title, BizzInfo[i][bPriceProd]*10);
 			else if (!IsBizCanBuyProduct(i))
 				format(str, sizeof(str), "%s%s (Het Ngan Sach)\t%d$\n", str, title, BizzInfo[i][bPriceProd]*10);
+		}
+	}
+	for (new i = 0; i < MAX_SBIZ; i++)
+	{
+		if (SBizzInfo[i][sbID] == -1) continue;
+		new title[300];
+		format(title, sizeof(title), SBizzInfo[i][sbMessage]);
+		DeleteTextLetter(title);
+		if (!IsSBizFullProduct(i) && IsSBizCanBuyProduct(i))
+			format(str, sizeof(str), "%s%s\t%d$\n", str, title, SBizzInfo[i][sbPriceProd] * 10);
+		else
+		{
+			if (IsSBizFullProduct(i))
+				format(str, sizeof(str), "%s%s (Day Hang)\t%d$\n", str, title, SBizzInfo[i][sbPriceProd] * 10);
+			else if (!IsSBizCanBuyProduct(i))
+				format(str, sizeof(str), "%s%s (Het Ngan Sach)\t%d$\n", str, title, SBizzInfo[i][sbPriceProd] * 10);
 		}
 	}
 	/*for (new i = 0; i < MAX_SBIZ; i++)
@@ -880,6 +1152,18 @@ stock GetBizLoadTruck()
 		else format(str, sizeof(str), "%s (Full Hang)\t%d$\n", title, SBizzInfo[i][sPriceProd]);
 	}*/
 	return str;
+}
+stock IsSBizFullProduct(bizid)
+{
+	if (SBizzInfo[bizid][sbProducts] < SBizzInfo[bizid][sbMaxProducts])
+		return 0;
+	return 1;
+}
+stock IsSBizCanBuyProduct(bizid)
+{
+	if (SBizzInfo[bizid][sbTill] <  (SBizzInfo[bizid][sbPriceProd] * 10))
+		return 0;
+	return 1;
 }
 stock IsBizFullProduct(bizid)
 {
@@ -924,7 +1208,6 @@ stock ClearSaving(playerid)
 	Saver[playerid] = -1;
 	SaveVehicle[playerid] = -1;
 }
-
 stock GetPatientAmbulance(vid)
 {
 	foreach(new playerid : Player)
@@ -939,7 +1222,7 @@ stock GetPatientAmbulance(vid)
 }
 stock IsFD(playerid)
 {
-	if (IsPlayerConnected(playerid))
+	if (IsLogOn(playerid))
 	{
 		new leader = PlayerInfo[playerid][pLeader];
 		new member = PlayerInfo[playerid][pMember];
@@ -965,7 +1248,6 @@ stock IsOnSavePosAmbulance(playerid)
 	}
 	return 0;
 }
-
 stock countFaction(idfac)
 {
 	new count = 0;
@@ -976,7 +1258,6 @@ stock countFaction(idfac)
 	}
 	return count;
 }
-		 
 forward ChangeDrugDealer(playerid, rand);
 public ChangeDrugDealer(playerid, rand)
 {
@@ -994,7 +1275,6 @@ public ChangeDrugDealer(playerid, rand)
 	}
 	return 1;
 }
-
 stock GetDriverVehicle(vid)
 {
 	foreach(new playerid : Player)
@@ -1004,7 +1284,6 @@ stock GetDriverVehicle(vid)
 	}
 	return -1;
 }
-
 stock CheckDrugDealerInVehicle(vid, ddcase)
 {
 	new count = 0;
@@ -1015,7 +1294,6 @@ stock CheckDrugDealerInVehicle(vid, ddcase)
 	}
 	return count;
 }
-
 stock IsPlayerDrugDealingCooperate(ddid, playerid, ddcase)
 {
 	new vid = GetPlayerVehicleID(playerid);
@@ -1023,13 +1301,11 @@ stock IsPlayerDrugDealingCooperate(ddid, playerid, ddcase)
 		return 1;
 	return 0;
 }
-
 stock DisableCheckpoint(playerid)
 {
 	PlayerPlaySound(playerid, 1058, 0.0, 0.0, 0.0);
 	DisablePlayerCheckpoint(playerid);
 }
-
 stock SetCheckpoint(playerid, Float:x, Float:y, Float:z, Float:range)
 {
 	PlayerPlaySound(playerid, 1002, 0.0, 0.0, 0.0);
@@ -1038,29 +1314,34 @@ stock SetCheckpoint(playerid, Float:x, Float:y, Float:z, Float:range)
 	SetPlayerCheckpoint(playerid, x,y,z,range);
 	return 1;
 }
-
 stock KickEx(playerid)
 {
 	SetTimerEx("KickTime", 1000, 0, "i", playerid);
 	return 1;
 }
-
 forward KickTime(playerid);
 public KickTime(playerid)
 {
 	Kick(playerid);
 	return 1;
 }
-
 stock GetClosestDoCPlayer(playerid)
 {
+	new result = -1;
+	new Float:mindistance = 5.0;
 	foreach(new i : Player)
 	{
-		if ((PlayerInfo[i][pMember] == 17 || PlayerInfo[i][pLeader] == 17) &&
-			IsPlayerNearPlayer(playerid, i, 5) && i != playerid)
-			return i;
+		new Float:distance = GetDistanceBetweenPlayers(playerid, i);
+		if ((PlayerInfo[i][pMember] == 17 || PlayerInfo[i][pLeader] == 17) && i != playerid)
+		{
+			if (distance < mindistance)
+			{
+				mindistance = distance;
+				result = i;
+			}
+		}
 	}
-	return -1;
+	return result;
 }
 stock GetClosestCell(playerid)
 {
@@ -1071,15 +1352,65 @@ stock GetClosestCell(playerid)
 	}
 	return -1;
 }
-
 stock IsPlayerNearArrestOut(playerid, id)
 {
 	if (IsPlayerInRangeOfPoint(playerid, 2, DocArrestOut[id][0], DocArrestOut[id][1], DocArrestOut[id][2]))
 		return 1;
 	return 0;
 }
-
-stock CreateGate(model, Float:startx, Float:starty, Float:startz, Float:endx, Float:endy, Float:endz, Float:srotatex, Float:srotatey, Float:srotatez, Float:erotatex, Float:erotatey, Float:erotatez, type = GATE, autotime = 0, Float:time = 5.0, Float:objecthealth = -1.0, Float:range = 3.0)
+stock UpdateWantedLevel(playerid)
+{
+	new points = WantedPoints[playerid];
+	switch (points)
+	{
+		case 3: WantedLevel[playerid] = 1;
+		case 4, 5: WantedLevel[playerid] = 2;
+		case 6, 7: WantedLevel[playerid] = 3;
+		case 8, 9: WantedLevel[playerid] = 4;
+		case 10, 11: WantedLevel[playerid] = 5;
+		case 12, 13: WantedLevel[playerid] = 6;
+	}
+	if (points < 3) WantedLevel[playerid] = 0;
+	else if (points >= 14) WantedLevel[playerid] = 10;
+	return 1;
+}
+stock HitGate(playeridz, gateid, Float:health)
+{
+	GateInfo[gateid][gHealth] -= health;
+	new str[128];
+	format(str, sizeof(str), "~y~Mau Cua: ~r~%0.0f", GateInfo[gateid][gHealth]);
+	GameTextPlayer(playeridz, str, 1000, 4);
+	if (GateInfo[gateid][gHealth] <= 0)
+	{
+		if (GateInfo[gateid][gFactionType] == FACTYPE)
+		{
+			format(str, sizeof(str), "[Camera] Phat hien co doi tuong pha cua o HQ, vui long dieu tra.");
+			SendRadioMessage(GateInfo[gateid][gFactionID], TEAM_RADIO_COLOR, str);
+			printf("%s", str);
+			foreach(new playerid : Player)
+			{
+				if (LastHitGate[playerid] == gateid)
+				{
+					if (WantedPoints[playerid] == 0) { WantedPoints[playerid] = 3; }
+					else { WantedPoints[playerid] += 2; }
+					SetPlayerCriminalEx(playerid, 255, "Pha Cua");
+				}
+			}
+		}
+		DestroyGate(gateid);
+	}
+	return 1;
+}
+stock IsGate(objectid)
+{
+	for (new i = 0; i < MAX_GATES; i++)
+	{
+		if (GateInfo[i][gObject] == objectid)
+			return i;
+	}
+	return -1;
+}
+stock CreateGate(model, Float:startx, Float:starty, Float:startz, Float:endx, Float:endy, Float:endz, Float:srotatex, Float:srotatey, Float:srotatez, Float:erotatex, Float:erotatey, Float:erotatez, type = GATE,  factype = -1, facid = -1, autotime = 0, Float:time = 5.0, Float:objecthealth = -1.0, Float:range = 3.0)
 {
 	new idgate = -1;
 	for (new i = 0; i < MAX_GATES; i++)
@@ -1105,13 +1436,35 @@ stock CreateGate(model, Float:startx, Float:starty, Float:startz, Float:endx, Fl
 	GateInfo[idgate][ERotateY] = erotatey;
 	GateInfo[idgate][ERotateZ] = erotatez;
 	GateInfo[idgate][gHealth] = objecthealth;
+	GateInfo[idgate][gMaxHealth] = objecthealth;
 	GateInfo[idgate][gType] = type;
 	GateInfo[idgate][gTime] = time;
 	GateInfo[idgate][gAutoTime] = autotime;
 	GateInfo[idgate][gRange] = range;
+	GateInfo[idgate][gFactionID] = facid;
+	GateInfo[idgate][gFactionType] = factype;
 	return 1;
 }
-
+stock DestroyGate(gateid)
+{
+	DestroyDynamicObject(GateInfo[gateid][gObject]);
+	GateInfo[gateid][gObject] = INVALID_OBJECT_ID;
+	return 1;
+}
+stock RespawnGate()
+{
+	for (new i = 0; i < MAX_GATES; i++)
+	{
+		if (GateInfo[i][gObject] == INVALID_OBJECT_ID && GateInfo[i][gModel] != 0)
+		{
+			new objid = CreateDynamicObject(GateInfo[i][gModel], GateInfo[i][StartX], GateInfo[i][StartY], GateInfo[i][StartZ],
+														GateInfo[i][SRotateX], GateInfo[i][SRotateY], GateInfo[i][SRotateZ]);
+			GateInfo[i][gObject] = objid;
+		}
+		GateInfo[i][gHealth] = GateInfo[i][gMaxHealth];
+	}
+	return 1;
+}
 stock GetClosestGate(playerid)
 {
 	for (new i = 0; i < MAX_GATES; i++)
@@ -1122,7 +1475,6 @@ stock GetClosestGate(playerid)
 	}
 	return -1;
 }
-
 stock GetClosestDoor(playerid)
 {
 	for (new i = 0; i < MAX_GATES; i++)
@@ -1133,7 +1485,6 @@ stock GetClosestDoor(playerid)
 	}
 	return -1;
 }
-
 stock MoveGate(gateid, type = -1)
 {
 	// 1 OPEN 2 CLOSED

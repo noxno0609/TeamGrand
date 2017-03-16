@@ -1,3 +1,31 @@
+timer CheckHitGate[350](playerid)
+{
+	new Float:x, Float:y, Float:z, Float:distance;
+	GetPlayerPos(playerid, x, y, z);
+	GetXYInFrontOfPlayer(playerid, x, y, 0.5);
+	//SetPlayerCheckpoint(playerid, x, y, z, 0.5);
+	//SetPVarInt(playerid, "FORTESTING", 1);
+	for (new i = 0; i < MAX_GATES; i++)
+	{
+		if (GateInfo[i][gObject] == INVALID_PLAYER_ID) continue;
+		if (GateInfo[i][gMoved] == 0)
+			distance = GetDistanceBetweenPointsXY(x, y, GateInfo[i][StartX], GateInfo[i][StartY]);
+		else distance = GetDistanceBetweenPointsXY(x, y, GateInfo[i][EndX], GateInfo[i][EndY]);
+		//printf("distance: %f", distance);
+		if (distance < 1.5 && IsHitObjectWeaponID(GetPlayerWeapon(playerid)))
+		{
+			OnPlayerHitGate(playerid, GetPlayerWeapon(playerid), i);
+			break;
+		}
+	}
+	defer ClearHitGate(playerid);
+	return 1;
+}
+timer ClearHitGate[380](playerid)
+{
+	SetPVarInt(playerid, "DelayHitAnim", 0);
+	return 1;
+}
 task AntiCheat[100]()
 {
 	foreach(new vehid : Vehicle)
@@ -5,7 +33,12 @@ task AntiCheat[100]()
 		new Float:newhealth;
 		GetVehicleHealth(vehid, newhealth);
 		if (newhealth > CarHealthCheat[vehid])
+		{
 			SetVehicleHealth(vehid, CarHealthCheat[vehid]);
+			new driverid = GetVehicleDriverID(vehid);
+			if (driverid != -1 && PlayerInfo[driverid][pAdmin] == 0)
+				CarCheatAttemping[driverid]++;
+		}
 		else if (newhealth < CarHealthCheat[vehid])
 		{
 			GetVehicleHealth(vehid, CarHealthCheat[vehid]);
@@ -14,6 +47,71 @@ task AntiCheat[100]()
 
 		if (CarRepairCheat[vehid][0] != 0)
 			CheckHackRepairCar(vehid);
+
+		if (engineOn[vehid] == 1)
+			CheckVehicleInNails(vehid);
+	}
+	foreach(new i: Player)
+	{
+		new delaytime = GetPVarInt(i, "DelayHackMoney");
+		if (delaytime > 0)
+		{
+			delaytime--;
+			SetPVarInt(i, "DelayHackMoney", delaytime);
+		}
+		if (IsLogOn(i) && PlayerInfo[i][pAdmin] < 1)
+		{
+			//Check Hack Money
+			new pmoney = GetPlayerMoney(i);
+			if (pmoney > ScriptMoney[i] && pmoney > 0)
+			{
+				/*printf("--===--");
+				printf("[%d] Now Money: %s$", i, AddCommas(pmoney));
+				printf("[%d] Script Money: %s$", i, AddCommas(ScriptMoney[i]));*/
+				new fuckmoney = pmoney - ScriptMoney[i];
+				new finemoney = (ScriptMoney[i] / 2);
+				new finebmoney = (PlayerInfo[i][pAccount] / 2);
+				if (ScriptMoney[i] <= 1)
+				{
+					finemoney = 0;
+					ResetPlayerMoney(i);
+					if (ScriptMoney[i] == 1) ScriptMoney[i] = 0;
+					GivePlayerMoney(i, ScriptMoney[i]);
+				}
+				else
+				{
+					GivePlayerMoney(i, -fuckmoney);
+					SafeGivePlayerMoney(i, -finemoney, 1, false);
+				}
+
+				if (PlayerInfo[i][pAccount] <= 1)
+					PlayerInfo[i][pAccount] = 0;
+				else SafeGivePlayerMoney(i, -finebmoney, 2, false);
+
+				if (GetPVarInt(i, "DelayHackMoney") == 0)
+				{
+					new strz[128];
+					format(strz, sizeof(strz), "AdmCMD: %s hack tien va bi phat mat nua tai san boi SERVER!", GN(i));
+					BroadCast(COLOR_LIGHTRED, strz);
+					SetPVarInt(i, "DelayHackMoney", 30);
+				}
+				/*printf("[%d] Fine Money: %s$", i, AddCommas(finemoney));
+				printf("[%d] After Script Money: %s$", i, AddCommas(ScriptMoney[i]));*/
+			}
+
+			//Check Hack Weapon
+			new weaponid, ammo;
+			for (new wid = 0; wid < 13; wid++)
+			{
+				GetPlayerWeaponData(i, wid, weaponid, ammo);
+				if (weaponid != ScriptWeapons[i][wid])
+				{
+					SetPlayerArmedWeapon(i, 0);
+					SafeReGivePlayerWeapon(i);
+					break;
+				}
+			}
+		}
 	}
 	return 1;
 }
@@ -52,6 +150,112 @@ task ServerBeat[1000]()
 	}
 	foreach(new playerid : Player)
 	{
+		if (TaxiAccepted[playerid] != -1 && IsPlayerNearPlayer(playerid, TaxiAccepted[playerid], 5))
+		{
+			new taxicaller = TaxiAccepted[playerid];
+			TaxiCall[taxicaller] = 0;
+			TaxiCallTime[taxicaller] = 0;
+			UnSetMarkerPlayer(playerid, taxicaller);
+			TaxiAccepted[playerid] = -1;
+		}
+		//if (!IsLogOn(playerid)) continue;
+		if (PizzaCallTime[playerid] > 0) 
+			PizzaCallTime[playerid]--;
+
+		if (MechanicCallTime[playerid] > 0)
+		{
+			MechanicCallTime[playerid]--;
+			if (MechanicCallTime[playerid] == 0)
+				MechanicCall[playerid] = 0;
+		}
+
+		if (TaxiCallTime[playerid] > 0)
+		{
+			TaxiCallTime[playerid]--;
+			if (TaxiCallTime[playerid] == 0)
+				TaxiCall[playerid] = 0;
+		}
+
+		if (NowGTTime[playerid] > 0)
+		{
+			NowGTTime[playerid] -= 1000;
+			if (NowGTTime[playerid] < 0)
+				NowGTTime[playerid] = 0;
+		}
+
+		if (GetPVarInt(playerid, "TimeReleaseCuffed") > 0)
+		{
+			new rtime = GetPVarInt(playerid, "TimeReleaseCuffed");
+			rtime--;
+			new str[128];
+			format(str, sizeof(str), "~r~%d giay~n~~y~de pha cong tay!", rtime);
+			GameTextPlayer(playerid, str, 1000, 4);
+			if (rtime == 0)
+			{
+				new prid = GetPVarInt(playerid, "RCPID");
+				format(str, sizeof(str), "* Ban da duoc be tay boi %s.", GN(playerid));
+				SendClientMessage(prid, COLOR_WHITE, str);
+				format(str, sizeof(str), "* Ban da be cong tay cho %s.", GN(prid));
+				SendClientMessage(playerid, COLOR_WHITE, str);
+				GameTextPlayer(prid, "~g~Be cong", 2500, 3);
+				TogglePlayerControllable(prid, 1);
+				PlayerCuffed[prid] = 0;
+				ClearAnimations(playerid);
+				ClearAnimations(prid);
+				rtime = -1;
+				SetPVarInt(playerid, "RCPID", -1);
+			}
+			SetPVarInt(playerid, "TimeReleaseCuffed", rtime);
+		}
+		if (GetPVarInt(playerid, "LastHitTime") > 0)
+		{
+			new hittime = GetPVarInt(playerid, "LastHitTime");
+			hittime--;
+			if (hittime == 0)
+				LastHitGate[playerid] = 0;
+			SetPVarInt(playerid, "LastHitTime", hittime);
+		}
+		if (SearchNails[playerid] == 1)
+		{
+			new vid = GetPlayerVehicleID(playerid);
+			if (!IsPlayerInAnyVehicle(playerid) || !IsASweeper(vid))
+			{
+				SearchNails[playerid] = 0;
+				GameTextPlayer(playerid, "~r~Che do ra dinh ket thuc", 5000, 4);
+				continue;
+			}
+			new Float:distance, nailid;
+			GetNearestNails(playerid, distance, nailid);
+			if (distance <= 2)
+			{
+				if (TimeNails[playerid] == -1)
+					TimeNails[playerid] = 6;
+
+				TimeNails[playerid]--;
+				new str[128];
+				if (TimeNails[playerid] == 0)
+				{
+					DeleteNail(nailid);
+					TimeNails[playerid] = -1;
+					format(str, sizeof(str), "~y~Hut Dinh Thanh Cong", TimeNails[playerid]);
+					GameTextPlayer(playerid, str, 1000, 4);
+					PlayerInfo[playerid][pMechSkill]++;
+					GiveJobReward(playerid, MECHANIC);
+				}
+				else
+				{
+					format(str, sizeof(str), "~g~Hut Dinh~n~~y~Thoi Gian: ~b~%d Giay", TimeNails[playerid]);
+					GameTextPlayer(playerid, str, 1000, 4);
+				}
+			}
+			else if (distance <= (50 + (GetLevelJob(playerid, MECHANIC)*5)))
+			{
+				new str[128];
+				format(str, sizeof(str), "~g~Phat Hien Dinh~n~~y~Khoang Cach: ~b~%0.0fm", distance);
+				GameTextPlayer(playerid, str, 1000, 4);
+				TimeNails[playerid] = -1;
+			}
+		}
 		if (DriverLicenseCar[playerid] != INVALID_VEHICLE_ID && DriverLicenseTime[playerid] != 0)
 		{
 			new Float:health;
@@ -83,11 +287,16 @@ task ServerBeat[1000]()
 				SetPVarInt(playerid, "AlarmPlayed", 0);
 			}
 		}
-
-		if (WantedLevel[playerid] > 0 && GetPlayerWantedLevel(playerid) != WantedLevel[playerid])
+		if (WantedLevel[playerid] > 0 && GetPlayerWantedLevel(playerid) != WantedLevel[playerid] && FirstSpawn[playerid] == 0)
+		{
+			UpdateWantedLevel(playerid);
 			SetPlayerWantedLevel(playerid, WantedLevel[playerid]);
-		else if (WantedLevel[playerid] == 0 && GetPlayerWantedLevel(playerid) != 0)
+		}
+		else if (WantedLevel[playerid] == 0 && GetPlayerWantedLevel(playerid) != 0 && FirstSpawn[playerid] == 0)
+		{
+			UpdateWantedLevel(playerid);
 			SetPlayerWantedLevel(playerid, 0);
+		}
 
 		if (DOCDelay[playerid] > 0)
 			DOCDelay[playerid]--;
@@ -130,12 +339,12 @@ task ServerBeat[1000]()
 					TruckTime[playerid]--;
 					new str[128];
 					format(str, sizeof(str), "~y~Giao hang trong ~g~%d~g~ ~y~giay~y~", TruckTime[playerid]);
-					GameTextForPlayer(playerid, str, 1000, 4);
+					GameTextPlayer(playerid, str, 1000, 4);
 					if (TruckTime[playerid] == 0)
 					{
 						Trucking[GetPlayerVehicleID(playerid)] = 2;
 						SetCheckpoint(playerid, 2458.2568, -2077.1592, 13.5469, 5);
-						GameTextForPlayer(playerid, "Quay ve de nhan tien!", 4000, 4);
+						GameTextPlayer(playerid, "Quay ve de nhan tien!", 4000, 4);
 					}
 				}
 			}
@@ -162,8 +371,8 @@ task ServerBeat[1000]()
 			//if (!IsPlayerInRangeOfPoint(playerid, 3, BTPos[playerid][0], BTPos[playerid][1], BTPos[playerid][2])) NamVien(playerid);
 			GetAnimationName(GetPlayerAnimationIndex(playerid), AnimLib, 32, AnimName, 32);
 			if (strcmp(AnimName, "KILL_Knife_Ped_Die", true) != 0) ApplyAnimation(playerid, "KNIFE", "KILL_Knife_Ped_Die", 4.0, 0, 1, 1, 1, 0, 1);
-			if (DyingTimeOut[playerid] != 0) GameTextForPlayer(playerid, "~r~Ban da bi thuong ~n~~y~Go /dichvu capcuu de goi cuu thuong", 1000, 4);
-			else GameTextForPlayer(playerid, "~r~Ban da bi thuong ~n~~y~Go /dichvu capcuu de goi cuu thuong~n~~r~/chapnhan chet ~y~de tu sat", 1000, 4);
+			if (DyingTimeOut[playerid] != 0) GameTextPlayer(playerid, "~r~Ban da bi thuong ~n~~y~Go /dichvu capcuu de goi cuu thuong", 1000, 4);
+			else GameTextPlayer(playerid, "~r~Ban da bi thuong ~n~~y~Go /dichvu capcuu de goi cuu thuong~n~~r~/chapnhan chet ~y~de tu sat", 1000, 4);
 		}
 		if (Dying[playerid] == 1 && Saving[playerid] > 0)
 		{
@@ -178,8 +387,8 @@ task ServerBeat[1000]()
 			Saving[playerid]--;
 			new str[128];
 			format(str, sizeof(str), "~g~Thoi gian dieu tri con~n~~y~%d ~y~giay~y~!", Saving[playerid]);
-			GameTextForPlayer(playerid, str, 1000, 4);
-			GameTextForPlayer(Saver[playerid], str, 1000, 4);
+			GameTextPlayer(playerid, str, 1000, 4);
+			GameTextPlayer(Saver[playerid], str, 1000, 4);
 			if (Saving[playerid] == 0)
 			{
 				format(str, sizeof(str), "Ban da dieu tri cho %s thanh cong.", GN(playerid));
@@ -258,7 +467,7 @@ task ServerBeat[1000]()
 		{
 			new str[128];
 			format(str, sizeof(str), "~y~%d giay ~n~~g~de bat dau buon lau.", DDTime[playerid]);
-			GameTextForPlayer(playerid, str, 1000, 4);
+			GameTextPlayer(playerid, str, 1000, 4);
 			DDTime[playerid]--;
 		}
 		if (DDTime[playerid] == 10 && DrugDealing[playerid] == 2 && GetPlayerState(playerid) == PLAYER_STATE_DRIVER)
@@ -326,7 +535,7 @@ task ServerBeat[1000]()
 			OldDD[playerid] = rand;
 			CarDD[playerid] = vid;
 
-			SetPlayerCheckpoint(playerid, BuonLauGiveCP[rand][0], BuonLauGiveCP[rand][1], BuonLauGiveCP[rand][2], 5);
+			SetCheckpoint(playerid, BuonLauGiveCP[rand][0], BuonLauGiveCP[rand][1], BuonLauGiveCP[rand][2], 5);
 		}
 	}
 }

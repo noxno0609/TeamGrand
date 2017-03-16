@@ -36,7 +36,7 @@ stock IsPlayerNearSeed(playerid)
 }
 //stock IsPlayerInRectangle(playerid, Float:x1, Float:y1, Float:x2, Float:y2)
 //{
-//	if (IsPlayerConnected(playerid))
+//	if (IsLogOn(playerid))
 //	{
 //		new Float:xs, Float:ys, Float:zs;
 //		GetPlayerPos(playerid, xs, ys, zs);
@@ -155,20 +155,6 @@ stock RiceGrowth(i, a) {
 		}
 	}
 	SeedCheck(i);
-}
-stock GetLevelSkill(playerid, skill)
-{
-	new value = 0;
-	switch (skill)
-	{
-	case PLANT: value = PlayerInfo[playerid][pPlantSkill];
-	}
-	if (value>0 && value <100) return 1;
-	else if (value >= 100 && value <500) return 2;
-	else if (value >= 500 && value <1000) return 3;
-	else if (value >= 1000 && value <2000) return 4;
-	else if (value >= 2000) return 5;
-	return 0;
 }
 
 stock TangSkill(playerid, skill, soluong)
@@ -321,7 +307,7 @@ CMD:goto(playerid, params[])
 	else if (IsNumeric(params))
 	{
 		new plo = strval(params);
-		if (plo == INVALID_PLAYER_ID || !IsPlayerConnected(plo))
+		if (plo == INVALID_PLAYER_ID || !IsLogOn(plo))
 		{
 			format(str, sizeof(str), "   %d , nguoi choi khong hop le.", plo);
 			return SendClientMessage(playerid, COLOR_GRAD1, str);
@@ -380,7 +366,7 @@ CMD:sendto(playerid, params[])
 		SendClientMessage(playerid, COLOR_GREY, "Dia diem: AllSaints | County | Wangcar");
 		return 1;
 	}
-	if (!IsPlayerConnected(playerid)) return SendClientMessage(playerid, COLOR_GRAD1, "ID khong hop le.");
+	if (!IsLogOn(playerid)) return SendClientMessage(playerid, COLOR_GRAD1, "ID khong hop le.");
 	new xe = GetPlayerVehicleID(nguoichoi), str[255];
 	if (!strcmp(location, "ls", true))
 	{
@@ -523,6 +509,7 @@ CMD:nonewb(playerid, params[])
 	return 1;
 }
 
+CMD:n(playerid, params[]) { return cmd_newb(playerid, params); }
 CMD:newb(playerid, params[])
 {
 	new str[255], mess[255];
@@ -557,7 +544,7 @@ CMD:yeucautrogiup(playerid, params[])
 CMD:chapnhangiupdo(playerid, params[])
 {
 	if (PlayerInfo[playerid][pHelper] < 2) return SendClientMessage(playerid, COLOR_GRAD1, "Ban khong phai advisor.");
-	/*if (CDuty[playerid] != 1) return SendClientMessage(playerid, COLOR_GRAD1, "Ban phai onduty Advisor truoc.");*/
+	if (CADuty[playerid] == 0) return SendClientMessage(playerid, COLOR_GRAD1, "Ban phai onduty Advisor truoc.");
 	new pgd;
 	if (sscanf(params, "u", pgd)) return SendClientMessage(playerid, COLOR_GRAD1, "/chapnhangiupdo [Ten/ID Nguoi Choi]");
 	if (pgd == INVALID_PLAYER_ID) return SendClientMessage(playerid, COLOR_GRAD1, "Nguoi choi khong ton tai.");
@@ -594,7 +581,6 @@ CMD:chapnhangiupdo(playerid, params[])
 	DeletePVar(pgd, "CanGiupDo");
 	return 1;
 }
-
 CMD:dagiup(playerid, params[])
 {
 	if (GetPVarInt(playerid, "DangHelp") != 1) return SendClientMessage(playerid, COLOR_GRAD1, "Ban hien khong giup do ai.");
@@ -717,7 +703,7 @@ public PlantKeyStateChange(playerid, newkeys, oldkeys)
 			ApplyAnimation(playerid, "CARRY", "crry_prtial", 4.0, 1, 1, 1, 1, 1);
 			SetPVarInt(playerid, "CantUseAnim", 1);
 			SendClientMessage(playerid, COLOR_WHITE, "Ban da thu hoach lua, hay mang no toi kho!");
-			SetPlayerCheckpoint(playerid, -1102.0814, -1636.1648, 76.3672, 4);
+			SetCheckpoint(playerid, -1102.0814, -1636.1648, 76.3672, 4);
 			DestroySeed(i);
 		}
 	}
@@ -782,7 +768,7 @@ public DMVOnPlayerEnterRaceCP(playerid) {
 		SetVirtualWorld(playerid, 0);
 		HideDriverLicenseTD(playerid);
 		PutPlayerInVehicle(playerid, DriverLicenseCar[playerid], 0);
-		GameTextForPlayer(playerid, "~g~Chuc mung ban hoan thanh bai sat hach lai xe~n~~y~Tro lai DMV de nhan bang lai xe", 5000, 3);
+		GameTextPlayer(playerid, "~g~Chuc mung ban hoan thanh bai sat hach lai xe~n~~y~Tro lai DMV de nhan bang lai xe", 5000, 3);
 		SetPVarInt(playerid,"DMVSuccess", 1);
 		SetPlayerCheckpoint(playerid, DriverLicensePos[9][0], DriverLicensePos[9][1], DriverLicensePos[9][2], 5);
 		DriverLicenseTime[playerid] = 0.0;
@@ -792,7 +778,7 @@ public DMVOnPlayerEnterRaceCP(playerid) {
 stock FailDrivingTest(playerid)
 {
 	stop DriverLicenseLoop[playerid];
-	GameTextForPlayer(playerid, "~r~Ban da rot bai thi sat hach lai xe", 5000, 3);
+	GameTextPlayer(playerid, "~r~Ban da rot bai thi sat hach lai xe", 5000, 3);
 	SetPVarInt(playerid, "DMVSuccess", 0);
 	DisablePlayerRaceCheckpoint(playerid);
 	DisablePlayerCheckpoint(playerid);
@@ -810,7 +796,7 @@ public DMVOnPlayerEnterCP(playerid) {
 	if (DriverLicenseCar[playerid] != INVALID_VEHICLE_ID && IsPlayerInRangeOfPoint(playerid, 5, DriverLicensePos[9][0], DriverLicensePos[9][1], DriverLicensePos[9][2])) {
 		if(GetPVarInt(playerid, "DMVSuccess") == 1) {
 			PlayerInfo[playerid][pCarLic] = 1;
-			GameTextForPlayer(playerid, "~w~Chuc mung ban da nhan duoc bang lai xe", 5000, 3);
+			GameTextPlayer(playerid, "~w~Chuc mung ban da nhan duoc bang lai xe", 5000, 3);
 		}
 		RemovePlayerFromVehicle(playerid);
 		SetVehicleToRespawn2(DriverLicenseCar[playerid]);
@@ -898,11 +884,12 @@ public InitDriverLicenseTD(playerid) {
 	PlayerTextDrawFont(playerid, DriverLicenseTD[playerid][4], 1);
 	PlayerTextDrawSetProportional(playerid, DriverLicenseTD[playerid][4], 0);
 	PlayerTextDrawSetShadow(playerid, DriverLicenseTD[playerid][4], 0);
+	return 1;
 }
 
 task Plant[1000]()
 {
-	/////////////////////////////////////////Growth///////////////////
+	///////////////////Growth///////////////////
 	for (new i = 0; i<MAXSEED; i++)
 	{
 		if (IsValidDynamicObject(SeedObject[i]))

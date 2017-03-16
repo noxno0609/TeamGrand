@@ -38,9 +38,6 @@
 #define _uf_included
 #pragma library uf
 
-#define MAX_STRING 255
-#define MAX_VEHICLES_MODELS 212
-
 #if defined MAX_PICKUPS 
 #undef MAX_PICKUPS 
 #endif 
@@ -85,221 +82,221 @@ const Float:PI=3.14159265;
 #define ACC_KMPH2 2
 #define ACC_G 3
 
-new stock VehicleNames[(MAX_VEHICLES_MODELS+1)][MAX_STRING] = {
-   "Landstalker",
-   "Bravura",
-   "Buffalo",
-   "Linerunner",
-   "Pereniel",
-   "Sentinel",
-   "Dumper",
-   "Firetruck",
-   "Trashmaster",
-   "Stretch",
-   "Manana",
-   "Infernus",
-   "Voodoo",
-   "Pony",
-   "Mule",
-   "Cheetah",
-   "Ambulance",
-   "Leviathan",
-   "Moonbeam",
-   "Esperanto",
-   "Taxi",
-   "Washington",
-   "Bobcat",
-   "Mr Whoopee",
-   "BF Injection",
-   "Hunter",
-   "Premier",
-   "Enforcer",
-   "Securicar",
-   "Banshee",
-   "Predator",
-   "Bus",
-   "Rhino",
-   "Barracks",
-   "Hotknife",
-   "Trailer", //artict1
-   "Previon",
-   "Coach",
-   "Cabbie",
-   "Stallion",
-   "Rumpo",
-   "RC Bandit",
-   "Romero",
-   "Packer",
-   "Monster",
-   "Admiral",
-   "Squalo",
-   "Seasparrow",
-   "Pizzaboy",
-   "Tram",
-   "Trailer", //artict2
-   "Turismo",
-   "Speeder",
-   "Reefer",
-   "Tropic",
-   "Flatbed",
-   "Yankee",
-   "Caddy",
-   "Solair",
-   "Berkley's RC Van",
-   "Skimmer",
-   "PCJ-600",
-   "Faggio",
-   "Freeway",
-   "RC Baron",
-   "RC Raider",
-   "Glendale",
-   "Oceanic",
-   "Sanchez",
-   "Sparrow",
-   "Patriot",
-   "Quad",
-   "Coastguard",
-   "Dinghy",
-   "Hermes",
-   "Sabre",
-   "Rustler",
-   "ZR3 50",
-   "Walton",
-   "Regina",
-   "Comet",
-   "BMX",
-   "Burrito",
-   "Camper",
-   "Marquis",
-   "Baggage",
-   "Dozer",
-   "Maverick",
-   "News Chopper",
-   "Rancher",
-   "FBI Rancher",
-   "Virgo",
-   "Greenwood",
-   "Jetmax",
-   "Hotring",
-   "Sandking",
-   "Blista Compact",
-   "Police Maverick",
-   "Boxville",
-   "Benson",
-   "Mesa",
-   "RC Goblin",
-   "Hotring Racer", //hotrina
-   "Hotring Racer", //hotrinb
-   "Bloodring Banger",
-   "Rancher",
-   "Super GT",
-   "Elegant",
-   "Journey",
-   "Bike",
-   "Mountain Bike",
-   "Beagle",
-   "Cropdust",
-   "Stunt",
-   "Tanker", //petro
-   "RoadTrain",
-   "Nebula",
-   "Majestic",
-   "Buccaneer",
-   "Shamal",
-   "Hydra",
-   "FCR-900",
-   "NRG-500",
-   "HPV1000",
-   "Cement Truck",
-   "Tow Truck",
-   "Fortune",
-   "Cadrona",
-   "FBI Truck",
-   "Willard",
-   "Forklift",
-   "Tractor",
-   "Combine",
-   "Feltzer",
-   "Remington",
-   "Slamvan",
-   "Blade",
-   "Freight",
-   "Streak",
-   "Vortex",
-   "Vincent",
-   "Bullet",
-   "Clover",
-   "Sadler",
-   "Firetruck", //firela
-   "Hustler",
-   "Intruder",
-   "Primo",
-   "Cargobob",
-   "Tampa",
-   "Sunrise",
-   "Merit",
-   "Utility",
-   "Nevada",
-   "Yosemite",
-   "Windsor",
-   "Monster", //monstera
-   "Monster", //monsterb
-   "Uranus",
-   "Jester",
-   "Sultan",
-   "Stratum",
-   "Elegy",
-   "Raindance",
-   "RC Tiger",
-   "Flash",
-   "Tahoma",
-   "Savanna",
-   "Bandito",
-   "Freight", //freiflat
-   "Trailer", //streakc
-   "Kart",
-   "Mower",
-   "Duneride",
-   "Sweeper",
-   "Broadway",
-   "Tornado",
-   "AT-400",
-   "DFT-30",
-   "Huntley",
-   "Stafford",
-   "BF-400",
-   "Newsvan",
-   "Tug",
-   "Trailer", //petrotr
-   "Emperor",
-   "Wayfarer",
-   "Euros",
-   "Hotdog",
-   "Club",
-   "Trailer", //freibox
-   "Trailer", //artict3
-   "Andromada",
-   "Dodo",
-   "RC Cam",
-   "Launch",
-   "Police Car (LSPD)",
-   "Police Car (SFPD)",
-   "Police Car (LVPD)",
-   "Police Ranger",
-   "Picador",
-   "S.W.A.T. Van",
-   "Alpha",
-   "Phoenix",
-   "Glendale",
-   "Sadler",
-   "Luggage Trailer", //bagboxa
-   "Luggage Trailer", //bagboxb
-   "Stair Trailer", //tugstair
-   "Boxville",
-   "Farm Plow", //farmtr1
-   "Utility Trailer", //utiltr1
-   "Invalid Vehicle" //just to return if the modelid is invalid
-};
+//new stock VehicleNames[213][255] = {
+//   "Landstalker",
+//   "Bravura",
+//   "Buffalo",
+//   "Linerunner",
+//   "Pereniel",
+//   "Sentinel",
+//   "Dumper",
+//   "Firetruck",
+//   "Trashmaster",
+//   "Stretch",
+//   "Manana",
+//   "Infernus",
+//   "Voodoo",
+//   "Pony",
+//   "Mule",
+//   "Cheetah",
+//   "Ambulance",
+//   "Leviathan",
+//   "Moonbeam",
+//   "Esperanto",
+//   "Taxi",
+//   "Washington",
+//   "Bobcat",
+//   "Mr Whoopee",
+//   "BF Injection",
+//   "Hunter",
+//   "Premier",
+//   "Enforcer",
+//   "Securicar",
+//   "Banshee",
+//   "Predator",
+//   "Bus",
+//   "Rhino",
+//   "Barracks",
+//   "Hotknife",
+//   "Trailer", //artict1
+//   "Previon",
+//   "Coach",
+//   "Cabbie",
+//   "Stallion",
+//   "Rumpo",
+//   "RC Bandit",
+//   "Romero",
+//   "Packer",
+//   "Monster",
+//   "Admiral",
+//   "Squalo",
+//   "Seasparrow",
+//   "Pizzaboy",
+//   "Tram",
+//   "Trailer", //artict2
+//   "Turismo",
+//   "Speeder",
+//   "Reefer",
+//   "Tropic",
+//   "Flatbed",
+//   "Yankee",
+//   "Caddy",
+//   "Solair",
+//   "Berkley's RC Van",
+//   "Skimmer",
+//   "PCJ-600",
+//   "Faggio",
+//   "Freeway",
+//   "RC Baron",
+//   "RC Raider",
+//   "Glendale",
+//   "Oceanic",
+//   "Sanchez",
+//   "Sparrow",
+//   "Patriot",
+//   "Quad",
+//   "Coastguard",
+//   "Dinghy",
+//   "Hermes",
+//   "Sabre",
+//   "Rustler",
+//   "ZR3 50",
+//   "Walton",
+//   "Regina",
+//   "Comet",
+//   "BMX",
+//   "Burrito",
+//   "Camper",
+//   "Marquis",
+//   "Baggage",
+//   "Dozer",
+//   "Maverick",
+//   "News Chopper",
+//   "Rancher",
+//   "FBI Rancher",
+//   "Virgo",
+//   "Greenwood",
+//   "Jetmax",
+//   "Hotring",
+//   "Sandking",
+//   "Blista Compact",
+//   "Police Maverick",
+//   "Boxville",
+//   "Benson",
+//   "Mesa",
+//   "RC Goblin",
+//   "Hotring Racer", //hotrina
+//   "Hotring Racer", //hotrinb
+//   "Bloodring Banger",
+//   "Rancher",
+//   "Super GT",
+//   "Elegant",
+//   "Journey",
+//   "Bike",
+//   "Mountain Bike",
+//   "Beagle",
+//   "Cropdust",
+//   "Stunt",
+//   "Tanker", //petro
+//   "RoadTrain",
+//   "Nebula",
+//   "Majestic",
+//   "Buccaneer",
+//   "Shamal",
+//   "Hydra",
+//   "FCR-900",
+//   "NRG-500",
+//   "HPV1000",
+//   "Cement Truck",
+//   "Tow Truck",
+//   "Fortune",
+//   "Cadrona",
+//   "FBI Truck",
+//   "Willard",
+//   "Forklift",
+//   "Tractor",
+//   "Combine",
+//   "Feltzer",
+//   "Remington",
+//   "Slamvan",
+//   "Blade",
+//   "Freight",
+//   "Streak",
+//   "Vortex",
+//   "Vincent",
+//   "Bullet",
+//   "Clover",
+//   "Sadler",
+//   "Firetruck", //firela
+//   "Hustler",
+//   "Intruder",
+//   "Primo",
+//   "Cargobob",
+//   "Tampa",
+//   "Sunrise",
+//   "Merit",
+//   "Utility",
+//   "Nevada",
+//   "Yosemite",
+//   "Windsor",
+//   "Monster", //monstera
+//   "Monster", //monsterb
+//   "Uranus",
+//   "Jester",
+//   "Sultan",
+//   "Stratum",
+//   "Elegy",
+//   "Raindance",
+//   "RC Tiger",
+//   "Flash",
+//   "Tahoma",
+//   "Savanna",
+//   "Bandito",
+//   "Freight", //freiflat
+//   "Trailer", //streakc
+//   "Kart",
+//   "Mower",
+//   "Duneride",
+//   "Sweeper",
+//   "Broadway",
+//   "Tornado",
+//   "AT-400",
+//   "DFT-30",
+//   "Huntley",
+//   "Stafford",
+//   "BF-400",
+//   "Newsvan",
+//   "Tug",
+//   "Trailer", //petrotr
+//   "Emperor",
+//   "Wayfarer",
+//   "Euros",
+//   "Hotdog",
+//   "Club",
+//   "Trailer", //freibox
+//   "Trailer", //artict3
+//   "Andromada",
+//   "Dodo",
+//   "RC Cam",
+//   "Launch",
+//   "Police Car (LSPD)",
+//   "Police Car (SFPD)",
+//   "Police Car (LVPD)",
+//   "Police Ranger",
+//   "Picador",
+//   "S.W.A.T. Van",
+//   "Alpha",
+//   "Phoenix",
+//   "Glendale",
+//   "Sadler",
+//   "Luggage Trailer", //bagboxa
+//   "Luggage Trailer", //bagboxb
+//   "Stair Trailer", //tugstair
+//   "Boxville",
+//   "Farm Plow", //farmtr1
+//   "Utility Trailer", //utiltr1
+//   "Invalid Vehicle" //just to return if the modelid is invalid
+//};
 #if defined OnPlayerBuyWeapon
 new stock Float:lvammu[3][3] = {
 (295.7932,-80.8074,1001.5156),
@@ -1075,12 +1072,14 @@ stock SendClientMessageToAdmins(colour,const str[]) //By Mike (Edited by Sacky)
 	return ret;
 }
 
-stock Float:GetDistanceBetweenPoints(Float:x1,Float:y1,Float:z1,Float:x2,Float:y2,Float:z2) //By milous22 (https://github.com/milous22)
+forward Float:GetDistanceBetweenPoints(Float:x1,Float:y1,Float:z1,Float:x2,Float:y2,Float:z2) ;//By milous22 (https://github.com/milous22)
+public Float:GetDistanceBetweenPoints(Float:x1,Float:y1,Float:z1,Float:x2,Float:y2,Float:z2) //By milous22 (https://github.com/milous22)
 {
 	return floatsqroot(floatadd(floatadd(floatpower(floatsub(x1,x2),2),floatpower(floatsub(y1,y2),2)),floatpower(floatsub(z1,z2),2)));
 }
 
-stock Float:GetDistanceToPoint(playerid,Float:x1,Float:y1,Float:z1) //By Gabriel "Larcius" Cordes
+forward Float:GetDistanceToPoint(playerid,Float:x1,Float:y1,Float:z1); //By Gabriel "Larcius" Cordes
+public Float:GetDistanceToPoint(playerid,Float:x1,Float:y1,Float:z1) //By Gabriel "Larcius" Cordes
 {
 	if (IsPlayerConnected(playerid))
 	{
@@ -1109,10 +1108,10 @@ stock Float:GetDistanceToCar(playerid,vehicleid) //By Darkrealm (Edited by Sacky
 
 stock GetClosestVehicle(playerid) //By Darkrealm (edited by Gabrie "Larcius" Cordes)
 {
-	if(IsPlayerConnected(playerid) && IsVehicleConnected(0))
+	new closestvehicle = -1;
+	new Float:closestdist = 5.0;
+	if(IsPlayerConnected(playerid))
 	{
-		new closestvehicle=0;
-		new Float:closestdist=GetDistanceToVehicle(playerid,0);
 		for(new vehicleid=0; vehicleid<MAX_VEHICLES; vehicleid++)
 		{
 			new Float:dist = GetDistanceToVehicle(playerid,vehicleid);
@@ -1122,9 +1121,8 @@ stock GetClosestVehicle(playerid) //By Darkrealm (edited by Gabrie "Larcius" Cor
 				closestvehicle = vehicleid;
 			}
 		}
-		return closestvehicle;
 	}
-	return -1;
+	return closestvehicle;
 }
 
 stock GetClosestCar(playerid)
@@ -1147,20 +1145,22 @@ public Float:GetDistanceBetweenPlayers(playerid,playerid2) //By Slick (Edited by
 
 stock GetClosestPlayer(playerid) //By Slick (edited by Gabriel "Larcius" Cordes)
 {
-	if(IsPlayerConnected(playerid) && IsPlayerConnected(0))
+	if(IsPlayerConnected(playerid))
 	{
 		new closestplayer=0;
-		new Float:closestdist=GetDistanceBetweenPlayers(playerid,0);
+		new Float:closestdist=5.0;
 		for(new playerid2=0; playerid2<MAX_PLAYERS; playerid2++)
 		{
+			if (playerid2 == playerid) continue;
 			new Float:dist = GetDistanceBetweenPlayers(playerid,playerid2);
 			if ((dist < closestdist))
 			{
 				closestdist = dist;
-				closestplayer = playerid;
+				closestplayer = playerid2;
 			}
 		}
-		return closestplayer;
+		if (closestdist < 5.0)
+			return closestplayer;
 	}
 	return -1;
 }
@@ -1355,7 +1355,30 @@ stock GetCurrentPosition(playerid) //By Sacky
 	}
 	return string;
 }
-
+stock GetXYInFrontOfPlayer(playerid, &Float:x, &Float:y, Float:distance) 
+{
+	if (IsPlayerInAnyVehicle(playerid)) return -1;
+	new Float:a;
+	
+	GetPlayerPos(playerid, x, y, a);
+	GetPlayerFacingAngle(playerid, a);
+	
+	x += (distance * floatsin(-a, degrees));
+	y += (distance * floatcos(-a, degrees));
+	return 1;
+}
+stock GetXYBehindPlayer(playerid, &Float:x, &Float:y, Float:distance) 
+{
+	if (IsPlayerInAnyVehicle(playerid)) return -1;
+	new Float:a;
+	
+	GetPlayerPos(playerid, x, y, a);
+	GetPlayerFacingAngle(playerid, a);
+	
+	x += (distance * -floatsin(-a, degrees));
+	y += (distance * -floatcos(-a, degrees));
+	return 1;
+}
 stock GetVehicles() //By Gabriel "Larcius" Cordes
 {
 	new vehicles=0;
@@ -1678,19 +1701,22 @@ stock GetVehicleNameByModel(modelid) //By Gabriel "Larcius" Cordes
 	return VehicleNames[(modelid-400)];
 }
 
-stock Float:GetDistanceToPointXY(playerid,Float:xs,Float:ys) //By Gabriel "Larcius" Cordes
+forward Float:GetDistanceToPointXY(playerid,Float:xs,Float:ys); //By Gabriel "Larcius" Cordes
+public Float:GetDistanceToPointXY(playerid,Float:xs,Float:ys) //By Gabriel "Larcius" Cordes
 {
 	new Float:x1,Float:y1,Float:z1;
 	GetPlayerPos(playerid,x1,y1,z1);
 	return GetDistanceToPoint(playerid,xs,ys,z1);
 }
 
-stock Float:GetDistanceBetweenPointsXY(Float:x1,Float:y1,Float:x2,Float:y2) //By Gabriel "Larcius" Cordes
+forward Float:GetDistanceBetweenPointsXY(Float:x1,Float:y1,Float:x2,Float:y2); //By Gabriel "Larcius" Cordes
+public Float:GetDistanceBetweenPointsXY(Float:x1,Float:y1,Float:x2,Float:y2) //By Gabriel "Larcius" Cordes
 {
 	return GetDistanceBetweenPoints(x1,y1,0.0,x2,y2,0.0);
 }
 
-stock Float:GetPlayerDistanceToPointXY(playerid,Float:xs,Float:ys)
+forward Float:GetPlayerDistanceToPointXY(playerid,Float:xs,Float:ys);
+public Float:GetPlayerDistanceToPointXY(playerid,Float:xs,Float:ys)
 {
 	return GetDistanceToPointXY(playerid,xs,ys);
 }
@@ -2747,62 +2773,68 @@ stock GetPlayers() //By rapidZ
 	return players;
 }
 
-stock str_replace(search[], replace[], source[]) //By Tratulla
+stock Replace(source[], search[], replace[])
 {
 	new newnick[256];
 	new newlen;
 	for (new i; i < strlen(source); i++)
 	{
-	    if (strlen(search) > 1 && i != (strlen(source) - 1))
-	    {
-	        new matched = 1;
-	        new start = i;
-	        for (new s=0; s < strlen(search) && matched == 1; s++)
-	        {
-	            if (source[i] != search[s] && s == 0)
-	            {
-	                newnick[newlen] = source[i];
-	                matched = 0;
-				} else
+		if (strlen(search) > 1 && i != (strlen(source) - 1))
+		{
+			new matched = 1;
+			new start = i;
+			for (new s = 0; s < strlen(search) && matched == 1; s++)
+			{
+				if (source[i] != search[s] && s == 0)
 				{
-		            if (source[i] == search[s])
-		            {
-		                i++;
-		            } else
-		            {
-		                matched = 0;
+					newnick[newlen] = source[i];
+					matched = 0;
+				}
+				else
+				{
+					if (source[i] == search[s])
+					{
+						i++;
+					}
+					else
+					{
+						matched = 0;
 					}
 				}
-	        }
-	        if (matched == 0)
-	        {
-	            for (start=start; start <= i; start++)
-	            {
-	                newnick[newlen] = source[start];
-	                newlen++;
-	            }
-	        } else
-	        {
-	            for (new r; r < strlen(replace); r++)
-	            {
-	                newnick[newlen] = replace[r];
-	                newlen++;
-	            }
+			}
+			if (matched == 0)
+			{
+				while (start <= i)
+				{
+					newnick[newlen] = source[start];
+					newlen++;
+					start++;
+				}
+			}
+			else
+			{
+				for (new r; r < strlen(replace); r++)
+				{
+					newnick[newlen] = replace[r];
+					newlen++;
+				}
 				i = (start + (strlen(search) - 1));
-	        }
-	    } else
-	    {
+			}
+		}
+		else
+		{
 			if (strlen(search) == 1 && source[i] == search[0])
 			{
-			    for (new r; r < strlen(replace); r++)
-			    {
-			        newnick[newlen] = replace[r];
-			        newlen++;
-			    }
-			} else
+				for (new r; r < strlen(replace); r++)
+				{
+					newnick[newlen] = replace[r];
+					newlen++;
+				}
+			}
+			else
 			{
-			    newnick[newlen] = source[i];
-			    newlen++;
+				newnick[newlen] = source[i];
+				newlen++;
 			}
 		}
 	}
